@@ -4,3 +4,14 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: interest-cohort=()
   X-Robots-Tag: noindex, follow
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.web3forms.com; frame-ancestors 'none'; base-uri 'self'; object-src 'none'
+
+/assets/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+/css/*
+  Cache-Control: public, max-age=86400, must-revalidate
+
+/js/*
+  Cache-Control: public, max-age=86400, must-revalidate

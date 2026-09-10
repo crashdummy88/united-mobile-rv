@@ -37,6 +37,14 @@ export async function onRequestPost(context) {
   const session = await readSession(request, env.SESSION_SECRET);
   if (!session) return json({ success: false, error: 'auth_required' }, 401);
 
+  const recent = await env.DB.prepare(
+    `SELECT created_at FROM threads WHERE author_id = ? ORDER BY created_at DESC LIMIT 1`
+  ).bind(session.uid).first();
+  if (recent) {
+    const seconds = (Date.now() - new Date(recent.created_at + 'Z').getTime()) / 1000;
+    if (seconds < 20) return json({ success: false, error: 'rate_limited', message: 'Please wait a moment before posting again.' }, 429);
+  }
+
   let body;
   try {
     body = await request.json();

@@ -46,6 +46,14 @@ export async function onRequestPost(context) {
     .first();
   if (!thread) return json({ success: false, error: 'not_found' }, 404);
 
+  const recent = await env.DB.prepare(
+    `SELECT created_at FROM posts WHERE author_id = ? ORDER BY created_at DESC LIMIT 1`
+  ).bind(session.uid).first();
+  if (recent) {
+    const seconds = (Date.now() - new Date(recent.created_at + 'Z').getTime()) / 1000;
+    if (seconds < 10) return json({ success: false, error: 'rate_limited', message: 'Please wait a moment before replying again.' }, 429);
+  }
+
   let body;
   try {
     body = await request.json();
