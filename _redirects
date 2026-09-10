@@ -1,7 +1,44 @@
-# Soft Pages → live/sibling convert ONLY (never whole hub / never /*)
-# Funnel — mothership united-mobile-rv.pages.dev
+# Soft Pages convert ONLY (never whole hub / never /*)
+# Funnel — united-mobile-rv.pages.dev · Domain HOLD
+# Keep: book / software / text (+ Prefer Text bounce at /go/text/)
+
+# Live Book + Prefer Text
 /go/book       https://unitedmobilerv.com/book-service/  302
 /go/book/      https://unitedmobilerv.com/book-service/  302
+/go/sms        /go/text/  302
+/go/sms/       /go/text/  302
+/go/phone      /go/text/  302
+/go/phone/     /go/text/  302
+/go/call       /go/text/  302
+/go/call/      /go/text/  302
+
+# Reviews / maps (Yelp public URL HOLD — Matt paste)
+/go/google     https://www.google.com/maps/place/United+Mobile+RV+LLC/data=!4m2!3m1!1s0x0:0xb040c24e93fec214  302
+/go/google/    https://www.google.com/maps/place/United+Mobile+RV+LLC/data=!4m2!3m1!1s0x0:0xb040c24e93fec214  302
+/go/maps       https://www.google.com/maps/place/United+Mobile+RV+LLC/data=!4m2!3m1!1s0x0:0xb040c24e93fec214  302
+/go/maps/      https://www.google.com/maps/place/United+Mobile+RV+LLC/data=!4m2!3m1!1s0x0:0xb040c24e93fec214  302
+/go/review     https://www.google.com/maps/place/United+Mobile+RV+LLC/data=!4m2!3m1!1s0x0:0xb040c24e93fec214  302
+/go/review/    https://www.google.com/maps/place/United+Mobile+RV+LLC/data=!4m2!3m1!1s0x0:0xb040c24e93fec214  302
+
+# On-hub service lines (mothership paths)
+/go/pricing    /pricing/  302
+/go/pricing/   /pricing/  302
+/go/about      /about/  302
+/go/about/     /about/  302
+/go/services   /service/  302
+/go/services/  /service/  302
+/go/service    /service/  302
+/go/service/   /service/  302
+/go/victron    /victron/  302
+/go/victron/   /victron/  302
+/go/wireless   /wireless/  302
+/go/wireless/  /wireless/  302
+/go/starlink   /wireless/  302
+/go/starlink/  /wireless/  302
+/go/electrical /electrical/  302
+/go/electrical/ /electrical/  302
+
+# Sibling soft hubs (Matt CF Creates may still be pending)
 /go/software   https://umrt-software.pages.dev/  302
 /go/software/  https://umrt-software.pages.dev/  302
 /go/portal     https://umrt-portal.pages.dev/  302
