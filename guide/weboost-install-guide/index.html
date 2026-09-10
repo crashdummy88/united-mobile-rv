@@ -3,16 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>weBoost Install Guide: Authorized Installer & AGC Honesty | UMRT</title>
-<meta name="description" content="weBoost Authorized Installer guide — antenna placement, oscillation control, and automatic gain control (AGC). Outdoor RF required; no invent-from-zero.">
+<title>weBoost RV Install: Authorized Installer, AGC &amp; Oscillation | UMRT</title>
+<meta name="description" content="weBoost Authorized Installer guide — donor/indoor antenna placement, AGC honesty, oscillation avoidance. Amplifies existing outdoor signal only. Prefer Text UMRT.">
 <link rel="canonical" href="https://united-mobile-rv.pages.dev/guide/weboost-install-guide/">
 <meta name="theme-color" content="#1A1A1A">
 <link rel="icon" href="/favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png">
-<meta property="og:title" content="weBoost Install Guide: Authorized Installer & AGC Honesty | UMRT">
-<meta property="og:description" content="weBoost Authorized Installer guide — antenna placement, oscillation control, and automatic gain control (AGC). Outdoor RF required; no invent-from-zero.">
+<meta property="og:title" content="weBoost RV Install: Authorized Installer, AGC &amp; Oscillation | UMRT">
+<meta property="og:description" content="weBoost Authorized Installer guide — donor/indoor antenna placement, AGC honesty, oscillation avoidance. Amplifies existing outdoor signal only.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://united-mobile-rv.pages.dev/guide/weboost-install-guide/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/site.css">
 </head>
 <body>
@@ -34,55 +37,88 @@
     </div>
   </div>
 </header>
-
 <main id="main">
+
 <section class="page-hero">
   <div class="wrap">
-    <span class="micro">Connectivity guide</span>
+    <span class="micro">Connectivity guide · weBoost Authorized Installer</span>
     <h1>weBoost install — Authorized Installer, AGC honesty</h1>
-    <p class="lead">weBoost Authorized Installer work: donor/indoor placement, coax, fused DC. Outdoor RF required. AGC manages gain — we don’t invent bars from zero signal.</p>
+    <p class="lead">A cell booster does not create signal out of nothing — it amplifies whatever weak signal already reaches your roof antenna. Install it wrong and you can end up with worse performance than no booster at all. United Mobile RV is a <strong>weBoost Authorized Installer</strong>.</p>
     <p class="muted" style="margin-top:16px;max-width:48ch">Active corridor: Montana · Wyoming · Idaho · Washington — case-by-case beyond.</p>
   </div>
 </section>
 <section class="band">
   <div class="wrap">
-
     <span class="micro">Field notes</span>
-    <p>United Mobile RV is a <strong>weBoost Authorized Installer</strong>. A booster amplifies usable outdoor signal — it does not invent coverage from zero RF. Modern systems use automatic gain control (AGC); we place antennas and cable so AGC works, we do not “tune gain” like a volume knob.</p>
+    <p>We place donor and indoor antennas to reduce oscillation and let automatic gain control (AGC) do its job. We do not promise magic bars where outdoor RF is not there. Measure outside first — dead outdoor cell is a coverage problem, not a missing amp.</p>
+
+    <h2 style="margin-top:28px;font-size:1.25rem">Three parts, one system</h2>
     <div class="grid-2">
-      <article class="service-card"><h3>Three parts, one system</h3><p>Outdoor (donor) antenna, amplifier, and indoor antenna must be spaced and aimed as a system. Cheap cable, crushed runs, and random ground-plane choices waste as much performance as a wrong amp model.</p></article>
-      <article class="service-card"><h3>Outdoor RF required</h3><p>If the donor antenna hears nothing usable, the amp has nothing honest to boost. Dead canyons and metal sheds are physics problems, not “need a bigger booster” problems. We check outdoor signal before promising indoor bars.</p></article>
-      <article class="service-card"><h3>AGC &amp; oscillation</h3><p>If indoor and outdoor antennas hear each other, the amp re-amplifies its own output. AGC then slams gain down — performance can be worse than no booster. Separation, isolation, and correct interior panel placement keep AGC from fighting you.</p></article>
-      <article class="service-card"><h3>Power &amp; fuse</h3><p>Fused DC power, clean grounds, and travel-safe mounting beat a booster zip-tied to a ladder with exposed coax. Vibration and UV destroy sloppy installs on the first long corridor day.</p></article>
-      <article class="service-card"><h3>With Starlink / Peplink</h3><p>weBoost helps weak-but-present cell. Starlink covers no-tower country. Peplink bonding and/or failover ties the WANs together. Antenna clusters need physical isolation so systems don’t interfere.</p></article>
-      <article class="service-card"><h3>When DIY ends</h3><p>Oscillation you can’t clear, roof penetrations, or “works in the driveway / dies at boondock” after a self-install usually means placement and path — not a random Amazon antenna swap. Prefer Text with photos of outdoor/indoor antenna locations.</p></article>
+      <article class="service-card"><h3>Donor (outdoor) antenna</h3><p>Captures weak outdoor cell signal. Placement and aim matter more than amp model. Keep it clear of other roof RF when possible.</p></article>
+      <article class="service-card"><h3>Amplifier</h3><p>Boosts what the donor hears. Cable quality and ground-plane choices matter. weBoost uses AGC — we do not “tune gain” like a stereo.</p></article>
+      <article class="service-card"><h3>Indoor antenna</h3><p>Rebroadcasts inside the coach. Must be isolated from the donor. Too close and you get oscillation feedback.</p></article>
+      <article class="service-card"><h3>Power</h3><p>Fused DC into the coach electrical system. No dangling cigarette-lighter specials for a travel install.</p></article>
     </div>
+
+    <h2 style="margin-top:28px;font-size:1.25rem">AGC &amp; oscillation</h2>
+    <div class="grid-2">
+      <article class="service-card"><h3>What AGC does</h3><p>Automatic gain control reduces boost when the amp hears its own output or when outdoor signal is already strong. Separation and isolation keep AGC from slamming gain to the floor.</p></article>
+      <article class="service-card"><h3>Oscillation feedback</h3><p>If outdoor and indoor antennas are too close, the amplifier picks up its own output and re-amplifies it. The system detects that and cuts gain — performance collapses.</p></article>
+      <article class="service-card"><h3>Authorized Installer honesty</h3><p>Placement and signal optimization — not “guaranteed bars” in a dead canyon. Outdoor RF and clear sightlines still win.</p></article>
+      <article class="service-card"><h3>With Starlink / Peplink</h3><p>Roof real estate is finite. Separate weBoost donor antennas from Starlink and Peplink cellular antennas. Crowding one corner creates interference that looks like bad firmware.</p></article>
+    </div>
+
     <div style="margin-top:20px">
       <span class="micro">Owner checklist</span>
       <ul style="margin-top:8px;line-height:1.7">
-        <li>Measure outdoor signal at candidate donor locations before drilling</li>
-        <li>Maximize indoor/outdoor antenna separation and avoid line-of-sight between them</li>
-        <li>Use specified coax; don’t coil spare cable next to the amp</li>
-        <li>Fuse the DC feed at the source; verify polarity</li>
-        <li>Retest after travel — vibration moves antennas and loosens connectors</li>
+        <li>Measure outdoor signal before buying — weak-but-present, not dead</li>
+        <li>Maximize separation between donor and indoor antennas</li>
+        <li>Use quality coax; avoid sharp bends and crushed runs</li>
+        <li>Fuse DC power; label the circuit</li>
+        <li>If bars look worse after install, assume oscillation until proven otherwise — see <a href="/troubleshoot/weboost-no-boost/">weBoost no-boost troubleshoot</a></li>
       </ul>
     </div>
 
-    <p class="muted">Related: <a href="/guide/starlink-rv-guide/">Starlink</a> · <a href="/guide/peplink-multi-wan-guide/">Peplink multi-WAN</a> · <a href="/wireless/">Wireless service</a> · <a href="/troubleshoot/weboost-no-boost/">weBoost no-boost troubleshoot</a></p>
+    <h2 style="margin-top:28px;font-size:1.25rem">DIY vs book UMRT</h2>
+    <div class="grid-2">
+      <article class="service-card"><h3>Reasonable DIY</h3><p>Kit unpack, app setup, temporary placement tests on a site with known weak signal — if you already have a fused power path and will not drill new penetrations.</p></article>
+      <article class="service-card"><h3>Book us when</h3><p>Permanent roof donor mount, sealed penetrations, clean coax routes, oscillation that will not clear, or you want the booster designed alongside Starlink/Peplink on the same roof.</p></article>
+    </div>
+
+
+    <h2 style="margin-top:28px;font-size:1.25rem">Site survey in five minutes</h2>
+    <div class="grid-2">
+      <article class="service-card"><h3>Outside first</h3><p>Stand outside the coach with the phone on the carrier you care about. If there is nothing usable outdoors, a booster will not invent it.</p></article>
+      <article class="service-card"><h3>Inside vs outside delta</h3><p>If outside is usable and inside is dead, the shell is shielding you — that is the booster use case. If outside is already dead, fix coverage path (different carrier, Starlink, or relocate) first.</p></article>
+      <article class="service-card"><h3>Donor aim</h3><p>Point toward the usable sector when the kit supports directional donors. Omnidirectional kits still need height and clear metal clutter.</p></article>
+      <article class="service-card"><h3>After install test</h3><p>Compare before/after speed and call quality at the same outdoor site. If performance got worse, assume oscillation or donor/indoor coupling until proven otherwise.</p></article>
+    </div>
+
+    <h2 style="margin-top:28px;font-size:1.25rem">FAQ</h2>
+    <div class="grid-2">
+      <article class="service-card"><h3>Will weBoost work with no bars outside?</h3><p>No. It amplifies existing outdoor signal. Dead outside stays dead.</p></article>
+      <article class="service-card"><h3>Can you tune the gain?</h3><p>weBoost uses AGC. We optimize placement and isolation so AGC does not throttle itself into the floor.</p></article>
+      <article class="service-card"><h3>Does it replace Starlink?</h3><p>No. Cell for low latency near towers; Starlink where towers disappear. Many travelers run both — Peplink coordinates them.</p></article>
+      <article class="service-card"><h3>Why did bars get worse after install?</h3><p>Classic oscillation or antennas too close. Separate donor and indoor, check coax damage, then retest. See the no-boost troubleshoot page.</p></article>
+    </div>
+
+    <p class="muted" style="margin-top:24px">Related: <a href="/guide/starlink-rv-guide/">Starlink guide</a> · <a href="/guide/peplink-multi-wan-guide/">Peplink multi-WAN</a> · <a href="/wireless/">Wireless service</a> · <a href="/troubleshoot/weboost-no-boost/">weBoost no boost</a> · Software <a href="https://umrt-software.pages.dev/weboost/">/weboost/</a></p>
     <div class="btn-row" style="margin-top:24px">
       <a class="btn btn-gold" href="/book-service/">Book a Service</a>
-      <a class="btn btn-ghost" href="tel:+16166065277">(616) 606-5277</a>
+      <a class="btn btn-ghost" href="tel:+16166065277">Prefer Text</a>
       <a class="btn btn-ghost" href="/guide/">All guides</a>
     </div>
   </div>
 </section>
+
 <section class="band band-tight" style="border-top:1px solid var(--rule)">
   <div class="wrap-narrow">
     <span class="micro">Pricing teaser</span>
-    <p>Trip fee <strong>$75</strong> within 30 miles, then <strong>$1.50/mi</strong>. Labor ~<strong>$150/hr</strong> (1-hour minimum, billed in 30-minute increments). Diagnostic <strong>$150</strong> applied toward repair if you proceed.</p>
-    <p class="muted" style="font-size:13px">Credentials (text): Victron Professional Certified Installer · weBoost Authorized Installer · Peplink Certified Associate · Dometic Professional Certified.</p>
+    <p>Trip fee <strong>$75</strong> within 30 miles, then <strong>$1.50/mi</strong> each way. Labor ~<strong>$150/hr</strong> (1-hour minimum, billed in 30-minute increments). Diagnostic <strong>$150</strong> applied toward repair if you proceed.</p>
+    <p class="muted" style="font-size:13px">Credentials (text): Victron Professional Certified Installer · weBoost Authorized Installer · Peplink Certified Associate · Dometic Professional Certified. Starlink = installs only (not a certified partner title).</p>
   </div>
 </section>
+
 </main>
 <footer class="site-footer">
   <div class="wrap footer-grid">
@@ -121,6 +157,11 @@
     <p class="footer-note"><span class="footer-quiet">Public beta / live test of United Mobile RV.</span> Fully functional sales site for corridor service — Prefer Text or Book.</p>
   </div>
 </footer>
+<div class="mobile-bar" aria-label="Quick actions">
+  <a class="btn btn-ghost" href="tel:+16166065277">Text / Call</a>
+  <a class="btn btn-gold" href="/book-service/">Book Now</a>
+</div>
+<script>window.PUBLIC_WEB3FORMS_KEY = window.PUBLIC_WEB3FORMS_KEY || 'PUBLIC_WEB3FORMS_KEY';</script>
 <script src="/js/site.js" defer></script>
 </body>
 </html>
