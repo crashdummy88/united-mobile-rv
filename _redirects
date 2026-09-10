@@ -1,6 +1,22 @@
-# Soft Pages → live convert ONLY (never whole hub / never /*)
+# Soft Pages → live/sibling convert ONLY (never whole hub / never /*)
 # Funnel — mothership united-mobile-rv.pages.dev
-/go/book      https://unitedmobilerv.com/book-service/  302
-/go/book/     https://unitedmobilerv.com/book-service/  302
-/go/software  https://umrt-software.pages.dev/  302
-/go/software/ https://umrt-software.pages.dev/  302
+/go/book       https://unitedmobilerv.com/book-service/  302
+/go/book/      https://unitedmobilerv.com/book-service/  302
+/go/software   https://umrt-software.pages.dev/  302
+/go/software/  https://umrt-software.pages.dev/  302
+/go/portal     https://umrt-portal.pages.dev/  302
+/go/portal/    https://umrt-portal.pages.dev/  302
+/go/pay        https://umrt-pay.pages.dev/  302
+/go/pay/       https://umrt-pay.pages.dev/  302
+/go/status     https://umrt-status.pages.dev/  302
+/go/status/    https://umrt-status.pages.dev/  302
+/go/docs       https://umrt-docs.pages.dev/  302
+/go/docs/      https://umrt-docs.pages.dev/  302
+/go/community  https://umrt-community.pages.dev/  302
+/go/community/ https://umrt-community.pages.dev/  302
+/go/go         https://umrt-go.pages.dev/  302
+/go/go/        https://umrt-go.pages.dev/  302
+/go/areas      https://umrt-areas.pages.dev/  302
+/go/areas/     https://umrt-areas.pages.dev/  302
+/go/quote      https://umrt-quote.pages.dev/  302
+/go/quote/     https://umrt-quote.pages.dev/  302
