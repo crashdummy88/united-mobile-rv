@@ -22,7 +22,7 @@ function json(data, status = 200) {
 }
 
 const FALLBACK =
-  "I can't reach the assistant right now. Call or text (616) 606-5277  -  or use Book a Service at /book-service/.";
+  "Live chat AI is offline right now. Prefer Text (616) 606-5277  -  or Book at /book-service/. A human will follow up.";
 
 export async function onRequestPost(context) {
   const { request, env } = context;
@@ -56,9 +56,8 @@ export async function onRequestPost(context) {
       const reply = await callAnthropic(anthropicKey, leadNote, messages);
       return json({ reply });
     }
-    // Deterministic offline canon helper when no LLM key is configured
-    const reply = localCanonReply(messages[messages.length - 1]?.content || '', lead);
-    return json({ reply, mode: 'local' });
+    // No LLM key / API unavailable — honest human handoff only (no fake assistant answers)
+    return json({ reply: FALLBACK, mode: 'fallback' });
   } catch (err) {
     return json({ error: 'upstream', reply: FALLBACK }, 200);
   }
@@ -129,27 +128,3 @@ async function callAnthropic(key, leadNote, messages) {
   return text;
 }
 
-function localCanonReply(last, lead) {
-  const q = (last || '').toLowerCase();
-  const phone = '(616) 606-5277';
-  if (/price|pricing|cost|rate|trip fee|diagnostic|labor|winteriz|trip prep|seasonal/.test(q)) {
-    return `Pricing: Trip fee $75 within 30 miles, then $1.50/mi each way. Labor ~$150/hr (1 hour minimum · 30-minute increments after). Winterize $175 · Trip-prep $225 (labor included; materials extra). Diagnostic $150  -  applied toward repair if you proceed. Parts quoted before install. Call or text ${phone} or Book a Service at /book-service/`;
-  }
-  if (/starlink|weboost|peplink|cell|connectivity|bonding|failover/.test(q)) {
-    return `Connectivity: Starlink install (clear-sky mount, cable/power, aim/setup  -  no "Starlink Certified" title). weBoost Authorized Installer  -  boosts weak-but-present outdoor cell; AGC, we don't "tune gain"; won't create signal from zero. Peplink Certified Associate  -  multi-WAN bonding and/or failover (SpeedFusion). Clean power/coax/PoE and placement matter. Book/text ${phone} for a site check.`;
-  }
-  if (/victron|dometic|cert|credential/.test(q)) {
-    return `Credentials (exact): Victron Professional Certified Installer · weBoost Authorized Installer · Peplink Certified Associate · Dometic Professional Certified. Background: FAA Part 145 / Liebherr; BMW & Mercedes service. Starlink is install capability only  -  no certified title. ${phone}`;
-  }
-  if (/area|corridor|where|state|montana|idaho|washington|wyoming|serve/.test(q)) {
-    return `Active corridor: Montana, Wyoming, Idaho, Washington. Case-by-case: Michigan, Wisconsin, South Dakota, Minnesota, North Dakota, Oregon. Mobile  -  campsite, driveway, or storage. Share City/ZIP and we'll say if the trip makes sense. ${phone}`;
-  }
-  if (/book|schedule|appoint|come out/.test(q)) {
-    const pref = lead?.prefer || 'Text';
-    return `To book: call/text ${phone} or use /book-service/. We need Name, Phone, Email, Location, Rig, issue, and Prefer Text (default).`;
-  }
-  if (/electrical|battery|drain|inverter|solar|plumb|roof|generator|lp|propane/.test(q)) {
-    return `We handle electrical/diagnostics, Victron / LiFePO4, appliances, plumbing, roof/water intrusion, Starlink/weBoost/Peplink, generator, LP, chassis/trailer, PPI, and seasonal work  -  at your location. Diagnostics first. ${phone}`;
-  }
-  return `United Mobile RV  -  mobile on-site repair. Trip $75/30mi then $1.50/mi each way · labor ~$150/hr · $150 diagnostic applied if you proceed. Active MT/WY/ID/WA. Ask about pricing, services, corridors, or booking  -  or call/text ${phone}.`;
-}
