@@ -357,13 +357,13 @@
     var html = '<h2>' + esc(data.thread.title) + '</h2>' +
       '<p class="muted" style="font-size:13px">by ' + esc(data.thread.author) + ' &middot; ' + timeAgo(data.thread.created_at) + '</p>' +
       '<p>' + esc(data.thread.body).replace(/\n/g,'<br>') + '</p>' +
-      (data.thread.image_key ? '<img class="post-image" src="/r2/' + esc(data.thread.image_key) + '" alt="">' : '') +
+      renderImages(data.thread.image_keys) +
       '<hr class="rule">';
 
     data.posts.forEach(function(p){
       html += '<div class="faq-item"><p class="muted mb-0" style="font-size:13px">' + esc(p.author) + ' &middot; ' + timeAgo(p.created_at) + '</p>' +
         '<p>' + esc(p.body).replace(/\n/g,'<br>') + '</p>' +
-        (p.image_key ? '<img class="post-image" src="/r2/' + esc(p.image_key) + '" alt="">' : '') +
+        renderImages(p.image_keys) +
         '</div>';
     });
     content.innerHTML = html;
@@ -379,10 +379,10 @@
       if (!body) return;
       submitBtn.disabled = true;
       status.textContent = '';
-      var upload = await uploadImage(imageInput, status);
+      var upload = await uploadImages(imageInput, status);
       if (!upload.ok) { submitBtn.disabled = false; return; }
       var res2 = await fetch('/api/threads/' + encodeURIComponent(id), {
-        method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ body: body, imageKey: upload.key })
+        method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ body: body, imageKeys: upload.keys })
       });
       var d2 = await res2.json();
       submitBtn.disabled = false;
@@ -405,11 +405,11 @@
     if (!title || !body) { status.textContent = 'Title and body required.'; return; }
     submitBtn.disabled = true;
     status.textContent = '';
-    var upload = await uploadImage(imageInput, status);
+    var upload = await uploadImages(imageInput, status);
     if (!upload.ok) { submitBtn.disabled = false; return; }
     var res = await fetch('/api/threads', {
       method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ title: title, body: body, category: category, imageKey: upload.key })
+      body: JSON.stringify({ title: title, body: body, category: category, imageKeys: upload.keys })
     });
     var data = await res.json();
     submitBtn.disabled = false;
