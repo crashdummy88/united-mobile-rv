@@ -27,6 +27,9 @@
     font-size:14px;font-weight:500;text-decoration:none;box-shadow:0 1px 2px rgba(0,0,0,.08);transition:box-shadow .15s,background .15s;}
   .google-signin-btn:hover{box-shadow:0 1px 3px rgba(0,0,0,.2);background:#f8f9fa;}
   .google-signin-btn svg{flex-shrink:0;}
+
+  .cat-pill{display:inline-flex;align-items:center;background:rgba(201,151,44,0.12);border:1px solid rgba(201,151,44,0.35);
+    color:#E8B84B;font-size:0.85em;font-weight:600;padding:6px 14px;border-radius:999px;}
 </style>
 </head>
 <body>
@@ -64,6 +67,29 @@
   </div>
 </section>
 
+<section class="band band-gray">
+  <div class="wrap wrap-narrow">
+    <div class="cat-nav" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:8px">
+      <span class="cat-pill">💬 General</span>
+      <span class="cat-pill">🔧 Repair &amp; Diagnostics</span>
+      <span class="cat-pill">⚡ Off-Grid &amp; Power</span>
+      <span class="cat-pill">📡 Connectivity</span>
+      <span class="cat-pill">🗺️ Route &amp; Service Areas</span>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap wrap-narrow">
+    <h2>📌 Community Rules</h2>
+    <div class="faq-item"><h3>🤝 Be useful, be kind</h3><p>Answer like you'd want answered. No putting down someone for not knowing something &mdash; everyone started somewhere.</p></div>
+    <div class="faq-item"><h3>🚫 No spam or self-promo</h3><p>Selling something or dropping links unrelated to the question gets your post held for review automatically, and removed by a moderator.</p></div>
+    <div class="faq-item"><h3>⚙️ Keep it on-topic</h3><p>Repair, off-grid/power, connectivity, route &amp; service areas, or general RV/vanlife talk. Political and unrelated content isn't for this forum.</p></div>
+    <div class="faq-item"><h3>🤖 Posts are AI-screened</h3><p>New threads and replies are auto-checked for spam, scams, and abuse before going live. Most posts clear instantly &mdash; flagged ones wait for a human moderator.</p></div>
+    <div class="faq-item"><h3>⚠️ Not a substitute for hands-on diagnosis</h3><p>Advice here (including from us) is offered in good faith, but isn't a replacement for an in-person look at your rig before you act on anything electrical, gas, or structural.</p></div>
+  </div>
+</section>
+
 <section class="band">
   <div class="wrap wrap-narrow">
 
@@ -71,11 +97,11 @@
       <h2>Start a thread</h2>
       <input class="forum-input" id="tf-title" placeholder="Title" maxlength="200">
       <select class="forum-input" id="tf-category">
-        <option value="general">General</option>
-        <option value="repair">Repair &amp; Diagnostics</option>
-        <option value="power">Off-Grid &amp; Power</option>
-        <option value="connectivity">Connectivity</option>
-        <option value="route">Route &amp; Service Areas</option>
+        <option value="general">💬 General</option>
+        <option value="repair">🔧 Repair &amp; Diagnostics</option>
+        <option value="power">⚡ Off-Grid &amp; Power</option>
+        <option value="connectivity">📡 Connectivity</option>
+        <option value="route">🗺️ Route &amp; Service Areas</option>
       </select>
       <textarea class="forum-input" id="tf-body" rows="5" placeholder="What's going on?" maxlength="8000"></textarea>
       <div class="btn-row">
@@ -154,6 +180,7 @@
 <script>
 (function () {
   function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+  function catEmoji(cat){return {general:'\uD83D\uDCAC',repair:'\uD83D\uDD27',power:'\u26A1',connectivity:'\uD83D\uDCE1',route:'\uD83D\uDDFA\uFE0F'}[cat] || '\uD83D\uDCAC';}
   function timeAgo(iso){
     var diff=(Date.now()-new Date(iso+'Z').getTime())/1000;
     var u=[['year',31536000],['month',2592000],['day',86400],['hour',3600],['minute',60]];
@@ -215,7 +242,7 @@
       }
       threadList.innerHTML = data.threads.map(function(t){
         return '<div class="faq-item"><a class="text-link" href="#" data-open-thread="'+esc(t.id)+'"><strong>'+esc(t.title)+'</strong></a>' +
-          '<p class="muted mb-0" style="font-size:13px">' + esc(t.category) + ' &middot; ' + t.reply_count + (t.reply_count===1?' reply':' replies') + ' &middot; by ' + esc(t.author) + ' &middot; updated ' + timeAgo(t.updated_at) + '</p></div>';
+          '<p class="muted mb-0" style="font-size:13px">' + catEmoji(t.category) + ' ' + esc(t.category) + ' &middot; ' + t.reply_count + (t.reply_count===1?' reply':' replies') + ' &middot; by ' + esc(t.author) + ' &middot; updated ' + timeAgo(t.updated_at) + '</p></div>';
       }).join('');
       threadList.querySelectorAll('[data-open-thread]').forEach(function(a){
         a.addEventListener('click', function(e){ e.preventDefault(); openThread(a.dataset.openThread); });
