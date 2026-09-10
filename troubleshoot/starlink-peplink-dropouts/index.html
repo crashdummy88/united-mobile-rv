@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Starlink or Peplink Dropouts: Obstruction, WAN &amp; Power | UMRT</title>
+<meta name="description" content="Dropouts while traveling? Check obstruction, dish/router power, and WAN priority before blaming the network. Prefer Text UMRT wireless installs.">
+<link rel="canonical" href="https://united-mobile-rv.pages.dev/troubleshoot/starlink-peplink-dropouts/">
+<meta name="theme-color" content="#1A1A1A">
+<link rel="icon" href="/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png">
+
+<meta property="og:title" content="Starlink or Peplink Dropouts: Obstruction, WAN &amp; Power | UMRT">
+<meta property="og:description" content="Dropouts while traveling? Check obstruction, dish/router power, and WAN priority before blaming the network. Prefer Text UMRT wireless installs.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://united-mobile-rv.pages.dev/troubleshoot/starlink-peplink-dropouts/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/site.css">
+
+
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap nav-bar">
+    <a class="brand" href="/"><img class="brand-logo" src="/assets/brand/umrt-logo.webp" alt="United Mobile RV" width="36" height="36"><span class="brand-text">United Mobile <span>RV</span></span></a>
+    <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">☰</button>
+    <ul class="nav-links"><li><a href="/">Home</a></li>
+<li><a href="/service/">Services</a></li>
+<li><a href="/pricing/">Pricing</a></li>
+<li><a href="/guide/" aria-current="page">Guides</a></li>
+<li><a href="/service-areas/">Areas</a></li>
+<li><a href="/about/">About</a></li>
+</ul>
+    <div class="nav-cta">
+      <a class="nav-phone" href="tel:+16166065277">(616) 606-5277</a>
+      <a class="btn btn-gold" href="/book-service/">Book Now</a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+<section class="page-hero">
+  <div class="wrap">
+    <span class="micro"><a href="/troubleshoot/">Troubleshoot</a></span>
+    <h1>Starlink / Peplink dropouts on the road</h1>
+    <p class="lead">Check obstruction, dish/router power, and WAN priority before blaming “the network.” Trees, canyons, and cell congestion are physics — not always a bad install.</p>
+  </div>
+</section>
+<section class="band"><div class="wrap-narrow">
+  <p>Most serious travelers run cellular and Starlink together: cell for low-latency near towers, Starlink where towers disappear. Dropouts while rolling often look like “the ISP failed” when the real fork is obstruction, 12V brownout, WAN priority flap, or a cable that worked parked and failed after three travel days. Work the pattern first — parked open-sky vs trees vs highway speed — then touch hardware.</p>
+
+  <h2>Quick path</h2>
+  <ol>
+    <li>Starlink app: obstruction map, reboot dish/router once, note firmware / offline reason. Screenshot the obstruction view.</li>
+    <li>Confirm dedicated power / ignition sense / DC-DC supply — not a shared flaky circuit that sags when the inverter loads up.</li>
+    <li>Peplink: which WAN is primary? Cellular signal bars vs real throughput; SIM data left? Note Health Check status.</li>
+    <li>Cable/connector strain at the roof boot and router WAN ports after travel days. Wiggle-test gently; do not yank proprietary Starlink cable.</li>
+    <li>Disable experimental features one at a time (VPN, QoS experiments) to isolate.</li>
+    <li>Compare behavior parked open-sky vs under trees / next to buildings / at highway speed.</li>
+  </ol>
+
+  <h2>Dropout pattern — parked vs rolling vs campground</h2>
+  <ul>
+    <li><strong>Works parked clear-sky, fails under trees</strong> — obstruction / mount placement. Clear-sky position is required for Starlink; we assess that first on installs.</li>
+    <li><strong>Works parked, flaps on the highway</strong> — mount vibration, cable strain, or cellular tower handoff; Peplink WAN priority and Health Check matter here.</li>
+    <li><strong>Wi-Fi OK locally, no internet</strong> — WAN down on one path; check Starlink offline reason and Peplink WAN status before resetting everything twice.</li>
+    <li><strong>Boot loops after heavy 12V load</strong> — supply sag looking like an ISP failure. Tie-in to house battery / inverter health.</li>
+  </ul>
+
+  <h2>Starlink path</h2>
+  <h3>Obstruction and mount</h3>
+  <p>Obstruction maps do not lie. A dish tucked under an awning rail or beside an AC shroud will search forever in tree cover. Weatherproof exterior mount, sealed penetrations, and cable routing are the install standard — clear-sky assessed first. We install Starlink; we are not a Starlink Certified partner and we will not invent that title.</p>
+  <h3>Power and boot loops</h3>
+  <p>PoE injectors and dish supplies that share a weak circuit will brown out when the microwave or AC kicks on. Confirm fused DC, proper gauge, and that the injector is not heat-damaged. Melted connectors are a stop-DIY moment.</p>
+
+  <h2>Peplink / cellular path</h2>
+  <h3>WAN priority and Health Check</h3>
+  <p>Bars are not throughput. A WAN that looks “up” but fails Health Check will flap and feel like random dropouts. Know which WAN is primary and what the failover order is before you swap SIMs at random.</p>
+  <h3>Bonding and/or failover (SpeedFusion)</h3>
+  <p>Peplink SpeedFusion is <strong>bonding and/or failover as configured</strong> — bonding is not the same as simple failover. As a Peplink Certified Associate we design for both when the site needs it, and we say which one you actually have. Do not assume “Peplink = bonded Starlink” unless that is what was configured.</p>
+
+  <h2>Power and 12V brownouts that look like ISP failures</h2>
+  <p>If dropouts line up with inverter surge, alternator load, or a low house bank, fix power before chasing RF. See also <a href="/troubleshoot/no-power/">No power / dead coach</a> for shore/converter/battery forks.</p>
+
+  <h2>What we won’t claim (honesty)</h2>
+  <ul>
+    <li>No invented Starlink Certified partner title — Starlink = install capability only.</li>
+    <li>weBoost needs usable outdoor signal; it will not invent RF from zero. weBoost uses AGC (we don’t “tune gain”).</li>
+    <li>Trees, canyons, and campground cell congestion are physics — not always a remount.</li>
+    <li>We will not cut or lengthen proprietary Starlink cable without OEM guidance, flash “community” firmware, or unlock carrier features outside support paths.</li>
+  </ul>
+
+  <h2>When to stop DIY</h2>
+  <ul>
+    <li>Roof mount hardware loose / spinning / seal failure risk.</li>
+    <li>PoE injector heat damage or melted DC connectors.</li>
+    <li>Any roof penetration you cannot reseal correctly.</li>
+  </ul>
+
+  <h2>What UMRT diagnoses</h2>
+  <p>Clear-sky mount placement and cable routing; Peplink WAN priority, Health Check, and SpeedFusion bonding and/or failover config; 12V supply stability under load; antenna / cellular modem path vs dish path isolation. Prefer Text for a wireless diagnostic or install. Service line: <a href="/wireless/">Starlink, weBoost &amp; Peplink</a>.</p>
+
+  <p>Deep dive: <a href="/guide/starlink-rv-guide/">Starlink RV guide</a> · <a href="/guide/peplink-multi-wan-guide/">Peplink multi-WAN</a> · <a href="/guide/weboost-install-guide/">weBoost install</a> · <a href="/wireless/">Wireless service</a>.<br>Siblings: <a href="/troubleshoot/starlink-offline/">Starlink offline</a> · <a href="/troubleshoot/weboost-no-boost/">weBoost no boost</a> · <a href="/troubleshoot/peplink-wan-flapping/">Peplink WAN flapping</a>. Cellular booster path: <strong>weBoost Authorized Installer</strong> (AGC — we don’t invent outdoor RF from zero).</p>
+  <p class="muted">Prefer Text — (616) 606-5277. Trip $75/30 mi then $1.50/mi · labor ~$150/hr (1 hr min / 30-min) · diagnostic $150 applied · winterize $175 · trip-prep $225. Credentials: Victron Professional Certified Installer · weBoost Authorized Installer · Peplink Certified Associate · Dometic Professional Certified. Starlink installs only — never Starlink Certified. Corridor MT · WY · ID · WA.</p>
+</div></section>
+
+<section class="band" style="border-top:1px solid var(--rule)">
+  <div class="wrap">
+    <span class="micro">Next step</span>
+    <h2>Book a Service</h2>
+    <p class="lead">Prefer Text — or call (616) 606-5277. Trip fee quoted upfront before we roll.</p>
+    <div class="btn-row">
+      <a class="btn btn-gold" href="/book-service/">Book Now</a>
+      <a class="btn btn-ghost" href="tel:+16166065277">Text / Call</a>
+    </div>
+  </div>
+</section>
+</main>
+<footer class="site-footer">
+  <div class="wrap footer-grid">
+    <div>
+      <div class="footer-brand">United Mobile RV LLC</div>
+      <p class="mb-0">Active MT · WY · ID · WA corridor. Case-by-case beyond.</p>
+      <p class="mt-6 mb-0"><a href="tel:+16166065277">(616) 606-5277</a><br>
+      <a href="mailto:unitedrvnetwork@gmail.com">unitedrvnetwork@gmail.com</a></p>
+    </div>
+    <div>
+      <div class="micro">Navigate</div>
+      <a href="/service/">Services</a>
+      <a href="/pricing/">Pricing</a>
+      <a href="/book-service/">Book a Service</a>
+      <a href="/guide/">Guides</a>
+      <a href="/service-areas/">Service Areas</a>
+      <a href="/about/">About</a>
+      <a href="/faq/">FAQ</a>
+      <a href="/privacy-policy/">Privacy</a>
+    </div>
+    <div>
+      <div class="micro">Credentials</div>
+      <p class="muted mb-0" style="font-size:13px;line-height:1.7">
+        Victron Professional Certified Installer<br>
+        weBoost Authorized Installer<br>
+        Peplink Certified Associate<br>
+        Dometic Professional Certified<br>
+        13 Google ★5.0 reviews
+      </p>
+    </div>
+  </div>
+  <div class="wrap">
+    <p class="footer-note"><span class="footer-quiet">Public beta / live test of United Mobile RV.</span> Fully functional sales site for corridor service — Prefer Text or Book. Credentials (text): Victron Professional Certified Installer · weBoost Authorized Installer · Peplink Certified Associate · Dometic Professional Certified.</p>
+  </div>
+</footer>
+<div class="mobile-bar" aria-label="Quick actions">
+  <a class="btn btn-ghost" href="tel:+16166065277">Text / Call</a>
+  <a class="btn btn-gold" href="/book-service/">Book Now</a>
+</div>
+
+<script>window.PUBLIC_WEB3FORMS_KEY = window.PUBLIC_WEB3FORMS_KEY || 'PUBLIC_WEB3FORMS_KEY';</script>
+<script src="/js/site.js" defer></script>
+</body>
+</html>
