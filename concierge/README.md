@@ -9,8 +9,8 @@
 | Money exceptions / angry / legal | **Sales Lead → Matt** |
 
 ## Files
-- `SYSTEM_PROMPT.md` — paste/load as the model system prompt (**v4**)
-- `FAQ_FACTS.md` — retrieval / few-shot / grounded facts (**v4**; connectivity + Book lead fields + labor cadence + winterize/trip-prep)
+- `SYSTEM_PROMPT.md` — paste/load as the model system prompt (**v4.1**)
+- `FAQ_FACTS.md` — retrieval / few-shot / grounded facts (**v4.1**; connectivity + Book lead fields + labor cadence + winterize/trip-prep)
 
 ## Funnel/Dev asks
 1. Wire widget on staging (umrt-sales-prototype / Cloudflare Pages), not live WP cores unless Matt names them.
