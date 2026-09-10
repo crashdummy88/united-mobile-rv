@@ -19,24 +19,22 @@
         status.textContent = 'Please choose how you prefer to be contacted.';
         return;
       }
-      if (!key || key === 'PUBLIC_WEB3FORMS_KEY' || key.indexOf('REPLACE') !== -1) {
-        status.className = 'form-status err';
-        status.textContent = 'Online form is not configured yet. Call or text (616) 606-5277 to book.';
-        return;
-      }
       var data = new FormData(form);
-      data.append('access_key', key);
       data.append('subject', 'UMRT Book a Service request');
+      var useClientKey = key && key !== 'PUBLIC_WEB3FORMS_KEY' && key.indexOf('REPLACE') === -1;
+      if (useClientKey) data.append('access_key', key);
       status.className = 'form-status';
       status.textContent = 'Sending...';
       try {
-        var res = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: data });
+        // Prefer /api/book (Pages env PUBLIC_WEB3FORMS_KEY). Client key is optional fallback.
+        var endpoint = useClientKey ? 'https://api.web3forms.com/submit' : '/api/book';
+        var res = await fetch(endpoint, { method: 'POST', body: data });
         var json = await res.json();
         if (json.success) {
           window.location.href = '/book-service/thank-you/';
         } else {
           status.className = 'form-status err';
-          status.textContent = 'Could not send. Please call (616) 606-5277.';
+          status.textContent = json.message || 'Could not send. Please call (616) 606-5277.';
         }
       } catch (err) {
         status.className = 'form-status err';

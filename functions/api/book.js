@@ -1,0 +1,92 @@
+/**
+ * Cloudflare Pages Function: POST /api/book
+ * Proxies Book form to Web3Forms using Pages env PUBLIC_WEB3FORMS_KEY
+ * (static HTML cannot read Pages env vars).
+ * Soft-fails with phone fallback messaging — never log or return the key.
+ */
+function json(data, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Cache-Control': 'no-store',
+    },
+  });
+}
+
+export async function onRequestPost(context) {
+  const { request, env } = context;
+  const key = (env.PUBLIC_WEB3FORMS_KEY || env.WEB3FORMS_ACCESS_KEY || '').trim();
+  if (!key || key === 'PUBLIC_WEB3FORMS_KEY' || key.includes('REPLACE')) {
+    return json(
+      {
+        success: false,
+        error: 'not_configured',
+        message: 'Online form is not configured yet. Call or text (616) 606-5277 to book.',
+      },
+      503
+    );
+  }
+
+  let form;
+  try {
+    form = await request.formData();
+  } catch {
+    return json({ success: false, error: 'invalid_form', message: 'Could not send. Please call (616) 606-5277.' }, 400);
+  }
+
+  // Required Book fields (Matt lock)
+  const required = ['name', 'phone', 'email', 'location', 'issue', 'rig'];
+  for (const field of required) {
+    const v = (form.get(field) || '').toString().trim();
+    if (!v) {
+      return json({ success: false, error: 'missing_field', message: 'Please fill all required fields.' }, 400);
+    }
+  }
+
+  const out = new FormData();
+  for (const [k, v] of form.entries()) {
+    if (k === 'access_key') continue;
+    out.append(k, v);
+  }
+  out.append('access_key', key);
+  if (!out.get('subject')) {
+    out.append('subject', 'UMRT Book a Service request');
+  }
+
+  try {
+    const res = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: out });
+    const data = await res.json().catch(() => ({}));
+    if (data && data.success) {
+      return json({ success: true });
+    }
+    return json(
+      {
+        success: false,
+        error: 'upstream',
+        message: 'Could not send. Please call (616) 606-5277.',
+      },
+      200
+    );
+  } catch {
+    return json(
+      {
+        success: false,
+        error: 'network',
+        message: 'Network error. Please call (616) 606-5277.',
+      },
+      200
+    );
+  }
+}
+
+export async function onRequestOptions() {
+  return new Response(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+      'Access-Control-Max-Age': '86400',
+    },
+  });
+}
