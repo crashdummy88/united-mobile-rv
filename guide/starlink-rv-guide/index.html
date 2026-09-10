@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Starlink for RVs: Mount, Power, Seals &amp; Routing | UMRT</title>
-<meta name="description" content="Starlink RV installs — roof vs portable, power budget, sealed penetrations. Installs-only (not Starlink certified). Optional Peplink bonding/failover. Prefer Text UMRT.">
+<meta name="description" content="Starlink RV installs — Residential vs Roam honesty, Mini vs Flat HP power, roof seals. Installs-only (not Starlink certified). Optional Peplink bonding/failover. Prefer Text UMRT.">
 <link rel="canonical" href="https://united-mobile-rv.pages.dev/guide/starlink-rv-guide/">
 <meta name="theme-color" content="#1A1A1A">
 <link rel="icon" href="/favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png">
 <meta property="og:title" content="Starlink for RVs: Mount, Power, Seals &amp; Routing | UMRT">
-<meta property="og:description" content="Starlink RV installs — roof vs portable, power budget, sealed penetrations. Installs-only (not Starlink certified). Optional Peplink bonding/failover.">
+<meta property="og:description" content="Starlink RV installs — Residential vs Roam honesty, Mini vs Flat HP power, roof seals. Installs-only (not Starlink certified). Optional Peplink bonding/failover.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://united-mobile-rv.pages.dev/guide/starlink-rv-guide/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -43,57 +43,75 @@
   <div class="wrap">
     <span class="micro">Connectivity guide · Installs only</span>
     <h1>Starlink for RVs — mount, power, and routing</h1>
-    <p class="lead">Satellite internet changed remote work on the road — but the RV-specific plan, mounting choice, and power draw have to match how you actually travel. United Mobile RV installs and integrates Starlink hardware the same way we do electrical work. We are <strong>not</strong> a Starlink “certified” dealer.</p>
+    <p class="lead">Satellite internet changed remote work on the road — but the RV-specific plan, mounting choice, and power draw have to match how you actually travel. United Mobile RV installs and integrates Starlink hardware the same way we do electrical work. We are <strong>not</strong> a Starlink “certified” dealer. Starlink = <strong>installs only</strong> — we never invent a Starlink Certified title.</p>
     <p class="muted" style="margin-top:16px;max-width:48ch">Active corridor: Montana · Wyoming · Idaho · Washington — case-by-case beyond.</p>
   </div>
 </section>
 <section class="band">
   <div class="wrap">
     <span class="micro">Field notes</span>
-    <p>Clear sky view still wins outdoors — trees and canyon walls beat any mount choice. A poorly sealed roof penetration is one of the most common sources of interior water damage, so this install is worth doing carefully. Dish + router draw meaningful continuous power; budget them with fridge and other always-on loads, not as negligible.</p>
+    <p>Clear sky view still wins outdoors — trees, canyon walls, A/C shrouds, and neighboring rigs beat any mount brand. Run the Starlink app obstruction check at the exact proposed height before you drill. A poorly sealed roof penetration is one of the most common sources of interior water damage, so this install is worth doing carefully. Dish + router draw meaningful continuous power; budget them with fridge and other always-on loads, not as negligible. OEM PDFs, app links, and support articles live on our software twin at <a href="https://umrt-software.pages.dev/starlink/">umrt-software.pages.dev/starlink/</a> — we point there instead of inventing watt numbers or plan fine print.</p>
+
+    <h2 style="margin-top:28px;font-size:1.25rem">Residential vs Roam (plan honesty)</h2>
+    <p style="max-width:68ch"><strong>Residential</strong> is built around a <strong>fixed service address</strong>. It is not the travel plan: no roam-as-you-go expectation, and <strong>no in-motion</strong> use as a Residential product promise. <strong>Roam</strong> is the RV / travel-oriented line — pause / standby options, and in-motion only in <em>select areas</em> under current Starlink terms. Do not oversell nationwide in-motion. Starlink’s <code>/rv</code> marketing path redirects to Roam; it is not a separate SKU. Hardware and plan are separate decisions. We install the dish and coach integration; account and plan choice stay with you and Starlink. Confirm current limits on starlink.com before you buy — terms change.</p>
+    <div class="grid-2">
+      <article class="service-card"><h3>Fixed address life</h3><p>Driveway, park model, or seasonal site that rarely moves → Residential may fit once address eligibility checks out. We will not tell you Residential is “fine for full-time travel.”</p></article>
+      <article class="service-card"><h3>Travel / boondocking</h3><p>Changing locations, BLM nights, corridor weeks → plan for Roam. Pause / standby helps when the coach sits. In-motion is plan- and area-dependent — verify before you bank a workday on it while driving.</p></article>
+      <article class="service-card"><h3>Landed on /rv?</h3><p>That path points at Roam-oriented travel service. Treat it as the travel product family, not a mystery third plan sitting beside Residential and Roam.</p></article>
+      <article class="service-card"><h3>What we install</h3><p>Mount, seals, cable, fused power, and clean coach networking. Plan checkout and billing stay on your Starlink account — we do not sell or “certify” the service.</p></article>
+    </div>
 
     <h2 style="margin-top:28px;font-size:1.25rem">Roof-mount vs portable</h2>
     <div class="grid-2">
-      <article class="service-card"><h3>Roof mount</h3><p>Hands-off every time you park. Needs clear sky overhead and a sealed penetration done right — solid, level base and cable routing that does not create a water intrusion point. Not a job to rush.</p></article>
-      <article class="service-card"><h3>Portable dish</h3><p>Flexible under trees; takes setup time and a secure cable run back to the coach. Useful when the roof position is shaded or you change sites often.</p></article>
-      <article class="service-card"><h3>Plan reality</h3><p>RV / roaming plans matter when you change locations frequently rather than parking long-term at one address. Match the plan to how you travel — we install hardware; account/plan details stay with the customer and Starlink.</p></article>
-      <article class="service-card"><h3>Optional Peplink</h3><p>Want cellular failover or multi-WAN bonding alongside Starlink? Peplink Certified Associate installs for bonding and/or failover — see the Peplink multi-WAN guide and <a href="/wireless/">/wireless/</a>.</p></article>
+      <article class="service-card"><h3>Roof mount</h3><p>Hands-off every time you park. Needs clear sky overhead and a sealed penetration done right — solid, level base into structure (not thin skin alone), and cable routing that does not create a water intrusion point. Not a job to rush. Highway vibration and freeze-thaw will find weak fasteners.</p></article>
+      <article class="service-card"><h3>Portable dish</h3><p>Flexible under trees; takes setup time and a secure cable run back to the coach. Useful when the roof position is shaded or you change sites often. Kickstand / picnic-table tests are fine for site checks — they are not a travel mount.</p></article>
+      <article class="service-card"><h3>Obstructions beat mounts</h3><p>Partial tree cover can look “fine” on a map and still kill uplink. If the app shows heavy obstruction at your usual parks, fix placement before blaming the router, Peplink, or the plan. Clear-sky field of view is the constraint that decides whether a permanent roof hole is worth it.</p></article>
+      <article class="service-card"><h3>Optional Peplink</h3><p>Want cellular failover or multi-WAN bonding alongside Starlink? We are a <strong>Peplink Certified Associate</strong> — that is the Peplink title we claim, nothing beyond it. Bonding and/or failover as configured: <strong>Hot Failover ≠ Bonding ≠ Smoothing</strong>. See the <a href="/guide/peplink-multi-wan-guide/">Peplink multi-WAN guide</a> and <a href="/wireless/">/wireless/</a>. Peplink does not invent clear sky.</p></article>
     </div>
 
-    <h2 style="margin-top:28px;font-size:1.25rem">Power &amp; cable</h2>
+    <h2 style="margin-top:28px;font-size:1.25rem">Power: Mini vs Flat High Performance</h2>
+    <p style="max-width:68ch">Plan from official specification-sheet averages, not campground anecdotes. Field meters vary with temperature, throughput, obstruction hunting, and (on kits that heat) melt cycles — but undersizing from marketing talk is how inverters brown out and Mini USB-C paths reboot-loop.</p>
     <div class="grid-2">
-      <article class="service-card"><h3>Off-grid budget</h3><p>Include Starlink continuous draw in the daily watt-hour math with fridge, lights, and other always-on loads. See the <a href="/guide/off-grid-power-budget-guide/">off-grid power budget guide</a> before locking battery bank size.</p></article>
-      <article class="service-card"><h3>Fused integration</h3><p>We route and fuse the feed so the install is part of the electrical system, not a dangling brick. Strain-relieve connectors; vibration opens mystery outages.</p></article>
-      <article class="service-card"><h3>Seals &amp; penetrations</h3><p>Drip loops, chafe protection, and proper sealant at every roof penetration. A fast “temporary” hole becomes a soft floor two seasons later.</p></article>
-      <article class="service-card"><h3>When DIY ends</h3><p>New roof penetrations, sealed mounts, and coach DC integration. If the dish is offline after a move, start at <a href="/troubleshoot/starlink-offline/">Starlink offline troubleshoot</a>.</p></article>
+      <article class="service-card"><h3>Starlink Mini</h3><p>Official sheet average about <strong>~25–40 W</strong>. Lower continuous draw — the realistic citizen on modest lithium / solar. Still include it in daily watt-hour math with fridge and always-on loads. Undersized USB-C PD accessories cause reboot loops that look like “Starlink is down.”</p></article>
+      <article class="service-card"><h3>Flat HP / High Performance</h3><p>Official sheet averages about <strong>~110–150 W</strong> — roughly three to four times Mini on paper. Treat as a real appliance on inverter, shore, or DC supply. Confirm continuous inverter rating, battery C-rate, cable gauge, and bay airflow before permanent install.</p></article>
+      <article class="service-card"><h3>Off-grid budget</h3><p>Include Starlink continuous draw in the daily watt-hour math. See the <a href="/guide/off-grid-power-budget-guide/">off-grid power budget guide</a> before locking battery bank size. OEM PDFs indexed at <a href="https://umrt-software.pages.dev/starlink/">/starlink/</a> on the software twin.</p></article>
+      <article class="service-card"><h3>Fused integration</h3><p>We route and fuse the feed so the install is part of the electrical system, not a dangling brick. Strain-relieve connectors; vibration opens mystery outages. On Victron coaches we treat Starlink as a known load in the energy budget.</p></article>
+    </div>
+
+    <h2 style="margin-top:28px;font-size:1.25rem">Seals, cable, and when DIY ends</h2>
+    <div class="grid-2">
+      <article class="service-card"><h3>Seals &amp; penetrations</h3><p>Drip loops, chafe protection, grommets, and proper sealant at every roof penetration. A fast “temporary” hole becomes a soft floor two seasons later. Re-check fasteners and sealant after the first hard season — sun and freeze-thaw work on roof mounts.</p></article>
+      <article class="service-card"><h3>Cable discipline</h3><p>Use kit-correct cable. Shortest clean path; no crush in compartments or slides; strain relief at dish and interior. Label both ends. Zip-ties into soft membrane or pinched doors create “mysterious” dropouts later.</p></article>
+      <article class="service-card"><h3>Heat and weather</h3><p>Roof mounts see sun, ice, and highway miles. Cable jackets crack at chafe points first. Leave service access to inspect seals and connectors without tearing the install apart.</p></article>
+      <article class="service-card"><h3>When DIY ends</h3><p>New roof penetrations, sealed mounts, and coach DC integration. If the dish is offline after a move, start at <a href="/troubleshoot/starlink-offline/">Starlink offline troubleshoot</a> before ordering another dish.</p></article>
     </div>
 
     <div style="margin-top:20px">
       <span class="micro">Owner checklist</span>
       <ul style="margin-top:8px;line-height:1.7">
-        <li>Assess clear-sky at typical parks before committing to a permanent roof mount</li>
-        <li>Budget continuous dish + router draw in your off-grid plan</li>
+        <li>Match Residential vs Roam to how you actually travel (fixed address ≠ full-time travel)</li>
+        <li>Assess clear-sky with the app at typical parks before committing to a permanent roof mount</li>
+        <li>Budget continuous dish + router draw from official averages (Mini ~25–40 W; Flat/HP ~110–150 W)</li>
         <li>Inspect roof seals at the mount seasonally</li>
-        <li>Keep firmware/app updates from official Starlink sources (software twin indexes links)</li>
-        <li>If you also run cellular, plan antenna separation and consider Peplink for one coach network</li>
+        <li>Keep firmware / app updates from official Starlink sources (software twin indexes links)</li>
+        <li>If you also run cellular, plan antenna separation and name Peplink roles honestly: Hot Failover ≠ Bonding ≠ Smoothing</li>
       </ul>
     </div>
-
 
     <h2 style="margin-top:28px;font-size:1.25rem">What good looks like on the road</h2>
     <div class="grid-2">
       <article class="service-card"><h3>After a stop</h3><p>Roof mount: park, wait for acquire, confirm apps work before you unload the day. Portable: known cable path, secure footing, no trip hazard across the door.</p></article>
-      <article class="service-card"><h3>Obstruction honesty</h3><p>Partial tree cover can look “fine” on a map and still kill uplink. If the app shows heavy obstruction at your usual parks, fix placement before blaming the router or Peplink.</p></article>
-      <article class="service-card"><h3>Heat and weather</h3><p>Roof mounts see sun and freeze-thaw. Re-check fasteners and sealant after the first hard season. Cable jackets crack at chafe points first.</p></article>
-      <article class="service-card"><h3>One coach network</h3><p>Phones hopping between Starlink Wi‑Fi and a separate hotspot is fragile. Peplink (or a deliberate single SSID design) keeps devices on one LAN while WANs change underneath.</p></article>
+      <article class="service-card"><h3>Obstruction honesty</h3><p>If the app shows heavy obstruction at your usual parks, fix placement before blaming the router or Peplink. Clear sky beats clever brackets every time.</p></article>
+      <article class="service-card"><h3>One coach network</h3><p>Phones hopping between Starlink Wi‑Fi and a separate hotspot is fragile. Peplink (or a deliberate single SSID design) keeps devices on one LAN while WANs change underneath — bonding and/or failover as actually configured.</p></article>
+      <article class="service-card"><h3>Buying mistakes we see</h3><p>Residential for a full-time travel coach. Flat HP on a marginal inverter because “bigger must be better.” Mounting under trees because the picnic table had signal once. Expecting Peplink or weBoost to compensate for a blocked sky.</p></article>
     </div>
 
     <h2 style="margin-top:28px;font-size:1.25rem">FAQ</h2>
     <div class="grid-2">
-      <article class="service-card"><h3>Standard vs RV plan?</h3><p>Roaming / RV-oriented plans matter when you change locations frequently. We install hardware; plan choice stays with you and Starlink.</p></article>
-      <article class="service-card"><h3>How much power off-grid?</h3><p>Meaningful continuous draw — include it in the budget with other always-on loads. Use the off-grid power budget guide for daily watt-hour math.</p></article>
-      <article class="service-card"><h3>Is roof-mount safe from leaks?</h3><p>Only with a properly sealed penetration and cable routing. A rushed mount is a common water-intrusion source.</p></article>
-      <article class="service-card"><h3>Are you Starlink certified?</h3><p>No. We are installs-only for Starlink. Certified partner titles we do claim: Victron, weBoost Authorized Installer, Peplink Certified Associate, Dometic.</p></article>
+      <article class="service-card"><h3>Residential vs Roam?</h3><p>Residential = fixed address, no roam, no in-motion promise. Roam = travel / RV use, pause / standby, in-motion only in select areas. Starlink <code>/rv</code> redirects to Roam — not a separate SKU. We install hardware; plan choice stays with you and Starlink.</p></article>
+      <article class="service-card"><h3>How much power off-grid?</h3><p>Use official sheet averages: Mini ~25–40 W avg; Flat High Performance / High Performance ~110–150 W avg. Include continuous draw in the budget with other always-on loads. PDF index: <a href="https://umrt-software.pages.dev/starlink/">software /starlink/</a>.</p></article>
+      <article class="service-card"><h3>Is roof-mount safe from leaks?</h3><p>Only with a properly sealed penetration and cable routing. A rushed mount is a common water-intrusion source. Sealed roof penetrations matter as much as the dish itself.</p></article>
+      <article class="service-card"><h3>Are you Starlink certified?</h3><p>No. We are installs-only for Starlink — never “Starlink Certified.” Certified partner titles we do claim: Victron Professional Certified Installer, weBoost Authorized Installer, Peplink Certified Associate, Dometic Professional Certified.</p></article>
     </div>
 
     <p class="muted" style="margin-top:24px">Related: <a href="/guide/weboost-install-guide/">weBoost install</a> · <a href="/guide/peplink-multi-wan-guide/">Peplink multi-WAN</a> · <a href="/wireless/">Wireless service</a> · <a href="/troubleshoot/starlink-offline/">Starlink offline</a> · <a href="/roof/">Roof service</a> · Software <a href="https://umrt-software.pages.dev/starlink/">/starlink/</a></p>
