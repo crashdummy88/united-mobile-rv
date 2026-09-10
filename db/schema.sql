@@ -27,7 +27,8 @@ CREATE TABLE IF NOT EXISTS threads (
   pinned INTEGER NOT NULL DEFAULT 0,
   hidden INTEGER NOT NULL DEFAULT 0,
   ai_flagged INTEGER NOT NULL DEFAULT 0,
-  ai_reason TEXT
+  ai_reason TEXT,
+  image_keys TEXT
 );
 
 CREATE TABLE IF NOT EXISTS posts (
@@ -38,7 +39,8 @@ CREATE TABLE IF NOT EXISTS posts (
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   hidden INTEGER NOT NULL DEFAULT 0,
   ai_flagged INTEGER NOT NULL DEFAULT 0,
-  ai_reason TEXT
+  ai_reason TEXT,
+  image_keys TEXT
 );
 
 CREATE TABLE IF NOT EXISTS moderation_log (
@@ -87,3 +89,10 @@ INSERT OR IGNORE INTO pricing (key, label, amount, note, sort_order) VALUES
   ('diagnostic', 'Diagnostic', '$175', 'Applied toward repair if you proceed', 4),
   ('winterize', 'Winterize', '$175', 'Separate line item', 5),
   ('trip_prep', 'Trip prep', '$225', 'Separate line item', 6);
+
+CREATE TABLE IF NOT EXISTS media_usage (
+  id INTEGER PRIMARY KEY CHECK (id = 1),
+  total_bytes INTEGER NOT NULL DEFAULT 0,
+  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+INSERT OR IGNORE INTO media_usage (id, total_bytes) VALUES (1, 0);

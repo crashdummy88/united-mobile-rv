@@ -18,7 +18,7 @@ export async function onRequestGet(context) {
   const limit = Math.min(parseInt(url.searchParams.get('limit') || '30', 10) || 30, 100);
 
   const { results } = await env.DB.prepare(
-    `SELECT t.id, t.title, t.category, t.created_at, t.updated_at, t.pinned, u.display_name AS author, u.avatar_url AS author_avatar,
+    `SELECT t.id, t.title, t.category, t.created_at, t.updated_at, t.pinned, t.image_keys, u.display_name AS author, u.avatar_url AS author_avatar,
       (SELECT COUNT(*) FROM posts p WHERE p.thread_id = t.id AND p.hidden = 0) AS reply_count
      FROM threads t JOIN users u ON u.id = t.author_id
      WHERE t.hidden = 0
@@ -57,6 +57,12 @@ export async function onRequestPost(context) {
   const title = (body.title || '').toString().trim().slice(0, 200);
   const text = (body.body || '').toString().trim().slice(0, 8000);
   const category = (body.category || 'general').toString().trim().slice(0, 40) || 'general';
+  const rawImageKeys = Array.isArray(body.imageKeys) ? body.imageKeys : [];
+  const imageKeys = rawImageKeys
+    .map((k) => (k || '').toString().trim().slice(0, 200))
+    .filter((k) => k.startsWith('forum/'))
+    .slice(0, 4);
+  const imageKeysJson = imageKeys.length ? JSON.stringify(imageKeys) : null;
 
   if (!title || !text) return json({ success: false, error: 'missing_fields' }, 400);
 
@@ -65,10 +71,10 @@ export async function onRequestPost(context) {
 
   const id = randomId();
   await env.DB.prepare(
-    `INSERT INTO threads (id, title, body, category, author_id, hidden, ai_flagged, ai_reason)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+    `INSERT INTO threads (id, title, body, category, author_id, hidden, ai_flagged, ai_reason, image_keys)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
   )
-    .bind(id, title, text, category, session.uid, hidden, mod.flagged ? 1 : 0, mod.reason)
+    .bind(id, title, text, category, session.uid, hidden, mod.flagged ? 1 : 0, mod.reason, imageKeysJson)
     .run();
 
   if (mod.flagged) {

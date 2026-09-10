@@ -21,6 +21,10 @@
   #thread-list.is-hidden{display:none}
   textarea.forum-input,input.forum-input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid #333;background:#111;color:#f2f2f2;font-family:inherit;font-size:0.95em;margin-bottom:10px}
   .held-note{color:#C9972C;font-size:0.85em}
+  .upload-label{display:block;font-size:0.85em;color:#aaa;margin-bottom:10px}
+  .upload-label input{margin-top:6px}
+  .post-images{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-top:10px;max-width:520px}
+  .post-images img{width:100%;height:140px;object-fit:cover;border-radius:8px;border:1px solid #333}
 
   .google-signin-btn{display:inline-flex;align-items:center;gap:10px;background:#fff;color:#3c4043;
     border:1px solid #dadce0;border-radius:8px;padding:10px 20px;font-family:'Google Sans',Roboto,Inter,sans-serif;
@@ -132,8 +136,9 @@
         <option value="blog">📝 Vlog &amp; Updates</option>
       </select>
       <textarea class="forum-input" id="tf-body" rows="5" placeholder="What's going on?" maxlength="8000"></textarea>
+      <label class="upload-label">Photos (optional, up to 4, JPG/PNG/WEBP/GIF, max 5MB each)<input type="file" id="tf-image" accept="image/jpeg,image/png,image/webp,image/gif" multiple class="forum-input"></label>
       <div class="btn-row">
-        <button type="submit" class="btn btn-gold">Post Thread</button>
+        <button type="submit" class="btn btn-gold" id="tf-submit-btn">Post Thread</button>
       </div>
       <p class="held-note" id="tf-status"></p>
     </form>
@@ -146,8 +151,9 @@
       <div id="thread-view-content"></div>
       <form id="reply-form" style="margin-top:20px">
         <textarea class="forum-input" id="rf-body" rows="4" placeholder="Write a reply&hellip;" maxlength="8000"></textarea>
+        <label class="upload-label">Photos (optional, up to 4, JPG/PNG/WEBP/GIF, max 5MB each)<input type="file" id="rf-image" accept="image/jpeg,image/png,image/webp,image/gif" multiple class="forum-input"></label>
         <div class="btn-row">
-          <button type="submit" class="btn btn-gold">Reply</button>
+          <button type="submit" class="btn btn-gold" id="rf-submit-btn">Reply</button>
         </div>
         <p class="held-note" id="rf-status"></p>
       </form>
@@ -208,6 +214,14 @@
 <script>
 (function () {
   function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+  function renderImages(imageKeysJson) {
+    if (!imageKeysJson) return '';
+    var keys;
+    try { keys = JSON.parse(imageKeysJson); } catch { return ''; }
+    if (!Array.isArray(keys) || !keys.length) return '';
+    return '<div class="post-images">' + keys.map(function(k){ return '<img src="/r2/' + esc(k) + '" alt="">'; }).join('') + '</div>';
+  }
+
   function catEmoji(cat){return {general:'\uD83D\uDCAC',repair:'\uD83D\uDD27',power:'\u26A1',connectivity:'\uD83D\uDCE1',route:'\uD83D\uDDFA\uFE0F',blog:'\uD83D\uDCDD'}[cat] || '\uD83D\uDCAC';}
   function timeAgo(iso){
     var diff=(Date.now()-new Date(iso+'Z').getTime())/1000;
@@ -307,6 +321,30 @@
     });
   });
 
+  async function uploadImages(fileInput, statusEl) {
+    var files = fileInput.files ? Array.prototype.slice.call(fileInput.files) : [];
+    if (!files.length) return { ok: true, keys: [] };
+    if (files.length > 4) { statusEl.textContent = 'Max 4 photos per post.'; return { ok: false }; }
+    var keys = [];
+    for (var i = 0; i < files.length; i++) {
+      var file = files[i];
+      if (file.size > 5 * 1024 * 1024) { statusEl.textContent = 'Each image must be under 5MB.'; return { ok: false }; }
+      var fd = new FormData();
+      fd.append('image', file);
+      try {
+        statusEl.textContent = 'Uploading photo ' + (i + 1) + ' of ' + files.length + '\u2026';
+        var res = await fetch('/api/upload', { method: 'POST', body: fd });
+        var data = await res.json();
+        if (!data.success) { statusEl.textContent = data.message || 'Could not upload image.'; return { ok: false }; }
+        keys.push(data.key);
+      } catch {
+        statusEl.textContent = 'Could not upload image.';
+        return { ok: false };
+      }
+    }
+    return { ok: true, keys: keys };
+  }
+
   async function openThread(id) {
     threadList.classList.add('is-hidden');
     threadView.classList.add('is-open');
@@ -318,11 +356,15 @@
 
     var html = '<h2>' + esc(data.thread.title) + '</h2>' +
       '<p class="muted" style="font-size:13px">by ' + esc(data.thread.author) + ' &middot; ' + timeAgo(data.thread.created_at) + '</p>' +
-      '<p>' + esc(data.thread.body).replace(/\n/g,'<br>') + '</p><hr class="rule">';
+      '<p>' + esc(data.thread.body).replace(/\n/g,'<br>') + '</p>' +
+      (data.thread.image_key ? '<img class="post-image" src="/r2/' + esc(data.thread.image_key) + '" alt="">' : '') +
+      '<hr class="rule">';
 
     data.posts.forEach(function(p){
       html += '<div class="faq-item"><p class="muted mb-0" style="font-size:13px">' + esc(p.author) + ' &middot; ' + timeAgo(p.created_at) + '</p>' +
-        '<p>' + esc(p.body).replace(/\n/g,'<br>') + '</p></div>';
+        '<p>' + esc(p.body).replace(/\n/g,'<br>') + '</p>' +
+        (p.image_key ? '<img class="post-image" src="/r2/' + esc(p.image_key) + '" alt="">' : '') +
+        '</div>';
     });
     content.innerHTML = html;
 
@@ -331,15 +373,22 @@
     replyForm.onsubmit = async function(e){
       e.preventDefault();
       var body = document.getElementById('rf-body').value.trim();
+      var status = document.getElementById('rf-status');
+      var imageInput = document.getElementById('rf-image');
+      var submitBtn = document.getElementById('rf-submit-btn');
       if (!body) return;
+      submitBtn.disabled = true;
+      status.textContent = '';
+      var upload = await uploadImage(imageInput, status);
+      if (!upload.ok) { submitBtn.disabled = false; return; }
       var res2 = await fetch('/api/threads/' + encodeURIComponent(id), {
-        method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ body: body })
+        method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ body: body, imageKey: upload.key })
       });
       var d2 = await res2.json();
-      var status = document.getElementById('rf-status');
+      submitBtn.disabled = false;
       if (!d2.success) { status.textContent = 'Could not post reply.'; return; }
       if (d2.held_for_review) { status.textContent = d2.message; }
-      else { document.getElementById('rf-body').value=''; status.textContent=''; openThread(id); }
+      else { document.getElementById('rf-body').value=''; imageInput.value=''; status.textContent=''; openThread(id); }
     };
   }
 
@@ -351,17 +400,25 @@
     var body = document.getElementById('tf-body').value.trim();
     var category = document.getElementById('tf-category').value;
     var status = document.getElementById('tf-status');
+    var imageInput = document.getElementById('tf-image');
+    var submitBtn = document.getElementById('tf-submit-btn');
     if (!title || !body) { status.textContent = 'Title and body required.'; return; }
+    submitBtn.disabled = true;
+    status.textContent = '';
+    var upload = await uploadImage(imageInput, status);
+    if (!upload.ok) { submitBtn.disabled = false; return; }
     var res = await fetch('/api/threads', {
       method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ title: title, body: body, category: category })
+      body: JSON.stringify({ title: title, body: body, category: category, imageKey: upload.key })
     });
     var data = await res.json();
+    submitBtn.disabled = false;
     if (!data.success) { status.textContent = 'Could not post.'; return; }
     if (data.held_for_review) { status.textContent = data.message; }
     else {
       document.getElementById('tf-title').value='';
       document.getElementById('tf-body').value='';
+      imageInput.value='';
       status.textContent='';
       loadThreadList();
     }

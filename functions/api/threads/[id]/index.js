@@ -14,7 +14,7 @@ export async function onRequestGet(context) {
   if (!env.DB) return json({ success: false, error: 'not_configured' }, 503);
 
   const thread = await env.DB.prepare(
-    `SELECT t.id, t.title, t.body, t.category, t.created_at, t.pinned, u.display_name AS author, u.avatar_url AS author_avatar
+    `SELECT t.id, t.title, t.body, t.category, t.created_at, t.pinned, t.image_keys, u.display_name AS author, u.avatar_url AS author_avatar
      FROM threads t JOIN users u ON u.id = t.author_id
      WHERE t.id = ? AND t.hidden = 0`
   )
@@ -24,7 +24,7 @@ export async function onRequestGet(context) {
   if (!thread) return json({ success: false, error: 'not_found' }, 404);
 
   const { results: posts } = await env.DB.prepare(
-    `SELECT p.id, p.body, p.created_at, u.display_name AS author, u.avatar_url AS author_avatar
+    `SELECT p.id, p.body, p.created_at, p.image_keys, u.display_name AS author, u.avatar_url AS author_avatar
      FROM posts p JOIN users u ON u.id = p.author_id
      WHERE p.thread_id = ? AND p.hidden = 0
      ORDER BY p.created_at ASC`
@@ -62,6 +62,12 @@ export async function onRequestPost(context) {
     return json({ success: false, error: 'invalid_json' }, 400);
   }
   const text = (body.body || '').toString().trim().slice(0, 8000);
+  const rawImageKeys = Array.isArray(body.imageKeys) ? body.imageKeys : [];
+  const imageKeys = rawImageKeys
+    .map((k) => (k || '').toString().trim().slice(0, 200))
+    .filter((k) => k.startsWith('forum/'))
+    .slice(0, 4);
+  const imageKeysJson = imageKeys.length ? JSON.stringify(imageKeys) : null;
   if (!text) return json({ success: false, error: 'missing_body' }, 400);
 
   const mod = await moderateText(env.AI, text);
@@ -69,9 +75,9 @@ export async function onRequestPost(context) {
 
   const id = randomId();
   await env.DB.prepare(
-    `INSERT INTO posts (id, thread_id, author_id, body, hidden, ai_flagged, ai_reason) VALUES (?, ?, ?, ?, ?, ?, ?)`
+    `INSERT INTO posts (id, thread_id, author_id, body, hidden, ai_flagged, ai_reason, image_keys) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
   )
-    .bind(id, params.id, session.uid, text, hidden, mod.flagged ? 1 : 0, mod.reason)
+    .bind(id, params.id, session.uid, text, hidden, mod.flagged ? 1 : 0, mod.reason, imageKeysJson)
     .run();
 
   if (!hidden) {

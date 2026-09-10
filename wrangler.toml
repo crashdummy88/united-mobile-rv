@@ -13,3 +13,9 @@ binding = "AI"
 binding = "DB"
 database_name = "umrt_forum"
 database_id = "0f9da84a-c0bd-48cb-a367-75f8aedce93f"
+
+# R2 bucket for forum photo uploads (one image per thread/reply).
+# Create with: wrangler r2 bucket create umrt-forum-media
+[[r2_buckets]]
+binding = "MEDIA"
+bucket_name = "umrt-forum-media"
