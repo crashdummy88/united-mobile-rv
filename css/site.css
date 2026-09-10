@@ -649,3 +649,28 @@ h1, h2 { font-weight: 400; letter-spacing: -0.03em; }
   opacity: 0.7;
   font-size: 12px;
 }
+
+
+/* ========== Show-ready nav + logo (2026-09-10) ========== */
+.site-header { position: sticky; }
+.nav-bar { position: relative; }
+.brand-logo {
+  height: 40px; width: auto; max-width: 48px;
+  object-fit: contain; border-radius: 0; background: transparent;
+}
+.nav-toggle {
+  border-radius: 4px; font-size: 18px; line-height: 1;
+}
+.nav-toggle[aria-expanded="true"] { border-color: var(--gold); color: var(--gold); }
+@media (max-width: 900px) {
+  .site-header.is-open .nav-links {
+    z-index: 120;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.45);
+  }
+  .site-header.is-open .nav-cta {
+    display: flex; width: 100%; justify-content: flex-end; gap: 12px; padding: 0 0 12px;
+  }
+  .site-header.is-open .nav-cta .btn { min-height: 44px; }
+}
+.footer-note { font-size: 12px; color: rgba(255,255,255,0.48); }
+.footer-quiet { opacity: 0.85; }
