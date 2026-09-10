@@ -50,9 +50,9 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   color: var(--gold); font-weight: 500; display: block; margin-bottom: calc(var(--space) * 2);
 }
 h1, h2, h3, h4 { font-weight: 500; letter-spacing: -0.03em; line-height: 1.05; margin: 0 0 calc(var(--space) * 3); }
-h1 { font-size: clamp(2.75rem, 7vw, 5.5rem); font-weight: 400; }
-h2 { font-size: clamp(2rem, 4.5vw, 3.5rem); font-weight: 400; }
-h3 { font-size: clamp(1.25rem, 2vw, 1.75rem); }
+h1 { font-size: clamp(2.25rem, 5.5vw, 5rem); font-weight: 400; } /* P0: 36–80px */
+h2 { font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 400; } /* P0: 32–56px */
+h3 { font-size: clamp(1.375rem, 2vw, 1.75rem); font-weight: 500; } /* P0: 22–28px */
 p { margin: 0 0 calc(var(--space) * 2); color: rgba(255,255,255,0.78); max-width: 62ch; }
 .lead { font-size: clamp(1.05rem, 1.6vw, 1.25rem); color: rgba(255,255,255,0.85); max-width: 48ch; }
 .rule { border: 0; border-top: 1px solid var(--rule); margin: calc(var(--space) * 8) 0; }
@@ -411,21 +411,24 @@ textarea { min-height: 120px; resize: vertical; }
 }
 .hero-media img {
   width: 100%;
-  height: 100%;
-  max-height: 420px;
+  height: auto;
+  min-height: 360px;
+  max-height: 520px;
   object-fit: cover;
-  display: block;
-  filter: contrast(1.02) saturate(0.95);
+  object-position: center;
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.12);
+  filter: contrast(1.02) saturate(0.94);
 }
 @media (max-width: 900px) {
   .hero-split { grid-template-columns: 1fr; gap: calc(var(--space) * 4); }
-  .hero-media img { max-height: 280px; }
+  .hero-media img { min-height: 220px; max-height: 320px; }
 }
 .photo-band h2 { margin-bottom: calc(var(--space) * 2); }
 .photo-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: calc(var(--space) * 2);
+  gap: calc(var(--space) * 4);
   margin-top: calc(var(--space) * 4);
 }
 .photo-card {
@@ -505,3 +508,70 @@ a.trust-chip:hover { border-color: var(--gold); color: #fff; }
 .btn { transition: background .2s var(--ease), color .2s var(--ease), border-color .2s var(--ease), box-shadow .2s var(--ease), transform .2s var(--ease); }
 .btn:hover { transform: translateY(-1px); }
 .btn-gold { box-shadow: 0 10px 28px rgba(201,151,44,0.28); }
+
+
+/* ========== Premium P0 — type / spacing / hero / CTA (2026-09-10 Brand memo) ========== */
+:root {
+  --max: 1160px; /* 1120–1200 craft width */
+  --gold-hover: #e0b04a; /* tint of canon gold — not a new brand color */
+}
+.wrap { width: min(100% - 48px, var(--max)); margin-inline: auto; }
+@media (max-width: 560px) {
+  .wrap, .wrap-narrow { width: min(100% - 24px, var(--max)); }
+}
+/* Type weights: 400 body/display, 500 labels/H3, 600 buttons only */
+body { font-weight: 400; }
+.micro, .eyebrow, .nav a, .trust-chip { font-weight: 500; }
+.btn, .chat-send, .mobile-bar a.btn { font-weight: 600; }
+h1, h2 { font-weight: 400; letter-spacing: -0.03em; }
+/* Hero presence + craft frame */
+.hero-split {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: calc(var(--space) * 6);
+  align-items: end;
+}
+.hero-media picture,
+.hero-media > img {
+  display: block;
+  width: 100%;
+}
+.hero-media img {
+  min-height: 360px;
+  max-height: 520px;
+}
+@media (max-width: 900px) {
+  .hero-split { grid-template-columns: 1fr; align-items: start; }
+  .hero-media img { min-height: 220px; max-height: 320px; }
+}
+/* Soften gold wash if present */
+.hero-media::before {
+  opacity: 0.12 !important;
+}
+/* Trust strip denser chips */
+.trust-chip {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  gap: 0;
+}
+.trust-row { gap: 12px 28px; }
+/* CTA hierarchy — gold hover tint locked */
+.btn-gold:hover { background: var(--gold-hover); color: var(--black); }
+/* Card gaps / band rhythm already 96/64 — reinforce grid */
+.photo-grid { gap: calc(var(--space) * 4); }
+.offer-grid, .services-grid, .price-grid {
+  gap: calc(var(--space) * 4);
+}
+/* Footer quiet disclaimer */
+.footer-quiet, .footer .footer-quiet {
+  opacity: 0.55;
+  font-size: 12px;
+}
+/* Tap targets */
+.btn, .mobile-bar a {
+  min-height: 44px;
+}
+@media (min-width: 1100px) {
+  h1 { font-size: clamp(3.5rem, 5vw, 5rem); } /* intentional ≤80px */
+}
