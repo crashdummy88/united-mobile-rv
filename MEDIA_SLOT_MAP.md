@@ -24,8 +24,23 @@
 | 2985 | img_3024.jpg | `/roof/` |
 | 3003 | img_3175.jpg | `/roof/` |
 | 3004 | img_3247.jpg | `/about/` |
-| 2967 | img_2482.jpg | `/about/` |
-| 2045 | umrt-logo (Canva) | Header sitewide |
+| 3251 | img_3251.jpg | `/about/` (replaced 2967) |
+| 2967 | img_2482.jpg | `/preventive/` (moved from About) |
+| job-01 | job-01-1200.webp | `/rv-repair/` |
+| job-02 | job-02.jpg | `/trailer/` |
+| job-06 | job-06-1200.webp | `/lp-gas/` |
+| job-07 | job-07.jpg | `/tech/` |
+| job-08 | job-08.jpg | `/ppi/` |
+| job-09 | job-09.jpg | `/chassis/` |
+| job-10 | job-10.jpg | `/customs/` |
+| #68 service band | img_2941, img_2962, img_3104, job-03 | `/service/` photo-band |
+| 2045 | umrt-logo (Canva) | Header sitewide + footer mark (targeted pages) |
+
+## Notes
+- HOLD 2976 / 2969 never used
+- Home IDs 2998/2994/2989/2970 never reused on service lines
+- Footer proof strip **omitted this PR** — only 8 unused Media IDs existed; all 8 assigned 1:1 to empty service lines (Dev Lead densify HARD). Brand footer strip soft/not blocking until more exclusive Media lands.
+- `/service/` hub restore already on main via #72 / 1ef1201 — not re-touched beyond footer 2045 mark
 
 ## Dupes killed
 - `img_3280` removed from Home grid, Wireless, Plumbing, About (hero-only)
@@ -36,4 +51,4 @@
 - `img_3176` removed from Roof (Wireless keeps)
 - HOLD 2976 / 2969 never used
 
-Header mark remains Canva `umrt-logo` (2045).
+Header mark remains Canva `umrt-logo` (2045). Footer brand row now includes the same 2045 mark on Home, troubleshoot, service, densified service lines, and primary service/about pages.
