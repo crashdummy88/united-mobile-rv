@@ -3,17 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>30-Amp vs 50-Amp RV Shore Power: What You Can Actually Run | UMRT</title>
-<meta name="description" content="Single-leg 30A vs dual-leg 50A explained — watt budgets, why two ACs trip 30A pedestals, and surge/EMS protection for either hookup.">
-<link rel="canonical" href="https://united-mobile-rv.pages.dev/guide/30-amp-vs-50-amp-guide/">
+<title>Peplink Multi-WAN: Bonding &amp; Failover Guide | UMRT</title>
+<meta name="description" content="Peplink Certified Associate guide — multi-WAN bonding and failover with Starlink/cellular. Deep-link /wireless/. Prefer Text UMRT.">
+<link rel="canonical" href="https://united-mobile-rv.pages.dev/guide/peplink-multi-wan-guide/">
 <meta name="theme-color" content="#1A1A1A">
 <link rel="icon" href="/favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png">
 
-<meta property="og:title" content="30-Amp vs 50-Amp RV Shore Power: What You Can Actually Run | UMRT">
-<meta property="og:description" content="Single-leg 30A vs dual-leg 50A explained — watt budgets, why two ACs trip 30A pedestals, and surge/EMS protection for either hookup.">
+<meta property="og:title" content="Peplink Multi-WAN: Bonding &amp; Failover Guide | UMRT">
+<meta property="og:description" content="Cell boosters amplify what exists — place the donor antenna, separate indoor/outdoor, and avoid oscillation that kills gain.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://united-mobile-rv.pages.dev/guide/30-amp-vs-50-amp-guide/">
+<meta property="og:url" content="https://united-mobile-rv.pages.dev/guide/peplink-multi-wan-guide/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -44,22 +44,26 @@
 <main id="main">
 <section class="page-hero">
   <div class="wrap">
-    <span class="micro">Electrical guide</span>
-    <h1>30-amp vs 50-amp shore power explained</h1>
-    <p class="lead">50-amp service isn’t “more current on one wire” — it’s a fundamentally different hookup. Here’s what that means for what you can actually run.</p>
+    <span class="micro">Connectivity guide</span>
+    <h1>Peplink multi-WAN — bonding &amp; failover</h1>
+    <p class="lead">Peplink Certified Associate installs for multi-WAN bonding and/or cellular failover alongside Starlink or campground Wi‑Fi. Deep service page: <a href="/wireless/">Wireless</a>. Software downloads twin: umrt-software <code>/peplink/</code>.</p>
     <p class="muted" style="margin-top:16px;max-width:48ch">Active corridor: Montana · Wyoming · Idaho · Washington — case-by-case beyond.</p>
   </div>
 </section>
 <section class="band">
   <div class="wrap">
     <span class="micro">Field notes</span>
-    <p>50-amp service isn’t “more current on one wire” — it’s a fundamentally different hookup. Here’s what that means for what you can actually run. A 30-amp shore connection is a single 120V leg — roughly 3,600 watts total available. A 50-amp connection is two separate 120V legs (100 amps total across both) — roughly 12,000 watts available, more than triple. That’s why a 30-to-50 or 50-to-30 dogbone adapter doesn’t turn a 30-amp pedestal into 50-amp power; it just lets the plug fit.</p>
-    <div class="grid-2"><article class="service-card"><h3>The Actual Difference</h3><p>A 30-amp shore connection is a single 120V leg — roughly 3,600 watts total available. A 50-amp connection is two separate 120V legs (100 amps total across both) — roughly 12,000 watts available, more than triple.</p></article><article class="service-card"><h3>Why 30-Amp Rigs Trip Breakers Running Two ACs</h3><p>On 30-amp service, running the AC, microwave, and water heater element at the same time is often enough to trip the pedestal breaker — there simply isn’t enough total wattage available.</p></article><article class="service-card"><h3>Protect the Connection Either Way</h3><p>Whichever service you have, a surge protector with voltage monitoring is the cheapest insurance against a bad pedestal — see our surge protector buying guide.</p></article><article class="service-card"><h3>Related</h3><p>Surge Protector &amp; EMS Buying GuideElectrical &amp; Shore Power TroubleshootingElectrical &amp; Power SystemsBack to Field Guide</p></article></div>
-    
-    <p class="muted">Related: <a href="/guide/">All guides</a> · <a href="/book-service/">Book a Service</a> · <a href="/pricing/">Pricing</a></p>
+    <p>One carrier is a single point of failure on the corridor. Peplink lets you bond or fail over across cellular + Starlink + Wi‑Fi so work and navigation keep a path when one WAN drops.</p>
+    <div class="grid-2">
+      <article class="service-card"><h3>Bonding vs failover</h3><p>Failover switches to a backup WAN when the primary dies. Bonding aggregates multiple WANs for throughput/resilience where the plan and radios support it. We size the design to how you travel — not a generic “max speed” pitch.</p></article>
+      <article class="service-card"><h3>With Starlink</h3><p>Starlink for bulk bandwidth + cellular for low-latency or tree cover is a common pair. See <a href="/guide/starlink-rv-guide/">Starlink installs</a> (installs-only — no Starlink dealer cert claim).</p></article>
+      <article class="service-card"><h3>Certified Associate</h3><p>Peplink Certified Associate work covers router install, WAN wiring, antenna placement, and honest expectations about outdoor RF.</p></article>
+      <article class="service-card"><h3>When to book</h3><p>Prefer Text or call. Trip fee quoted upfront. Service overview: <a href="/wireless/">/wireless/</a>.</p></article>
+    </div>
+    <p class="muted">Related: <a href="/guide/weboost-install-guide/">weBoost</a> · <a href="/wireless/">Wireless service</a> · <a href="/troubleshoot/">Troubleshoot</a></p>
     <div class="btn-row" style="margin-top:24px">
       <a class="btn btn-gold" href="/book-service/">Book a Service</a>
-      <a class="btn btn-ghost" href="tel:+16166065277">(616) 606-5277</a>
+      <a class="btn btn-ghost" href="tel:+16166065277">Text / Call</a>
       <a class="btn btn-ghost" href="/guide/">All guides</a>
     </div>
   </div>
@@ -67,11 +71,9 @@
 <section class="band band-tight" style="border-top:1px solid var(--rule)">
   <div class="wrap-narrow">
     <span class="micro">Pricing teaser</span>
-    <p>Trip fee <strong>$75</strong> within 30 miles, then <strong>$1.50/mi</strong>. Labor ~<strong>$150/hr</strong> (1-hour minimum, billed in 30-minute increments). Diagnostic <strong>$150</strong> applied toward repair if you proceed.</p>
-    <p class="muted" style="font-size:13px">Active corridor: Montana · Wyoming · Idaho · Washington — case-by-case beyond. Credentials (text): Victron Professional Certified Installer · weBoost Authorized Installer · Peplink Certified Associate · Dometic Professional Certified.</p>
+    <p>Trip fee <strong>$75</strong> within 30 miles, then <strong>$1.50/mi</strong>. Labor ~<strong>$150/hr</strong> (1-hour minimum / 30-minute increments). Diagnostic <strong>$150</strong> applied if you proceed.</p>
   </div>
 </section>
-
 </main>
 <footer class="site-footer">
   <div class="wrap footer-grid">
@@ -104,7 +106,7 @@
     </div>
   </div>
   <div class="wrap">
-    <p class="footer-note"><span class="footer-quiet">Public beta — live field testing for United Mobile RV LLC.</span> Official UMRT and Victron Professional Certified Installer marks shown where authorized.</p>
+    <p class="footer-note">Staging prototype for sales / design review. Separate from the live WordPress site at unitedmobilerv.com. Official UMRT and Victron Professional Certified Installer marks shown where authorized; other credentials appear as text until official badge files are added.</p>
   </div>
 </footer>
 <div class="mobile-bar" aria-label="Quick actions">
