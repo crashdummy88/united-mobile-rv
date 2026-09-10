@@ -649,3 +649,18 @@ h1, h2 { font-weight: 400; letter-spacing: -0.03em; }
   opacity: 0.7;
   font-size: 12px;
 }
+
+/* ========== Enterprise service-hero polish (2026-09-10) ========== */
+.service-hero {
+  padding-top: calc(var(--space) * 10);
+  padding-bottom: calc(var(--space) * 8);
+}
+.service-hero h1 {
+  max-width: 16ch;
+  font-size: clamp(2.25rem, 5vw, 4.25rem);
+}
+.service-hero .lead {
+  max-width: 52ch;
+  margin-top: calc(var(--space) * 3);
+}
+.service-hero .btn-row { margin-top: calc(var(--space) * 4); }
