@@ -9,8 +9,8 @@
 /go/sms/       /go/text/  302
 /go/phone      /go/text/  302
 /go/phone/     /go/text/  302
-/go/call       tel:+16166065277  302
-/go/call/      tel:+16166065277  302
+/go/call       /go/text/  302
+/go/call/      /go/text/  302
 
 # Reviews / maps (Yelp public URL HOLD — Matt paste)
 /go/google     https://www.google.com/maps/place/United+Mobile+RV+LLC/data=!4m2!3m1!1s0x0:0xb040c24e93fec214  302
