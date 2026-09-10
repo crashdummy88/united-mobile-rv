@@ -1,37 +1,26 @@
-# UMRT sales / staging prototype
+# United Mobile RV — SpaceX staging prototype
 
-**Private staging site for United Mobile RV LLC.**  
-This is **not** the live WordPress site at [unitedmobilerv.com](https://unitedmobilerv.com).
+Private staging site. Separate from unitedmobilerv.com WordPress.
 
-Repo: `crashdummy88/umrt-sales-prototype`  
-Host target: **Cloudflare Pages** (Git-connected).
+## Cloudflare Pages
+- Framework preset: None
+- Build command: (empty)
+- Output directory: /
 
-## Stack
-Static HTML/CSS — no build step. Cloudflare Pages can deploy from the repo root as a static site.
+## Canon
+- Phone: (616) 606-5277
+- Trip: $75 / 30mi then $1.50/mi each way
+- Labor: ~$150/hr
+- Diagnostic: $150 applied if proceed
+- CTAs: Book Now / Book a Service
+- Creds: Victron Professional Certified Installer; weBoost Authorized Installer; Peplink Certified Associate; Dometic Professional Certified
 
-## Cloudflare Pages setup
-See also **[CF_PAGES.md](./CF_PAGES.md)** for a short reference card.
+## Design
+Black #1A1A1A, white type, gold #C9972C only. SpaceX-inspired. No rockets/HUD.
 
-1. Cloudflare Dashboard → **Workers & Pages** → **Create** → **Pages** → **Connect to Git**
-2. Authorize GitHub → select `crashdummy88/umrt-sales-prototype`
-3. Build settings:
-   - **Framework preset:** None
-   - **Build command:** *(leave empty)*
-   - **Build output directory:** `/` (repo root)
-4. Deploy. You’ll get a `*.pages.dev` preview URL.
-5. Optional later: custom subdomain (e.g. `staging.unitedmobilerv.com`) via the existing Cloudflare zone — keep apex/www on live WP.
-
-## Brand (canon)
-- Gold `#C9972C` · Black `#1A1A1A` · White `#FFFFFF` · Light gray `#F5F5F5` · Dark gray `#666666`
-- Book CTAs: **Book Now** / **Book a Service**
-- Phone `(616) 606-5277` · Email `unitedrvnetwork@gmail.com`
-
-## Status
-- MVP static pages: Home, Services, Pricing, Book, About
-- Book form wired to **Web3Forms** (access key stubbed as `YOUR_WEB3FORMS_ACCESS_KEY` — replace before public traffic)
-- See **CF_PAGES.md** for Cloudflare Pages build settings
-- Team fact-check in progress (Audit / Sales / Brand / Dev)
-
-## Do not
-- Point this project at live WP cores (Home / Book / Pricing / Services)
-- Add partner logos without brand rights
+## AI chat
+- Gold FAB + dark panel (client: js/site.js)
+- Backend: Cloudflare Pages Function `functions/api/chat.js` → POST /api/chat
+- Set secret OPENAI_API_KEY (or ANTHROPIC_API_KEY) in Pages env — never in client
+- Without a key, local canon replies still work; upstream errors soft-fail to (616) 606-5277
+- Lead gate: Name, Phone, City/ZIP, issue, Prefer (Text default)
