@@ -330,3 +330,57 @@ textarea { min-height: 120px; resize: vertical; }
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
+
+
+/* Visual density — UMRT mark + official badges (2026-09-10) */
+.brand-logo {
+  height: 40px;
+  width: auto;
+  display: block;
+  border-radius: 4px;
+}
+.hero-lockup {
+  display: block;
+  height: 48px;
+  width: auto;
+  margin-bottom: calc(var(--space) * 3);
+  filter: drop-shadow(0 8px 24px rgba(0,0,0,0.35));
+}
+.hero {
+  position: relative;
+  background:
+    radial-gradient(ellipse 80% 60% at 70% 20%, rgba(201,151,44,0.12), transparent 55%),
+    radial-gradient(ellipse 60% 50% at 10% 80%, rgba(255,255,255,0.04), transparent 50%),
+    var(--black);
+}
+.hero h1 { max-width: 14ch; }
+.btn {
+  border-radius: 2px;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.06) inset;
+}
+.btn-gold {
+  box-shadow: 0 8px 24px rgba(201,151,44,0.28);
+}
+.btn-gold:hover { box-shadow: 0 10px 28px rgba(201,151,44,0.38); }
+.trust-strip {
+  background: rgba(255,255,255,0.02);
+}
+.cred-logos {
+  gap: 20px 28px;
+  padding: calc(var(--space) * 2) 0;
+}
+.cred-logos img {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 4px;
+  padding: 8px 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+}
+.offer-card, .service-card, .price-card, .step, .faq-item, .guide-card, .area-card {
+  transition: border-color .2s var(--ease), transform .2s var(--ease);
+}
+.offer-card:hover, .service-card:hover, .guide-card:hover, .area-card:hover {
+  border-top-color: var(--gold);
+}
