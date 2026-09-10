@@ -11,6 +11,8 @@ CREATE TABLE IF NOT EXISTS users (
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   banned INTEGER NOT NULL DEFAULT 0,
   is_mod INTEGER NOT NULL DEFAULT 0,
+  tou_accepted_at TEXT,
+  tou_version TEXT,
   UNIQUE(provider, provider_id)
 );
 

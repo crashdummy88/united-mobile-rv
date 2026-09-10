@@ -19,9 +19,9 @@ async function upsertUser(db, provider, mapped) {
   const id = randomId();
   await db
     .prepare(
-      'INSERT INTO users (id, provider, provider_id, email, display_name, avatar_url) VALUES (?, ?, ?, ?, ?, ?)'
+      'INSERT INTO users (id, provider, provider_id, email, display_name, avatar_url, tou_accepted_at, tou_version) VALUES (?, ?, ?, ?, ?, ?, datetime(\'now\'), ?)'
     )
-    .bind(id, provider, mapped.provider_id, mapped.email, mapped.display_name, mapped.avatar_url)
+    .bind(id, provider, mapped.provider_id, mapped.email, mapped.display_name, mapped.avatar_url, '1.0')
     .run();
   return { id, banned: false };
 }

@@ -1,5 +1,6 @@
 import { readSession, randomId } from '../../../_lib/session.js';
 import { moderateText } from '../../../_lib/moderate.js';
+import { notifyForumActivity } from '../../../_lib/notify.js';
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -77,6 +78,12 @@ export async function onRequestPost(context) {
     await env.DB.prepare(`UPDATE threads SET updated_at = datetime('now') WHERE id = ?`)
       .bind(params.id)
       .run();
+
+    const threadRow = await env.DB.prepare('SELECT title FROM threads WHERE id = ?').bind(params.id).first();
+    context.waitUntil(notifyForumActivity(env, {
+      subject: `New forum reply: ${threadRow ? threadRow.title : params.id}`,
+      message: `New reply from ${session.name || 'a member'}:\n\n${text}\n\nhttps://united-mobile-rv.pages.dev/forum/`,
+    }));
   }
 
   if (mod.flagged) {

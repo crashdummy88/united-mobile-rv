@@ -1,5 +1,7 @@
 import { readSession, randomId } from '../../_lib/session.js';
 import { moderateText } from '../../_lib/moderate.js';
+import { draftAiReply } from '../../_lib/ai-reply.js';
+import { notifyForumActivity } from '../../_lib/notify.js';
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -106,6 +108,32 @@ export async function onRequestPost(context) {
     } catch (e) {
       // Welcome bot is a nice-to-have — never let it break thread creation.
     }
+
+    // AI first-pass technical draft: only for non-general technical categories,
+    // clearly labeled as an automated draft, never posing as Matt.
+    try {
+      if (category !== 'general') {
+        const draft = await draftAiReply(env.AI, title, text);
+        if (draft) {
+          const bot = await env.DB.prepare(`SELECT id FROM users WHERE id = 'bot-umrt-team'`).first();
+          if (bot) {
+            const draftBody = `🤖 Automated first-pass from the UMRT assistant (not Matt, not a full diagnosis):\n\n${draft}\n\nWant eyes and a meter on it? Text/call (616) 606-5277.`;
+            await env.DB.prepare(
+              `INSERT INTO posts (id, thread_id, author_id, body, hidden, ai_flagged, ai_reason) VALUES (?, ?, ?, ?, 0, 0, NULL)`
+            ).bind(randomId(), id, bot.id, draftBody).run();
+            await env.DB.prepare(`UPDATE threads SET updated_at = datetime('now') WHERE id = ?`).bind(id).run();
+          }
+        }
+      }
+    } catch (e) {
+      // AI draft reply is a nice-to-have — never let it break thread creation.
+    }
+
+    // Email alert to Matt — fire and forget.
+    context.waitUntil(notifyForumActivity(env, {
+      subject: `New forum thread: ${title}`,
+      message: `New thread posted in "${category}" by ${session.name || 'a member'}:\n\n${title}\n\n${text}\n\nhttps://united-mobile-rv.pages.dev/forum/ (open the thread from the list)`,
+    }));
   }
 
   if (hidden) {

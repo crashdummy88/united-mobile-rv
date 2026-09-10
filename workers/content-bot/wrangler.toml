@@ -1,0 +1,16 @@
+name = "umrt-forum-content-bot"
+main = "index.js"
+compatibility_date = "2024-11-01"
+
+# Runs on a schedule and writes directly into the forum's D1 database and
+# Workers AI — same free bindings the Pages Functions app already uses.
+[triggers]
+crons = ["0 15 * * 2,5"]  # Tue & Fri, 15:00 UTC (~10-11am ET depending on DST)
+
+[ai]
+binding = "AI"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "umrt_forum"
+database_id = "0f9da84a-c0bd-48cb-a367-75f8aedce93f"
