@@ -29,17 +29,32 @@
   "email": "unitedrvnetwork@gmail.com",
   "priceRange": "$$",
   "areaServed": [
-    {"@type":"State","name":"Montana"},
-    {"@type":"State","name":"Wyoming"},
-    {"@type":"State","name":"Idaho"},
-    {"@type":"State","name":"Washington"},
-    {"@type":"State","name":"Minnesota"},
-    {"@type":"State","name":"Wisconsin"},
-    {"@type":"State","name":"South Dakota"},
-    {"@type":"State","name":"North Dakota"},
-    {"@type":"State","name":"Oregon"}
+    {
+      "@type": "State",
+      "name": "Montana"
+    },
+    {
+      "@type": "State",
+      "name": "Wyoming"
+    },
+    {
+      "@type": "State",
+      "name": "Idaho"
+    },
+    {
+      "@type": "State",
+      "name": "Washington"
+    }
   ],
-  "knowsAbout": ["RV electrical diagnostics","Victron power systems","Starlink","weBoost","Peplink","RV plumbing","RV roof repair"],
+  "knowsAbout": [
+    "RV electrical diagnostics",
+    "Victron power systems",
+    "Starlink",
+    "weBoost",
+    "Peplink",
+    "RV plumbing",
+    "RV roof repair"
+  ],
   "slogan": "Active corridor: Montana · Wyoming · Idaho · Washington — case-by-case beyond."
 }
 </script>
@@ -52,7 +67,7 @@
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header">
   <div class="wrap nav-bar">
-    <a class="brand" href="/"><img class="brand-logo" src="/assets/brand/umrt-logo.webp" onerror="this.src=\'/assets/brand/umrt-logo.png\'" alt="United Mobile RV" width="36" height="36"><span class="brand-text">United Mobile <span>RV</span></span></a>
+    <a class="brand" href="/"><img class="brand-logo" src="/assets/brand/umrt-logo.webp" alt="United Mobile RV" width="36" height="36"><span class="brand-text">United Mobile <span>RV</span></span></a>
     <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">☰</button>
     <ul class="nav-links"><li><a href="/" aria-current="page">Home</a></li>
 <li><a href="/service/">Services</a></li>
@@ -105,10 +120,9 @@
 <section class="band band-tight" aria-label="Credentials">
   <div class="wrap">
     <span class="micro">Credentials</span>
-    <div class="cred-logos">
-      <a href="/"><img src="/assets/brand/umrt-logo.webp" onerror="this.src='/assets/brand/umrt-logo.png'" alt="United Mobile RV" width="40" height="40"></a>
-      <a href="/victron/"><img src="/assets/brand/victron-certified-installer.png" alt="Victron Professional Certified Installer" height="40"></a>
-      <a href="/wireless/"><img src="/assets/brand/peplink-certified-associate.png" alt="Peplink Certified Associate" height="40"></a>
+    <div class="cred-logos cred-logos-scrubbed">
+      <a class="cred-pill" href="/victron/"><img src="/assets/brand/victron-certified-installer.webp" alt="Victron Professional Certified Installer" height="40" width="160" loading="lazy" decoding="async"></a>
+      <a class="cred-pill" href="/wireless/"><img src="/assets/brand/peplink-certified-associate.webp" alt="Peplink Certified Associate" height="40" width="160" loading="lazy" decoding="async"></a>
       <a class="cred-text" href="/wireless/">weBoost Authorized Installer</a>
       <a class="cred-text" href="/service/">Dometic Professional Certified</a>
     </div>
@@ -126,24 +140,28 @@
           <source type="image/webp" srcset="/assets/photos/jobs/img_3286-800.webp 800w, /assets/photos/jobs/img_3286-1200.webp 1200w" sizes="(max-width:560px) 100vw, (max-width:900px) 50vw, 33vw">
           <img src="/assets/photos/jobs/img_3286-1200.webp" alt="Completed RV Victron power install with MultiPlus, Lynx distributor, Cerbo GX, and a strapped 460Ah lithium battery." loading="lazy" width="1600" height="1200">
         </picture>
+        <figcaption class="photo-cap">Finished Victron bay</figcaption>
       </figure>
       <figure class="photo-card">
         <picture>
           <source type="image/webp" srcset="/assets/photos/jobs/img_3018-800.webp 800w, /assets/photos/jobs/img_3018-1200.webp 1200w" sizes="(max-width:560px) 100vw, (max-width:900px) 50vw, 33vw">
           <img src="/assets/photos/jobs/img_3018-1200.webp" alt="Tiffin Allegro Open Road motorhome on a residential driveway with tools beside an open service bay." loading="lazy" width="1600" height="1200">
         </picture>
+        <figcaption class="photo-cap">Motorhome service call</figcaption>
       </figure>
       <figure class="photo-card">
         <picture>
           <source type="image/webp" srcset="/assets/photos/jobs/img_2937-800.webp 800w, /assets/photos/jobs/img_2937-1200.webp 1200w" sizes="(max-width:560px) 100vw, (max-width:900px) 50vw, 33vw">
           <img src="/assets/photos/jobs/img_2937-1200.webp" alt="Open RV electrical bay with fuse blocks and a Fluke multimeter resting on a circuit schematic during diagnostics." loading="lazy" width="1600" height="1200">
         </picture>
+        <figcaption class="photo-cap">12V diagnostics</figcaption>
       </figure>
       <figure class="photo-card">
         <picture>
           <source type="image/webp" srcset="/assets/photos/jobs/img_2780-800.webp 800w, /assets/photos/jobs/img_2780-1200.webp 1200w" sizes="(max-width:560px) 100vw, (max-width:900px) 50vw, 33vw">
           <img src="/assets/photos/jobs/img_2780-1200.webp" alt="Technician working under an RV on a driveway with power tools and supplies spread on the concrete." loading="lazy" width="1600" height="1200">
         </picture>
+        <figcaption class="photo-cap">Underbelly / chassis</figcaption>
       </figure>
     </div>
   </div>
@@ -153,26 +171,26 @@
 <section class="band">
   <div class="wrap">
     <span class="micro">Offer ladder</span>
-    <h2>What we fix  -  at your location</h2>
+    <h2>What we fix — at your location</h2>
     <p class="lead">No shop drop-off. No tow bill. Root-cause diagnosis before parts.</p>
     <div class="grid-3 mt-8">
       <article class="offer-card">
-        <span class="micro">01  -  Diagnostics</span>
+        <span class="micro offer-num">01 / Diagnostics</span>
         <h3>Electrical &amp; system diagnostics</h3>
-        <p>Shore power faults, battery drain, parasitic draw, converter failures, wiring issues. Thermal imaging and professional DVOM testing  -  we diagnose the root cause before touching a single part.</p>
-        <a href="/electrical/">Electrical →</a>
+        <p>Shore power faults, battery drain, parasitic draw, converter failures, wiring issues. Thermal imaging and professional DVOM testing — we diagnose the root cause before touching a single part.</p>
+        <a class="text-link" href="/electrical/">Electrical</a>
       </article>
       <article class="offer-card">
-        <span class="micro">02  -  Power</span>
+        <span class="micro offer-num">02 / Power</span>
         <h3>Victron power &amp; energy upgrades</h3>
         <p>Victron system design and installation. LiFePO4 integration, MPPT solar, inverter/charger setup, full system balancing. Clean installs. Properly documented.</p>
-        <a href="/victron/">Victron →</a>
+        <a class="text-link" href="/victron/">Victron</a>
       </article>
       <article class="offer-card">
-        <span class="micro">03  -  Connectivity</span>
+        <span class="micro offer-num">03 / Connectivity</span>
         <h3>Starlink · weBoost · Peplink</h3>
-        <p>Reliable internet on the road. Clean exterior mounts, proper coax routing, full power integration. Not just plugged in  -  done right.</p>
-        <a href="/wireless/">Wireless →</a>
+        <p>Reliable internet on the road. Clean exterior mounts, proper coax routing, full power integration. Not just plugged in — done right.</p>
+        <a class="text-link" href="/wireless/">Wireless</a>
       </article>
     </div>
     <div class="grid-3 mt-8">
@@ -180,7 +198,7 @@
       <article class="service-card"><h3>Plumbing</h3><p>Water pumps, tanks, fittings, fresh/grey/black troubleshooting at your location.</p><a href="/plumbing/">Plumbing →</a></article>
       <article class="service-card"><h3>Roof &amp; water intrusion</h3><p>Leak tracing, EPDM/TPO repair, vents, moisture detection with thermal imaging.</p><a href="/roof/">Roof →</a></article>
     </div>
-    <p class="mt-8 muted"><a href="/service/">Full service menu</a>  -  generator, LP gas, chassis, trailer, PPI, preventive, customs, seasonal, and more.</p>
+    <p class="mt-8 muted"><a href="/service/">Full service menu</a> — generator, LP gas, chassis, trailer, PPI, preventive, customs, seasonal, and more.</p>
   </div>
 </section>
 
@@ -319,7 +337,7 @@
     </div>
   </div>
   <div class="wrap">
-    <p class="footer-note"><span class="footer-quiet">Staging prototype for sales / design review.</span> Separate from the live WordPress site at unitedmobilerv.com. Official UMRT and Victron Professional Certified Installer marks shown where authorized; other credentials appear as text until official badge files are added.</p>
+    <p class="footer-note"><span class="footer-quiet">Staging review build.</span> Separate from the live WordPress site at unitedmobilerv.com. Official UMRT and Victron Professional Certified Installer marks shown where authorized; other credentials appear as text until official badge files are added.</p>
   </div>
 </footer>
 <div class="mobile-bar" aria-label="Quick actions">
