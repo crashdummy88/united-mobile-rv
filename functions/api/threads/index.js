@@ -77,6 +77,37 @@ export async function onRequestPost(context) {
       .run();
   }
 
+  // Auto-welcome: if this is the author's first-ever (visible) thread, have the
+  // UMRT Team bot account drop a friendly first reply so new members don't post into silence.
+  if (!hidden) {
+    try {
+      const countRow = await env.DB.prepare(
+        `SELECT COUNT(*) AS n FROM threads WHERE author_id = ? AND hidden = 0`
+      ).bind(session.uid).first();
+      if (countRow && countRow.n === 1) {
+        const bot = await env.DB.prepare(`SELECT id FROM users WHERE id = 'bot-umrt-team'`).first();
+        if (bot) {
+          const firstName = (session.name || 'there').toString().split(' ')[0];
+          const catWelcome = {
+            general: "Glad to have you here — feel free to poke around the other categories too.",
+            repair: "Diagnostics and repair questions are exactly what this place is for — hope you get it sorted.",
+            power: "Off-grid and power setups come up a lot here — good place to compare notes.",
+            connectivity: "Connectivity questions are common here too — Starlink, boosters, all of it.",
+            route: "Good to have another voice on route and service-area talk.",
+          };
+          const line = catWelcome[category] || catWelcome.general;
+          const welcomeBody = `Welcome to the forum, ${firstName}! ${line} If you don't hear back right away, hang tight — someone (often Matt) will chime in.`;
+          await env.DB.prepare(
+            `INSERT INTO posts (id, thread_id, author_id, body, hidden, ai_flagged, ai_reason) VALUES (?, ?, ?, ?, 0, 0, NULL)`
+          ).bind(randomId(), id, bot.id, welcomeBody).run();
+          await env.DB.prepare(`UPDATE threads SET updated_at = datetime('now') WHERE id = ?`).bind(id).run();
+        }
+      }
+    } catch (e) {
+      // Welcome bot is a nice-to-have — never let it break thread creation.
+    }
+  }
+
   if (hidden) {
     return json({
       success: true,
