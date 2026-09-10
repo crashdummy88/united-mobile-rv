@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Book a Service | United Mobile RV</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="logo" href="/">United Mobile <span>RV</span></a>
+      <nav aria-label="Primary">
+        <a href="/services.html">Services</a>
+        <a href="/pricing.html">Pricing</a>
+        <a href="/about.html">About</a>
+        <a class="btn btn-sm" href="/book.html">Book Now</a>
+      </nav>
+      <a class="phone" href="tel:+16166065277">(616) 606-5277</a>
+    </div>
+  </header>
+  <main class="wrap page">
+    <h1>Book a Service</h1>
+    <p>Tell us where you are and what’s going on. We’ll text you back to confirm.</p>
+    <form id="book-form" action="#" method="post" onsubmit="event.preventDefault(); alert('Staging form — wire Web3Forms or Square next. Call or text (616) 606-5277 for now.');">
+      <label>Name <input name="name" required autocomplete="name" /></label>
+      <label>Phone <input name="phone" type="tel" required autocomplete="tel" /></label>
+      <label>Email <input name="email" type="email" autocomplete="email" /></label>
+      <label>City / location <input name="location" required /></label>
+      <label>RV / vehicle type <input name="rig" placeholder="e.g. Class A, travel trailer, van" /></label>
+      <label>What’s going on?
+        <textarea name="issue" rows="5" required placeholder="Symptoms, when it started, any codes or recent work"></textarea>
+      </label>
+      <button class="btn" type="submit">Book Now</button>
+    </form>
+    <p style="margin-top:1.25rem;color:var(--gray)">Prefer text? <a href="tel:+16166065277">(616) 606-5277</a></p>
+  </main>
+  <footer class="site-footer"><div class="wrap footer-inner"><p class="fine">Staging form placeholder — connect Web3Forms before public traffic.</p></div></footer>
+</body>
+</html>
