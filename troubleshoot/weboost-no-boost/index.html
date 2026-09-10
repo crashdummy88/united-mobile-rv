@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>weBoost No Boost or Oscillation | UMRT Troubleshoot</title>
-<meta name="description" content="weBoost not helping? Outdoor RF, AGC/oscillation, coax, and power checks before blaming the amp. Prefer Text (616) 606-5277 — Authorized Installer.">
+<title>weBoost No Boost: Outdoor RF, AGC &amp; Install Checks | UMRT</title>
+<meta name="description" content="weBoost not helping? Confirm outdoor signal, antenna isolation, AGC, and power before blaming the booster. Prefer Text (616) 606-5277 — Authorized Installer.">
 <link rel="canonical" href="https://united-mobile-rv.pages.dev/troubleshoot/weboost-no-boost/">
 <meta name="theme-color" content="#1A1A1A">
 <link rel="icon" href="/favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png">
-<meta property="og:title" content="weBoost No Boost or Oscillation | UMRT Troubleshoot">
-<meta property="og:description" content="weBoost not boosting — outdoor RF, antenna separation, AGC/oscillation checks. Authorized Installer honesty. Prefer Text UMRT.">
+<meta property="og:title" content="weBoost No Boost: Outdoor RF, AGC &amp; Install Checks | UMRT">
+<meta property="og:description" content="weBoost not helping? Confirm outdoor signal, antenna isolation, AGC, and power before blaming the booster. Prefer Text (616) 606-5277 — Authorized Installer.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://united-mobile-rv.pages.dev/troubleshoot/weboost-no-boost/">
 <link rel="stylesheet" href="/css/site.css">
@@ -39,49 +39,112 @@
   <div class="wrap">
     <span class="micro"><a href="/troubleshoot/">Troubleshoot</a></span>
     <h1>weBoost no boost</h1>
-    <p class="lead">Outdoor RF, AGC/oscillation, and antenna isolation — won’t invent coverage from zero.</p>
+    <p class="lead">Outdoor RF, AGC, and install checks — won’t invent coverage from zero. Same diagnostic depth as our weak-signal sibling.</p>
   </div>
 </section>
 <section class="band"><div class="wrap-narrow">
 
-  <p>A booster that “does nothing” usually means no usable outdoor signal, oscillation from antenna geometry, travel-damaged coax, or a power path problem — not a reason to invent RF. United Mobile RV is a <strong>weBoost Authorized Installer</strong>. weBoost uses <strong>AGC</strong> — we don’t “tune gain” or promise bar counts.</p>
-  <h2>Quick path</h2>
-  <ol>
-    <li>Outside first: booster <strong>off</strong> — does the phone have any usable outdoor signal at the exterior antenna location? No outdoor signal → the booster cannot invent coverage.</li>
-    <li>Note LED / app status (oscillation, overload, soft install). Photo the exact string or light pattern.</li>
-    <li>Confirm interior/exterior antenna separation and barriers per OEM — oscillation is often geometry, not a bad amp.</li>
-    <li>Coax &amp; connectors after travel: kinks, water intrusion, loose N/SMA fittings.</li>
-    <li>Power: fused DC, correct voltage, not a shared circuit that sags under inverter load.</li>
-    <li>Speed test outdoors vs indoors with booster on/off (same carrier, same spot).</li>
-    <li>If Peplink is in the stack, note WAN Health Check on cellular before blaming the booster alone.</li>
-  </ol>
-  <h2>Oscillation vs weak signal vs overload</h2>
+  <p>A cellular booster amplifies <strong>usable outdoor signal</strong> into the coach. If interior bars barely move, calls still drop, or the kit “does nothing,” start outside — not by buying a bigger box. United Mobile RV is a <strong>weBoost Authorized Installer</strong>. weBoost uses <strong>AGC</strong> — we don’t “tune gain,” and we will not invent RF from zero. Prefer Text when DIY ends.</p>
+
+  <h2>Symptoms</h2>
   <ul>
-    <li><strong>Oscillation</strong> — interior and exterior antennas hearing each other; fix isolation / placement / barriers.</li>
-    <li><strong>Overload</strong> — too much outdoor signal near a tower; follow OEM attenuation / placement guidance.</li>
-    <li><strong>True weak signal</strong> — outdoor is marginal; the booster helps some, physics still wins in the hole.</li>
-    <li><strong>No outdoor signal</strong> — dead zone / canyon / metal carport; a bigger kit will not invent RF from zero.</li>
+    <li>Interior bars barely move after install; calls still drop</li>
+    <li>Booster LED / app shows oscillation, overload, or error states</li>
+    <li>Works near the window, fails deeper in the coach</li>
+    <li>Worked parked, fails after travel (antenna shift, coax strain, ground loss)</li>
+    <li>Hot booster or power supply; intermittent reboot</li>
+    <li>Peplink cellular WAN still flaps even with booster “on”</li>
+    <li>Owner bought a kit expecting “always 5 bars” in canyons / heavy timber</li>
   </ul>
-  <h2>Install quality vs ladder-rack specials</h2>
-  <p>A booster bolted to a ladder with exposed coax is a different product than one grounded, fused, and isolated into the coach. Separate kit limitation, install geometry, travel damage, and power-path failures before condemning the amplifier.</p>
+
+  <h2>Quick checks (owner-safe)</h2>
+  <ol>
+    <li><strong>Outside first:</strong> with the booster off, check whether your phone has any usable outdoor signal where the exterior antenna sits. No outdoor signal → booster cannot invent coverage.</li>
+    <li><strong>LED / app status:</strong> note exact lights or app messages (oscillation / overload / soft install). Photo them.</li>
+    <li><strong>Separation:</strong> confirm exterior and interior antennas have enough physical separation / isolation per OEM — oscillation is often an install geometry problem, not a “bad amp.”</li>
+    <li><strong>Coax &amp; connectors:</strong> check for kinked coax, water in connectors, loose N/SMA fittings after travel days.</li>
+    <li><strong>Power:</strong> fused DC, correct voltage, no shared circuit that sags under inverter load.</li>
+    <li><strong>Carrier reality:</strong> verify SIM / plan is active; bars ≠ throughput; try a speed test outdoors vs indoors with booster on/off.</li>
+    <li><strong>Disable experiments:</strong> temporary VPNs / Wi-Fi calling quirks can mask whether the booster path actually improved RF.</li>
+  </ol>
+
   <h2>When to stop DIY</h2>
   <ul>
-    <li>Seal failure, spinning mounts, or water in coax you cannot replace correctly.</li>
-    <li>Hot / melting power supplies or scorched wiring.</li>
-    <li>Plans to “crank gain” or flash non-OEM firmware.</li>
-    <li>Roof work on a wet roof or near power lines.</li>
+    <li>Roof / ladder-rack mounts with seal failure or spinning hardware</li>
+    <li>Water in coax connectors or corroded fittings you cannot replace correctly</li>
+    <li>Hot / melting power supplies or scorched wiring</li>
+    <li>Cutting proprietary antenna cables without OEM guidance</li>
+    <li>Any plan to “crank gain” or flash non-OEM firmware</li>
+    <li>Working on a wet roof or near power lines</li>
   </ul>
+
   <h2>What UMRT diagnoses</h2>
-  <p>Outdoor signal survey at the proposed exterior antenna, isolation/oscillation vs true weak-signal path, coax quality and fused DC, and whether Peplink/Starlink multi-WAN is the better architecture for your travel pattern. Prefer Text for an Authorized Installer diagnostic.</p>
-  <h2>Honesty</h2>
+  <p>Outdoor signal survey at the proposed exterior antenna location (honesty first). Antenna isolation / oscillation vs true weak-signal path. Coax quality, grounding, and fused DC integration (install quality vs zip-tie ladder specials). Interaction with Peplink WAN Health Check / failover when both are present. Whether Starlink / Peplink multi-WAN is the better architecture for <em>your</em> travel pattern (<strong>weBoost Authorized Installer</strong> · Peplink Certified Associate · Starlink install capability only).</p>
+  <p>DVOM on the DC feed when brownout is suspected; we do not invent RF meters-as-marketing.</p>
+
+  <h2>Outdoor signal required (honesty)</h2>
+  <p>If the exterior antenna sits in a null (deep canyon, dense timber, metal carport), the booster has nothing useful to amplify. Moving the coach ten feet, raising the antenna, or accepting Starlink for that stretch is often smarter than buying a second kit.</p>
+
+  <h2>AGC — we don’t “tune gain”</h2>
+  <p>weBoost systems use <strong>automatic gain control</strong>. We place antennas, set isolation, and verify LEDs/app health — we do <strong>not</strong> promise manual gain tricks or guaranteed bar counts. Marketing screenshots are not a field test.</p>
+
+  <h2>Oscillation vs weak signal vs overload</h2>
   <ul>
-    <li>Needs <strong>usable outdoor signal</strong> — will not invent RF from zero.</li>
-    <li><strong>AGC</strong> — no tune-gain / no guaranteed bars.</li>
-    <li>No invented throughput guarantees.</li>
-    <li>Official support / manuals only for LED meanings and install geometry.</li>
+    <li><strong>Oscillation</strong> — interior and exterior antennas hearing each other; fix geometry / isolation / barriers.</li>
+    <li><strong>Overload</strong> — too much outdoor signal near a tower; OEM guidance on attenuation / placement.</li>
+    <li><strong>True weak signal</strong> — outdoor is marginal; booster helps some, physics still wins in the hole.</li>
+    <li><strong>No outdoor signal</strong> — dead zone; a bigger kit will not invent RF from zero.</li>
   </ul>
-  <p>Deep dive: <a href="/troubleshoot/weboost-weak-signal/">weBoost weak signal</a> · <a href="/guide/weboost-install-guide/">weBoost install guide</a> · <a href="/troubleshoot/starlink-peplink-dropouts/">Starlink / Peplink dropouts</a> · <a href="/troubleshoot/peplink-wan-flapping/">Peplink WAN flapping</a> · <a href="/wireless/">Wireless service</a>. OEM: <a href="https://www.weboost.com/support">weboost.com/support</a>.</p>
-  <p class="muted">Prefer Text — (616) 606-5277. Trip $75/30 mi then $1.50/mi · labor ~$150/hr (1 hr min / 30-min) · diagnostic $150 applied. Credentials: Victron Professional Certified Installer · weBoost Authorized Installer · Peplink Certified Associate · Dometic Professional Certified. Starlink installs only — never Starlink Certified. Corridor MT · WY · ID · WA.</p>
+
+  <h2>Power and travel damage</h2>
+  <p>Travel days loosen mounts and chew coax. A kit that passed at install can fail after corrugated road. Re-check connectors and antenna aim before condemning the amplifier. Shared flaky 12V feeds cause “booster randomly dies” tickets that are really power tickets — see <a href="/troubleshoot/12v-battery-no-charge/">12V battery not charging</a>.</p>
+
+  <h2>How this fits Starlink + Peplink</h2>
+  <p>Many coaches run <strong>weBoost → Peplink cellular WAN</strong> alongside Starlink. Diagnose each path separately, then look at WAN priority. Combined road-dropout guide: <a href="/troubleshoot/starlink-peplink-dropouts/">Starlink / Peplink dropouts</a>. Sibling deep-dive: <a href="/troubleshoot/weboost-weak-signal/">weBoost weak signal</a>. Service installs: <a href="/wireless/">Wireless</a>.</p>
+
+  <h2>Install quality vs ladder-rack specials</h2>
+  <p>A booster bolted to a ladder with exposed coax is a different product than one grounded, fused, and isolated into the coach. When diagnosing “this kit never worked,” separate:</p>
+  <ul>
+    <li><strong>Kit limitation</strong> — outdoor null / wrong band expectations</li>
+    <li><strong>Install geometry</strong> — oscillation from interior/exterior too close</li>
+    <li><strong>Travel damage</strong> — connectors, water, mounts</li>
+    <li><strong>Power path</strong> — sag, shared circuits, undersized feed</li>
+  </ul>
+  <p>UMRT installs treat wireless like electrical work: mount, seal, fuse, integrate.</p>
+
+  <h2>LED / app triage (owner capture)</h2>
+  <p>Before Prefer Text, capture:</p>
+  <ol>
+    <li>Exact LED color/pattern or app status string</li>
+    <li>Whether the fault changes with doors/windows open (isolation clue)</li>
+    <li>Outdoor phone test at the exterior antenna location (booster off)</li>
+    <li>Indoor test at the interior antenna with booster on vs off (same spot, same carrier)</li>
+  </ol>
+  <p>Bring those four data points — it cuts diagnostic time.</p>
+
+  <h2>Campground and canyon expectations</h2>
+  <p>Evening campground congestion and deep timber / canyon walls will beat any consumer booster. We will say so up front. Multi-WAN (Peplink + Starlink) is often the architecture for travelers who need resilience — not a third weBoost kit stacked on hope.</p>
+
+  <h2>Official support only</h2>
+  <ul>
+    <li><a href="https://www.weboost.com/support">weboost.com/support</a></li>
+    <li><a href="https://www.weboost.com/">weboost.com</a></li>
+    <li>Wilson resources (OEM family): <a href="https://www.wilsonamplifiers.com/resources/">wilsonamplifiers.com/resources</a></li>
+  </ul>
+  <p>No proprietary binary hosting; software hub points at official links only.</p>
+
+  <h2>Honesty box</h2>
+  <ul>
+    <li>Needs <strong>usable outdoor signal</strong> — will not invent RF from zero</li>
+    <li><strong>AGC</strong> — we don’t tune gain or promise bar counts</li>
+    <li>No invented throughput guarantees</li>
+    <li>Ladder-rack zip-tie coax is a different product than a sealed, fused, isolated install</li>
+    <li>Official support / manuals only for firmware and LED meanings</li>
+    <li>Starlink = install capability only — never a Starlink Certified partner title</li>
+  </ul>
+
+  <p>Related: <a href="/wireless/">Wireless</a> · <a href="/troubleshoot/weboost-weak-signal/">weBoost weak signal</a> · <a href="/guide/weboost-install-guide/">weBoost install guide</a> · <a href="/troubleshoot/starlink-peplink-dropouts/">Starlink / Peplink dropouts</a> · <a href="/troubleshoot/peplink-wan-flapping/">Peplink WAN flapping</a> · <a href="/troubleshoot/">Troubleshoot hub</a>.</p>
+  <p class="muted">Prefer Text — (616) 606-5277. Trip $75/30 mi then $1.50/mi · labor ~$150/hr (1 hr min / 30-min) · diagnostic $150 applied. Credentials: Victron Professional Certified Installer · <strong>weBoost Authorized Installer</strong> · Peplink Certified Associate · Dometic Professional Certified · Starlink install capability (no invented Starlink cert). Corridor: MT · WY · ID · WA.</p>
 
 </div></section>
 <section class="band" style="border-top:1px solid var(--rule)">
