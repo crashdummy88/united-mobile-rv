@@ -62,8 +62,10 @@
     '    <div class="chat-lead-grid">',
     '      <div><label for="cl-name">Name *</label><input id="cl-name" name="name" autocomplete="name" required></div>',
     '      <div><label for="cl-phone">Phone *</label><input id="cl-phone" name="phone" type="tel" autocomplete="tel" required></div>',
-    '      <div><label for="cl-city">City / ZIP *</label><input id="cl-city" name="city_zip" required></div>',
-    '      <div><label for="cl-prefer">Prefer *</label><select id="cl-prefer" required><option value="">Select…</option><option value="Text" selected>Text</option><option value="Call">Call</option><option value="Email">Email</option></select></div>',
+    '      <div><label for="cl-email">Email *</label><input id="cl-email" name="email" type="email" autocomplete="email" required></div>',
+    '      <div><label for="cl-location">Location *</label><input id="cl-location" name="location" required placeholder="City / ZIP"></div>',
+    '      <div><label for="cl-rig">Rig info *</label><input id="cl-rig" name="rig" required placeholder="Year / make / model"></div>',
+    '      <div><label for="cl-prefer">Prefer *</label><select id="cl-prefer" required><option value="Text" selected>Text</option><option value="Call">Call</option><option value="Email">Email</option></select></div>',
     '      <div class="full"><label for="cl-issue">Issue *</label><input id="cl-issue" name="issue" required placeholder="What’s going on?"></div>',
     '    </div>',
     '    <button type="button" class="chat-send" id="chat-lead-go" style="width:100%;margin-top:8px">Start chat</button>',
@@ -116,17 +118,19 @@
   leadGo.addEventListener('click', function () {
     var name = document.getElementById('cl-name').value.trim();
     var phone = document.getElementById('cl-phone').value.trim();
-    var city = document.getElementById('cl-city').value.trim();
+    var email = document.getElementById('cl-email').value.trim();
+    var location = document.getElementById('cl-location').value.trim();
+    var rig = document.getElementById('cl-rig').value.trim();
     var prefer = document.getElementById('cl-prefer').value;
     var issue = document.getElementById('cl-issue').value.trim();
-    if (!name || !phone || !city || !prefer || !issue) {
-      addBubble('bot', 'Please fill Name, Phone, City/ZIP, Prefer, and Issue — then we can chat. Or call <a href="tel:+16166065277">(616) 606-5277</a>.');
+    if (!name || !phone || !email || !location || !rig || !prefer || !issue) {
+      addBubble('bot', 'Please fill Name, Phone, Email, Location, Rig, Prefer, and Issue — then we can chat. Or text <a href="tel:+16166065277">(616) 606-5277</a>.');
       return;
     }
-    leadData = { name: name, phone: phone, city_zip: city, prefer: prefer, issue: issue };
+    leadData = { name: name, phone: phone, email: email, location: location, city_zip: location, rig: rig, prefer: prefer, issue: issue };
     lead.hidden = true;
     compose.hidden = false;
-    addBubble('user', 'Lead: ' + name + ' · ' + city + ' · Prefer ' + prefer + ' · ' + issue);
+    addBubble('user', 'Lead: ' + name + ' · ' + location + ' · ' + rig + ' · Prefer ' + prefer + ' · ' + issue);
     addBubble('bot', 'Thanks, ' + name.split(' ')[0] + '. What would you like to know?');
     history.push({ role: 'user', content: 'Lead capture: ' + JSON.stringify(leadData) });
     input.focus();
