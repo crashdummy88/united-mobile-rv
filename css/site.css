@@ -605,3 +605,11 @@ h1, h2 { font-weight: 400; letter-spacing: -0.03em; }
   text-transform: uppercase; color: rgba(255,255,255,0.55);
 }
 .footer-quiet { opacity: 0.55; font-size: 12px; }
+
+/* ========== Location hub chrome parity (2026-09-10) ========== */
+.hub-hero .lead { max-width: 52ch; }
+.hub-hero .eyebrow { margin-bottom: calc(var(--space) * 2); }
+.location-proof { display: grid; gap: calc(var(--space) * 3); }
+@media (min-width: 900px) {
+  .location-proof { grid-template-columns: 1.1fr 0.9fr; align-items: start; }
+}
