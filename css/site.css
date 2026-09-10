@@ -455,3 +455,10 @@ textarea { min-height: 120px; resize: vertical; }
   .photo-grid { grid-template-columns: 1fr; }
   .photo-card-wide { grid-column: span 1; aspect-ratio: 16 / 10; }
 }
+
+
+a.trust-chip { text-decoration: none; color: inherit; cursor: pointer; }
+a.trust-chip:hover { border-color: var(--gold); color: #fff; }
+.cred-logos a { text-decoration: none; color: inherit; }
+.cred-logos a:hover { color: var(--gold); }
+.brand-logo { height: 48px; width: auto; display: block; border-radius: 4px; }
