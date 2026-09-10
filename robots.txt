@@ -1,2 +1,5 @@
 User-agent: *
 Allow: /
+
+# Brand SEO 2026-09-10: mothership pages.dev is noindex via X-Robots-Tag
+# (live convert lives on unitedmobilerv.com). Soft CTAs still crawlable with follow.
