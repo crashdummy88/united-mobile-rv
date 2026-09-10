@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Starlink Offline or Slow in an RV | UMRT Troubleshoot</title>
-<meta name="description" content="Starlink offline/slow on an RV — sky view, power, cable, and app checks before you blame the dish. Installs-only honesty. Prefer Text UMRT.">
+<meta name="description" content="Starlink offline/slow on an RV — sky view, power, cable, and dual-WAN checks before you blame the dish. Installs-only honesty. Prefer Text (616) 606-5277.">
 <link rel="canonical" href="https://united-mobile-rv.pages.dev/troubleshoot/starlink-offline/">
 <meta name="theme-color" content="#1A1A1A">
 <link rel="icon" href="/favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png">
 <meta property="og:title" content="Starlink Offline or Slow in an RV | UMRT Troubleshoot">
-<meta property="og:description" content="Starlink offline/slow on an RV — sky view, power, cable, and app checks before you blame the dish. Installs-only honesty. Prefer Text UMRT.">
+<meta property="og:description" content="Starlink offline/slow on an RV — sky view, power, cable, and dual-WAN checks before you blame the dish. Installs-only honesty. Prefer Text (616) 606-5277.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://united-mobile-rv.pages.dev/troubleshoot/starlink-offline/">
 <link rel="stylesheet" href="/css/site.css">
@@ -44,39 +44,65 @@
 </section>
 <section class="band"><div class="wrap-narrow">
 
-  <p>Most “Starlink is broken” calls are obstruction, power brownout, or a cable/connector issue — not a failed dish. United Mobile RV installs Starlink hardware; we do <strong>not</strong> claim a Starlink Certified dealer title — install capability only.</p>
-  <h2>Quick path</h2>
+  <p>Most “Starlink is broken” calls are obstruction, power brownout, or a cable/connector issue — not a failed dish. United Mobile RV installs Starlink hardware; we do <strong>not</strong> claim a Starlink Certified dealer title — <strong>install capability only</strong>.</p>
+
+  <h2>Symptoms</h2>
+  <ul>
+    <li>Starlink app: obstruction, offline, searching, or reboot loops</li>
+    <li>Works parked clear-sky; fails under trees / next to buildings / at highway speed</li>
+    <li>Wi-Fi OK locally but no internet</li>
+    <li>Boot loops after inverter surge, microwave, or AC kick-on (looks like ISP failure)</li>
+    <li>Cable / connector strain at roof boot after travel days</li>
+    <li>Dropouts that line up with low house-bank voltage</li>
+    <li>Dual-WAN with Peplink — unclear which path actually dropped</li>
+  </ul>
+
+  <h2>Quick path (owner-safe)</h2>
   <ol>
-    <li>Check the Starlink app obstruction / outage status and offline reason before swapping hardware. Screenshot it.</li>
+    <li>Check the Starlink app obstruction map, outage status, and exact offline reason. Screenshot it before resetting anything twice.</li>
     <li>Confirm clear-sky: awning rails, AC shrouds, and trees will keep the dish searching.</li>
     <li>Power: dedicated fused DC / PoE path — not a shared circuit that sags when the microwave or AC kicks on.</li>
-    <li>Cable/boot: gentle wiggle-test after travel days. Do <strong>not</strong> cut or splice proprietary Starlink cable.</li>
-    <li>If you dual-WAN with Peplink, confirm which path actually dropped (Starlink vs cellular) before resetting everything twice.</li>
-    <li>Reboot dish/router <strong>once</strong>; note firmware. Official app/support only — no sideload “fixes.”</li>
+    <li>Cable/boot: gentle wiggle-test after travel days. Do <strong>not</strong> cut, splice, or lengthen proprietary Starlink cable without OEM guidance.</li>
+    <li>If you dual-WAN with Peplink, confirm which WAN actually dropped (Starlink vs cellular) and Health Check status before the double-reset ritual.</li>
+    <li>Reboot dish/router <strong>once</strong>; note firmware. Official app/support only — no sideload “fixes” or community flashes.</li>
+    <li>If dropouts line up with heavy 12V loads, meter house voltage at the bank under that load — brownout often masquerades as ISP failure.</li>
   </ol>
+
   <h2>Symptom forks</h2>
   <ul>
-    <li><strong>Obstruction / searching</strong> — mount placement and clear-sky first.</li>
-    <li><strong>Offline after heavy 12V load</strong> — brownout looking like ISP failure; meter the bank.</li>
+    <li><strong>Obstruction / searching</strong> — mount placement and clear-sky first. Obstruction maps do not lie.</li>
+    <li><strong>Offline after heavy 12V load</strong> — supply sag looking like an ISP failure; fix power before chasing RF.</li>
     <li><strong>Works parked, fails rolling</strong> — vibration, cable strain, or dual-WAN priority flap.</li>
     <li><strong>Wi-Fi OK, no internet</strong> — WAN/path down; check app offline reason and Peplink WAN status.</li>
+    <li><strong>Reboot loops</strong> — PoE injector heat, weak DC feed, or thermal shutdown — stop-DIY if connectors are melted.</li>
   </ul>
+
+  <h2>Starlink path — obstruction and mount</h2>
+  <p>A dish tucked under an awning rail or beside an AC shroud will search forever in tree cover. Weatherproof exterior mount, sealed penetrations, and clean cable routing are the install standard — <strong>clear-sky assessed first</strong>.</p>
+
+  <h2>Power and boot loops</h2>
+  <p>PoE injectors and dish supplies that share a weak circuit will brown out when the microwave or AC kicks on. Confirm fused DC, proper gauge, and that the injector is not heat-damaged. Melted connectors are a stop-DIY moment — Prefer Text.</p>
+
   <h2>When to stop DIY</h2>
   <ul>
-    <li>Loose / spinning roof mount or seal failure risk.</li>
-    <li>PoE injector heat damage or melted DC connectors.</li>
-    <li>Water at the cable boot; any penetration you cannot reseal.</li>
-    <li>Community firmware flashes or cable lengthening without OEM guidance.</li>
+    <li>Loose / spinning roof mount or seal failure risk</li>
+    <li>PoE injector heat damage or melted DC connectors</li>
+    <li>Water at the cable boot; any penetration you cannot reseal</li>
+    <li>Community firmware flashes or cable lengthening without OEM guidance</li>
   </ul>
+
   <h2>What UMRT diagnoses</h2>
-  <p>Clear-sky mount and cable routing (Starlink install capability only); power stability under load; dual-WAN interaction with Peplink Health Check / failover. Prefer Text for a wireless diagnostic.</p>
+  <p>Clear-sky mount and cable routing (Starlink install capability only). Power stability under load (DVOM where needed). Dual-WAN interaction with Peplink Health Check / failover as configured. Honest expectation-setting: trees, canyons, and weather outages are physics — not always a remount.</p>
+
   <h2>Honesty</h2>
   <ul>
-    <li>No invented Starlink Certified partner title.</li>
-    <li>Trees, canyons, and weather outages are physics — not always a remount.</li>
-    <li>No invented throughput guarantees.</li>
+    <li>No invented <strong>Starlink Certified</strong> partner title — install capability only</li>
+    <li>Trees, canyons, and weather outages are physics — not always a remount</li>
+    <li>No invented throughput guarantees</li>
+    <li>We will not cut/lengthen proprietary Starlink cable without OEM guidance or flash community firmware</li>
   </ul>
-  <p>Deep dive: <a href="/guide/starlink-rv-guide/">Starlink RV guide</a> · <a href="/troubleshoot/starlink-peplink-dropouts/">Starlink / Peplink dropouts</a> · <a href="/troubleshoot/peplink-wan-flapping/">Peplink WAN flapping</a> · <a href="/wireless/">Wireless service</a>. Official: <a href="https://www.starlink.com/support">starlink.com/support</a> · software hub <a href="https://umrt-software.pages.dev/starlink.html">umrt-software starlink</a>.</p>
+
+  <p>Deep dive: <a href="/guide/starlink-rv-guide/">Starlink RV guide</a> · <a href="/troubleshoot/starlink-peplink-dropouts/">Starlink / Peplink dropouts</a> · <a href="/troubleshoot/peplink-wan-flapping/">Peplink WAN flapping</a> · <a href="/troubleshoot/12v-battery-no-charge/">12V battery not charging</a> · <a href="/wireless/">Wireless service</a>. Official: <a href="https://www.starlink.com/support">starlink.com/support</a> · software hub <a href="https://umrt-software.pages.dev/starlink.html">umrt-software starlink</a>.</p>
   <p class="muted">Prefer Text — (616) 606-5277. Trip $75/30 mi then $1.50/mi · labor ~$150/hr (1 hr min / 30-min) · diagnostic $150 applied. Credentials: Victron Professional Certified Installer · weBoost Authorized Installer · Peplink Certified Associate · Dometic Professional Certified. Starlink installs only — never Starlink Certified. Corridor MT · WY · ID · WA.</p>
 
 </div></section>
