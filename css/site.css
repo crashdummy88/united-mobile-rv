@@ -613,3 +613,39 @@ h1, h2 { font-weight: 400; letter-spacing: -0.03em; }
 @media (min-width: 900px) {
   .location-proof { grid-template-columns: 1.1fr 0.9fr; align-items: start; }
 }
+
+
+/* ========== Enterprise location polish (2026-09-10 post-#53) ========== */
+.hub-hero {
+  padding-top: calc(var(--space) * 10);
+  padding-bottom: calc(var(--space) * 8);
+}
+.hub-hero .micro,
+.hub-hero .eyebrow {
+  margin-bottom: calc(var(--space) * 2);
+}
+.hub-hero h1 {
+  max-width: 16ch;
+  font-size: clamp(2.25rem, 5vw, 4.25rem);
+}
+.hub-hero .lead {
+  max-width: 52ch;
+  margin-top: calc(var(--space) * 3);
+}
+.hub-hero .btn-row {
+  margin-top: calc(var(--space) * 4);
+}
+/* Quieter staging disclaimer sitewide */
+.footer-note {
+  font-size: 12px;
+  line-height: 1.45;
+  color: rgba(255,255,255,0.45);
+}
+.band-light .footer-note,
+.band-gray .footer-note {
+  color: rgba(26,26,26,0.45);
+}
+.footer-quiet {
+  opacity: 0.7;
+  font-size: 12px;
+}
