@@ -146,7 +146,7 @@ function localCanonReply(last, lead) {
   }
   if (/book|schedule|appoint|come out/.test(q)) {
     const pref = lead?.prefer || 'Text';
-    return `To book: call/text ${phone} or use /book-service/. We need Name, Phone, Email, Location, Rig, issue, and Prefer (${pref} is fine).`;
+    return `To book: call/text ${phone} or use /book-service/. We need Name, Phone, Email, Location, Rig, issue, and Prefer Text (default).`;
   }
   if (/electrical|battery|drain|inverter|solar|plumb|roof|generator|lp|propane/.test(q)) {
     return `We handle electrical/diagnostics, Victron / LiFePO4, appliances, plumbing, roof/water intrusion, Starlink/weBoost/Peplink, generator, LP, chassis/trailer, PPI, and seasonal work  -  at your location. Diagnostics first. ${phone}`;
