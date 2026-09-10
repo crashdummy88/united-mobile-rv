@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Peplink Multi-WAN RV Guide: Bonding vs Failover | UMRT</title>
-<meta name="description" content="Peplink Certified Associate guide to SpeedFusion bonding and/or failover with Starlink + cellular — WAN health checks, 12V power honesty, no miracle uptime. Prefer Text UMRT.">
+<title>Peplink Multi-WAN RV Guide: Bonding &amp; Failover (SpeedFusion) | UMRT</title>
+<meta name="description" content="Peplink Certified Associate — SpeedFusion Hot Failover, Bonding, and Smoothing with Starlink + cellular. Honest SIM/plan and license caveats.">
 <link rel="canonical" href="https://united-mobile-rv.pages.dev/guide/peplink-multi-wan-guide/">
 <meta name="theme-color" content="#1A1A1A">
 <link rel="icon" href="/favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png">
-<meta property="og:title" content="Peplink Multi-WAN RV Guide: Bonding vs Failover | UMRT">
-<meta property="og:description" content="Peplink Certified Associate guide to SpeedFusion bonding and/or failover with Starlink + cellular — WAN health checks, 12V power honesty, no miracle uptime.">
+<meta property="og:title" content="Peplink Multi-WAN RV Guide: Bonding &amp; Failover (SpeedFusion) | UMRT">
+<meta property="og:description" content="Peplink Certified Associate — SpeedFusion Hot Failover, Bonding, and Smoothing with Starlink + cellular. Honest SIM/plan and license caveats.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://united-mobile-rv.pages.dev/guide/peplink-multi-wan-guide/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -42,101 +42,227 @@
 <section class="page-hero">
   <div class="wrap">
     <span class="micro">Connectivity guide · Peplink Certified Associate</span>
-    <h1>Peplink multi-WAN for RVs — when to bond, when to fail over</h1>
-    <p class="lead">Serious travelers rarely trust a single WAN. Cellular is fast near towers; Starlink keeps you online where towers disappear. A Peplink mobile router turns those links into one coach network — bonding and/or failover as configured — not a pile of hotspots fighting over DNS.</p>
-    <p class="muted" style="margin-top:16px;max-width:48ch">Active corridor: Montana · Wyoming · Idaho · Washington — case-by-case beyond.</p>
+    <h1>Peplink multi-WAN for RVs — bonding and/or failover that survives travel</h1>
+    <p class="lead">Serious travelers rarely trust a single WAN. Cellular is fast and low-latency near towers; Starlink keeps you online where towers disappear; campground Wi-Fi can be a useful third pipe when the site is designed for it. A Peplink mobile router is how those links become <strong>one coach network</strong> — not three hotspots fighting for DNS.</p>
+    <p class="muted" style="margin-top:16px;max-width:48ch">Active corridor: Montana · Wyoming · Idaho · Washington — case-by-case beyond. No fake multi-city NAP claims.</p>
   </div>
 </section>
+
 <section class="band">
   <div class="wrap">
     <span class="micro">Field notes</span>
-    <p>United Mobile RV is a <strong>Peplink Certified Associate</strong>. We install routers like electrical work: mounted, sealed, fused, and integrated so the system survives washboard roads. Firmware and InControl come from <strong>peplink.com</strong> only — we do not redistribute proprietary binaries. This guide will not promise miracle uptime. Trees, canyons, dead outdoor cell, and 12V brownouts still win.</p>
+    <p>United Mobile RV is a <strong>Peplink Certified Associate</strong>. We treat router installs like electrical work: mounted, sealed, fused, and integrated so the system survives washboard roads, freeze–thaw seasons, and weekly tear-downs. Firmware and <strong>InControl2</strong> management come from <strong>peplink.com only</strong> — we do not redistribute proprietary binaries.</p>
+    <p><strong>Bonding is not the same as failover.</strong> SpeedFusion has several modes. This guide is diagnostic-first: decide what you actually need, then install clean. <strong>Hot Failover ≠ Bonding ≠ Smoothing ≠ local outbound policy</strong> — name each distinctly when you buy, configure, or troubleshoot.</p>
 
-    <h2 style="margin-top:28px;font-size:1.25rem">Who this is for</h2>
+    <h2 style="margin-top:28px;font-size:1.25rem">Who this is for / decision frame</h2>
     <div class="grid-2">
-      <article class="service-card"><h3>Right place if you</h3><p>Work or stream from the coach and cannot afford one carrier dropping the whole day. Already run (or plan) both cellular and Starlink and want them coordinated. Need a travel-safe install: SIM trays accessible, Ethernet routed cleanly, power fused into coach DC.</p></article>
-      <article class="service-card"><h3>Maybe not yet if</h3><p>You only camp near strong towers and a phone hotspot is enough. You only need occasional Starlink at a fixed clear-sky site. Your pain is zero outdoor cell — that is coverage first; a router cannot invent RF. Pair with the weBoost and Starlink guides.</p></article>
+      <article class="service-card"><h3>Right place if you</h3>
+        <ul style="margin-top:8px;line-height:1.7;padding-left:1.1em">
+          <li>Work or stream from the coach and cannot afford “one carrier dropped, whole day ruined.”</li>
+          <li>Already run (or plan to run) <strong>cellular and Starlink</strong>, and want them coordinated instead of manually switching SSIDs.</li>
+          <li>Need a travel-safe install: SIM trays accessible, Ethernet/PoE routed cleanly, power fused into coach DC — not a router zip-tied to a cabinet hinge.</li>
+          <li>Care about honesty: SpeedFusion modes, SIM plans, and licenses matter as much as the badge on the chassis.</li>
+        </ul>
+      </article>
+      <article class="service-card"><h3>Maybe not yet if</h3>
+        <ul style="margin-top:8px;line-height:1.7;padding-left:1.1em">
+          <li>You only camp near strong cell towers and a single phone hotspot is enough.</li>
+          <li>You only need occasional Starlink at a fixed clear-sky site and can live with one network at a time.</li>
+          <li>Your pain is “no outdoor cell at all” — that is a coverage problem first; a router cannot invent RF. Pair with the <a href="/guide/weboost-install-guide/">weBoost install &amp; optimize guide</a> and <a href="/guide/starlink-rv-guide/">Starlink RV guide</a>.</li>
+        </ul>
+      </article>
     </div>
-
-    <h2 style="margin-top:28px;font-size:1.25rem">Bonding vs failover (honesty)</h2>
-    <p><strong>SpeedFusion</strong> is Peplink’s multi-WAN toolkit. On a given chassis and license it can mean bonding and/or failover as configured — those are not synonyms.</p>
-    <div class="grid-2">
-      <article class="service-card"><h3>Failover</h3><p>One WAN stays primary. When Health Check declares it dead, traffic moves to the backup. Upside: simple mental model. Cost: no combined capacity; cutover can interrupt sessions; a flapping primary can thrash if thresholds are wrong.</p></article>
-      <article class="service-card"><h3>Bonding</h3><p>Multiple healthy WANs participate so capacity and resilience improve when the design and license support it. Upside: better use of two decent links. Cost: more complexity; needs healthy multiple WANs to matter.</p></article>
-      <article class="service-card"><h3>Both when the site needs it</h3><p>Many serious builds use failover as the safety net and bonding where licensed for day-to-day resilience. Valid — as long as you hear the real policy, not a marketing diagram.</p></article>
-      <article class="service-card"><h3>What we will not claim</h3><p>Miracle uptime. “Bonding” on a failover-only config. That Peplink invents outdoor cell or clear sky. Nationwide SLA vibes. If dropouts persist after a clean install, start at WAN flapping / Starlink offline troubleshoot.</p></article>
-    </div>
-
-    <h2 style="margin-top:28px;font-size:1.25rem">Diagnostic-first before you buy</h2>
-    <div class="grid-2">
-      <article class="service-card"><h3>Travel pattern</h3><p>Nights near towns vs forests/canyons vs driving days with maps and calls. Cell-first corridors reward low-latency cellular. Remote nights reward Starlink. Mixed months reward bonding and/or failover so apps do not care which pipe is healthy.</p></article>
-      <article class="service-card"><h3>WAN health first</h3><p>Cellular: stand outside — bars plus real speed tests. Dead outdoor cell → placement or weBoost only when weak-but-present signal exists. Starlink: clear-sky at typical parks. Campground Wi‑Fi: optional, captive-portal messy, never your only plan.</p></article>
-      <article class="service-card"><h3>Power and space</h3><p>Fused DC near the install zone, ventilation, Ethernet path, cellular antenna lead path. Dirty power and shared noisy circuits create flaky radios that look like ISP failure.</p></article>
-      <article class="service-card"><h3>Latency vs throughput</h3><p>Video calls hate high latency even when megabits look fine. Near towers, prefer cellular priority. Where towers vanish, Starlink carries. Policy should match that reality.</p></article>
-    </div>
-
-    <h2 style="margin-top:28px;font-size:1.25rem">WAN Health Checks</h2>
-    <p>Health Checks are how Peplink decides a WAN is alive. Bad settings feel like random dropouts or “it never fails over.”</p>
-    <div style="margin-top:12px">
-      <span class="micro">Owner checklist</span>
-      <ul style="margin-top:8px;line-height:1.7">
-        <li>Know which WAN is primary vs backup — write it down</li>
-        <li>Confirm Health Check targets make sense for travel (not one brittle destination that dies in captive-portal parks)</li>
-        <li>Watch for flap: marginal cell that passes/fails every few minutes</li>
-        <li>After firmware from peplink.com, re-verify Health Check and outbound policy</li>
-        <li>Road-test cell-only, Starlink-only, then failover/bonding before calling the install done</li>
-      </ul>
-    </div>
-
-    <h2 style="margin-top:28px;font-size:1.25rem">12V brownouts look like ISP failure</h2>
-    <p>Radios and Starlink power paths hate voltage sag. Classic false diagnosis: “internet died” when the inverter surged or the converter dipped.</p>
-    <div class="grid-2">
-      <article class="service-card"><h3>Design for</h3><p>Dedicated fused DC sized for router + modem loads; label the fuse. Check voltage under A/C start and inverter surge. Strain-relieved connectors. Keep Starlink power independent enough that microwave cycles do not reboot the dish.</p></article>
-      <article class="service-card"><h3>Fix power first</h3><p>If sessions die when the inverter kicks or the battery is low, fix power before buying another WAN. Ties to electrical service and connectivity troubleshoot pages.</p></article>
-    </div>
-
-    <h2 style="margin-top:28px;font-size:1.25rem">Install sequence (travel-safe)</h2>
+    <p style="margin-top:16px"><strong>Decision frame (owner + tech):</strong></p>
     <ol style="line-height:1.75;margin-top:8px">
-      <li>Confirm WANs on site: outdoor cell, Starlink sky, optional Wi‑Fi plan</li>
-      <li>Pick mount with ventilation, lead length, SIM service access</li>
-      <li>Mount with real fasteners — no zip-tie hinge specials</li>
-      <li>Route Ethernet and antenna leads with drip loops, chafe protection, service loops; seal exterior penetrations</li>
-      <li>Land fused DC; verify voltage under load</li>
-      <li>Insert SIMs; connect Starlink WAN per kit topology</li>
-      <li>Firmware / InControl from peplink.com only</li>
-      <li>Configure outbound policy + Health Checks; name bonding and/or failover honestly</li>
-      <li>Document SSIDs, priorities, fuse location; road-test cutover behavior</li>
+      <li>Map how you actually roam (highway corridors vs deep forest vs desert BLM).</li>
+      <li>List WANs you can realistically feed the router: cellular SIM(s), Starlink Ethernet WAN, optional campground Wi-Fi as a designed-in WAN.</li>
+      <li>Decide policy: <strong>local failover / outbound priority</strong> vs <strong>SpeedFusion Hot Failover</strong> vs <strong>Bonding</strong> vs <strong>Smoothing</strong> — and name the mode you will actually configure.</li>
+      <li>Budget clean power, RF hygiene, and (if bonding) a real SpeedFusion peer or SpeedFusion Connect plan — half of RV reliability is placement and power, not the logo.</li>
     </ol>
-    <p style="margin-top:12px">Starlink does not replace cellular everywhere. It pairs via Peplink bonding and/or failover. Clear sky still wins for the dish. Starlink is <strong>install capability only</strong> — never “Starlink Certified.”</p>
 
-    <h2 style="margin-top:28px;font-size:1.25rem">Failure modes we see</h2>
+    <h2 style="margin-top:28px;font-size:1.25rem">SpeedFusion honesty (what the brochure skips)</h2>
+    <p>Peplink “multi-WAN” covers more than one technology. Say the mode out loud when you buy, configure, or troubleshoot.</p>
+
+    <h3 style="margin-top:20px;font-size:1.05rem">1) Local multi-WAN outbound policy (no SpeedFusion tunnel)</h3>
+    <p>Priority, weighted balance, and related outbound rules steer <strong>sessions</strong> across WANs on the router itself. No remote peer required. This is enough for many coaches that need a sticky primary (usually cellular near towers) and a backup (Starlink or second cell) when the primary dies.</p>
+    <p class="muted">Limitation: classic failover can still drop some VPN/VoIP sessions during the handoff. Fine for browsing and email; weaker for “never drop the call.”</p>
+
+    <h3 style="margin-top:20px;font-size:1.05rem">2) SpeedFusion Hot Failover</h3>
+    <p>Builds a SpeedFusion/PepVPN tunnel with a <strong>peer</strong> (another Peplink, FusionHub, or Peplink SpeedFusion Connect/Cloud). Standby paths stay ready; traffic flips when health checks fail so sessions are far more likely to survive.</p>
+    <p>Use when uptime and session persistence matter more than raw Mbps.</p>
+
+    <h3 style="margin-top:20px;font-size:1.05rem">3) SpeedFusion Bandwidth Bonding</h3>
+    <p>Packet-level aggregation across WANs <strong>inside</strong> the SpeedFusion tunnel (peer required). Can raise usable throughput for bulk transfers when links are healthy and latency is not wildly mismatched.</p>
+    <p><strong>Starlink + cellular reality:</strong> Starlink’s latency and jitter often swing more than terrestrial LTE/5G. Bonding those two for Zoom, Teams, Wi-Fi calling, or RDP can look great on a speed test and feel worse in the meeting — the receiver spends time reordering packets. Prefer Hot Failover or careful outbound policy for interactive traffic; reserve bonding for bulk upload/download when links are closer in behavior. <strong>Never promise 2× speed.</strong></p>
+
+    <h3 style="margin-top:20px;font-size:1.05rem">4) WAN Smoothing</h3>
+    <p>Sends redundant copies across active WANs and keeps the first good copy. Excellent for jitter/loss-sensitive traffic. Honesty: <strong>you burn more metered data</strong> because duplicates ride multiple pipes.</p>
+
+    <h3 style="margin-top:20px;font-size:1.05rem">5) Dynamic Weighted Bonding (firmware feature)</h3>
+    <p>Down-weights congested or failing links inside a bonded tunnel so one bad WAN hurts the whole pipe less. Still not magic if outdoor RF or sky view is trash.</p>
+
+    <h3 style="margin-top:20px;font-size:1.05rem">License / Care honesty (PrimeCare)</h3>
+    <p>Many higher-tier mobile chassis include Hot Failover / Bonding / Smoothing in the hardware story. <strong>Entry models</strong> (commonly BR1 Mini, some BR2 / BR2 Micro, B One class) may need an active <strong>PrimeCare</strong> subscription or a feature pack before those SpeedFusion modes unlock. Verify the <strong>invoice and datasheet for that exact SKU</strong> — do not assume the brochure feature list is what powers on after unboxing.</p>
+    <p><strong>Always document what was configured:</strong> Hot Failover ≠ Bonding ≠ Smoothing ≠ local outbound-only failover.</p>
+    <p class="muted">Official overview: <a href="https://www.peplink.com/technology/speedfusion-vpn/" rel="noopener">peplink.com/technology/speedfusion-vpn</a> · Firmware: <a href="https://www.peplink.com/support/downloads/firmware/" rel="noopener">peplink.com/support/downloads/firmware</a> · Software hub twin: <a href="https://umrt-software.pages.dev/peplink/">umrt-software /peplink/</a>.</p>
+
+    <h2 style="margin-top:28px;font-size:1.25rem">Chassis family map (roles, not a fake SKU catalog)</h2>
+    <p>Exact model pick is quote- and coach-specific. Conceptual roles only — no invented watt / dB / SKU matrices here.</p>
     <div class="grid-2">
-      <article class="service-card"><h3>Wrong mental model</h3><p>Expecting bonding from failover-only (or the reverse).</p></article>
-      <article class="service-card"><h3>Starlink behind trees</h3><p>Fix sky and mount first — the router cannot invent clear sky.</p></article>
-      <article class="service-card"><h3>Dead outdoor cell</h3><p>Measure outside. weBoost only for weak-but-present signal.</p></article>
-      <article class="service-card"><h3>Dirty power</h3><p>Shared circuits, undersized fuse, inverter surge impersonate bad ISP.</p></article>
-      <article class="service-card"><h3>RF self-interference</h3><p>Antenna placement vs Starlink, indoor boosters, noisy DC-DC.</p></article>
-      <article class="service-card"><h3>Unlabeled spaghetti</h3><p>Label WAN/LAN/fuse for the next 10 p.m. failure.</p></article>
+      <article class="service-card"><h3>MAX BR1 / BR1 Mini / BR1 Pro</h3><p>Single-cellular workhorses. Mini for tight cabinets; Pro when you need higher cellular throughput. Confirm which SpeedFusion modes are included vs Care/license.</p></article>
+      <article class="service-card"><h3>MAX BR2 / BR2 Pro / BR2 Micro</h3><p>Dual-cellular diversity (two modems/carriers) plus Ethernet/Wi-Fi WANs — strong when cell-map fill matters as much as Starlink.</p></article>
+      <article class="service-card"><h3>MAX Transit / Transit Duo / Transit Pro</h3><p>Passenger/vehicle-oriented enclosures and I/O; same multi-WAN philosophy, different mechanical fit.</p></article>
+      <article class="service-card"><h3>Balance (branch/fixed)</h3><p>Usually not the coach box — often the HQ / FusionHub peer that terminates SpeedFusion for Hot Failover or Bonding.</p></article>
+    </div>
+    <p style="margin-top:12px">Pepwave mobile products sit under the same Peplink support and firmware tree. Manage fleets with <strong>InControl2</strong>.</p>
+    <p class="muted"><strong>NE / on-site (do not invent numbers here):</strong> idle and load watts, fuse sizing for that chassis on that coach DC path, antenna model/band (dBi is model- and band-specific), and per-kit Starlink Ethernet topology. Quote after measurement — not a single blog number.</p>
+
+    <h2 style="margin-top:28px;font-size:1.25rem">Diagnostic-first: measure before you buy</h2>
+    <div class="grid-2">
+      <article class="service-card"><h3>1) Travel pattern inventory</h3><p>Nights near towns vs forests/canyons vs desert. Cell-first corridors reward low-latency cellular. Remote nights reward Starlink. Mixed months reward a Peplink policy that matches reality.</p></article>
+      <article class="service-card"><h3>2) Existing WAN health (before the router)</h3><p><strong>Cellular:</strong> stand outside the coach on each carrier you might SIM. Bars + real speed tests. Peplink cannot amplify RF; dead outdoor cell needs placement or a booster only when signal is <strong>weak-but-present</strong> (<a href="/guide/weboost-install-guide/">weBoost guide</a>). <strong>Starlink:</strong> clear-sky potential at typical parks — trees and eaves win every argument (<a href="/guide/starlink-rv-guide/">Starlink RV guide</a>). <strong>Campground Wi-Fi:</strong> optional designed-in WAN only — captive portals and congestion are normal.</p></article>
+      <article class="service-card"><h3>3) Coach power and space</h3><p>Fused DC near the install zone, ventilation, path for Ethernet and cellular antenna leads. Dirty power and shared noisy circuits create flaky radios. <strong>Clean power, chafe-protected routing, interference/placement checks</strong> are half the reliability story.</p></article>
+      <article class="service-card"><h3>4) Latency vs throughput</h3><p>Video calls hate jitter even when megabits look fine. Near towers, prefer cellular priority. Where towers vanish, Starlink carries. Match SpeedFusion mode to that truth.</p></article>
+    </div>
+    <p style="margin-top:12px"><strong>5) SIM and plan logistics:</strong> router-legal SIMs, dual-modem access after cabinetry closes, labeled trays, service loops.</p>
+
+    <h2 style="margin-top:28px;font-size:1.25rem">SIM / data-plan honesty</h2>
+    <ul style="margin-top:8px;line-height:1.7">
+      <li>Many consumer phone plans <strong>forbid routers</strong> or throttle hard once they see modem traffic. Read the ToS. Prefer router-rated / dedicated data plans when you can get them.</li>
+      <li><strong>Bonding and Smoothing can increase metered usage</strong> (multiple paths or duplicate packets). Budget for that.</li>
+      <li>Dual-SIM diversity is <strong>coverage insurance</strong>, not automatic double speed.</li>
+      <li>Set InControl2 / usage alerts so a failed primary does not silently burn the backup plan overnight.</li>
+      <li>Leave labeled physical/eSIM access after the cabinet is finished — future you at 10 p.m. matters.</li>
+    </ul>
+
+    <h2 style="margin-top:28px;font-size:1.25rem">Buying / kit architecture</h2>
+    <p>Peplink aggregates WANs — typically <strong>SIM/cellular + Starlink</strong>, optional campground Wi-Fi — and presents one LAN/Wi-Fi to the coach. Configure the <strong>named</strong> mode you need: local outbound failover, SpeedFusion Hot Failover, Bonding, and/or Smoothing.</p>
+    <ol style="line-height:1.75;margin-top:8px">
+      <li><strong>Cellular modem path(s)</strong> — SIM(s) in the Peplink; external antennas when the shell shields radios.</li>
+      <li><strong>Starlink as WAN</strong> — official Starlink Ethernet adapter <strong>or</strong> Starlink router LAN port → Peplink WAN. Keep the PoE/power path <strong>brownout-aware</strong> (inverter surge and long thin runs drop dishes and confuse health checks). Exact port map is kit-generation specific (<strong>NE on site</strong>).</li>
+      <li><strong>Optional Wi-Fi as WAN</strong> — client mode when designed in; never your only plan.</li>
+      <li><strong>LAN / coach Wi-Fi</strong> — one SSID beats three hotspots.</li>
+      <li><strong>Power</strong> — fused DC sized from Peplink docs <strong>and</strong> measured on that coach path; modem on that same chassis fused feed (not a separate lighter/noisy tap); Starlink PoE injector on its <strong>own</strong> fused path; strain-relieved; labeled. No single universal amp number in this guide.</li>
+      <li><strong>Management</strong> — InControl2 / firmware from peplink.com only.</li>
+      <li><strong>SpeedFusion peer</strong> (if using Hot Failover / Bonding / Smoothing) — second Peplink, FusionHub, or SpeedFusion Connect — plus any Care/license the chassis requires.</li>
+    </ol>
+
+    <h3 style="margin-top:20px;font-size:1.05rem">SpeedFusion / multi-WAN mode tradeoffs (OEM only)</h3>
+    <div class="grid-2">
+      <article class="service-card"><h3>Local outbound failover only</h3><p><strong>Upside:</strong> simple; no peer required. <strong>Cost / risk:</strong> some sessions still drop on handoff.</p></article>
+      <article class="service-card"><h3>SpeedFusion Hot Failover</h3><p><strong>Upside:</strong> session-friendly uptime. <strong>Cost / risk:</strong> needs peer + healthy secondary WAN.</p></article>
+      <article class="service-card"><h3>Bonding</h3><p><strong>Upside:</strong> throughput / resilience for bulk when links match. <strong>Cost / risk:</strong> peer + possible Care/license; Starlink+cell can hurt interactive apps.</p></article>
+      <article class="service-card"><h3>Smoothing</h3><p><strong>Upside:</strong> jitter/loss resilience. <strong>Cost / risk:</strong> higher data use.</p></article>
+      <article class="service-card"><h3>Dual cellular + Starlink</h3><p><strong>Upside:</strong> carrier diversity + satellite. <strong>Cost / risk:</strong> cost, roof real estate, power draw (measure on site).</p></article>
+      <article class="service-card"><h3>Campground Wi-Fi alone</h3><p><strong>Upside:</strong> cheap when it works. <strong>Cost / risk:</strong> captive portals, congestion, no travel continuity.</p></article>
     </div>
 
-    <h2 style="margin-top:28px;font-size:1.25rem">DIY vs book UMRT</h2>
+    <h3 style="margin-top:20px;font-size:1.05rem">What not to buy into</h3>
+    <ul style="margin-top:8px;line-height:1.7">
+      <li>Assuming “multi-WAN” means Bonding. Name the mode: local outbound failover, Hot Failover, Bonding, or Smoothing.</li>
+      <li>Ladder-rack “installs” with dangling PoE and unfused cigarette-plug power.</li>
+      <li>Firmware from random mirrors.</li>
+      <li>Assuming entry-chassis SpeedFusion modes are unlocked without Care/feature pack (PrimeCare honesty).</li>
+    </ul>
+    <p>Related service overview: <a href="/wireless/">/wireless/</a>.</p>
+
+    <h2 style="margin-top:28px;font-size:1.25rem">Install sequence (stepwise)</h2>
+    <p>Treat this like electrical work. Order matters.</p>
+    <h3 style="margin-top:16px;font-size:1.05rem">Pre-job</h3>
+    <ol style="line-height:1.75;margin-top:8px">
+      <li>Confirm WANs on site: outdoor cellular usability, Starlink sky view, optional Wi-Fi plan.</li>
+      <li>Pick mount location: ventilation, antenna lead length, SIM service access, away from microwave ovens and noisy inverters when possible.</li>
+      <li>Isolate circuits you will tap; verify battery/alternator behavior under load; plan fuse sizing from <strong>chassis documentation + on-site measurement</strong> (Network Engineer / install tech — no invented single amp rating here).</li>
+    </ol>
+    <h3 style="margin-top:16px;font-size:1.05rem">Mechanical &amp; cable</h3>
+    <ol start="4" style="line-height:1.75;margin-top:8px">
+      <li>Mount the router with proper fasteners — no zip-tie hinge specials.</li>
+      <li>Route Ethernet and antenna leads with drip loops, chafe protection, and service loops. Seal exterior penetrations properly.</li>
+      <li>Separate noisy power runs from RF leads where practical. Keep cellular antennas isolated from Starlink routing and weBoost outdoor antennas — crowding one roof corner creates “bad firmware” tickets that are really RF.</li>
+    </ol>
+    <h3 style="margin-top:16px;font-size:1.05rem">Power integration</h3>
+    <ol start="7" style="line-height:1.75;margin-top:8px">
+      <li>Land on a <strong>fused</strong> DC feed sized for that chassis and path. Label the fuse. Cellular modem current rides that <strong>same chassis fused DC</strong> with the router — do not park the modem or an antenna amp on a separate cigarette-lighter / shared noisy circuit while the chassis feed looks “clean.”</li>
+      <li>Keep the <strong>Starlink PoE injector on its own fused path</strong> (brownout-aware); do not share it with the router/modem DC tap.</li>
+      <li>Verify clean voltage under load (A/C start, inverter surge, winch). Brown-outs reset sessions and flap WAN health checks.</li>
+      <li>If AC is used, use a proper receptacle circuit — not a daisy-chained strip behind bedding.</li>
+    </ol>
+    <h3 style="margin-top:16px;font-size:1.05rem">WAN bring-up</h3>
+    <ol start="11" style="line-height:1.75;margin-top:8px">
+      <li>Insert SIMs; connect Starlink via official Ethernet path (adapter or router LAN → Peplink WAN); confirm PoE/power path is stable.</li>
+      <li>Update firmware / confirm InControl2 from <strong>peplink.com</strong> only.</li>
+      <li>Configure the <strong>named</strong> policy: outbound priority and/or SpeedFusion Hot Failover / Bonding / Smoothing as designed — including peer and license checks.</li>
+      <li>Optional: campground Wi-Fi as WAN below trusted links.</li>
+      <li>Document SSIDs, WAN priorities, configured SpeedFusion mode, fuse location, and SIM carriers for the owner.</li>
+    </ol>
+    <h3 style="margin-top:16px;font-size:1.05rem">Travel-safe finish</h3>
+    <ol start="16" style="line-height:1.75;margin-top:8px">
+      <li>Strain-relieve every cable; clamp against vibration; photograph the layout.</li>
+      <li>Road-test: cell-only, Starlink-only, then intentional failover / bonding behavior before calling it done.</li>
+    </ol>
+    <p style="margin-top:12px"><strong>Starlink pairing note:</strong> Starlink does not replace cellular everywhere. It pairs with cell via Peplink multi-WAN. Clear sky still wins for the dish; the router only manages the pipe. Starlink = <strong>install capability only</strong> (mount, cable routing, power integration, aim/setup) — <strong>not</strong> a “Starlink Certified” or partner title; no partner logos.</p>
+
+    <h2 style="margin-top:28px;font-size:1.25rem">Optimize / failure modes</h2>
+    <h3 style="margin-top:16px;font-size:1.05rem">Healthy system signs</h3>
+    <ul style="margin-top:8px;line-height:1.7">
+      <li>Devices stay on one coach SSID while WANs change underneath.</li>
+      <li>Failover or SpeedFusion behavior matches what was documented (named mode).</li>
+      <li>No random reboots when the inverter surges.</li>
+      <li>SIM and Ethernet connectors still tight after washboard.</li>
+    </ul>
+    <h3 style="margin-top:16px;font-size:1.05rem">Common failure modes</h3>
     <div class="grid-2">
-      <article class="service-card"><h3>Reasonable DIY</h3><p>Account setup, SSID naming, basic WAN priority on a pre-installed router; speed tests by park; cable dressing without new penetrations or fuse-panel work if you are competent.</p></article>
-      <article class="service-card"><h3>Book us when</h3><p>You need a clean travel-safe install; bonding and/or failover designed for real routes; Starlink + cellular on one coach network; prior install is ladder-rack chaos; you are in MT · WY · ID · WA or need a case-by-case trip quote.</p></article>
+      <article class="service-card"><h3>Wrong mental model</h3><p>Expecting Bonding from outbound-only failover (or the reverse). Re-read policy; name the mode: Hot Failover ≠ Bonding ≠ Smoothing ≠ local outbound.</p></article>
+      <article class="service-card"><h3>Missing SpeedFusion peer / license</h3><p>Bonding or Hot Failover configured in the UI but peer Care/Connect/FusionHub never finished. Looks like “Peplink is broken.”</p></article>
+      <article class="service-card"><h3>WAN Health Check flaps</h3><p>Single brittle health-check target, brownout power, or marginal RF causes flapping. Fix power/RF and diversify health checks.</p></article>
+      <article class="service-card"><h3>Starlink behind trees</h3><p>Router LEDs look fine; WAN is garbage. Fix sky / mount first.</p></article>
+      <article class="service-card"><h3>Dead outdoor cell</h3><p>Measure outside; booster only for weak-but-present signal.</p></article>
+      <article class="service-card"><h3>Dirty power / PoE brownout</h3><p>Shared circuits, undersized conductors, long thin PoE runs, or modem/antenna amp on a lighter tap while the chassis feed looks clean. Keep modem on chassis fused DC; Starlink PoE on its own fuse. Clean power is half of reliability.</p></article>
+      <article class="service-card"><h3>RF self-interference</h3><p>Cellular, Starlink, and weBoost antennas stacked. Placement checks matter.</p></article>
+      <article class="service-card"><h3>Captive-portal Wi-Fi as primary</h3><p>Optional WAN only.</p></article>
+      <article class="service-card"><h3>Firmware drift</h3><p>Random downloaded images. Stay on peplink.com.</p></article>
+      <article class="service-card"><h3>Unlabeled spaghetti</h3><p>Label WAN ports, SIMs, and fuses.</p></article>
     </div>
+    <h3 style="margin-top:16px;font-size:1.05rem">Optimization habits</h3>
+    <ul style="margin-top:8px;line-height:1.7">
+      <li>Revisit WAN priority after major seasonal route changes.</li>
+      <li>Keep a cheat sheet: fuse ID, SIM carriers, configured SpeedFusion mode, Starlink account recovery, InControl2 org note.</li>
+      <li>After any roof work, re-check antenna routes, seals, and isolation.</li>
+    </ul>
+
+    <h2 style="margin-top:28px;font-size:1.25rem">DIY boundary vs book UMRT</h2>
+    <div class="grid-2">
+      <article class="service-card"><h3>Reasonable DIY</h3>
+        <ul style="margin-top:8px;line-height:1.7;padding-left:1.1em">
+          <li>Account setup, SSID naming, basic WAN priority on a pre-installed router.</li>
+          <li>Speed tests and noting which parks kill which WAN.</li>
+          <li>Cable dressing inside cabinets <strong>without</strong> new penetrations or fuse-panel work if you are competent and follow manufacturer docs.</li>
+        </ul>
+      </article>
+      <article class="service-card"><h3>Book United Mobile RV when</h3>
+        <ul style="margin-top:8px;line-height:1.7;padding-left:1.1em">
+          <li>You need a <strong>clean install that survives travel</strong>: mounts, sealed penetrations, fused DC, Ethernet/PoE hygiene.</li>
+          <li>You want <strong>named</strong> bonding and/or failover designed for your routes — not a default checkbox.</li>
+          <li>Starlink + cellular + optional campground Wi-Fi must share one coach network.</li>
+          <li>Prior “install” is ladder-rack chaos, overheating, or Health Check flaps under vibration.</li>
+          <li>You are in the active corridor (<strong>MT · WY · ID · WA</strong>) or need a case-by-case trip quote beyond.</li>
+        </ul>
+      </article>
+    </div>
+    <p style="margin-top:12px">We diagnose first, then proceed with your go-ahead. Prefer Text for scheduling.</p>
 
     <h2 style="margin-top:28px;font-size:1.25rem">FAQ</h2>
     <div class="grid-2">
-      <article class="service-card"><h3>Is bonding the same as failover?</h3><p>No. <strong>SpeedFusion</strong> supports bonding and/or failover as configured. Ask what was actually configured — bonding ≠ simple failover.</p></article>
+      <article class="service-card"><h3>Is Hot Failover the same as Bonding?</h3><p>No. <strong>Hot Failover</strong>, <strong>Bonding</strong>, <strong>Smoothing</strong>, and <strong>local outbound policy</strong> are distinct. Ask what was actually configured — and document it.</p></article>
+      <article class="service-card"><h3>Do I need PrimeCare?</h3><p>Entry models may need an active <strong>PrimeCare</strong> subscription or feature pack before SpeedFusion modes unlock. Verify the invoice and datasheet for that exact SKU — we do not invent peer/license pricing here.</p></article>
       <article class="service-card"><h3>Will Peplink keep me online in the trees?</h3><p>No router invents clear sky or outdoor cell. Peplink coordinates the WANs you actually have. No miracle uptime.</p></article>
-      <article class="service-card"><h3>Internet dies when A/C kicks on?</h3><p>Often 12V / power quality, not the ISP. Fix fused DC and brownouts before buying another WAN.</p></article>
-      <article class="service-card"><h3>Where do firmware downloads live?</h3><p>Official Peplink sources only. Our software twin indexes links: <a href="https://umrt-software.pages.dev/peplink/">umrt-software.pages.dev/peplink/</a>.</p></article>
+      <article class="service-card"><h3>Where do firmware / InControl2 live?</h3><p>Official Peplink sources only. Soft-yield software hub twin: <a href="https://umrt-software.pages.dev/peplink/">umrt-software.pages.dev/peplink/</a>.</p></article>
     </div>
 
-    <p class="muted" style="margin-top:24px">Related: <a href="/guide/starlink-rv-guide/">Starlink guide</a> · <a href="/guide/weboost-install-guide/">weBoost install</a> · <a href="/wireless/">Wireless service</a> · <a href="/troubleshoot/peplink-wan-flapping/">Peplink WAN flapping</a> · <a href="/troubleshoot/starlink-offline/">Starlink offline</a> · Software <a href="https://umrt-software.pages.dev/peplink/">/peplink/</a></p>
+    <p class="muted" style="margin-top:24px">Related: <a href="/guide/weboost-install-guide/">weBoost install &amp; optimize</a> · <a href="/guide/starlink-rv-guide/">Starlink for RVs</a> · <a href="/wireless/">Wireless service</a> · <a href="/troubleshoot/peplink-wan-flapping/">Peplink WAN troubleshoot</a> · Software hub <a href="https://umrt-software.pages.dev/peplink/">/peplink/</a> · <a href="/guide/">All guides</a> · <a href="/pricing/">Pricing</a></p>
     <div class="btn-row" style="margin-top:24px">
-      <a class="btn btn-gold" href="/book-service/">Book a Service</a>
-      <a class="btn btn-ghost" href="tel:+16166065277">Prefer Text</a>
+      <a class="btn btn-gold" href="tel:+16166065277">Prefer Text</a>
+      <a class="btn btn-ghost" href="/book-service/">Book a Service</a>
       <a class="btn btn-ghost" href="/guide/">All guides</a>
     </div>
   </div>
@@ -145,8 +271,8 @@
 <section class="band band-tight" style="border-top:1px solid var(--rule)">
   <div class="wrap-narrow">
     <span class="micro">Pricing teaser</span>
-    <p>Trip fee <strong>$75</strong> within 30 miles, then <strong>$1.50/mi</strong> each way. Labor ~<strong>$150/hr</strong> (1-hour minimum, billed in 30-minute increments). Diagnostic <strong>$150</strong> applied toward repair if you proceed.</p>
-    <p class="muted" style="font-size:13px">Credentials (text): Victron Professional Certified Installer · weBoost Authorized Installer · Peplink Certified Associate · Dometic Professional Certified. Starlink = installs only (not a certified partner title).</p>
+    <p>Trip fee <strong>$75</strong> within 30 miles, then <strong>$1.50/mi</strong> each way. Labor ~<strong>$150/hr</strong> (1-hour minimum, billed in 30-minute increments). Diagnostic <strong>$150</strong> applied toward repair if you proceed. Parts / materials billed separately; connectivity installs quoted after on-site assessment.</p>
+    <p class="muted" style="font-size:13px">Credentials (exact): Victron Professional Certified Installer · weBoost Authorized Installer · <strong>Peplink Certified Associate</strong> · Dometic Professional Certified. Starlink = installs only (not a certified partner title). Full rates: <a href="/pricing/">/pricing/</a>. Service overview: <a href="/wireless/">/wireless/</a>.</p>
   </div>
 </section>
 
@@ -189,8 +315,8 @@
   </div>
 </footer>
 <div class="mobile-bar" aria-label="Quick actions">
-  <a class="btn btn-ghost" href="tel:+16166065277">Text / Call</a>
-  <a class="btn btn-gold" href="/book-service/">Book Now</a>
+  <a class="btn btn-gold" href="tel:+16166065277">Prefer Text</a>
+  <a class="btn btn-ghost" href="/book-service/">Book a Service</a>
 </div>
 <script>window.PUBLIC_WEB3FORMS_KEY = window.PUBLIC_WEB3FORMS_KEY || 'PUBLIC_WEB3FORMS_KEY';</script>
 <script src="/js/site.js" defer></script>
