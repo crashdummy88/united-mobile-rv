@@ -42,25 +42,57 @@
 </header>
 
 <main id="main">
+
 <section class="page-hero">
   <div class="wrap">
     <span class="micro"><a href="/troubleshoot/">Troubleshoot</a></span>
     <h1>No power / dead coach</h1>
-    <p class="lead">Work the symptom from shore inlet → breakers → converter → house batteries before guessing parts.</p>
+    <p class="lead">Work the symptom from shore inlet → breakers → converter → house batteries before guessing parts. A dark coach is usually a path problem, not a whole-coach rebuild.</p>
   </div>
 </section>
 <section class="band"><div class="wrap-narrow">
-    <p>Start safe: confirm the pedestal breaker and your shore cord ends before opening panels. A dark coach is often an open breaker, a failed surge protector/EMS, or a converter that quit — not a “whole electrical rebuild.”</p>
-    <h2>Quick path</h2>
-    <ol>
-      <li>Verify pedestal power and try a known-good outlet / different pedestal when possible.</li>
-      <li>Check coach main breakers and the EMS / surge protector status lights.</li>
-      <li>Listen/feel for the converter fan; measure converter output and battery voltage.</li>
-      <li>Separate 120V symptoms from 12V drain (lights, slides, furnace board).</li>
-    </ol>
-    <p>Deep dive: <a href="/guide/electrical-troubleshooting/">Electrical troubleshooting</a> · <a href="/guide/solar-battery-troubleshooting/">Solar &amp; battery</a> · <a href="/guide/victron-fault-code-guide/">Victron fault codes</a>.</p>
-    <p class="muted">United Mobile RV brings diagnostics-first metering (DVOM / thermal where needed) as a Victron Professional Certified Installer. Prefer Text — trip fee quoted before we roll.</p>
-    </div></section>
+  <p>Start safe: confirm the pedestal breaker and your shore cord ends before opening panels. Do not stand in wet ground while resetting a GFI pedestal, and do not bypass a failed EMS by jerry-rigging bare copper. A dark coach is often an open breaker, a failed surge protector/EMS, a converter that quit, or a battery disconnect that got bumped — not “the inverter is dead forever.”</p>
+
+  <h2>Quick path</h2>
+  <ol>
+    <li>Verify pedestal power; try a known-good outlet or different pedestal when possible. Confirm the shore cord is fully seated at both ends.</li>
+    <li>Check coach main breakers and the EMS / surge protector status lights. Note any fault LEDs before you reset anything twice.</li>
+    <li>Listen/feel for the converter fan; measure converter output and battery voltage with a DVOM if you have one. Write the numbers down.</li>
+    <li>Separate 120V symptoms from 12V drain (lights, slides, furnace board, water pump). If 12V is alive and 120V is not, stay on the shore path.</li>
+    <li>Check the battery disconnect switch and any main house fuse / ANL / MIDI fuse before you condemn the bank.</li>
+  </ol>
+
+  <h2>Common forks</h2>
+  <ul>
+    <li><strong>No 120V only</strong> — shore/EMS/breaker path; house 12V may still be fine. Do not start by replacing the inverter.</li>
+    <li><strong>No 12V only</strong> — battery, disconnect, converter/charger, or a main fuse. Lights and slides go dark while the microwave might still work on shore.</li>
+    <li><strong>Both dark</strong> — start at the pedestal and work inward. Confirm the coach is not on “storage mode” or a parasitic drain that killed the bank overnight.</li>
+    <li><strong>Intermittent / brownout</strong> — loose shore pin, weak pedestal, or converter thermal foldback under AC + microwave load. Note when it fails.</li>
+  </ul>
+
+  <h2>Owner checklist (photos help)</h2>
+  <ul>
+    <li>Pedestal breaker amp rating vs your cord (30A vs 50A adapters matter).</li>
+    <li>EMS / surge protector model and any fault code on the display.</li>
+    <li>Converter / charger brand and model sticker; Victron users — note MultiPlus / Cerbo fault text.</li>
+    <li>Battery type (flooded / AGM / Li) and resting voltage if you can measure it.</li>
+    <li>Year / make / model of the coach and where you are parked.</li>
+  </ul>
+
+  <h2>When to stop DIY</h2>
+  <ul>
+    <li>Burning smell, scorched shore plug, or melted adapter — unplug and Prefer Text.</li>
+    <li>You need to open sealed EMS housings or cut factory harnesses to “test.”</li>
+    <li>Lithium BMS lockout, inverter AC-out faults you cannot clear, or neutral-ground bonding questions on a bonded pedestal.</li>
+    <li>Any work that requires thermal imaging of hot breakers or torque on lug connections you are not equipped for.</li>
+  </ul>
+
+  <h2>What we bring on a diagnostic roll</h2>
+  <p>United Mobile RV runs diagnostics-first metering (DVOM / thermal where needed) as a Victron Professional Certified Installer. We quote the trip before we roll, then apply the diagnostic toward repair if you proceed. Corridor: MT · WY · ID · WA.</p>
+
+  <p>Deep dive: <a href="/guide/electrical-troubleshooting/">Electrical troubleshooting</a> · <a href="/guide/solar-battery-troubleshooting/">Solar &amp; battery</a> · <a href="/guide/victron-fault-code-guide/">Victron fault codes</a>. Hub: <a href="/troubleshoot/">Troubleshoot</a>.</p>
+  <p class="muted">Prefer Text — (616) 606-5277. Trip $75/30 mi then $1.50/mi · labor ~$150/hr (1 hr min / 30-min) · diagnostic $150 applied. Winterize $175 · trip-prep $225. Credentials: Victron Professional Certified Installer · weBoost Authorized Installer · Peplink Certified Associate · Dometic Professional Certified.</p>
+</div></section>
 
 <section class="band" style="border-top:1px solid var(--rule)">
   <div class="wrap">
@@ -73,7 +105,6 @@
     </div>
   </div>
 </section>
-
 </main>
 <footer class="site-footer">
   <div class="wrap footer-grid">
@@ -105,20 +136,8 @@
       </p>
     </div>
   </div>
-  <div class="wrap footer-proof" aria-label="Real job photos">
-    <div class="footer-brand-row">
-      <img class="footer-logo" src="/assets/brand/umrt-logo.webp" width="40" height="40" alt="United Mobile RV">
-      <span class="footer-proof-cap">Real jobs · real rigs</span>
-    </div>
-    <div class="footer-proof-strip">
-      <img src="/assets/photos/jobs/img_3280-1200.webp" width="160" height="120" loading="lazy" decoding="async" alt="Brinkley fifth-wheel driveway electrical bay service">
-      <img src="/assets/photos/jobs/img_3286-1200.webp" width="160" height="120" loading="lazy" decoding="async" alt="Completed Victron MultiPlus lithium power install">
-      <img src="/assets/photos/jobs/img_3018-1200.webp" width="160" height="120" loading="lazy" decoding="async" alt="Tiffin Allegro Open Road driveway service">
-      <img src="/assets/photos/jobs/img_2937-1200.webp" width="160" height="120" loading="lazy" decoding="async" alt="Fluke diagnostics in open RV electrical bay">
-    </div>
-  </div>
   <div class="wrap">
-    <p class="footer-note"><span class="footer-quiet">Public beta — live field testing for United Mobile RV LLC.</span> Official UMRT and Victron Professional Certified Installer marks shown where authorized.</p>
+    <p class="footer-note"><span class="footer-quiet">Public beta / live test of United Mobile RV.</span> Fully functional sales site for corridor service — Prefer Text or Book. Credentials (text): Victron Professional Certified Installer · weBoost Authorized Installer · Peplink Certified Associate · Dometic Professional Certified.</p>
   </div>
 </footer>
 <div class="mobile-bar" aria-label="Quick actions">
