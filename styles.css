@@ -175,3 +175,12 @@ button.btn { cursor: pointer; border-style: solid; width: fit-content; }
 @media (max-width: 640px) {
   .phone { width: 100%; }
 }
+
+.stub-note {
+  margin: 0.65rem 0 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--gold);
+}

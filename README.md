@@ -29,7 +29,7 @@ Static HTML/CSS — no build step. Cloudflare Pages can deploy from the repo roo
 - MVP static pages: Home, Services (hub), Pricing, Book, About, Service Areas
 - Book form is a **placeholder** (alert) until Web3Forms (or similar) is wired
 - Team fact-check in progress (Audit / Sales / Brand / Dev)
-- Guides hub / nav — next (Batch 2)
+- Guides hub + stub guide pages added; Guides in primary nav
 
 ## Do not
 - Point this project at live WP cores (Home / Book / Pricing / Services)
