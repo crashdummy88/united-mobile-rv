@@ -39,67 +39,95 @@
   <div class="wrap">
     <span class="micro"><a href="/troubleshoot/">Troubleshoot</a></span>
     <h1>Starlink offline / crawling speeds</h1>
-    <p class="lead">Sky view, power, cable, and dual-WAN checks before you blame the dish. Installs-only honesty.</p>
+    <p class="lead">Sky view, power, cable, and dual-WAN checks before you blame the dish. Most “Starlink is broken” tickets are obstruction, brownout, or a travel-stressed cable — not a dead terminal. Prefer Text when DIY ends.</p>
   </div>
 </section>
 <section class="band"><div class="wrap-narrow">
 
-  <p>Most “Starlink is broken” calls are obstruction, power brownout, or a cable/connector issue — not a failed dish. United Mobile RV installs Starlink hardware; we do <strong>not</strong> claim a Starlink Certified dealer title — <strong>install capability only</strong>.</p>
+  <p>United Mobile RV installs Starlink hardware on RVs: weatherproof mounts, sealed penetrations, clean cable routing, and a fused DC / PoE path that survives inverter surge. We do <strong>not</strong> claim a Starlink Certified dealer title — <strong>install capability only</strong>. Official app and <a href="https://www.starlink.com/support">starlink.com/support</a> stay the source of truth for firmware and account status; we diagnose the coach side.</p>
+
+  <p>Work the pattern first. Capture whether the path fails parked in clear sky, under trees, after a travel day, under heavy 12V load, or only when Peplink is steering traffic. That log usually beats a second blind reboot.</p>
 
   <h2>Symptoms</h2>
   <ul>
     <li>Starlink app: obstruction, offline, searching, or reboot loops</li>
     <li>Works parked clear-sky; fails under trees / next to buildings / at highway speed</li>
-    <li>Wi-Fi OK locally but no internet</li>
+    <li>Wi-Fi OK locally but no internet (LAN up, WAN down)</li>
     <li>Boot loops after inverter surge, microwave, or AC kick-on (looks like ISP failure)</li>
     <li>Cable / connector strain at roof boot after travel days</li>
-    <li>Dropouts that line up with low house-bank voltage</li>
+    <li>Dropouts that line up with low house-bank voltage or converter/charger events</li>
     <li>Dual-WAN with Peplink — unclear which path actually dropped</li>
+    <li>Crawling speeds with “online” status — often obstruction margin, thermal throttle, or shared congested sky view, not a magic speed knob</li>
   </ul>
 
   <h2>Quick path (owner-safe)</h2>
   <ol>
     <li>Check the Starlink app obstruction map, outage status, and exact offline reason. Screenshot it before resetting anything twice.</li>
-    <li>Confirm clear-sky: awning rails, AC shrouds, and trees will keep the dish searching.</li>
-    <li>Power: dedicated fused DC / PoE path — not a shared circuit that sags when the microwave or AC kicks on.</li>
+    <li>Confirm clear-sky: awning rails, AC shrouds, ladder racks, and trees will keep the dish searching. Move the coach ten feet if you can — physics first.</li>
+    <li>Power: dedicated fused DC / PoE path — not a shared circuit that sags when the microwave or AC kicks on. Feel the injector for abnormal heat after a failure.</li>
     <li>Cable/boot: gentle wiggle-test after travel days. Do <strong>not</strong> cut, splice, or lengthen proprietary Starlink cable without OEM guidance.</li>
     <li>If you dual-WAN with Peplink, confirm which WAN actually dropped (Starlink vs cellular) and Health Check status before the double-reset ritual.</li>
     <li>Reboot dish/router <strong>once</strong>; note firmware. Official app/support only — no sideload “fixes” or community flashes.</li>
-    <li>If dropouts line up with heavy 12V loads, meter house voltage at the bank under that load — brownout often masquerades as ISP failure.</li>
+    <li>If dropouts line up with heavy 12V loads, meter house voltage at the bank under that load — brownout often masquerades as ISP failure. See <a href="/troubleshoot/12v-battery-no-charge/">12V battery not charging</a> when the bank itself is soft.</li>
   </ol>
 
   <h2>Symptom forks</h2>
   <ul>
-    <li><strong>Obstruction / searching</strong> — mount placement and clear-sky first. Obstruction maps do not lie.</li>
-    <li><strong>Offline after heavy 12V load</strong> — supply sag looking like an ISP failure; fix power before chasing RF.</li>
-    <li><strong>Works parked, fails rolling</strong> — vibration, cable strain, or dual-WAN priority flap.</li>
-    <li><strong>Wi-Fi OK, no internet</strong> — WAN/path down; check app offline reason and Peplink WAN status.</li>
-    <li><strong>Reboot loops</strong> — PoE injector heat, weak DC feed, or thermal shutdown — stop-DIY if connectors are melted.</li>
+    <li><strong>Obstruction / searching</strong> — mount placement and clear-sky first. Obstruction maps do not lie; remounting into the same null does not help.</li>
+    <li><strong>Offline after heavy 12V load</strong> — supply sag looking like an ISP failure; fix power before chasing RF or swapping dishes.</li>
+    <li><strong>Works parked, fails rolling</strong> — vibration, cable strain at the boot, connector seating, or dual-WAN priority flap once cellular handoffs start.</li>
+    <li><strong>Wi-Fi OK, no internet</strong> — WAN/path down; check app offline reason and Peplink WAN status before factory-resetting the wrong box.</li>
+    <li><strong>Reboot loops</strong> — PoE injector heat, weak DC feed, undersized wire, or thermal shutdown — stop-DIY if connectors are melted or scorched.</li>
+    <li><strong>Dual-WAN with Peplink</strong> — Starlink may be fine while Health Check flaps the WAN, or cellular may be the real failure. Isolate paths before blaming the dish. Deep dive: <a href="/troubleshoot/starlink-peplink-dropouts/">Starlink / Peplink dropouts</a> · <a href="/troubleshoot/peplink-wan-flapping/">Peplink WAN flapping</a>.</li>
   </ul>
 
-  <h2>Starlink path — obstruction and mount</h2>
-  <p>A dish tucked under an awning rail or beside an AC shroud will search forever in tree cover. Weatherproof exterior mount, sealed penetrations, and clean cable routing are the install standard — <strong>clear-sky assessed first</strong>.</p>
+  <h2>Mount and clear-sky</h2>
+  <p>A dish tucked under an awning rail, beside an AC shroud, or in the shadow of a ladder rack will search forever in tree cover. Weatherproof exterior mount, sealed penetrations, strain-relieved cable, and clean routing are the install standard — <strong>clear-sky assessed first</strong>. Parked open-sky success does not prove the mount will survive highway vibration or a timber campsite.</p>
+  <p>When the app shows obstruction wedges that match what you see (rail, tree, building), believe it. Relocating the coach or raising the mount beats buying a second kit for the same sky hole. We will say so on a diagnostic — trees, canyons, and weather outages are physics, not always a remount.</p>
 
   <h2>Power and boot loops</h2>
-  <p>PoE injectors and dish supplies that share a weak circuit will brown out when the microwave or AC kicks on. Confirm fused DC, proper gauge, and that the injector is not heat-damaged. Melted connectors are a stop-DIY moment — Prefer Text.</p>
+  <p>PoE injectors and dish supplies that share a weak circuit will brown out when the microwave, AC, or inverter surge hits. Confirm fused DC, proper gauge, ignition-sense or always-on policy that matches how you travel, and that the injector is not heat-damaged. A path that “dies every time the AC kicks on” is a power ticket until proven otherwise.</p>
+  <p>Meter the house bank under the same load that “kills internet.” Soft banks and undersized feeds create reboot loops that look identical to ISP failure in the app. Melted connectors, scorched insulation, or a hot injector after a failure are stop-DIY — Prefer Text rather than restuffing a burnt connector.</p>
+
+  <h2>Cable, boot, and travel damage</h2>
+  <p>Travel days loosen boots, chew jackets at sharp edges, and unseat connectors that passed at install. Gentle inspection at the roof boot and router / injector ends after corrugated miles is owner-safe. Do <strong>not</strong> yank the proprietary cable, cut it to “add length,” or splice in random Ethernet. OEM guidance only for cable service; community lengthening tricks are out of scope.</p>
 
   <h2>When to stop DIY</h2>
   <ul>
     <li>Loose / spinning roof mount or seal failure risk</li>
     <li>PoE injector heat damage or melted DC connectors</li>
-    <li>Water at the cable boot; any penetration you cannot reseal</li>
+    <li>Water at the cable boot; any penetration you cannot reseal correctly</li>
     <li>Community firmware flashes or cable lengthening without OEM guidance</li>
+    <li>Working on a wet roof, near power lines, or with unknown 120V / inverter backfeed risk</li>
+    <li>Dual-WAN policy you cannot name (bonding vs failover vs Health Check) after two honest isolation attempts</li>
   </ul>
 
   <h2>What UMRT diagnoses</h2>
-  <p>Clear-sky mount and cable routing (Starlink install capability only). Power stability under load (DVOM where needed). Dual-WAN interaction with Peplink Health Check / failover as configured. Honest expectation-setting: trees, canyons, and weather outages are physics — not always a remount.</p>
+  <ul>
+    <li>Clear-sky mount placement and cable routing (<strong>Starlink install capability only</strong> — never a Starlink Certified partner title)</li>
+    <li>Power stability under load (DVOM where needed; thermal on hot injectors / connectors when indicated)</li>
+    <li>Dual-WAN interaction with Peplink Health Check / failover / bonding <strong>as configured</strong> (Peplink Certified Associate) — we name the mode you actually have</li>
+    <li>Travel damage at boot and connectors vs true terminal failure</li>
+    <li>Honest expectation-setting: trees, canyons, and weather outages are physics — not always a remount, and never an invented throughput guarantee</li>
+  </ul>
+
+  <h2>Owner data to Prefer Text with</h2>
+  <p>Send these when you book a wireless diagnostic — it saves a round trip of guessing:</p>
+  <ol>
+    <li>Failure pattern (parked clear-sky / trees / highway / after heavy 12V load) with times</li>
+    <li>Starlink app obstruction screenshot + exact offline / searching reason + firmware note</li>
+    <li>Peplink WAN status / Health Check notes if dual-WAN (which WAN primary)</li>
+    <li>House-bank voltage under the load that “kills internet,” if you can meter safely</li>
+    <li>Photos of roof mount, cable boot, and injector / power feed</li>
+  </ol>
 
   <h2>Honesty</h2>
   <ul>
-    <li>No invented <strong>Starlink Certified</strong> partner title — install capability only</li>
+    <li>No invented <strong>Starlink Certified</strong> partner title — <strong>install capability / installs only</strong></li>
     <li>Trees, canyons, and weather outages are physics — not always a remount</li>
-    <li>No invented throughput guarantees</li>
+    <li>No invented throughput guarantees or “always online” promises</li>
     <li>We will not cut/lengthen proprietary Starlink cable without OEM guidance or flash community firmware</li>
+    <li>Dual-WAN help names bonding vs failover as configured — we do not bake in competitor kits or claim Peplink = bonded Starlink unless that is what was built</li>
   </ul>
 
   <p>Deep dive: <a href="/guide/starlink-rv-guide/">Starlink RV guide</a> · <a href="/troubleshoot/starlink-peplink-dropouts/">Starlink / Peplink dropouts</a> · <a href="/troubleshoot/peplink-wan-flapping/">Peplink WAN flapping</a> · <a href="/troubleshoot/12v-battery-no-charge/">12V battery not charging</a> · <a href="/wireless/">Wireless service</a>. Official: <a href="https://www.starlink.com/support">starlink.com/support</a> · software hub <a href="https://umrt-software.pages.dev/starlink.html">umrt-software starlink</a>.</p>
