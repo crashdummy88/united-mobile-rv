@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Peplink WAN Flapping or Failover Fail | UMRT Troubleshoot</title>
-<meta name="description" content="Diagnose Peplink WAN Health Check flaps, SpeedFusion mode, power, and SIM issues. Prefer Text (616) 606-5277.">
+<meta name="description" content="Diagnose Peplink WAN Health Check flaps, wrong SpeedFusion mode, missing peer/license, dirty power, and SIM issues — before you blame firmware. Prefer Text (616) 606-5277.">
 <link rel="canonical" href="https://united-mobile-rv.pages.dev/troubleshoot/peplink-wan-flapping/">
 <meta name="theme-color" content="#1A1A1A">
 <link rel="icon" href="/favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png">
 <meta property="og:title" content="Peplink WAN Flapping or Failover Fail | UMRT Troubleshoot">
-<meta property="og:description" content="Diagnose Peplink WAN Health Check flaps, SpeedFusion mode, power, and SIM issues. Prefer Text (616) 606-5277.">
+<meta property="og:description" content="Diagnose Peplink WAN Health Check flaps, wrong SpeedFusion mode, missing peer/license, dirty power, and SIM issues — before you blame firmware. Prefer Text (616) 606-5277.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://united-mobile-rv.pages.dev/troubleshoot/peplink-wan-flapping/">
 <link rel="stylesheet" href="/css/site.css">
@@ -37,55 +37,133 @@
 <main id="main">
 <section class="page-hero">
   <div class="wrap">
-    <span class="micro"><a href="/troubleshoot/">Troubleshoot</a></span>
+    <span class="micro"><a href="/troubleshoot/">Troubleshoot</a> · Peplink Certified Associate</span>
     <h1>Peplink: WAN flapping / failover not sticking</h1>
-    <p class="lead">When the coach Wi-Fi stays up but apps drop every few minutes, or failover “works in the driveway” and dies on the road, separate <strong>radio/sky problems</strong> from <strong>router policy, power, and SpeedFusion configuration</strong>. United Mobile RV is a <strong>Peplink Certified Associate</strong>. Firmware only from <a href="https://www.peplink.com/support/downloads/firmware/">peplink.com</a>.</p>
+    <p class="lead">When the coach Wi-Fi stays up but apps drop every few minutes, or failover “works in the driveway” and dies on the road, separate <strong>radio/sky problems</strong> from <strong>router policy, power, and SpeedFusion configuration</strong>. United Mobile RV is a <strong>Peplink Certified Associate</strong>. Firmware only from <a href="https://www.peplink.com/support/downloads/firmware/">peplink.com</a> / <a href="https://incontrol2.peplink.com/">InControl 2</a>.</p>
+    <div class="btn-row" style="margin-top:18px">
+      <a class="btn btn-gold" href="/book-service/">Book Now</a>
+      <a class="btn btn-ghost" href="tel:+16166065277">Prefer Text (616) 606-5277</a>
+    </div>
   </div>
 </section>
+
 <section class="band"><div class="wrap-narrow">
-<p><strong>Always name the mode you configured:</strong> local outbound failover ≠ SpeedFusion Hot Failover ≠ Bonding ≠ Smoothing.</p>
-<p>Related guide: <a href="/guide/peplink-multi-wan-guide/">/guide/peplink-multi-wan-guide/</a> · Software hub: <a href="https://umrt-software.pages.dev/peplink/">umrt-software /peplink/</a> · Joint dropouts: <a href="/troubleshoot/starlink-peplink-dropouts/">/troubleshoot/starlink-peplink-dropouts/</a></p>
-<p>---</p>
+<p><strong>Always name the mode you configured:</strong> local outbound failover ≠ SpeedFusion Hot Failover ≠ Bonding ≠ Smoothing. Peplink SpeedFusion is <strong>bonding and/or Hot Failover and/or Smoothing and/or local outbound failover as configured</strong> — never conflate those modes. A driveway demo that “fails over” on weighted outbound priority is not the same product as a peer-backed Hot Failover or Bonding tunnel.</p>
+<p>Related: <a href="/guide/peplink-multi-wan-guide/">Peplink multi-WAN guide</a> · <a href="https://umrt-software.pages.dev/peplink/">umrt-software /peplink/</a> · <a href="/troubleshoot/starlink-peplink-dropouts/">Starlink / Peplink dropouts</a> · <a href="/troubleshoot/starlink-offline/">Starlink offline</a></p>
+
 <h2>Symptom → first bucket</h2>
-<p>| What you see | Start here | | --- | --- | | Disconnect every 1–5 minutes, LEDs blink WAN | WAN Health Check flaps or brownout power | | Zoom/Teams die when cell drops; browsing recovers | Local outbound-only failover (or Hot Failover peer missing) | | Speed test fat, apps jittery | Bonding across Starlink + cell latency mismatch | | Second SIM idle forever | Outbound priority / SIM auth / plan block | | InControl offline, LAN still up | Upstream WAN dead or device reboot loop | | UI says Bonding, no aggregate | No SpeedFusion peer, Care/feature pack, or wrong profile | | Starlink “connected,” Peplink marks WAN down | Ethernet handoff, PoE brownout, or health-check target |</p>
-<p>---</p>
+<p>Match what you see before you flash firmware or buy another SIM. Most “Peplink is broken” tickets on RVs land in power, RF/sky, SIM/auth, or mode truth — not a magic firmware revision.</p>
+<ul>
+<li><strong>Disconnect every 1–5 minutes, LEDs blink WAN</strong> — start with WAN Health Check flaps or brownout power under load.</li>
+<li><strong>Zoom / Teams die when cell drops; browsing recovers</strong> — local outbound-only failover, or SpeedFusion Hot Failover with a missing / unhealthy peer.</li>
+<li><strong>Speed test fat, apps jittery</strong> — Bonding across Starlink + cell with latency mismatch (Mbps look good; interactive apps hurt).</li>
+<li><strong>Second SIM idle forever</strong> — outbound priority policy, SIM auth, or a plan that blocks / throttles routers.</li>
+<li><strong>InControl offline, LAN still up</strong> — upstream WAN dead or device reboot loop (often power / brownout again).</li>
+<li><strong>UI says Bonding, no aggregate</strong> — no SpeedFusion peer, Care / feature pack missing on that SKU, or wrong profile.</li>
+<li><strong>Starlink “connected,” Peplink marks WAN down</strong> — Ethernet handoff, PoE brownout, or a brittle health-check target.</li>
+</ul>
+
 <h2>Decision tree (do in order)</h2>
+<p>Work top-down. Changing SpeedFusion profiles before you prove power and RF is how driveway “fixes” die on the first mountain pass.</p>
+
 <h3>1) Power (most RV “mystery flaps”)</h3>
-<ul><li>Measure voltage <strong>under load</strong> (A/C start, inverter surge). Brown-outs reset modems and flap health checks.</li><li>Router + <strong>cellular modem</strong> must ride the <strong>same chassis fused DC</strong>. Do not park modem/antenna amp on a cigarette-lighter or shared noisy tap while the chassis feed looks “clean.”</li><li><strong>Starlink PoE injector on its own fused path</strong> — brownout-aware; do not share with router/modem DC.</li><li>Fuse labeled; conductors sized for path length. Exact amps: measure-on-site (no invented single number).</li></ul>
+<p>Measure voltage <strong>under load</strong> — A/C start, inverter surge, microwave kick-on. A bank that reads “fine” at idle can sag hard enough to reset cellular modems and flap WAN Health Checks. That looks like an ISP failure; it is a 12V problem.</p>
+<ul>
+<li>Router + <strong>cellular modem</strong> must ride the <strong>same chassis fused DC</strong>. Do not park the modem or antenna amp on a cigarette-lighter socket or a shared noisy tap while the chassis feed “looks clean.”</li>
+<li><strong>Starlink PoE injector on its own fused path</strong> — brownout-aware. Do not share that feed with router / modem DC.</li>
+<li>Fuse labeled; conductors sized for path length. Exact amps: measure on site — we will not invent a single magical number for every coach.</li>
+<li>If dropouts line up with inverter events, meter the house bank under that same load before you chase RF. Related: <a href="/troubleshoot/12v-battery-no-charge/">12V battery not charging</a> · <a href="/troubleshoot/inverter-shore-power-faults/">inverter / shore-power faults</a>.</li>
+</ul>
+
 <h3>2) RF / sky (before touching Peplink policy)</h3>
-<ul><li>Outdoor cell usable on that carrier? Peplink cannot invent RF — see <a href="/guide/weboost-install-guide/">weBoost guide</a> only for weak-but-present signal.</li><li>Starlink clear sky? Trees/eaves win — <a href="/guide/starlink-rv-guide/">Starlink RV guide</a>.</li><li>Antenna isolation: cellular, Starlink routing, and weBoost outdoor antennas crowded on one roof corner create “firmware” tickets that are RF.</li></ul>
+<p>Peplink cannot invent RF. A perfect Bonding profile on a null outdoor cell path still fails. Confirm sky and outdoor cell before you rewrite outbound rules.</p>
+<ul>
+<li>Outdoor cell usable on that carrier at the exterior antenna location? If the outside world is a dead zone, see <a href="/guide/weboost-install-guide/">weBoost install guide</a> only for <em>weak-but-present</em> signal — weBoost will not invent coverage from zero (AGC manages gain; we don’t “tune gain”).</li>
+<li>Starlink clear sky? Trees and eaves win — <a href="/guide/starlink-rv-guide/">Starlink RV guide</a> · <a href="/troubleshoot/starlink-offline/">Starlink offline</a>.</li>
+<li>Antenna isolation: cellular, Starlink routing, and weBoost outdoor antennas crowded on one roof corner create “firmware” tickets that are RF geometry.</li>
+</ul>
+
 <h3>3) SIM / modem auth</h3>
-<ul><li>Router-legal plan (many phone plans block/throttle routers).</li><li>Both modems registered; APN correct; trays labeled and seated after vibration.</li><li>Dual-SIM ≠ double speed — insurance + map fill.</li></ul>
+<ul>
+<li>Router-legal plan — many phone plans block or throttle routers. Bars with a plan block still look “up” and still flap Health Checks.</li>
+<li>Both modems registered; APN correct; trays labeled and seated after vibration (travel days loosen trays).</li>
+<li>Dual-SIM ≠ double speed. Treat the second SIM as insurance and map fill, not automatic aggregate Mbps unless you actually configured Bonding with a peer.</li>
+</ul>
+
 <h3>4) Mode truth (name it)</h3>
-<p>Open the config and write down exactly what is running:</p>
-<ul><li><strong>Local outbound priority / weighted balance</strong> — no SpeedFusion tunnel; sessions may drop on handoff.</li><li><strong>SpeedFusion Hot Failover</strong> — needs peer (Peplink / FusionHub / SpeedFusion Connect) + healthy secondary.</li><li><strong>Bonding</strong> — peer required; Starlink+cell can hurt interactive apps even when Mbps look good. Never expect automatic 2×.</li><li><strong>Smoothing</strong> — redundant copies; burns more metered data.</li></ul>
-<p>Entry chassis (BR1 Mini, some BR2/Micro, B One class) may need <strong>PrimeCare / feature pack</strong> before SpeedFusion modes unlock — verify invoice/SKU.</p>
+<p>Open the config and write down exactly what is running. Say the mode out loud. Peplink SpeedFusion modes are <strong>bonding and/or Hot Failover and/or Smoothing</strong>, and many coaches only run <strong>local outbound failover</strong> with no SpeedFusion tunnel at all.</p>
+<ul>
+<li><strong>Local outbound priority / weighted balance</strong> — no SpeedFusion tunnel; sessions may drop on handoff. Fine for browsing; brutal for Zoom if the primary dies mid-call.</li>
+<li><strong>SpeedFusion Hot Failover</strong> — needs a peer (another Peplink, FusionHub, or SpeedFusion Connect) plus a healthy secondary. Without the peer / license path, the UI label lies.</li>
+<li><strong>Bonding</strong> — peer required. Starlink + cell can hurt interactive apps even when Mbps look good (latency mismatch). Never expect automatic 2×.</li>
+<li><strong>Smoothing</strong> — redundant copies across paths; burns more metered data. Useful for jitter-sensitive apps when you accept the data cost.</li>
+</ul>
+<p>Entry chassis (BR1 Mini, some BR2 / Micro, B One class) may need <strong>PrimeCare / feature pack</strong> before SpeedFusion modes unlock — verify invoice / SKU before you assume Bonding is “broken.”</p>
+
 <h3>5) WAN Health Checks</h3>
-<ul><li>One brittle health-check IP = false flaps when that target blocks ICMP/HTTP.</li><li>Diversify checks; fix power/RF root cause instead of forever tightening thresholds.</li><li>After any power or roof work, re-test intentional WAN kills in the driveway.</li></ul>
+<ul>
+<li>One brittle health-check IP = false flaps when that target blocks ICMP / HTTP or gets congested.</li>
+<li>Diversify checks; fix power / RF root cause instead of forever tightening thresholds.</li>
+<li>After any power or roof work, re-test intentional WAN kills in the driveway — kill cell, kill Starlink Ethernet, watch whether apps drop or stick, and whether the mode you named behaves like that mode.</li>
+</ul>
+
 <h3>6) Starlink Ethernet handoff</h3>
-<ul><li>Official Starlink Ethernet adapter <strong>or</strong> Starlink router LAN → Peplink WAN.</li><li>Confirm link lights and that Peplink sees the WAN before blaming SpeedFusion.</li><li>PoE path brownout = dish drops = Peplink flaps.</li></ul>
+<ul>
+<li>Official Starlink Ethernet adapter <strong>or</strong> Starlink router LAN → Peplink WAN.</li>
+<li>Confirm link lights and that Peplink sees the WAN before blaming SpeedFusion.</li>
+<li>PoE path brownout = dish drops = Peplink flaps. Joint road guide: <a href="/troubleshoot/starlink-peplink-dropouts/">Starlink / Peplink dropouts</a>.</li>
+</ul>
+
 <h3>7) Firmware source</h3>
-<ul><li>peplink.com / InControl 2 only (`https://incontrol2.peplink.com/`). No random mirrors.</li></ul>
-<p>---</p>
+<p>Firmware and management only from manufacturer paths: <a href="https://www.peplink.com/support/downloads/firmware/">peplink.com firmware downloads</a> and <a href="https://incontrol2.peplink.com/">InControl 2</a>. No random mirrors, “community” flashes, or unlocked binaries from forums. Software hub (official links only): <a href="https://umrt-software.pages.dev/peplink/">umrt-software.pages.dev/peplink/</a>.</p>
+
 <h2>Owner self-checks (15 minutes)</h2>
-<ol><li>Photo: WAN wiring, SIM carriers, fuse block, PoE injector feed.</li><li>Toggle each WAN off once; watch whether apps drop or stick.</li><li>Note whether <strong>interactive</strong> apps suffer more than bulk downloads (bonding mismatch clue).</li><li>Write the configured mode name on a sticker inside the cabinet.</li></ol>
-<p>---</p>
+<ol>
+<li>Photo: WAN wiring, SIM carriers, fuse block, PoE injector feed.</li>
+<li>Toggle each WAN off once in the driveway; watch whether apps drop or stick.</li>
+<li>Note whether <strong>interactive</strong> apps suffer more than bulk downloads (Bonding latency-mismatch clue).</li>
+<li>Write the configured mode name on a sticker inside the cabinet — outbound-only, Hot Failover, Bonding, or Smoothing.</li>
+<li>Capture InControl / local UI screenshots of WAN Health Check status and peer status before you change anything twice.</li>
+</ol>
+
+<h2>What “works in the driveway” misses on the road</h2>
+<p>Driveway tests often skip the three things that kill multi-WAN on travel days: voltage under A/C and inverter surge, Starlink obstruction that only appears after you roll under trees, and cellular tower handoffs at highway speed. A weighted outbound failover that feels seamless parked can drop Zoom every time the primary cell tower swaps. A Bonding profile that looks great on a speed test can feel worse than single-WAN for calls when Starlink latency and cell latency disagree. Name the mode, then test the failure you actually care about — not only the Mbps number.</p>
+
 <h2>When to book UMRT</h2>
-<p>Persistent Health Check flaps after power/RF checks, SpeedFusion peer never stabilizes, travel-unsafe mechanical install, or unlabeled spaghetti after a prior DIY. Active corridor: <strong>MT · WY · ID · WA</strong> — case-by-case beyond. Prefer Text <strong>(616) 606-5277</strong> · <a href="/book-service/">/book-service/</a>.</p>
-<p><strong>Pricing teaser:</strong> Trip $75 within 30 miles then $1.50/mi; labor ~$150/hr (1 hr min / 30-min increments); diagnostic $150 applied if you proceed.</p>
-<p><strong>Credentials:</strong> Peplink Certified Associate · weBoost Authorized Installer · Victron Professional Certified Installer · Dometic Professional Certified · Starlink install capability only (no Starlink Certified claim).</p>
-<p>---</p>
-<h2>Related</h2>
-<ul><li><a href="/guide/peplink-multi-wan-guide/">/guide/peplink-multi-wan-guide/</a></li><li><a href="/troubleshoot/starlink-peplink-dropouts/">/troubleshoot/starlink-peplink-dropouts/</a></li><li><a href="/guide/starlink-rv-guide/">/guide/starlink-rv-guide/</a> · <a href="/guide/weboost-install-guide/">/guide/weboost-install-guide/</a></li><li><a href="https://umrt-software.pages.dev/peplink/">umrt-software /peplink/</a></li></ul>
+<p>Book when Health Check flaps persist after power / RF checks, a SpeedFusion peer never stabilizes, the mechanical install is travel-unsafe, or you inherited unlabeled spaghetti after a prior DIY. Active corridor: <strong>MT · WY · ID · WA</strong> — case-by-case beyond. Prefer Text <strong>(616) 606-5277</strong> · <a href="/book-service/">Book a Service</a>.</p>
+<p><strong>Pricing teaser:</strong> Trip $75 within 30 miles then $1.50/mi; labor ~$150/hr (1 hr min / 30-min increments); diagnostic $150 applied if you proceed. Full rates: <a href="/pricing/">/pricing/</a>.</p>
+<p><strong>Credentials:</strong> Peplink Certified Associate · weBoost Authorized Installer · Victron Professional Certified Installer · Dometic Professional Certified · Starlink install capability only (no Starlink Certified claim). No competitor bake-in as partners. This is the pages.dev mothership — not a live WordPress edit.</p>
+
+<h2>Honesty box</h2>
+<ul>
+<li><strong>Peplink Certified Associate</strong> — we design and diagnose multi-WAN; we name the mode that is actually configured.</li>
+<li>SpeedFusion = <strong>bonding and/or Hot Failover and/or Smoothing and/or local outbound failover as configured</strong> — never conflate.</li>
+<li>Firmware only from <strong>peplink.com / InControl</strong> — no mirrors.</li>
+<li>No invented aggregate Mbps, “always stays up,” or automatic 2× Bonding claims.</li>
+<li>No competitor routers or softwares baked in as partners.</li>
+<li>Starlink = <strong>install capability only</strong> — never “Starlink Certified.”</li>
+<li>Prefer Text <strong>(616) 606-5277</strong>. No live WordPress claim on this staging mothership page.</li>
+</ul>
+
+<h2>Related guides &amp; pages</h2>
+<ul>
+<li><a href="/guide/peplink-multi-wan-guide/">/guide/peplink-multi-wan-guide/</a> — multi-WAN architecture</li>
+<li><a href="/troubleshoot/starlink-peplink-dropouts/">/troubleshoot/starlink-peplink-dropouts/</a> — joint road dropouts</li>
+<li><a href="/troubleshoot/starlink-offline/">/troubleshoot/starlink-offline/</a> — dish / sky / power path</li>
+<li><a href="https://umrt-software.pages.dev/peplink/">https://umrt-software.pages.dev/peplink/</a> — official Peplink links only</li>
+<li><a href="/guide/starlink-rv-guide/">/guide/starlink-rv-guide/</a> · <a href="/guide/weboost-install-guide/">/guide/weboost-install-guide/</a></li>
+<li><a href="/wireless/">/wireless/</a> · <a href="/troubleshoot/">/troubleshoot/</a></li>
+</ul>
 </div></section>
+
 <section class="band" style="border-top:1px solid var(--rule)">
   <div class="wrap">
     <span class="micro">Next step</span>
-    <h2>Book a Service</h2>
-    <p class="lead">Prefer Text — (616) 606-5277. Trip fee quoted upfront before we roll.</p>
+    <h2>Prefer Text — book a wireless diagnostic</h2>
+    <p class="lead">Prefer Text — (616) 606-5277. Send city/ZIP, rig type, which WAN flaps, configured mode name, and photos of fuse / PoE / WAN ports. Trip fee quoted upfront before we roll.</p>
     <div class="btn-row">
       <a class="btn btn-gold" href="/book-service/">Book Now</a>
-      <a class="btn btn-ghost" href="tel:+16166065277">Text / Call</a>
+      <a class="btn btn-ghost" href="tel:+16166065277">Text / Call (616) 606-5277</a>
     </div>
   </div>
 </section>
