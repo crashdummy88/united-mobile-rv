@@ -752,3 +752,15 @@ h1, h2 { font-weight: 400; letter-spacing: -0.03em; }
 @media (prefers-reduced-motion: reduce) {
   .footer-proof-strip img { transition: none; }
 }
+
+
+/* VISUAL home PERF */
+.band-gray,
+.photo-grid,
+.footer-proof {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 480px;
+}
+.footer-proof-strip img {
+  background: #111;
+}
