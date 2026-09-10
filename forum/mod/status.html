@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Edit Status &amp; Pricing | United Mobile RV</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="/favicon.png" type="image/png">
+<link rel="stylesheet" href="/css/site.css">
+<style>
+  .forum-input{width:100%;padding:10px 12px;border-radius:8px;border:1px solid #333;background:#111;color:#f2f2f2;font-family:inherit;font-size:0.9em;margin-bottom:8px}
+  .field-row{margin-bottom:14px}
+  .field-row label{display:block;font-size:0.85em;color:#999;margin-bottom:4px}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap nav-bar">
+    <a class="brand" href="/"><img class="brand-logo" src="/assets/brand/umrt-logo.webp" alt="United Mobile RV" width="40" height="40"><span class="brand-text">United Mobile <span>RV</span></span></a>
+    <ul class="nav-links"><li><a href="/forum/">Forum</a></li><li><a href="/forum/mod/">Mod Queue</a></li></ul>
+  </div>
+</header>
+<main id="main">
+<section class="page-hero">
+  <div class="wrap">
+    <h1>Status &amp; Pricing</h1>
+    <p class="lead">One edit here updates united-mobile-rv, umrt-areas, umrt-go, and umrt-quote — they all read this live via /api/status.</p>
+  </div>
+</section>
+<section class="band">
+  <div class="wrap wrap-narrow" id="app">
+    <p class="muted">Loading&hellip;</p>
+  </div>
+</section>
+</main>
+<script>
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+
+async function load() {
+  var app = document.getElementById('app');
+  var res = await fetch('/api/admin/status');
+  var data = await res.json();
+  if (!data.success) {
+    app.innerHTML = '<p class="muted">' + (data.error === 'forbidden' ? 'You are not a moderator, or not signed in. <a class="text-link" href="/forum/">Sign in on the forum first.</a>' : 'Could not load.') + '</p>';
+    return;
+  }
+  var s = data.status;
+  var html = '<h2>Corridor status</h2>' +
+    field('active_corridor', 'Active corridor', s.active_corridor) +
+    field('case_by_case', 'Case-by-case states', s.case_by_case) +
+    field('current_location', 'Current location', s.current_location) +
+    field('status_note', 'Status note (e.g. "Now Cycling")', s.status_note) +
+    field('hours', 'Hours', s.hours) +
+    '<h2 style="margin-top:28px">Pricing</h2>';
+
+  data.pricing.forEach(function(p){
+    html += '<div class="field-row" data-pricing-key="' + esc(p.key) + '">' +
+      '<label>' + esc(p.label) + ' (' + esc(p.key) + ')</label>' +
+      '<input class="forum-input" data-field="amount" value="' + esc(p.amount) + '" placeholder="Amount">' +
+      '<input class="forum-input" data-field="note" value="' + esc(p.note||'') + '" placeholder="Note">' +
+      '</div>';
+  });
+
+  html += '<div class="btn-row"><button class="btn btn-gold" id="save-btn" type="button">Save</button></div><p id="save-status" class="held-note"></p>';
+  app.innerHTML = html;
+
+  document.getElementById('save-btn').addEventListener('click', save);
+}
+
+function field(id, label, value) {
+  return '<div class="field-row"><label>' + esc(label) + '</label>' +
+    '<input class="forum-input" id="f-' + id + '" value="' + esc(value) + '"></div>';
+}
+
+async function save() {
+  var status = {
+    active_corridor: document.getElementById('f-active_corridor').value,
+    case_by_case: document.getElementById('f-case_by_case').value,
+    current_location: document.getElementById('f-current_location').value,
+    status_note: document.getElementById('f-status_note').value,
+    hours: document.getElementById('f-hours').value,
+  };
+  var pricing = [];
+  document.querySelectorAll('[data-pricing-key]').forEach(function(row){
+    pricing.push({
+      key: row.dataset.pricingKey,
+      label: row.querySelector('label').textContent,
+      amount: row.querySelector('[data-field="amount"]').value,
+      note: row.querySelector('[data-field="note"]').value,
+    });
+  });
+
+  var res = await fetch('/api/admin/status', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ status: status, pricing: pricing })
+  });
+  var data = await res.json();
+  document.getElementById('save-status').textContent = data.success ? 'Saved.' : 'Could not save.';
+}
+
+load();
+</script>
+</body>
+</html>

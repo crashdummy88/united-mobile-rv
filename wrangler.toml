@@ -12,4 +12,4 @@ binding = "AI"
 [[d1_databases]]
 binding = "DB"
 database_name = "umrt_forum"
-database_id = "REPLACE_WITH_D1_DATABASE_ID"
+database_id = "0f9da84a-c0bd-48cb-a367-75f8aedce93f"

@@ -52,3 +52,36 @@ CREATE TABLE IF NOT EXISTS moderation_log (
 CREATE INDEX IF NOT EXISTS idx_posts_thread ON posts(thread_id);
 CREATE INDEX IF NOT EXISTS idx_threads_updated ON threads(updated_at DESC);
 CREATE INDEX IF NOT EXISTS idx_modlog_created ON moderation_log(created_at DESC);
+
+-- Shared status + pricing, read by united-mobile-rv, umrt-areas, umrt-go, umrt-quote
+-- via /api/status. Single source of truth so satellite sites never go stale.
+
+CREATE TABLE IF NOT EXISTS site_status (
+  id INTEGER PRIMARY KEY CHECK (id = 1),
+  active_corridor TEXT NOT NULL DEFAULT 'Montana · Wyoming · Idaho · Washington',
+  case_by_case TEXT NOT NULL DEFAULT 'MI / WI / SD · MN / ND / OR',
+  current_location TEXT NOT NULL DEFAULT 'Alpine WY',
+  status_note TEXT NOT NULL DEFAULT 'Now Cycling',
+  hours TEXT NOT NULL DEFAULT 'Mon–Sat 8am–7pm',
+  updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_by TEXT
+);
+
+INSERT OR IGNORE INTO site_status (id) VALUES (1);
+
+CREATE TABLE IF NOT EXISTS pricing (
+  key TEXT PRIMARY KEY,
+  label TEXT NOT NULL,
+  amount TEXT NOT NULL,
+  note TEXT,
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+INSERT OR IGNORE INTO pricing (key, label, amount, note, sort_order) VALUES
+  ('trip_fee', 'Trip fee', '$75', 'Within 30 miles', 1),
+  ('mileage', 'Mileage', '$1.50/mi', 'Each way beyond 30 miles', 2),
+  ('labor', 'Labor', '~$150/hr', '1 hr minimum, 30-min increments after', 3),
+  ('diagnostic', 'Diagnostic', '$175', 'Applied toward repair if you proceed', 4),
+  ('winterize', 'Winterize', '$175', 'Separate line item', 5),
+  ('trip_prep', 'Trip prep', '$225', 'Separate line item', 6);
