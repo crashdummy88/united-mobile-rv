@@ -713,3 +713,45 @@ h1, h2 { font-weight: 400; letter-spacing: -0.03em; }
   .footer-proof-strip { grid-template-columns: repeat(2, 1fr); }
   .footer-proof-strip img { height: 88px; }
 }
+
+
+/* PHASE 2 bulletin + forum UI */
+.bulletin-list { display: grid; gap: calc(var(--space) * 3); margin-top: calc(var(--space) * 4); }
+.bulletin-card {
+  background: #141414;
+  border-top: 2px solid var(--gold);
+  border-radius: 6px;
+  padding: calc(var(--space) * 3) calc(var(--space) * 3);
+}
+.bulletin-card h3 { margin: 0.35rem 0 0.5rem; font-weight: 500; }
+.bulletin-card p { margin: 0; color: rgba(255,255,255,0.7); }
+.forum-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: calc(var(--space) * 3);
+  margin-top: calc(var(--space) * 4);
+}
+.forum-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  background: #141414;
+  border: 1px solid transparent;
+  border-top: 2px solid var(--gold);
+  border-radius: 6px;
+  padding: calc(var(--space) * 3);
+  text-decoration: none;
+  color: inherit;
+  min-height: 7rem;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.forum-card:hover { border-color: rgba(201,151,44,0.35); transform: translateY(-1px); }
+.forum-card h3 { margin: 0; color: var(--white); }
+.forum-card p { margin: 0; color: rgba(255,255,255,0.65); font-size: 0.95rem; }
+@media (max-width: 600px) {
+  .forum-grid { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .forum-card { transition: none; }
+  .forum-card:hover { transform: none; }
+}
