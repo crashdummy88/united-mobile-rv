@@ -3,15 +3,15 @@
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: interest-cohort=()
-  X-Robots-Tag: noindex, follow
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
   Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.web3forms.com; frame-ancestors 'none'; base-uri 'self'; object-src 'none'
 
-/forum/*
-  X-Robots-Tag: index, follow
-
-/forum-live/*
-  X-Robots-Tag: index, follow
+# X-Robots-Tag is now set by functions/_middleware.js instead of here —
+# Cloudflare Pages merges/duplicates X-Robots-Tag across matching _headers
+# blocks rather than letting a more specific path override it, which broke
+# the /forum/ and /forum-live/ index exception (both noindex and index sent
+# at once, and Google treats duplicate X-Robots-Tag headers as a union where
+# noindex always wins). The middleware sets exactly one clean value per path.
 
 /assets/*
   Cache-Control: public, max-age=604800, stale-while-revalidate=86400
