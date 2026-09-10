@@ -6,7 +6,7 @@
 <title>Community Forum | United Mobile RV</title>
 <meta name="description" content="Ask questions, share off-grid builds, and connect with other RVers.">
 <link rel="canonical" href="https://united-mobile-rv.pages.dev/forum/">
-<meta name="robots" content="noindex,follow">
+<meta name="robots" content="index,follow">
 <meta name="theme-color" content="#1A1A1A">
 <link rel="icon" href="/favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png">
@@ -41,6 +41,14 @@
   .cat-pill:hover{background:rgba(201,151,44,0.16);border-color:rgba(201,151,44,0.55);transform:translateY(-1px);}
   .cat-pill.is-active{background:#C9972C;border-color:#C9972C;color:#1A1A1A;box-shadow:0 4px 14px rgba(201,151,44,0.35);}
   .cat-pill .emoji{font-size:1.05em;}
+
+  .stats-bar{display:flex;flex-wrap:wrap;gap:28px;margin-top:22px;padding-top:18px;border-top:1px solid rgba(255,255,255,0.08);}
+  .stat-item{display:flex;flex-direction:column;}
+  .stat-num{font-size:1.6em;font-weight:800;color:#E8B84B;line-height:1.1;}
+  .stat-label{font-size:0.8em;color:#9a9a9a;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;}
+  .founding-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(201,151,44,0.14);
+    border:1px solid rgba(201,151,44,0.4);color:#E8B84B;font-size:0.8em;font-weight:700;
+    letter-spacing:0.06em;text-transform:uppercase;padding:6px 14px;border-radius:999px;margin-bottom:14px;}
 </style>
 </head>
 <body>
@@ -68,13 +76,16 @@
 <main id="main">
 <section class="page-hero">
   <div class="wrap">
+    <div class="founding-badge">🌱 Founding community — be one of the first voices</div>
     <span class="eyebrow"><span class="dot"></span>Community</span>
     <h1>United Mobile RV Forum</h1>
-    <p class="lead">Ask questions, swap notes on off-grid builds, and connect with other RVers and vanlifers. New posts are auto-screened before they go live.</p>
+    <p class="lead">Direct access to a certified RV tech, real troubleshooting, off-grid builds, and updates from the road — free to join, no ads, no tracking. New posts are auto-screened before they go live.</p>
 
     <div class="auth-bar" id="auth-bar">
       <span class="muted">Loading&hellip;</span>
     </div>
+
+    <div class="stats-bar" id="stats-bar"></div>
   </div>
 </section>
 
@@ -89,6 +100,7 @@
         <button type="button" class="cat-pill" data-cat="power"><span class="emoji">⚡</span> Off-Grid &amp; Power</button>
         <button type="button" class="cat-pill" data-cat="connectivity"><span class="emoji">📡</span> Connectivity</button>
         <button type="button" class="cat-pill" data-cat="route"><span class="emoji">🗺️</span> Route &amp; Service Areas</button>
+        <button type="button" class="cat-pill" data-cat="blog"><span class="emoji">📝</span> Vlog &amp; Updates</button>
       </div>
     </div>
   </div>
@@ -117,6 +129,7 @@
         <option value="power">⚡ Off-Grid &amp; Power</option>
         <option value="connectivity">📡 Connectivity</option>
         <option value="route">🗺️ Route &amp; Service Areas</option>
+        <option value="blog">📝 Vlog &amp; Updates</option>
       </select>
       <textarea class="forum-input" id="tf-body" rows="5" placeholder="What's going on?" maxlength="8000"></textarea>
       <div class="btn-row">
@@ -195,7 +208,7 @@
 <script>
 (function () {
   function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
-  function catEmoji(cat){return {general:'\uD83D\uDCAC',repair:'\uD83D\uDD27',power:'\u26A1',connectivity:'\uD83D\uDCE1',route:'\uD83D\uDDFA\uFE0F'}[cat] || '\uD83D\uDCAC';}
+  function catEmoji(cat){return {general:'\uD83D\uDCAC',repair:'\uD83D\uDD27',power:'\u26A1',connectivity:'\uD83D\uDCE1',route:'\uD83D\uDDFA\uFE0F',blog:'\uD83D\uDCDD'}[cat] || '\uD83D\uDCAC';}
   function timeAgo(iso){
     var diff=(Date.now()-new Date(iso+'Z').getTime())/1000;
     var u=[['year',31536000],['month',2592000],['day',86400],['hour',3600],['minute',60]];
@@ -354,8 +367,28 @@
     }
   });
 
+  async function loadStats() {
+    var el = document.getElementById('stats-bar');
+    try {
+      var res = await fetch('/api/forum-stats');
+      var data = await res.json();
+      if (!data.success) { el.remove(); return; }
+      var parts = [];
+      parts.push('<div class="stat-item"><span class="stat-num">' + data.members + '</span><span class="stat-label">Member' + (data.members===1?'':'s') + '</span></div>');
+      parts.push('<div class="stat-item"><span class="stat-num">' + data.threads + '</span><span class="stat-label">Thread' + (data.threads===1?'':'s') + '</span></div>');
+      parts.push('<div class="stat-item"><span class="stat-num">' + data.replies + '</span><span class="stat-label">Repl' + (data.replies===1?'y':'ies') + '</span></div>');
+      if (data.last_activity) {
+        parts.push('<div class="stat-item"><span class="stat-num" style="font-size:1em">' + timeAgo(data.last_activity) + '</span><span class="stat-label">Last Post</span></div>');
+      }
+      el.innerHTML = parts.join('');
+    } catch {
+      el.remove();
+    }
+  }
+
   loadMe();
   loadThreadList();
+  loadStats();
 })();
 </script>
 </body>
