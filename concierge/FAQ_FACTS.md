@@ -1,4 +1,4 @@
-# UMRT Site Concierge — FAQ Facts (v3)
+# UMRT Site Concierge  -  FAQ Facts (v3)
 
 Structured facts for the widget. Prefer these over improvisation. Owner: Field Knowledge. Update this file when canon changes; bump version in SYSTEM_PROMPT.md + FAQ_FACTS.md.
 
@@ -21,7 +21,7 @@ Structured facts for the widget. Prefer these over improvisation. Owner: Field K
 | Diagnostic | $150 | Credited toward repair if customer proceeds |
 | Parts | Quoted before install | No surprise installs |
 
-**Script:** “Trip fee is $75 within 30 miles, then $1.50 a mile each way. Labor runs about $150 an hour. Diagnostic is $150 and applies toward the repair if we move forward.”
+**Script:** "Trip fee is $75 within 30 miles, then $1.50 a mile each way. Labor runs about $150 an hour. Diagnostic is $150 and applies toward the repair if we move forward."
 
 ## Corridor
 | Tier | States |
@@ -29,9 +29,9 @@ Structured facts for the widget. Prefer these over improvisation. Owner: Field K
 | Active | MT, WY, ID, WA |
 | Case-by-case | MI, WI, SD (cycled this pass), MN, ND, OR |
 
-**Hubs (14):** Royal Oak MI · St. Ignace MI · Ironwood MI · Superior WI · Rapid City SD · Custer SD · Billings MT · Bozeman MT · Missoula MT · Jackson Hole WY · Alpine WY · Coeur d’Alene ID · Spokane WA · Seattle WA
+**Hubs (14):** Royal Oak MI · St. Ignace MI · Ironwood MI · Superior WI · Rapid City SD · Custer SD · Billings MT · Bozeman MT · Missoula MT · Jackson Hole WY · Alpine WY · Coeur d'Alene ID · Spokane WA · Seattle WA
 
-**Script:** “We’re active on the MT / WY / ID / WA corridor. Midwest and a few adjacent states are case-by-case when the route fits — tell us your city and ZIP.”
+**Script:** "We're active on the MT / WY / ID / WA corridor. Midwest and a few adjacent states are case-by-case when the route fits  -  tell us your city and ZIP."
 
 ## Services (yes)
 - Electrical & diagnostics (12V / 120V)
@@ -51,32 +51,32 @@ Structured facts for the widget. Prefer these over improvisation. Owner: Field K
 4. Dometic Professional Certified  
 5. Background: FAA Part 145 / Liebherr; BMW & Mercedes service  
 
-Starlink: install capability only (mount, cable routing, power integration, aim/setup) — no “Starlink certified installer” claim, no partner logos.
+Starlink: install capability only (mount, cable routing, power integration, aim/setup)  -  no "Starlink certified installer" claim, no partner logos.
 
 ## How we work
 - Mobile: we come to you
 - Diagnostics first, then repair with your go-ahead
-- Lead fields for Book (all required): Name, Phone, Email, Location (City/ZIP), Issue, Rig info — Prefer Text default
+- Lead fields for Book (all required): Name, Phone, Email, Location (City/ZIP), Issue, Rig info  -  Prefer Text default
 - Prefer texting (616) 606-5277 for scheduling
 
-## Connectivity (Network Engineer canon — 2026-09-10)
+## Connectivity (Network Engineer canon  -  2026-09-10)
 
-**Credentials (exact only for wireless):** weBoost Authorized Installer · Peplink Certified Associate · Starlink install capability (no Starlink “certified installer,” no partner logos).
+**Credentials (exact only for wireless):** weBoost Authorized Installer · Peplink Certified Associate · Starlink install capability (no Starlink "certified installer," no partner logos).
 
-**Starlink:** Mount, cable routing, power integration, aim/setup, travel-safe cable management. Needs clear sky — trees/obstructions kill it. Doesn’t replace cellular everywhere; pairs well with cell failover.
+**Starlink:** Mount, cable routing, power integration, aim/setup, travel-safe cable management. Needs clear sky  -  trees/obstructions kill it. Doesn't replace cellular everywhere; pairs well with cell failover.
 
-**weBoost:** Outdoor/indoor antenna placement + cable path + verify usable outdoor signal. Uses AGC — we don’t “tune gain.” Won’t create signal from zero outdoor RF. Best for weak-but-present cell at boondock sites.
+**weBoost:** Outdoor/indoor antenna placement + cable path + verify usable outdoor signal. Uses AGC  -  we don't "tune gain." Won't create signal from zero outdoor RF. Best for weak-but-present cell at boondock sites.
 
-**Peplink:** Multi-WAN **bonding and/or failover** (SpeedFusion), SIM/cellular + Starlink together, clean install that survives travel. Bonding ≠ simple failover — say both when relevant.
+**Peplink:** Multi-WAN **bonding and/or failover** (SpeedFusion), SIM/cellular + Starlink together, clean install that survives travel. Bonding ≠ simple failover  -  say both when relevant.
 
-**Power/RF hygiene:** Clean power for radios, coax/PoE routed right, interference/placement checked — half the reliability on RVs.
+**Power/RF hygiene:** Clean power for radios, coax/PoE routed right, interference/placement checked  -  half the reliability on RVs.
 
 **Honesty gates:** No invented discounts, reviews, logos, or certs. Pricing/exceptions → Sales Lead / Matt. Staging answers only.
 
 ## Common Q&A short answers
 
 **Q: What do you need to book?**  
-A: Name, phone, email, city/ZIP (location), what’s going on (issue), and rig info. Prefer text is the default for follow-up — then Book or text (616) 606-5277.
+A: Name, phone, email, city/ZIP (location), what's going on (issue), and rig info. Prefer text is the default for follow-up  -  then Book or text (616) 606-5277.
 
 **Q: How much will my repair cost?**  
 A: Until we diagnose on site we quote structure, not a guess total: trip + labor rates above, diagnostic $150 toward repair if you proceed, parts quoted before install. Book or text so we can look at your location and symptoms.
@@ -88,16 +88,16 @@ A: Check active corridor vs case-by-case. Ask for city/ZIP. Always offer Book/te
 A: Owner-operated mobile service. We meet you at campsites, driveways, and storage lots.
 
 **Q: Victron / lithium?**  
-A: Yes — design, install, and commission Victron systems and LiFePO4 banks on site. Matt is a Victron Professional Certified Installer.
+A: Yes  -  design, install, and commission Victron systems and LiFePO4 banks on site. Matt is a Victron Professional Certified Installer.
 
 **Q: Cell / Starlink / Peplink?**  
-A: Yes. Starlink: clear-sky mount + power/cable (no invented Starlink cert). weBoost Authorized Installer: boosts weak-but-present outdoor cell — won’t invent signal from zero; we don’t “tune gain” (AGC). Peplink Certified Associate: multi-WAN bonding and/or failover (SpeedFusion) with SIM + Starlink. Clean power/coax/PoE and placement matter. Book/text for site check.
+A: Yes. Starlink: clear-sky mount + power/cable (no invented Starlink cert). weBoost Authorized Installer: boosts weak-but-present outdoor cell  -  won't invent signal from zero; we don't "tune gain" (AGC). Peplink Certified Associate: multi-WAN bonding and/or failover (SpeedFusion) with SIM + Starlink. Clean power/coax/PoE and placement matter. Book/text for site check.
 
 **Q: Roof leaking / soft spot?**  
-A: We trace intrusion and do targeted roof work so water doesn’t become structure damage. Book with photos if possible + location.
+A: We trace intrusion and do targeted roof work so water doesn't become structure damage. Book with photos if possible + location.
 
 **Q: Can I get a discount?**  
-A: We don’t invent discounts in chat. Escalate pricing exceptions to Sales Lead / Matt; take the lead and say someone will follow up.
+A: We don't invent discounts in chat. Escalate pricing exceptions to Sales Lead / Matt; take the lead and say someone will follow up.
 
 **Q: Emergency / smell gas / CO?**  
 A: Leave the area if unsafe; call emergency services for immediate danger. Schedule when safe.
@@ -105,7 +105,7 @@ A: Leave the area if unsafe; call emergency services for immediate danger. Sched
 ## Never say
 - Nationwide service
 - Guaranteed same-day everywhere
-- Invented coupon codes or “mates rates”
+- Invented coupon codes or "mates rates"
 - Fake star ratings or partner logos
 - Exact job totals without diagnostic context
-- Credential titles that aren’t on the exact list above
+- Credential titles that aren't on the exact list above

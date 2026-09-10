@@ -28,7 +28,7 @@
       data.append('access_key', key);
       data.append('subject', 'UMRT Book a Service request');
       status.className = 'form-status';
-      status.textContent = 'Sendingâ¦';
+      status.textContent = 'Sending...';
       try {
         var res = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: data });
         var json = await res.json();
@@ -66,12 +66,12 @@
     '      <div><label for="cl-location">Location *</label><input id="cl-location" name="location" required placeholder="City / ZIP"></div>',
     '      <div><label for="cl-rig">Rig info *</label><input id="cl-rig" name="rig" required placeholder="Year / make / model"></div>',
     '      <div><label for="cl-prefer">Prefer *</label><select id="cl-prefer" required><option value="Text" selected>Text</option><option value="Call">Call</option><option value="Email">Email</option></select></div>',
-    '      <div class="full"><label for="cl-issue">Issue *</label><input id="cl-issue" name="issue" required placeholder="What’s going on?"></div>',
+    '      <div class="full"><label for="cl-issue">Issue *</label><input id="cl-issue" name="issue" required placeholder="What's going on?"></div>',
     '    </div>',
     '    <button type="button" class="chat-send" id="chat-lead-go" style="width:100%;margin-top:8px">Start chat</button>',
     '  </div>',
     '  <div class="chat-compose" id="chat-compose" hidden>',
-    '    <textarea id="chat-input" rows="2" placeholder="Ask about pricing, services, corridors…"></textarea>',
+    '    <textarea id="chat-input" rows="2" placeholder="Ask about pricing, services, corridors..."></textarea>',
     '    <button type="button" class="chat-send" id="chat-send">Send</button>',
     '  </div>',
     '</div>'
@@ -94,7 +94,7 @@
     panel.classList.add('is-open');
     fab.setAttribute('aria-expanded', 'true');
     if (!msgs.dataset.welcomed) {
-      addBubble('bot', 'I can help with UMRT pricing, services, service corridors, credentials, and booking. Share your details below — Prefer Text is selected by default — then ask anything. Or call (616) 606-5277.');
+      addBubble('bot', 'I can help with UMRT pricing, services, service corridors, credentials, and booking. Share your details below  -  Prefer Text is selected by default  -  then ask anything. Or call (616) 606-5277.');
       msgs.dataset.welcomed = '1';
     }
   }
@@ -124,7 +124,7 @@
     var prefer = document.getElementById('cl-prefer').value;
     var issue = document.getElementById('cl-issue').value.trim();
     if (!name || !phone || !email || !location || !rig || !prefer || !issue) {
-      addBubble('bot', 'Please fill Name, Phone, Email, Location, Rig, Prefer, and Issue — then we can chat. Or text <a href="tel:+16166065277">(616) 606-5277</a>.');
+      addBubble('bot', 'Please fill Name, Phone, Email, Location, Rig, Prefer, and Issue  -  then we can chat. Or text <a href="tel:+16166065277">(616) 606-5277</a>.');
       return;
     }
     leadData = { name: name, phone: phone, email: email, location: location, city_zip: location, rig: rig, prefer: prefer, issue: issue };
@@ -156,7 +156,7 @@
       addBubble('bot', data.reply);
       history.push({ role: 'assistant', content: data.reply });
     } catch (e) {
-      addBubble('bot', 'Chat is briefly unavailable. Call or text <a href="tel:+16166065277">(616) 606-5277</a> — Matt answers. Or use <a href="/book-service/">Book a Service</a>.');
+      addBubble('bot', 'Chat is briefly unavailable. Call or text <a href="tel:+16166065277">(616) 606-5277</a>  -  Matt answers. Or use <a href="/book-service/">Book a Service</a>.');
     } finally {
       sendBtn.disabled = false;
     }

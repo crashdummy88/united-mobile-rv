@@ -1,4 +1,4 @@
-/* United Mobile RV â SpaceX-inspired staging prototype */
+/* United Mobile RV  -  SpaceX-inspired staging prototype */
 :root {
   --black: #1A1A1A;
   --white: #FFFFFF;
@@ -231,7 +231,7 @@ textarea { min-height: 120px; resize: vertical; }
 .muted { color: rgba(255,255,255,0.55); }
 .band-light .muted, .band-gray .muted { color: var(--gray); }
 
-/* AI Chat — SpaceX dark panel + gold FAB */
+/* AI Chat  -  SpaceX dark panel + gold FAB */
 .chat-fab {
   position: fixed; right: calc(var(--space) * 3); bottom: calc(var(--space) * 3); z-index: 300;
   width: 56px; height: 56px; border-radius: 50%;
@@ -295,3 +295,38 @@ textarea { min-height: 120px; resize: vertical; }
 .chat-lead-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space) 12px; }
 .chat-lead-grid .full { grid-column: 1 / -1; }
 @media (max-width: 420px) { .chat-lead-grid { grid-template-columns: 1fr; } }
+
+
+/* Brand mark */
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.brand-logo {
+  height: 36px;
+  width: auto;
+  display: block;
+}
+.brand-text { line-height: 1.1; }
+.cred-logos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 24px;
+  align-items: center;
+  margin-top: 20px;
+}
+.cred-logos img {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 6px;
+  padding: 6px 10px;
+}
+.cred-logos .cred-text {
+  font-size: 12px;
+  color: var(--muted, #999);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
