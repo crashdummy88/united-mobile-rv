@@ -42,24 +42,57 @@
 </header>
 
 <main id="main">
+
 <section class="page-hero">
   <div class="wrap">
     <span class="micro"><a href="/troubleshoot/">Troubleshoot</a></span>
     <h1>Generator won’t start</h1>
-    <p class="lead">Treat no-start as a sequence: battery → oil/fuel safeties → control board → fuel delivery — then load tests.</p>
+    <p class="lead">Treat no-start as a sequence: battery → oil/fuel safeties → control board → fuel delivery — then load tests. Hour meters and fault codes matter more than “it needs a new generator.”</p>
   </div>
 </section>
 <section class="band"><div class="wrap-narrow">
-    <p>A generator that cranks but won’t fire is a different problem than one that clicks dead. Hour meters, fault blink codes, and fuel that sat through storage matter more than “it needs a new generator.”</p>
-    <h2>Quick path</h2>
-    <ol>
-      <li>Coach batteries strong enough to crank? Try with charger/shore support.</li>
-      <li>Oil level / low-oil shutdown; prime per OEM if equipped.</li>
-      <li>Note any fault blink codes (Onan and others).</li>
-      <li>Fuel age and valve position after storage.</li>
-    </ol>
-    <p>Deep dive: <a href="/guide/generator-troubleshooting/">Generator troubleshooting</a> · <a href="/guide/fault-code-index-dometic-onan/">Onan / Dometic fault index</a>.</p>
-    </div></section>
+  <p>A generator that cranks but won’t fire is a different problem than one that clicks dead. Hour meters, fault blink codes, and fuel that sat through storage matter more than guessing a control board. Note exactly what happens when you press Start: click, slow crank, fast crank/no fire, start-then-die, or start-with-no-load. That single observation cuts the diagnostic tree in half.</p>
+
+  <h2>Quick path</h2>
+  <ol>
+    <li>Coach batteries strong enough to crank? Try with charger/shore support. Voltage under crank tells more than resting voltage.</li>
+    <li>Oil level / low-oil shutdown; prime per OEM if equipped. Low oil is a common “mysterious” no-start after a move.</li>
+    <li>Note any fault blink codes (Onan and others). Count the blinks twice; photo the service manual page if you have it.</li>
+    <li>Fuel age and valve position after storage. Stale gasoline and a closed generator fuel tap are classic post-winter fails.</li>
+    <li>Confirm the generator breaker and transfer switch path only after it runs — no-load vs no-start are different tickets.</li>
+  </ol>
+
+  <h2>Narrow the fault</h2>
+  <ul>
+    <li><strong>Click, no crank</strong> — battery, cables, starter solenoid, ground.</li>
+    <li><strong>Cranks, no start</strong> — fuel, spark/glow (diesel), safeties, control board, air filter / carb varnish on gas units.</li>
+    <li><strong>Starts, then dies</strong> — fuel delivery, vapor lock / heat soak, safety sensor, or auto-stop on fault.</li>
+    <li><strong>Starts, no load</strong> — breaker, transfer switch, load issues — see the full generator guide before replacing the genset.</li>
+  </ul>
+
+  <h2>Owner checklist</h2>
+  <ul>
+    <li>Generator brand/model and hour meter reading.</li>
+    <li>Fuel type (gas / diesel / LP) and how long the coach sat.</li>
+    <li>Exact Start behavior and any blink code count.</li>
+    <li>Whether shore power / inverter is available as a backup while we diagnose.</li>
+    <li>Coach location for a trip quote (Prefer Text).</li>
+  </ul>
+
+  <h2>When to stop DIY</h2>
+  <ul>
+    <li>Fuel smell in the bay, wet carb, or diesel leaks — do not keep cranking.</li>
+    <li>Opening sealed control boards or “flashing” controllers from random forums.</li>
+    <li>Running with known low oil after a shutdown — that is how you buy a short block.</li>
+    <li>Transfer switch work you are not metered for while the coach is on shore.</li>
+  </ul>
+
+  <h2>What we diagnose</h2>
+  <p>Mobile generator diagnosis: cranking voltage, safeties, fuel path, and fault-code interpretation (Onan / Dometic index). Labor ~$150/hr (1 hr min / 30-min); diagnostic $150 applied if you proceed. Prefer Text — corridor MT · WY · ID · WA. Dometic Professional Certified for appliance-adjacent work; generator service is diagnostics-first, not parts roulette.</p>
+
+  <p>Deep dive: <a href="/guide/generator-troubleshooting/">Generator troubleshooting</a> · <a href="/guide/fault-code-index-dometic-onan/">Onan / Dometic fault index</a> · <a href="/generator/">Generator service</a>. Hub: <a href="/troubleshoot/">Troubleshoot</a>.</p>
+  <p class="muted">Prefer Text — (616) 606-5277. Trip $75/30 mi then $1.50/mi · labor ~$150/hr (1 hr min / 30-min) · diagnostic $150 applied · winterize $175 · trip-prep $225. Credentials: Victron Professional Certified Installer · weBoost Authorized Installer · Peplink Certified Associate · Dometic Professional Certified.</p>
+</div></section>
 
 <section class="band" style="border-top:1px solid var(--rule)">
   <div class="wrap">
@@ -72,7 +105,6 @@
     </div>
   </div>
 </section>
-
 </main>
 <footer class="site-footer">
   <div class="wrap footer-grid">
@@ -105,7 +137,7 @@
     </div>
   </div>
   <div class="wrap">
-    <p class="footer-note"><span class="footer-quiet">Public beta — live field testing for United Mobile RV LLC.</span> Official UMRT and Victron Professional Certified Installer marks shown where authorized.</p>
+    <p class="footer-note"><span class="footer-quiet">Public beta / live test of United Mobile RV.</span> Fully functional sales site for corridor service — Prefer Text or Book. Credentials (text): Victron Professional Certified Installer · weBoost Authorized Installer · Peplink Certified Associate · Dometic Professional Certified.</p>
   </div>
 </footer>
 <div class="mobile-bar" aria-label="Quick actions">
