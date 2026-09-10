@@ -7,6 +7,12 @@ Private staging site. Separate from unitedmobilerv.com WordPress.
 - Build command: (empty)
 - Output directory: /
 
+## Book form + secrets (Pages)
+
+- **AI chat** (`functions/api/chat.js` → `POST /api/chat`): set Production env `OPENAI_API_KEY` (or `ANTHROPIC_API_KEY`). After saving secrets, **Redeploy** the project so Functions bind the new vars. Until then `/api/chat` returns `mode: "local"`.
+- **Book form** (`functions/api/book.js` → `POST /api/book`): set Production env `PUBLIC_WEB3FORMS_KEY`. Static HTML cannot read Pages env — the client posts to `/api/book`, which proxies to Web3Forms. Optional: inline a real public key in `window.PUBLIC_WEB3FORMS_KEY` as a client-side fallback.
+- Never paste secrets into chat or commit them.
+
 ## Canon
 - Phone: (616) 606-5277
 - Trip: $75 / 30mi then $1.50/mi each way
