@@ -43,7 +43,7 @@
   <div class="wrap">
     <span class="micro">Book</span>
     <h1>Book a Service</h1>
-    <p class="lead">Prefer to talk? Call or text <a href="tel:+16166065277">(616) 606-5277</a> anytime. Or send the form â required fields marked.</p>
+    <p class="lead">Text or call <a href="tel:+16166065277">(616) 606-5277</a> anytime — or send the form. We need your rig, issue, location, email, and phone.</p>
   </div>
 </section>
 <section class="band">
@@ -59,8 +59,16 @@
         <input id="phone" name="phone" type="tel" required autocomplete="tel">
       </div>
       <div>
-        <label for="city">City / ZIP <span class="req">*</span></label>
-        <input id="city" name="city_zip" required autocomplete="postal-code" placeholder="e.g. Billings 59101">
+        <label for="email">Email <span class="req">*</span></label>
+        <input id="email" name="email" type="email" required autocomplete="email">
+      </div>
+      <div>
+        <label for="location">Location <span class="req">*</span></label>
+        <input id="location" name="location" required autocomplete="postal-code" placeholder="City / ZIP (e.g. Billings 59101)">
+      </div>
+      <div>
+        <label for="rig">Rig info <span class="req">*</span></label>
+        <input id="rig" name="rig" required placeholder="Year / make / model (or van/trailer type)">
       </div>
       <div>
         <label for="prefer">Prefer <span class="req">*</span></label>
@@ -71,30 +79,22 @@
         </select>
       </div>
       <div class="full">
-        <label for="issue">Whatâs going on? <span class="req">*</span></label>
-        <textarea id="issue" name="issue" required placeholder="Symptoms, error codes, when it startedâ¦"></textarea>
-      </div>
-      <div>
-        <label for="email">Email</label>
-        <input id="email" name="email" type="email" autocomplete="email">
-      </div>
-      <div>
-        <label for="rig">RV year / make / model</label>
-        <input id="rig" name="rig">
+        <label for="issue">Issue <span class="req">*</span></label>
+        <textarea id="issue" name="issue" required placeholder="Symptoms, error codes, when it started…"></textarea>
       </div>
       <div>
         <label for="when">Preferred timing</label>
-        <input id="when" name="when" placeholder="This week, weekend, flexibleâ¦">
+        <input id="when" name="when" placeholder="This week, weekend, flexible…">
       </div>
       <div>
         <label for="found">How did you find us?</label>
         <input id="found" name="how_found">
       </div>
       <div class="full btn-row">
-        <button class="btn btn-gold" type="submit">Book a Service</button>
-        <a class="btn btn-ghost" href="tel:+16166065277">Call (616) 606-5277</a>
+        <button class="btn btn-gold" type="submit">Send — Text me back</button>
+        <a class="btn btn-ghost" href="sms:+16166065277">Text (616) 606-5277</a>
       </div>
-      <p class="form-note full">Online submit uses Web3FORMS when <code>PUBLIC_WEB3FORMS_KEY</code> is configured in Pages env / inline. Until then, call or text â we never bury the phone number.</p>
+      <p class="form-note full">Required: name, phone, email, location, rig, issue. Prefer defaults to Text. Online submit uses Web3FORMS when <code>PUBLIC_WEB3FORMS_KEY</code> is set. Until then, text or call — we never bury the number.</p>
       <div id="form-status" class="form-status full" role="status" aria-live="polite"></div>
     </form>
   </div>
