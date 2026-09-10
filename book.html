@@ -22,19 +22,89 @@
   <main class="wrap page">
     <h1>Book a Service</h1>
     <p>Tell us where you are and what’s going on. We’ll text you back to confirm.</p>
-    <form id="book-form" action="#" method="post" onsubmit="event.preventDefault(); alert('Staging form — wire Web3Forms or Square next. Call or text (616) 606-5277 for now.');">
+
+    <div id="form-success" hidden>
+      <p><strong>Thanks — we got your request.</strong> We’ll follow up using your preferred contact method soon.</p>
+      <p style="color:var(--gray)">Need us sooner? Call or text <a href="tel:+16166065277">(616) 606-5277</a>.</p>
+    </div>
+
+    <div id="form-error" hidden>
+      <p><strong>Something went wrong sending the form.</strong> Please try again, or call/text us directly:</p>
+      <p><a class="btn" href="tel:+16166065277">(616) 606-5277</a></p>
+    </div>
+
+    <form id="book-form" action="#" method="post" novalidate>
       <label>Name <input name="name" required autocomplete="name" /></label>
       <label>Phone <input name="phone" type="tel" required autocomplete="tel" /></label>
-      <label>Email <input name="email" type="email" autocomplete="email" /></label>
-      <label>City / location <input name="location" required /></label>
-      <label>RV / vehicle type <input name="rig" placeholder="e.g. Class A, travel trailer, van" /></label>
+      <label>Email <span style="font-weight:400;color:var(--gray)">(optional)</span>
+        <input name="email" type="email" autocomplete="email" />
+      </label>
+      <label>City / ZIP <input name="city_zip" required autocomplete="postal-code" placeholder="e.g. Grand Rapids 49503" /></label>
+      <label>RV / vehicle type <span style="font-weight:400;color:var(--gray)">(optional)</span>
+        <input name="rig" placeholder="e.g. Class A, travel trailer, van" />
+      </label>
       <label>What’s going on?
         <textarea name="issue" rows="5" required placeholder="Symptoms, when it started, any codes or recent work"></textarea>
       </label>
-      <button class="btn" type="submit">Book Now</button>
+      <label>Prefer contact by
+        <select name="contact_pref" required>
+          <option value="Text" selected>Text</option>
+          <option value="Call">Call</option>
+          <option value="Email">Email</option>
+        </select>
+      </label>
+      <button class="btn" type="submit" id="book-submit">Book Now</button>
     </form>
+
     <p style="margin-top:1.25rem;color:var(--gray)">Prefer text? <a href="tel:+16166065277">(616) 606-5277</a></p>
   </main>
-  <footer class="site-footer"><div class="wrap footer-inner"><p class="fine">Staging form placeholder — connect Web3Forms before public traffic.</p></div></footer>
+  <footer class="site-footer"><div class="wrap footer-inner"><p class="fine">Staging form — replace PUBLIC_FORM_ACCESS_KEY before public traffic.</p></div></footer>
+  <script>
+    // Stub: replace with your Web3Forms access key before going live.
+    const PUBLIC_FORM_ACCESS_KEY = "YOUR_WEB3FORMS_ACCESS_KEY";
+
+    const form = document.getElementById("book-form");
+    const successEl = document.getElementById("form-success");
+    const errorEl = document.getElementById("form-error");
+    const submitBtn = document.getElementById("book-submit");
+
+    form.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      errorEl.hidden = true;
+
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      const data = Object.fromEntries(new FormData(form).entries());
+      data.access_key = PUBLIC_FORM_ACCESS_KEY;
+      data.subject = "UMRT Book request";
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Sending…";
+
+      try {
+        const res = await fetch("https://api.web3forms.com/submit", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify(data),
+        });
+        const json = await res.json().catch(function () { return {}; });
+        if (!res.ok || json.success === false) {
+          throw new Error(json.message || "Submit failed");
+        }
+        form.hidden = true;
+        successEl.hidden = false;
+      } catch (err) {
+        errorEl.hidden = false;
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Book Now";
+      }
+    });
+  </script>
 </body>
 </html>

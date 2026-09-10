@@ -10,6 +10,8 @@ Host target: **Cloudflare Pages** (Git-connected).
 Static HTML/CSS — no build step. Cloudflare Pages can deploy from the repo root as a static site.
 
 ## Cloudflare Pages setup
+See also **[CF_PAGES.md](./CF_PAGES.md)** for a short reference card.
+
 1. Cloudflare Dashboard → **Workers & Pages** → **Create** → **Pages** → **Connect to Git**
 2. Authorize GitHub → select `crashdummy88/umrt-sales-prototype`
 3. Build settings:
@@ -26,7 +28,8 @@ Static HTML/CSS — no build step. Cloudflare Pages can deploy from the repo roo
 
 ## Status
 - MVP static pages: Home, Services, Pricing, Book, About
-- Book form is a **placeholder** (alert) until Web3Forms (or similar) is wired
+- Book form wired to **Web3Forms** (access key stubbed as `YOUR_WEB3FORMS_ACCESS_KEY` — replace before public traffic)
+- See **CF_PAGES.md** for Cloudflare Pages build settings
 - Team fact-check in progress (Audit / Sales / Brand / Dev)
 
 ## Do not
