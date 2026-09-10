@@ -677,11 +677,16 @@ h1, h2 { font-weight: 400; letter-spacing: -0.03em; }
 
 
 /* SHOW-READY footer proof strip */
+.footer-proof {
+  margin-top: calc(var(--space) * 5);
+  padding-top: calc(var(--space) * 4);
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
 .footer-brand-row {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: calc(var(--space) * 3);
+  gap: 10px;
+  margin-bottom: calc(var(--space) * 2);
 }
 .footer-logo {
   width: 40px;
@@ -698,8 +703,8 @@ h1, h2 { font-weight: 400; letter-spacing: -0.03em; }
 .footer-proof-strip {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  margin: 0 0 calc(var(--space) * 4);
+  gap: 6px;
+  margin: 0;
 }
 .footer-proof-strip img {
   width: 100%;
@@ -710,6 +715,6 @@ h1, h2 { font-weight: 400; letter-spacing: -0.03em; }
   display: block;
 }
 @media (max-width: 600px) {
-  .footer-proof-strip { grid-template-columns: repeat(2, 1fr); }
-  .footer-proof-strip img { height: 88px; }
+  .footer-proof-strip { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+  .footer-proof-strip img { height: 80px; }
 }
