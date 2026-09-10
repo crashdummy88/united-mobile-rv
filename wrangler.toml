@@ -5,3 +5,11 @@ pages_build_output_dir = "."
 # Workers AI — free open models (Llama). Bind as `AI` in CF Pages → Settings → Functions → Bindings.
 [ai]
 binding = "AI"
+
+# Forum database (Cloudflare D1). Create with:
+#   wrangler d1 create umrt_forum
+# then paste the returned database_id below.
+[[d1_databases]]
+binding = "DB"
+database_name = "umrt_forum"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"

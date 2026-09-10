@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mod Queue | United Mobile RV</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="/favicon.png" type="image/png">
+<link rel="stylesheet" href="/css/site.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap nav-bar">
+    <a class="brand" href="/"><img class="brand-logo" src="/assets/brand/umrt-logo.webp" alt="United Mobile RV" width="40" height="40"><span class="brand-text">United Mobile <span>RV</span></span></a>
+    <ul class="nav-links"><li><a href="/forum/">Back to Forum</a></li></ul>
+  </div>
+</header>
+<main id="main">
+<section class="page-hero">
+  <div class="wrap">
+    <h1>Moderation Queue</h1>
+    <p class="lead">Posts the AI classifier auto-held for review. Approve to publish, remove to keep hidden.</p>
+  </div>
+</section>
+<section class="band">
+  <div class="wrap wrap-narrow" id="queue">
+    <p class="muted">Loading&hellip;</p>
+  </div>
+</section>
+</main>
+<script>
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+
+async function load() {
+  const el = document.getElementById('queue');
+  const res = await fetch('/api/mod/queue');
+  const data = await res.json();
+  if (!data.success) {
+    el.innerHTML = '<p class="muted">' + (data.error === 'forbidden' ? 'You are not a moderator, or you are not signed in.' : 'Queue unavailable.') + '</p>';
+    return;
+  }
+  if (!data.items.length) {
+    el.innerHTML = '<p class="muted">Nothing waiting for review.</p>';
+    return;
+  }
+  el.innerHTML = data.items.map(function(item){
+    return '<div class="faq-item" data-kind="'+item.kind+'" data-id="'+item.id+'">' +
+      '<p class="mb-0"><strong>' + esc(item.kind) + '</strong> by ' + esc(item.author) + ' &mdash; ' + esc(item.created_at) + '</p>' +
+      '<p class="muted" style="font-size:13px">Flag reason: ' + esc(item.ai_reason || 'n/a') + '</p>' +
+      '<p>' + esc(item.preview).slice(0,400) + '</p>' +
+      '<div class="btn-row">' +
+        '<button class="btn btn-gold" data-action="approve">Approve</button>' +
+        '<button class="btn btn-ghost" data-action="remove">Keep Removed</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  el.querySelectorAll('button[data-action]').forEach(function(btn){
+    btn.addEventListener('click', async function(){
+      const card = btn.closest('[data-id]');
+      await fetch('/api/mod/queue', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ kind: card.dataset.kind, id: card.dataset.id, action: btn.dataset.action })
+      });
+      card.remove();
+    });
+  });
+}
+load();
+</script>
+</body>
+</html>
