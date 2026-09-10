@@ -16,7 +16,6 @@
 <meta property="og:url" content="https://umrt-sales-prototype.pages.dev/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/site.css">
 
 <script type="application/ld+json">
@@ -45,12 +44,15 @@
 }
 </script>
 
+  <link rel="preload" href="/fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/inter-600.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" as="image" href="/assets/photos/jobs/hero-3280-1200.webp" fetchpriority="high" type="image/webp">
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header">
   <div class="wrap nav-bar">
-    <a class="brand" href="/"><img class="brand-logo" src="/assets/brand/umrt-logo.png" alt="United Mobile RV" width="36" height="36"><span class="brand-text">United Mobile <span>RV</span></span></a>
+    <a class="brand" href="/"><img class="brand-logo" src="/assets/brand/umrt-logo.webp" onerror="this.src=\'/assets/brand/umrt-logo.png\'" alt="United Mobile RV" width="36" height="36"><span class="brand-text">United Mobile <span>RV</span></span></a>
     <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">☰</button>
     <ul class="nav-links"><li><a href="/" aria-current="page">Home</a></li>
 <li><a href="/service/">Services</a></li>
@@ -81,7 +83,10 @@
       </div>
     </div>
     <div class="hero-media">
-      <img src="https://unitedmobilerv.com/wp-content/uploads/2026/09/img_3280.jpg" alt="Brinkley fifth-wheel on a driveway with an open electrical bay and technician tools laid out for mobile service." width="1600" height="900">
+      <picture>
+        <source type="image/webp" srcset="/assets/photos/jobs/hero-3280-800.webp 800w, /assets/photos/jobs/hero-3280-1200.webp 1200w" sizes="(max-width:900px) 100vw, 45vw">
+        <img src="https://unitedmobilerv.com/wp-content/uploads/2026/09/img_3280.jpg" alt="Brinkley fifth-wheel on a driveway with an open electrical bay and technician tools laid out for mobile service." width="1600" height="900" fetchpriority="high" decoding="async">
+      </picture>
         <div class="badge-float">
       <div><strong>Victron Certified Installer</strong><span>Solar, lithium &amp; power diagnostics on site</span></div>
     </div>
