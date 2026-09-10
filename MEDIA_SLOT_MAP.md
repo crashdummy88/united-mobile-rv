@@ -41,6 +41,7 @@
 - Home IDs 2998/2994/2989/2970 never reused on service lines
 - Footer proof strip **omitted this PR** — only 8 unused Media IDs existed; all 8 assigned 1:1 to empty service lines (Dev Lead densify HARD). Brand footer strip soft/not blocking until more exclusive Media lands.
 - `/service/` hub restore already on main via #72 / 1ef1201 — not re-touched beyond footer 2045 mark
+- `/generator/` hub restore in this PR (pre-#68 body + #68 photo-band img_3030 + job-05 kept)
 
 ## Dupes killed
 - `img_3280` removed from Home grid, Wireless, Plumbing, About (hero-only)
