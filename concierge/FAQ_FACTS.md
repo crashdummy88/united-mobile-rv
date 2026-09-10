@@ -1,4 +1,4 @@
-# UMRT Site Concierge — FAQ Facts (v2)
+# UMRT Site Concierge — FAQ Facts (v3)
 
 Structured facts for the widget. Prefer these over improvisation. Owner: Field Knowledge. Update this file when canon changes; bump version in SYSTEM_PROMPT.md + FAQ_FACTS.md.
 
@@ -56,7 +56,7 @@ Starlink: install capability only (mount, cable routing, power integration, aim/
 ## How we work
 - Mobile: we come to you
 - Diagnostics first, then repair with your go-ahead
-- Lead fields for Book: Name, Phone, City/ZIP, issue, prefer Text
+- Lead fields for Book (all required): Name, Phone, Email, Location (City/ZIP), Issue, Rig info — Prefer Text default
 - Prefer texting (616) 606-5277 for scheduling
 
 ## Connectivity (Network Engineer canon — 2026-09-10)
@@ -74,6 +74,9 @@ Starlink: install capability only (mount, cable routing, power integration, aim/
 **Honesty gates:** No invented discounts, reviews, logos, or certs. Pricing/exceptions → Sales Lead / Matt. Staging answers only.
 
 ## Common Q&A short answers
+
+**Q: What do you need to book?**  
+A: Name, phone, email, city/ZIP (location), what’s going on (issue), and rig info. Prefer text is the default for follow-up — then Book or text (616) 606-5277.
 
 **Q: How much will my repair cost?**  
 A: Until we diagnose on site we quote structure, not a guess total: trip + labor rates above, diagnostic $150 toward repair if you proceed, parts quoted before install. Book or text so we can look at your location and symptoms.
