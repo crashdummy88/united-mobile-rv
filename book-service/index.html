@@ -43,7 +43,7 @@
   <div class="wrap">
     <span class="micro">Book</span>
     <h1>Book a Service</h1>
-    <p class="lead">Text or call <a href="tel:+16166065277">(616) 606-5277</a> anytime  -  or send the form below. We need your name, phone, email, location, rig, and issue so we can quote the trip before we roll.</p>
+    <p class="lead">Text or call <a href="tel:+16166065277">(616) 606-5277</a> anytime  -  or send the form. We need your rig, issue, location, email, and phone.</p>
   </div>
 </section>
 <section class="band">
@@ -52,15 +52,15 @@
     <form id="book-form" class="form-grid" novalidate>
       <div>
         <label for="name">Name <span class="req">*</span></label>
-        <input id="name" name="name" required autocomplete="name" placeholder="Your name">
+        <input id="name" name="name" required autocomplete="name">
       </div>
       <div>
         <label for="phone">Phone <span class="req">*</span></label>
-        <input id="phone" name="phone" type="tel" required autocomplete="tel" placeholder="Best number for text/call">
+        <input id="phone" name="phone" type="tel" required autocomplete="tel">
       </div>
       <div>
         <label for="email">Email <span class="req">*</span></label>
-        <input id="email" name="email" type="email" required autocomplete="email" placeholder="you@email.com">
+        <input id="email" name="email" type="email" required autocomplete="email">
       </div>
       <div>
         <label for="location">Location <span class="req">*</span></label>
@@ -88,13 +88,13 @@
       </div>
       <div>
         <label for="found">How did you find us?</label>
-        <input id="found" name="how_found" placeholder="Google, referral, campground, etc.">
+        <input id="found" name="how_found">
       </div>
       <div class="full btn-row">
         <button class="btn btn-gold" type="submit">Send  -  Text me back</button>
         <a class="btn btn-ghost" href="sms:+16166065277">Text (616) 606-5277</a>
       </div>
-      <p class="form-note full">Required: Name, Phone, Email, Location, Rig, Issue. Prefer defaults to Text  -  we will reply that way unless you pick Call or Email. Prefer text/call anytime if the form is slow: we never bury the number.</p>
+      <p class="form-note full">Required: name, phone, email, location, rig, issue. Prefer defaults to Text. Online submit uses Web3FORMS when <code>PUBLIC_WEB3FORMS_KEY</code> is set. Until then, text or call  -  we never bury the number.</p>
       <div id="form-status" class="form-status full" role="status" aria-live="polite"></div>
     </form>
   </div>
@@ -105,7 +105,7 @@
   <div class="wrap footer-grid">
     <div>
       <div class="footer-brand">United Mobile RV LLC</div>
-      <p class="mb-0">Active MT · WY · ID · WA corridor. Case-by-case beyond.</p>
+      <p class="mb-0">Wherever the road takes you  -  we've got you covered.</p>
       <p class="mt-6 mb-0"><a href="tel:+16166065277">(616) 606-5277</a><br>
       <a href="mailto:unitedrvnetwork@gmail.com">unitedrvnetwork@gmail.com</a></p>
     </div>
@@ -132,11 +132,11 @@
     </div>
   </div>
   <div class="wrap">
-    <p class="footer-note">Staging prototype for sales / design review. Separate from the live WordPress site at unitedmobilerv.com. No partner logos are displayed as images on this prototype  -  credential names appear in text only.</p>
+    <p class="footer-note">Staging prototype for sales / design review. Separate from the live WordPress site at unitedmobilerv.com. Official UMRT and Victron Certified Installer marks shown where authorized; other credentials appear as text until official badge files are added.</p>
   </div>
 </footer>
 <div class="mobile-bar" aria-label="Quick actions">
-  <a class="btn btn-ghost" href="tel:+16166065277">Text / Call</a>
+  <a class="btn btn-ghost" href="tel:+16166065277">Call</a>
   <a class="btn btn-gold" href="/book-service/">Book Now</a>
 </div>
 
