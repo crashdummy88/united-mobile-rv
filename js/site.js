@@ -28,7 +28,7 @@
       data.append('access_key', key);
       data.append('subject', 'UMRT Book a Service request');
       status.className = 'form-status';
-      status.textContent = 'Sendingâ¦';
+      status.textContent = 'Sending…';
       try {
         var res = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: data });
         var json = await res.json();
@@ -61,9 +61,11 @@
     '  <div class="chat-lead" id="chat-lead">',
     '    <div class="chat-lead-grid">',
     '      <div><label for="cl-name">Name *</label><input id="cl-name" name="name" autocomplete="name" required></div>',
-    '      <div><label for="cl-phone">Phone *</label><input id="cl-phone" name="phone" type="tel" autocomplete="tel" required></div>',
-    '      <div><label for="cl-city">City / ZIP *</label><input id="cl-city" name="city_zip" required></div>',
-    '      <div><label for="cl-prefer">Prefer *</label><select id="cl-prefer" required><option value="">Select…</option><option value="Text" selected>Text</option><option value="Call">Call</option><option value="Email">Email</option></select></div>',
+    '      <div><label for="cl-phone">Phone *</label><input id="cl-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required></div>',
+    '      <div><label for="cl-email">Email *</label><input id="cl-email" name="email" type="email" autocomplete="email" required></div>',
+    '      <div><label for="cl-city">City / ZIP *</label><input id="cl-city" name="city_zip" required placeholder="e.g. Billings 59101"></div>',
+    '      <div><label for="cl-prefer">Prefer contact by *</label><select id="cl-prefer" name="prefer" required><option value="Text" selected>Text</option><option value="Call">Call</option><option value="Email">Email</option></select></div>',
+    '      <div><label for="cl-rig">RV year / make / model *</label><input id="cl-rig" name="rig" required></div>',
     '      <div class="full"><label for="cl-issue">Issue *</label><input id="cl-issue" name="issue" required placeholder="What’s going on?"></div>',
     '    </div>',
     '    <button type="button" class="chat-send" id="chat-lead-go" style="width:100%;margin-top:8px">Start chat</button>',
@@ -116,17 +118,19 @@
   leadGo.addEventListener('click', function () {
     var name = document.getElementById('cl-name').value.trim();
     var phone = document.getElementById('cl-phone').value.trim();
+    var email = document.getElementById('cl-email').value.trim();
     var city = document.getElementById('cl-city').value.trim();
     var prefer = document.getElementById('cl-prefer').value;
     var issue = document.getElementById('cl-issue').value.trim();
-    if (!name || !phone || !city || !prefer || !issue) {
-      addBubble('bot', 'Please fill Name, Phone, City/ZIP, Prefer, and Issue — then we can chat. Or call <a href="tel:+16166065277">(616) 606-5277</a>.');
+    var rig = document.getElementById('cl-rig').value.trim();
+    if (!name || !phone || !email || !city || !prefer || !issue || !rig) {
+      addBubble('bot', 'Please fill Name, Phone, Email, City/ZIP, Prefer, Issue, and Rig — then we can chat. Or call <a href="tel:+16166065277">(616) 606-5277</a>.');
       return;
     }
-    leadData = { name: name, phone: phone, city_zip: city, prefer: prefer, issue: issue };
+    leadData = { name: name, phone: phone, email: email, city_zip: city, prefer: prefer, issue: issue, rig: rig };
     lead.hidden = true;
     compose.hidden = false;
-    addBubble('user', 'Lead: ' + name + ' · ' + city + ' · Prefer ' + prefer + ' · ' + issue);
+    addBubble('user', 'Lead: ' + name + ' · ' + email + ' · ' + city + ' · ' + rig + ' · Prefer ' + prefer + ' · ' + issue);
     addBubble('bot', 'Thanks, ' + name.split(' ')[0] + '. What would you like to know?');
     history.push({ role: 'user', content: 'Lead capture: ' + JSON.stringify(leadData) });
     input.focus();
