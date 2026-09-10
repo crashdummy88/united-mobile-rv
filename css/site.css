@@ -462,3 +462,8 @@ a.trust-chip:hover { border-color: var(--gold); color: #fff; }
 .cred-logos a { text-decoration: none; color: inherit; }
 .cred-logos a:hover { color: var(--gold); }
 .brand-logo { height: 48px; width: auto; display: block; border-radius: 4px; }
+
+
+/* Enterprise media density — WP Media hotlinks + Peplink mark */
+.cred-logos a img { display: block; }
+.page-hero + .photo-band { border-top: 1px solid var(--rule); }
