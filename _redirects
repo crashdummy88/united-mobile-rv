@@ -1,0 +1,6 @@
+# Soft Pages → live convert ONLY (never whole hub / never /*)
+# Funnel — mothership united-mobile-rv.pages.dev
+/go/book      https://unitedmobilerv.com/book-service/  302
+/go/book/     https://unitedmobilerv.com/book-service/  302
+/go/software  https://umrt-software.pages.dev/  302
+/go/software/ https://umrt-software.pages.dev/  302
