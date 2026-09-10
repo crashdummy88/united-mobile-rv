@@ -1,4 +1,4 @@
-# UMRT Site Concierge — FAQ Facts (v4.1)
+# UMRT Site Concierge — FAQ Facts (v4.2)
 
 Structured facts for the widget. Prefer these over improvisation. Owner: Field Knowledge. Update this file when canon changes; bump version in SYSTEM_PROMPT.md + FAQ_FACTS.md.
 
@@ -11,6 +11,14 @@ Structured facts for the widget. Prefer these over improvisation. Owner: Field K
 | Payments | Square |
 | Public site | unitedmobilerv.com |
 | Reviews hub | Google Business Profile (primary) |
+
+
+## Domain HOLD
+| Fact | Value |
+|------|-------|
+| Staging / mothership | united-mobile-rv.pages.dev (Cloudflare Pages prototype) |
+| Live public site | unitedmobilerv.com (WordPress) — **Domain HOLD** on Pages (custom domain not attached yet) |
+| SEO | Pages mothership is noindex vs live WP |
 
 ## Pricing (Sept 2026 canon)
 | Item | Amount | Notes |
