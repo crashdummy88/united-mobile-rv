@@ -718,3 +718,37 @@ h1, h2 { font-weight: 400; letter-spacing: -0.03em; }
   .footer-proof-strip { grid-template-columns: repeat(2, 1fr); gap: 6px; }
   .footer-proof-strip img { height: 80px; }
 }
+
+
+/* VISUAL nav + footer strip polish (#84) */
+.site-header {
+  backdrop-filter: blur(8px);
+  background: rgba(26,26,26,0.94);
+}
+.brand-logo {
+  border-radius: 6px;
+}
+.nav-toggle {
+  min-width: 44px;
+  min-height: 44px;
+}
+.nav-bar a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.footer-proof {
+  margin-top: calc(var(--space) * 5);
+  padding-top: calc(var(--space) * 4);
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.footer-proof-strip img {
+  transition: opacity 0.15s ease, border-color 0.15s ease;
+}
+.footer-proof-strip img:hover {
+  opacity: 0.92;
+  border-color: rgba(201,151,44,0.35);
+}
+@media (prefers-reduced-motion: reduce) {
+  .footer-proof-strip img { transition: none; }
+}
