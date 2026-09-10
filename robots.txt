@@ -3,3 +3,21 @@ Allow: /
 
 # Brand SEO 2026-09-10: mothership pages.dev is noindex via X-Robots-Tag
 # (live convert lives on unitedmobilerv.com). Soft CTAs still crawlable with follow.
+# Exception: /forum/ and /forum-live/ are indexable (see _headers) — real Q&A
+# content is meant to rank and be cited by AI answer engines.
+
+User-agent: GPTBot
+Allow: /forum/
+Allow: /forum-live/
+
+User-agent: ClaudeBot
+Allow: /forum/
+Allow: /forum-live/
+
+User-agent: PerplexityBot
+Allow: /forum/
+Allow: /forum-live/
+
+User-agent: Google-Extended
+Allow: /forum/
+Allow: /forum-live/
