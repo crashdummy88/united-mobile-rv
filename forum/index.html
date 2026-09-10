@@ -31,8 +31,16 @@
   .tou-consent-note a{color:#8a8a8a;text-decoration:underline;}
   .tou-consent-note a:hover{color:#C9972C;}
 
-  .cat-pill{display:inline-flex;align-items:center;background:rgba(201,151,44,0.12);border:1px solid rgba(201,151,44,0.35);
-    color:#E8B84B;font-size:0.85em;font-weight:600;padding:6px 14px;border-radius:999px;}
+  .cat-nav-wrap{background:linear-gradient(160deg, rgba(201,151,44,0.08) 0%, rgba(201,151,44,0.02) 100%);
+    border:1px solid rgba(201,151,44,0.25);border-radius:16px;padding:20px;}
+  .cat-nav-label{font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#a08650;margin-bottom:12px;}
+  .cat-nav{display:flex;flex-wrap:wrap;gap:10px;}
+  .cat-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.03);
+    border:1px solid rgba(201,151,44,0.3);color:#E8B84B;font-size:0.9em;font-weight:600;
+    padding:9px 16px;border-radius:999px;cursor:pointer;transition:all .15s ease;font-family:inherit;}
+  .cat-pill:hover{background:rgba(201,151,44,0.16);border-color:rgba(201,151,44,0.55);transform:translateY(-1px);}
+  .cat-pill.is-active{background:#C9972C;border-color:#C9972C;color:#1A1A1A;box-shadow:0 4px 14px rgba(201,151,44,0.35);}
+  .cat-pill .emoji{font-size:1.05em;}
 </style>
 </head>
 <body>
@@ -72,12 +80,16 @@
 
 <section class="band band-gray">
   <div class="wrap wrap-narrow">
-    <div class="cat-nav" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:8px">
-      <span class="cat-pill">💬 General</span>
-      <span class="cat-pill">🔧 Repair &amp; Diagnostics</span>
-      <span class="cat-pill">⚡ Off-Grid &amp; Power</span>
-      <span class="cat-pill">📡 Connectivity</span>
-      <span class="cat-pill">🗺️ Route &amp; Service Areas</span>
+    <div class="cat-nav-wrap">
+      <div class="cat-nav-label">Browse by topic</div>
+      <div class="cat-nav">
+        <button type="button" class="cat-pill is-active" data-cat="all"><span class="emoji">🧭</span> All</button>
+        <button type="button" class="cat-pill" data-cat="general"><span class="emoji">💬</span> General</button>
+        <button type="button" class="cat-pill" data-cat="repair"><span class="emoji">🔧</span> Repair &amp; Diagnostics</button>
+        <button type="button" class="cat-pill" data-cat="power"><span class="emoji">⚡</span> Off-Grid &amp; Power</button>
+        <button type="button" class="cat-pill" data-cat="connectivity"><span class="emoji">📡</span> Connectivity</button>
+        <button type="button" class="cat-pill" data-cat="route"><span class="emoji">🗺️</span> Route &amp; Service Areas</button>
+      </div>
     </div>
   </div>
 </section>
@@ -235,6 +247,24 @@
     renderAuth();
   }
 
+  var allThreads = [];
+  var activeCategory = 'all';
+
+  function renderThreadList() {
+    var filtered = activeCategory === 'all' ? allThreads : allThreads.filter(function(t){ return t.category === activeCategory; });
+    if (!filtered.length) {
+      threadList.innerHTML = '<p class="muted">' + (activeCategory === 'all' ? 'No threads yet — be the first to post.' : 'No threads in this topic yet — be the first to post one.') + '</p>';
+      return;
+    }
+    threadList.innerHTML = filtered.map(function(t){
+      return '<div class="faq-item"><a class="text-link" href="#" data-open-thread="'+esc(t.id)+'"><strong>'+esc(t.title)+'</strong></a>' +
+        '<p class="muted mb-0" style="font-size:13px">' + catEmoji(t.category) + ' ' + esc(t.category) + ' &middot; ' + t.reply_count + (t.reply_count===1?' reply':' replies') + ' &middot; by ' + esc(t.author) + ' &middot; updated ' + timeAgo(t.updated_at) + '</p></div>';
+    }).join('');
+    threadList.querySelectorAll('[data-open-thread]').forEach(function(a){
+      a.addEventListener('click', function(e){ e.preventDefault(); openThread(a.dataset.openThread); });
+    });
+  }
+
   async function loadThreadList() {
     threadView.classList.remove('is-open');
     threadList.classList.remove('is-hidden');
@@ -246,17 +276,23 @@
         threadList.innerHTML = '<p class="muted">No threads yet — be the first to post.</p>';
         return;
       }
-      threadList.innerHTML = data.threads.map(function(t){
-        return '<div class="faq-item"><a class="text-link" href="#" data-open-thread="'+esc(t.id)+'"><strong>'+esc(t.title)+'</strong></a>' +
-          '<p class="muted mb-0" style="font-size:13px">' + catEmoji(t.category) + ' ' + esc(t.category) + ' &middot; ' + t.reply_count + (t.reply_count===1?' reply':' replies') + ' &middot; by ' + esc(t.author) + ' &middot; updated ' + timeAgo(t.updated_at) + '</p></div>';
-      }).join('');
-      threadList.querySelectorAll('[data-open-thread]').forEach(function(a){
-        a.addEventListener('click', function(e){ e.preventDefault(); openThread(a.dataset.openThread); });
-      });
+      allThreads = data.threads;
+      renderThreadList();
     } catch {
       threadList.innerHTML = '<p class="muted">Could not load threads right now.</p>';
     }
   }
+
+  document.querySelectorAll('.cat-pill[data-cat]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      activeCategory = btn.dataset.cat;
+      document.querySelectorAll('.cat-pill[data-cat]').forEach(function(b){ b.classList.toggle('is-active', b === btn); });
+      threadView.classList.remove('is-open');
+      threadList.classList.remove('is-hidden');
+      renderThreadList();
+      threadList.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
 
   async function openThread(id) {
     threadList.classList.add('is-hidden');
