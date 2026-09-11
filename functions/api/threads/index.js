@@ -2,6 +2,7 @@ import { readSession, randomId } from '../../_lib/session.js';
 import { moderateText } from '../../_lib/moderate.js';
 import { draftAiReply } from '../../_lib/ai-reply.js';
 import { notifyForumActivity } from '../../_lib/notify.js';
+import { verifyTurnstile } from '../../_lib/turnstile.js';
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -53,6 +54,9 @@ export async function onRequestPost(context) {
   } catch {
     return json({ success: false, error: 'invalid_json' }, 400);
   }
+
+  const ts = await verifyTurnstile(body.turnstileToken, env, request.headers.get('CF-Connecting-IP'));
+  if (!ts.ok) return json({ success: false, error: 'turnstile_failed', message: 'Security check failed — please try again.' }, 403);
 
   const title = (body.title || '').toString().trim().slice(0, 200);
   const text = (body.body || '').toString().trim().slice(0, 8000);

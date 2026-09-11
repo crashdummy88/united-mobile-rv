@@ -11,6 +11,7 @@
 <link rel="icon" href="/favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png">
 <link rel="stylesheet" href="/css/site.css">
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <link rel="preload" href="/fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/inter-600.woff2" as="font" type="font/woff2" crossorigin>
 <style>
@@ -137,6 +138,7 @@
       </select>
       <textarea class="forum-input" id="tf-body" rows="5" placeholder="What's going on?" maxlength="8000"></textarea>
       <label class="upload-label">Photos (optional, up to 4, JPG/PNG/WEBP/GIF, max 5MB each)<input type="file" id="tf-image" accept="image/jpeg,image/png,image/webp,image/gif" multiple class="forum-input"></label>
+      <div class="cf-turnstile" id="tf-turnstile" data-sitekey="0x4AAAAAAEvvXidVbXxlagxj" style="margin:10px 0"></div>
       <div class="btn-row">
         <button type="submit" class="btn btn-gold" id="tf-submit-btn">Post Thread</button>
       </div>
@@ -152,6 +154,7 @@
       <form id="reply-form" style="margin-top:20px">
         <textarea class="forum-input" id="rf-body" rows="4" placeholder="Write a reply&hellip;" maxlength="8000"></textarea>
         <label class="upload-label">Photos (optional, up to 4, JPG/PNG/WEBP/GIF, max 5MB each)<input type="file" id="rf-image" accept="image/jpeg,image/png,image/webp,image/gif" multiple class="forum-input"></label>
+        <div class="cf-turnstile" id="rf-turnstile" data-sitekey="0x4AAAAAAEvvXidVbXxlagxj" style="margin:10px 0"></div>
         <div class="btn-row">
           <button type="submit" class="btn btn-gold" id="rf-submit-btn">Reply</button>
         </div>
@@ -379,14 +382,17 @@
       if (!body) return;
       submitBtn.disabled = true;
       status.textContent = '';
+      var turnstileToken = (window.turnstile && document.getElementById('rf-turnstile')) ? window.turnstile.getResponse('rf-turnstile') : '';
+      if (!turnstileToken) { status.textContent = 'Please complete the security check.'; submitBtn.disabled = false; return; }
       var upload = await uploadImages(imageInput, status);
       if (!upload.ok) { submitBtn.disabled = false; return; }
       var res2 = await fetch('/api/threads/' + encodeURIComponent(id), {
-        method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ body: body, imageKeys: upload.keys })
+        method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ body: body, imageKeys: upload.keys, turnstileToken: turnstileToken })
       });
       var d2 = await res2.json();
       submitBtn.disabled = false;
-      if (!d2.success) { status.textContent = 'Could not post reply.'; return; }
+      if (window.turnstile) { try { window.turnstile.reset('rf-turnstile'); } catch (e) {} }
+      if (!d2.success) { status.textContent = d2.message || 'Could not post reply.'; return; }
       if (d2.held_for_review) { status.textContent = d2.message; }
       else { document.getElementById('rf-body').value=''; imageInput.value=''; status.textContent=''; openThread(id); }
     };
@@ -405,15 +411,18 @@
     if (!title || !body) { status.textContent = 'Title and body required.'; return; }
     submitBtn.disabled = true;
     status.textContent = '';
+    var turnstileToken = (window.turnstile && document.getElementById('tf-turnstile')) ? window.turnstile.getResponse('tf-turnstile') : '';
+    if (!turnstileToken) { status.textContent = 'Please complete the security check.'; submitBtn.disabled = false; return; }
     var upload = await uploadImages(imageInput, status);
     if (!upload.ok) { submitBtn.disabled = false; return; }
     var res = await fetch('/api/threads', {
       method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ title: title, body: body, category: category, imageKeys: upload.keys })
+      body: JSON.stringify({ title: title, body: body, category: category, imageKeys: upload.keys, turnstileToken: turnstileToken })
     });
     var data = await res.json();
     submitBtn.disabled = false;
-    if (!data.success) { status.textContent = 'Could not post.'; return; }
+    if (window.turnstile) { try { window.turnstile.reset('tf-turnstile'); } catch (e) {} }
+    if (!data.success) { status.textContent = data.message || 'Could not post.'; return; }
     if (data.held_for_review) { status.textContent = data.message; }
     else {
       document.getElementById('tf-title').value='';
