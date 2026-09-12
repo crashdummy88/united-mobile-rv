@@ -13,7 +13,7 @@ Do not sign the message, do not use a greeting like "Hi", just give the guidance
 export async function draftAiReply(ai, title, text) {
   if (!ai) return null;
   try {
-    const result = await ai.run('@cf/meta/llama-3.1-8b-instruct', {
+    const result = await ai.run('@cf/meta/llama-3.1-8b-instruct-fast', {
       messages: [
         { role: 'system', content: DRAFT_PROMPT },
         { role: 'user', content: `${title}\n\n${text}`.slice(0, 4000) },
