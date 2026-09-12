@@ -140,7 +140,7 @@ export async function onRequestGet(context) {
   .badge-locked{background:rgba(201,151,44,0.12);color:#C9972C;border:1px solid rgba(201,151,44,0.35)}
   .badge-cat{background:rgba(255,255,255,0.04);color:#E8B84B;border:1px solid rgba(201,151,44,0.3)}
   .thread-actions{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}
-  textarea.forum-input,input.forum-input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid #333;background:#111;color:#f2f2f2;font-family:inherit;font-size:0.95em;margin-bottom:10px}
+  textarea.forum-input,input.forum-input{width:100%;padding:14px 16px;border-radius:10px;border:1px solid #333;background:#111;color:#f2f2f2;font-family:inherit;font-size:1.05em;line-height:1.5;margin-bottom:10px}
   .held-note{color:#C9972C;font-size:0.85em}
   .post-images{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-top:10px;max-width:520px}
   .post-images img{width:100%;height:140px;object-fit:cover;border-radius:8px;border:1px solid #333;cursor:zoom-in}

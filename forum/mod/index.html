@@ -47,13 +47,14 @@ async function load() {
     return;
   }
   el.innerHTML = data.items.map(function(item){
-    return '<div class="faq-item" data-kind="'+item.kind+'" data-id="'+item.id+'">' +
+    return '<div class="faq-item" data-kind="'+item.kind+'" data-id="'+item.id+'" data-author-id="'+esc(item.author_id||'')+'">' +
       '<p class="mb-0"><strong>' + esc(item.kind) + '</strong> by ' + esc(item.author) + ' &mdash; ' + esc(item.created_at) + '</p>' +
       '<p class="muted" style="font-size:13px">Flag reason: ' + esc(item.ai_reason || 'n/a') + '</p>' +
       '<p>' + esc(item.preview).slice(0,400) + '</p>' +
       '<div class="btn-row">' +
         '<button class="btn btn-gold" data-action="approve">Approve</button>' +
         '<button class="btn btn-ghost" data-action="remove">Keep Removed</button>' +
+        (item.author_id ? '<button class="btn btn-ghost" data-ban-user="'+esc(item.author_id)+'" style="color:#e05a5a">Ban ' + esc(item.author) + '</button>' : '') +
       '</div>' +
     '</div>';
   }).join('');
@@ -69,6 +70,19 @@ async function load() {
       card.remove();
     });
   });
+
+  el.querySelectorAll('button[data-ban-user]').forEach(function(btn){
+    btn.addEventListener('click', async function(){
+      if (!confirm('Ban this member? They will be signed out of the forum immediately and unable to post or sign in again.')) return;
+      btn.disabled = true;
+      const res = await fetch('/api/mod/queue', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ kind: 'user', id: btn.dataset.banUser, action: 'ban' })
+      });
+      const d = await res.json().catch(function(){return {};});
+      btn.textContent = d.success ? 'Banned' : (d.error === 'cannot_ban_moderator' ? 'Cannot ban a moderator' : 'Could not ban');
+    });
+  });
 }
 function loadReports() {
   return fetch('/api/mod/queue').then(function(r){ return r.json(); }).then(function(data){
@@ -76,12 +90,13 @@ function loadReports() {
     if (!data.success) { el.innerHTML = ''; return; }
     if (!data.reports || !data.reports.length) { el.innerHTML = '<p class="muted">No open reports.</p>'; return; }
     el.innerHTML = data.reports.map(function(r){
-      return '<div class="faq-item" data-report-id="'+r.id+'">' +
+      return '<div class="faq-item" data-report-id="'+r.id+'" data-thread-id="'+esc(r.thread_id||'')+'" data-thread-author-id="'+esc(r.thread_author_id||'')+'">' +
         '<p class="mb-0"><strong>Reported: ' + esc(r.reason) + '</strong> by ' + esc(r.reporter) + ' &mdash; ' + esc(r.created_at) + '</p>' +
-        (r.thread_title ? '<p class="muted" style="font-size:13px"><a class="text-link" href="/forum/t/'+esc(r.thread_id)+'" target="_blank">' + esc(r.thread_title) + '</a></p>' : '') +
+        (r.thread_title ? '<p class="muted" style="font-size:13px"><a class="text-link" href="/forum/t/'+esc(r.thread_id)+'" target="_blank">' + esc(r.thread_title) + '</a> (by ' + esc(r.thread_author_name||'unknown') + ')</p>' : '') +
         '<div class="btn-row">' +
           '<button class="btn btn-ghost" data-report-action="dismiss">Dismiss</button>' +
           (r.thread_id ? '<button class="btn btn-ghost" data-report-action="lock">Lock thread</button>' : '') +
+          (r.thread_author_id ? '<button class="btn btn-ghost" data-ban-user="'+esc(r.thread_author_id)+'" style="color:#e05a5a">Ban thread author</button>' : '') +
         '</div>' +
       '</div>';
     }).join('');
@@ -93,11 +108,20 @@ function loadReports() {
           await fetch('/api/mod/queue', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ kind:'report', id: reportId, action:'dismiss_report' }) });
           card.remove();
         } else if (btn.dataset.reportAction === 'lock') {
-          var threadId = card.querySelector('a')?.getAttribute('href')?.split('/').pop();
+          var threadId = card.dataset.threadId;
           if (threadId) await fetch('/api/mod/queue', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ kind:'thread', id: threadId, action:'lock' }) });
           await fetch('/api/mod/queue', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ kind:'report', id: reportId, action:'dismiss_report' }) });
           card.remove();
         }
+      });
+    });
+    el.querySelectorAll('[data-ban-user]').forEach(function(btn){
+      btn.addEventListener('click', async function(){
+        if (!confirm('Ban this member? They will be signed out of the forum immediately and unable to post or sign in again.')) return;
+        btn.disabled = true;
+        const res = await fetch('/api/mod/queue', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ kind:'user', id: btn.dataset.banUser, action:'ban' }) });
+        const d = await res.json().catch(function(){return {};});
+        btn.textContent = d.success ? 'Banned' : (d.error === 'cannot_ban_moderator' ? 'Cannot ban a moderator' : 'Could not ban');
       });
     });
   });

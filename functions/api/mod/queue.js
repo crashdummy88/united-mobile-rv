@@ -22,19 +22,20 @@ export async function onRequestGet(context) {
   if (!session) return json({ success: false, error: 'forbidden' }, 403);
 
   const { results: threads } = await env.DB.prepare(
-    `SELECT t.id, 'thread' AS kind, t.title AS preview, t.ai_reason, t.created_at, u.display_name AS author
+    `SELECT t.id, 'thread' AS kind, t.title AS preview, t.ai_reason, t.created_at, u.id AS author_id, u.display_name AS author
      FROM threads t JOIN users u ON u.id = t.author_id WHERE t.hidden = 1 ORDER BY t.created_at DESC LIMIT 50`
   ).all();
   const { results: posts } = await env.DB.prepare(
-    `SELECT p.id, 'post' AS kind, p.body AS preview, p.ai_reason, p.created_at, p.thread_id, u.display_name AS author
+    `SELECT p.id, 'post' AS kind, p.body AS preview, p.ai_reason, p.created_at, p.thread_id, u.id AS author_id, u.display_name AS author
      FROM posts p JOIN users u ON u.id = p.author_id WHERE p.hidden = 1 ORDER BY p.created_at DESC LIMIT 50`
   ).all();
 
   const { results: reports } = await env.DB.prepare(
     `SELECT r.id, r.reason, r.thread_id, r.post_id, r.created_at, u.display_name AS reporter,
-       t.title AS thread_title
+       t.title AS thread_title, t.author_id AS thread_author_id, tu.display_name AS thread_author_name
      FROM reports r JOIN users u ON u.id = r.reporter_id
      LEFT JOIN threads t ON t.id = r.thread_id
+     LEFT JOIN users tu ON tu.id = t.author_id
      WHERE r.status = 'open' ORDER BY r.created_at DESC LIMIT 50`
   ).all();
 
@@ -54,9 +55,21 @@ export async function onRequestPost(context) {
     return json({ success: false, error: 'invalid_json' }, 400);
   }
   const { kind, id, action } = body;
-  // kind: 'thread'|'post'|'report' , action: 'approve'|'remove'|'dismiss_report'|'lock'|'unlock'
-  if (!kind || !id || !['approve', 'remove', 'dismiss_report', 'lock', 'unlock'].includes(action)) {
+  // kind: 'thread'|'post'|'report'|'user' , action: 'approve'|'remove'|'dismiss_report'|'lock'|'unlock'|'ban'|'unban'
+  if (!kind || !id || !['approve', 'remove', 'dismiss_report', 'lock', 'unlock', 'ban', 'unban'].includes(action)) {
     return json({ success: false, error: 'missing_fields' }, 400);
+  }
+
+  if (kind === 'user') {
+    if (!['ban', 'unban'].includes(action)) return json({ success: false, error: 'invalid_action_for_kind' }, 400);
+    const target = await env.DB.prepare('SELECT id, is_mod FROM users WHERE id = ?').bind(id).first();
+    if (!target) return json({ success: false, error: 'not_found' }, 404);
+    if (target.is_mod) return json({ success: false, error: 'cannot_ban_moderator' }, 400);
+    await env.DB.prepare('UPDATE users SET banned = ? WHERE id = ?').bind(action === 'ban' ? 1 : 0, id).run();
+    await env.DB.prepare(
+      `INSERT INTO moderation_log (id, author_id, action, reason) VALUES (?, ?, ?, ?)`
+    ).bind(crypto.randomUUID(), id, `mod_${action}`, `by ${session.name}`).run();
+    return json({ success: true, banned: action === 'ban' });
   }
 
   if (kind === 'report') {

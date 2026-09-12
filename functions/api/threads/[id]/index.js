@@ -44,6 +44,11 @@ export async function onRequestPost(context) {
   const session = await readSession(request, env.SESSION_SECRET);
   if (!session) return json({ success: false, error: 'auth_required' }, 401);
 
+  // Re-check banned status on every write -- a ban must actually cut off
+  // an already-logged-in bad actor, not just block future logins.
+  const banCheck = await env.DB.prepare('SELECT banned FROM users WHERE id = ?').bind(session.uid).first();
+  if (!banCheck || banCheck.banned) return json({ success: false, error: 'banned' }, 403);
+
   const thread = await env.DB.prepare('SELECT id, locked FROM threads WHERE id = ? AND hidden = 0')
     .bind(params.id)
     .first();
