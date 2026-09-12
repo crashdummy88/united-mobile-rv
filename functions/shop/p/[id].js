@@ -72,6 +72,8 @@ export async function onRequestGet(context) {
   .service-tier input{margin-right:10px}
   textarea.forum-input,input.forum-input{width:100%;padding:14px 16px;border-radius:10px;border:1px solid #333;background:#111;color:#f2f2f2;font-family:inherit;font-size:1.05em;line-height:1.5;margin-bottom:10px}
   .held-note{color:#C9972C;font-size:0.85em}
+  .cart-badge-count{display:inline-block;background:#E8B84B;color:#111;border-radius:999px;font-size:0.75em;font-weight:800;padding:1px 7px;margin-left:6px}
+  .add-cart-btn{margin:10px 0 4px}
 </style>
 </head>
 <body>
@@ -80,6 +82,7 @@ export async function onRequestGet(context) {
     <a class="brand" href="/"><img class="brand-logo" src="/assets/brand/umrt-logo.webp" alt="United Mobile RV" width="40" height="40"><span class="brand-text">United Mobile <span>RV</span></span></a>
     <ul class="nav-links">
       <li><a href="/shop/">&larr; Shop</a></li>
+      <li><a href="/shop/cart">Cart <span class="cart-badge-count" hidden></span></a></li>
       <li><a href="/forum/">Forum</a></li>
       <li><a href="/guide/">Guides</a></li>
     </ul>
@@ -94,6 +97,7 @@ export async function onRequestGet(context) {
     <div class="price-tag">$${Number(product.retail_price).toLocaleString()}</div>
     <p class="price-note">Public reference price (${esc(product.price_source || 'source on file')}) -- your actual quote may differ once availability and shipping are confirmed.</p>
     <p class="muted">${esc(stockNote)}</p>
+    <button type="button" class="btn btn-gold add-cart-btn" id="add-cart-btn" data-product-id="${esc(product.id)}">Add to Cart</button>
   </div>
 </section>
 <section class="band">
@@ -128,8 +132,17 @@ export async function onRequestGet(context) {
   </div>
 </section>
 </main>
+<script src="/js/cart.js"></script>
 <script>
 (function () {
+  var addBtn = document.getElementById('add-cart-btn');
+  addBtn.addEventListener('click', function () {
+    window.UMRTCart.addToCart(addBtn.dataset.productId, 1);
+    var original = addBtn.textContent;
+    addBtn.textContent = 'Added to Cart \u2713';
+    setTimeout(function () { addBtn.textContent = original; }, 1200);
+  });
+
   var form = document.getElementById('quote-form');
   form.addEventListener('submit', async function (e) {
     e.preventDefault();

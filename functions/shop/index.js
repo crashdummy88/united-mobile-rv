@@ -56,11 +56,14 @@ export async function onRequestGet(context) {
   const sectionsHtml = categoriesToShow.map((cat) => {
     const label = CATEGORY_LABELS[cat] || cat;
     const cards = byCategory[cat].map((p) => `
-      <a class="shop-card" href="${base}/shop/p/${esc(p.id)}">
-        <div class="shop-card-title">${esc(displayName(p.manufacturer, p.title))}</div>
-        <div class="shop-card-price">$${Number(p.retail_price).toLocaleString()}</div>
-        <div class="shop-card-meta">${p.product_type === 'kit' ? 'Complete kit' : 'Component'} &middot; price shown is a public reference price, not a live quote</div>
-      </a>`).join('');
+      <div class="shop-card">
+        <a class="shop-card-link" href="${base}/shop/p/${esc(p.id)}">
+          <div class="shop-card-title">${esc(displayName(p.manufacturer, p.title))}</div>
+          <div class="shop-card-price">$${Number(p.retail_price).toLocaleString()}</div>
+          <div class="shop-card-meta">${p.product_type === 'kit' ? 'Complete kit' : 'Component'} &middot; price shown is a public reference price, not a live quote</div>
+        </a>
+        <button type="button" class="btn btn-ghost shop-add-btn" data-product-id="${esc(p.id)}">Add to Cart</button>
+      </div>`).join('');
     return `<section class="band"><div class="wrap wrap-narrow">
       <h2>${esc(label)}</h2>
       <div class="shop-grid">${cards}</div>
@@ -89,6 +92,9 @@ export async function onRequestGet(context) {
   .shop-chip{display:inline-flex;align-items:center;background:rgba(255,255,255,0.03);border:1px solid rgba(201,151,44,0.3);color:#E8B84B;font-size:0.9em;font-weight:600;padding:8px 16px;border-radius:999px;text-decoration:none}
   .shop-chip:hover{background:rgba(201,151,44,0.16)}
   .shop-chip.is-active{background:#C9972C;border-color:#C9972C;color:#1A1A1A}
+  .shop-card-link{display:block;text-decoration:none;color:inherit}
+  .shop-add-btn{margin-top:10px;width:100%}
+  .cart-badge-count{display:inline-block;background:#E8B84B;color:#111;border-radius:999px;font-size:0.75em;font-weight:800;padding:1px 7px;margin-left:6px}
 </style>
 </head>
 <body>
@@ -103,6 +109,7 @@ export async function onRequestGet(context) {
       <li><a href="/guide/">Guides</a></li>
       <li><a href="/forum/">Forum</a></li>
       <li><a href="/shop/" aria-current="page">Shop</a></li>
+      <li><a href="/shop/cart">Cart <span class="cart-badge-count" hidden></span></a></li>
       <li><a href="/about/">About</a></li>
     </ul>
     <div class="nav-cta">
@@ -133,7 +140,20 @@ ${sectionsHtml || '<section class="band"><div class="wrap wrap-narrow"><p class=
     </div>
   </div>
 </footer>
+<script src="/js/cart.js"></script>
 <script src="/js/site.js" defer></script>
+<script>
+(function () {
+  document.querySelectorAll('.shop-add-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      window.UMRTCart.addToCart(btn.dataset.productId, 1);
+      var original = btn.textContent;
+      btn.textContent = 'Added \u2713';
+      setTimeout(function () { btn.textContent = original; }, 1200);
+    });
+  });
+})();
+</script>
 </body>
 </html>`;
 
