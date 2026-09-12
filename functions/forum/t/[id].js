@@ -12,6 +12,11 @@ function esc(s) {
   return String(s || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
+function credBadge(cred) {
+  if (!cred) return '';
+  return `<span class="cred-badge" style="display:inline-block;margin-left:6px;font-size:11px;font-weight:700;letter-spacing:0.02em;color:#C9972C;background:rgba(201,151,44,0.12);border:1px solid rgba(201,151,44,0.3);border-radius:999px;padding:2px 8px;vertical-align:middle">${esc(cred)}</span>`;
+}
+
 function renderImages(imageKeysJson) {
   if (!imageKeysJson) return '';
   let keys;
@@ -50,7 +55,7 @@ export async function onRequestGet(context) {
   const thread = await env.DB.prepare(
     `SELECT t.id, t.title, t.body, t.category, t.created_at, t.updated_at, t.pinned, t.image_keys,
             t.solved_at, t.solved_by, t.reopened_at, t.accepted_reply_id, t.locked,
-            u.id AS author_id, u.display_name AS author, u.avatar_url AS author_avatar
+            u.id AS author_id, u.display_name AS author, u.avatar_url AS author_avatar, u.credentials AS author_credentials
      FROM threads t JOIN users u ON u.id = t.author_id
      WHERE t.id = ? AND t.hidden = 0`
   ).bind(params.id).first();
@@ -59,7 +64,7 @@ export async function onRequestGet(context) {
 
   const { results: posts } = await env.DB.prepare(
     `SELECT p.id, p.body, p.created_at, p.image_keys,
-            u.id AS author_id, u.display_name AS author, u.avatar_url AS author_avatar
+            u.id AS author_id, u.display_name AS author, u.avatar_url AS author_avatar, u.credentials AS author_credentials
      FROM posts p JOIN users u ON u.id = p.author_id
      WHERE p.thread_id = ? AND p.hidden = 0
      ORDER BY p.created_at ASC`
@@ -85,7 +90,7 @@ export async function onRequestGet(context) {
     const isAccepted = thread.accepted_reply_id && p.id === thread.accepted_reply_id;
     return `<article class="faq-item" id="post-${esc(p.id)}" data-post-id="${esc(p.id)}">
       ${isAccepted ? '<p class="held-note" style="color:#2e9e4f;font-weight:700;margin:0 0 6px">&#10003; Accepted answer</p>' : ''}
-      <p class="muted mb-0" style="font-size:13px"><a class="text-link" href="${base}/forum/member/${esc(p.author_id)}">${esc(p.author)}</a> &middot; <time datetime="${esc(p.created_at)}">${esc(p.created_at)}</time></p>
+      <p class="muted mb-0" style="font-size:13px"><a class="text-link" href="${base}/forum/member/${esc(p.author_id)}">${esc(p.author)}</a>${credBadge(p.author_credentials)} &middot; <time datetime="${esc(p.created_at)}">${esc(p.created_at)}</time></p>
       <p>${esc(p.body).replace(/\n/g, '<br>')}</p>
       ${renderImages(p.image_keys)}
       <button type="button" class="btn btn-ghost btn-sm mark-solution-btn" data-reply-id="${esc(p.id)}" style="display:none;margin-top:8px">Mark as solution</button>
@@ -184,7 +189,7 @@ export async function onRequestGet(context) {
       ${solved ? '<span class="badge badge-solved">&#10003; Solved</span>' : ''}
       ${thread.locked ? '<span class="badge badge-locked">&#128274; Locked</span>' : ''}
     </div>
-    <p class="muted" style="font-size:13px">by <a class="text-link" href="/forum/member/${esc(thread.author_id)}">${esc(thread.author)}</a> &middot; <time datetime="${esc(thread.created_at)}">${esc(thread.created_at)}</time></p>
+    <p class="muted" style="font-size:13px">by <a class="text-link" href="/forum/member/${esc(thread.author_id)}">${esc(thread.author)}</a>${credBadge(thread.author_credentials)} &middot; <time datetime="${esc(thread.created_at)}">${esc(thread.created_at)}</time></p>
   </div>
 </section>
 <section class="band">
