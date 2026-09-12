@@ -15,7 +15,7 @@ export async function onRequestGet(context) {
   if (!env.DB) return json({ success: false, error: 'not_configured' }, 503);
 
   const thread = await env.DB.prepare(
-    `SELECT t.id, t.title, t.body, t.category, t.created_at, t.pinned, t.image_keys, u.display_name AS author, u.avatar_url AS author_avatar
+    `SELECT t.id, t.title, t.body, t.category, t.created_at, t.updated_at, t.pinned, t.solved, t.solved_at, t.accepted_post_id, t.image_keys, u.display_name AS author, u.avatar_url AS author_avatar
      FROM threads t JOIN users u ON u.id = t.author_id
      WHERE t.id = ? AND t.hidden = 0`
   )
@@ -57,21 +57,14 @@ export async function onRequestPost(context) {
   }
 
   let body;
-  try {
-    body = await request.json();
-  } catch {
-    return json({ success: false, error: 'invalid_json' }, 400);
-  }
+  try { body = await request.json(); } catch { return json({ success: false, error: 'invalid_json' }, 400); }
 
   const ts = await verifyTurnstile(body.turnstileToken, env, request.headers.get('CF-Connecting-IP'));
   if (!ts.ok) return json({ success: false, error: 'turnstile_failed', message: 'Security check failed — please try again.' }, 403);
 
   const text = (body.body || '').toString().trim().slice(0, 8000);
   const rawImageKeys = Array.isArray(body.imageKeys) ? body.imageKeys : [];
-  const imageKeys = rawImageKeys
-    .map((k) => (k || '').toString().trim().slice(0, 200))
-    .filter((k) => k.startsWith('forum/'))
-    .slice(0, 4);
+  const imageKeys = rawImageKeys.map((k) => (k || '').toString().trim().slice(0, 200)).filter((k) => k.startsWith('forum/')).slice(0, 4);
   const imageKeysJson = imageKeys.length ? JSON.stringify(imageKeys) : null;
   if (!text) return json({ success: false, error: 'missing_body' }, 400);
 
@@ -81,15 +74,10 @@ export async function onRequestPost(context) {
   const id = randomId();
   await env.DB.prepare(
     `INSERT INTO posts (id, thread_id, author_id, body, hidden, ai_flagged, ai_reason, image_keys) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
-  )
-    .bind(id, params.id, session.uid, text, hidden, mod.flagged ? 1 : 0, mod.reason, imageKeysJson)
-    .run();
+  ).bind(id, params.id, session.uid, text, hidden, mod.flagged ? 1 : 0, mod.reason, imageKeysJson).run();
 
   if (!hidden) {
-    await env.DB.prepare(`UPDATE threads SET updated_at = datetime('now') WHERE id = ?`)
-      .bind(params.id)
-      .run();
-
+    await env.DB.prepare(`UPDATE threads SET updated_at = datetime('now') WHERE id = ?`).bind(params.id).run();
     const threadRow = await env.DB.prepare('SELECT title FROM threads WHERE id = ?').bind(params.id).first();
     context.waitUntil(notifyForumActivity(env, {
       subject: `New forum reply: ${threadRow ? threadRow.title : params.id}`,
@@ -100,13 +88,9 @@ export async function onRequestPost(context) {
   if (mod.flagged) {
     await env.DB.prepare(
       `INSERT INTO moderation_log (id, post_id, thread_id, author_id, action, reason) VALUES (?, ?, ?, ?, ?, ?)`
-    )
-      .bind(randomId(), id, params.id, session.uid, hidden ? 'auto_hide' : 'flagged', mod.reason)
-      .run();
+    ).bind(randomId(), id, params.id, session.uid, hidden ? 'auto_hide' : 'flagged', mod.reason).run();
   }
 
-  if (hidden) {
-    return json({ success: true, id, held_for_review: true, message: 'Your reply was held for moderator review.' });
-  }
+  if (hidden) return json({ success: true, id, held_for_review: true, message: 'Your reply was held for moderator review.' });
   return json({ success: true, id });
 }
