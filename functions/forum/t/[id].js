@@ -17,7 +17,7 @@ function renderImages(imageKeysJson) {
   let keys;
   try { keys = JSON.parse(imageKeysJson); } catch { return ''; }
   if (!Array.isArray(keys) || !keys.length) return '';
-  return '<div class="post-images">' + keys.map((k) => `<img src="/r2/${esc(k)}" alt="" loading="lazy">`).join('') + '</div>';
+  return '<div class="post-images">' + keys.map((k) => `<img src="/r2/${esc(k)}" alt="" loading="lazy" class="lightbox-img" tabindex="0" role="button" aria-label="View full-size photo">`).join('') + '</div>';
 }
 
 function catLabel(cat) {
@@ -143,7 +143,11 @@ export async function onRequestGet(context) {
   textarea.forum-input,input.forum-input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid #333;background:#111;color:#f2f2f2;font-family:inherit;font-size:0.95em;margin-bottom:10px}
   .held-note{color:#C9972C;font-size:0.85em}
   .post-images{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-top:10px;max-width:520px}
-  .post-images img{width:100%;height:140px;object-fit:cover;border-radius:8px;border:1px solid #333}
+  .post-images img{width:100%;height:140px;object-fit:cover;border-radius:8px;border:1px solid #333;cursor:zoom-in}
+  #lightbox-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:9999;align-items:center;justify-content:center;padding:20px}
+  #lightbox-overlay.is-open{display:flex}
+  #lightbox-overlay img{max-width:100%;max-height:100%;border-radius:6px}
+  #lightbox-close{position:absolute;top:16px;right:20px;background:none;border:none;color:#fff;font-size:2em;line-height:1;cursor:pointer;padding:6px 10px}
   .diag-prompt{background:linear-gradient(160deg, rgba(201,151,44,0.08) 0%, rgba(201,151,44,0.02) 100%);border:1px solid rgba(201,151,44,0.25);border-radius:14px;padding:16px 18px;margin:14px 0;font-size:0.92em}
   .diag-prompt ul{margin:8px 0 0;padding-left:20px}
   .btn-sm{padding:6px 12px;font-size:0.85em}
@@ -232,6 +236,10 @@ export async function onRequestGet(context) {
     </div>
   </div>
 </footer>
+<div id="lightbox-overlay">
+  <button type="button" id="lightbox-close" aria-label="Close">&times;</button>
+  <img id="lightbox-img" src="" alt="">
+</div>
 <div class="mobile-bar" aria-label="Quick actions">
   <a class="btn btn-ghost" href="tel:+16166065277">Text / Call</a>
   <a class="btn btn-gold" href="/book-service/">Book Now</a>
@@ -354,6 +362,20 @@ export async function onRequestGet(context) {
     if (data.held_for_review) { status.textContent = data.message; }
     else { location.reload(); }
   });
+
+  document.querySelectorAll('.lightbox-img').forEach(function (img) {
+    function open() {
+      var overlay = document.getElementById('lightbox-overlay');
+      document.getElementById('lightbox-img').src = img.src;
+      overlay.classList.add('is-open');
+    }
+    img.addEventListener('click', open);
+    img.addEventListener('keypress', function (e) { if (e.key === 'Enter' || e.key === ' ') open(); });
+  });
+  var lightboxOverlay = document.getElementById('lightbox-overlay');
+  document.getElementById('lightbox-close').addEventListener('click', function () { lightboxOverlay.classList.remove('is-open'); });
+  lightboxOverlay.addEventListener('click', function (e) { if (e.target === lightboxOverlay) lightboxOverlay.classList.remove('is-open'); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') lightboxOverlay.classList.remove('is-open'); });
 
   loadMe();
 })();
