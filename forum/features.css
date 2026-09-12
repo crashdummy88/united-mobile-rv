@@ -1,0 +1,54 @@
+/* === Forum Engagement Features === */
+.ask-tech-cta {
+  background: linear-gradient(135deg, #C9972C 0%, #E8B84B 100%);
+  border-radius: 16px; padding: 24px 28px; margin: 18px 0; text-align: center;
+  box-shadow: 0 4px 20px rgba(201,151,44,0.3);
+}
+.ask-tech-cta h3 { color: #1A1A1A; margin: 0 0 6px; font-size: 1.3em; font-weight: 800; }
+.ask-tech-cta p { color: rgba(26,26,26,0.8); margin: 0 0 14px; font-size: 0.95em; }
+.ask-tech-cta .btn {
+  background: #1A1A1A; color: #E8B84B; border: none; padding: 12px 28px;
+  font-size: 1em; font-weight: 700; border-radius: 999px; cursor: pointer;
+  transition: transform .15s, box-shadow .15s;
+}
+.ask-tech-cta .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+.trending-wrap { margin-bottom: 24px; }
+.trending-list { display: flex; flex-direction: column; gap: 10px; }
+.trending-item {
+  display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px; transition: border-color .15s, background .15s; text-decoration: none;
+}
+.trending-item:hover { border-color: rgba(201,151,44,0.4); background: rgba(201,151,44,0.06); }
+.trending-rank { font-size: 1.4em; font-weight: 800; color: rgba(201,151,44,0.5); min-width: 28px; line-height: 1; }
+.trending-item:nth-child(1) .trending-rank { color: #E8B84B; }
+.trending-content { flex: 1; min-width: 0; }
+.trending-title { font-weight: 600; color: #f2f2f2; font-size: 0.95em; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.trending-meta { font-size: 12px; color: #9a9a9a; margin-top: 3px; }
+.trending-flame { font-size: 0.85em; }
+.online-badge {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: rgba(76,190,110,0.1); border: 1px solid rgba(76,190,110,0.3);
+  color: #4CBE6E; font-size: 0.82em; font-weight: 600; padding: 5px 12px; border-radius: 999px;
+}
+.online-dot { width: 8px; height: 8px; border-radius: 50%; background: #4CBE6E; animation: pulse 2s infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+.post-footer { display: flex; align-items: center; gap: 12px; margin-top: 10px; padding-top: 8px; }
+.helpful-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+  color: #9a9a9a; font-size: 0.82em; font-weight: 600; padding: 6px 14px;
+  border-radius: 999px; cursor: pointer; transition: all .15s; font-family: inherit;
+}
+.helpful-btn:hover { border-color: rgba(201,151,44,0.4); color: #E8B84B; background: rgba(201,151,44,0.06); }
+.helpful-btn.voted { background: rgba(201,151,44,0.15); border-color: #C9972C; color: #E8B84B; }
+.helpful-btn:disabled { cursor: default; opacity: 0.5; }
+.share-row { display: flex; gap: 8px; margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06); }
+.share-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+  color: #9a9a9a; font-size: 0.8em; padding: 6px 12px; border-radius: 8px;
+  cursor: pointer; transition: all .15s; text-decoration: none; font-family: inherit;
+}
+.share-btn:hover { border-color: rgba(201,151,44,0.4); color: #E8B84B; }
+.share-label { font-size: 0.78em; color: #6a6a6a; margin-right: 4px; }

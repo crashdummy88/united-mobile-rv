@@ -1,1 +1,15 @@
 .wrangler/
+
+# Real supplier wholesale cost/MAP data -- never commit to a public repo.
+# Only the blank .example.csv templates are tracked.
+supplier_feeds/artek.csv
+supplier_feeds/amazon.csv
+supplier_feeds/invertersrus.csv
+
+# Generated, reviewable D1 sync SQL (may contain real cost figures) --
+# review locally, apply with wrangler, don't commit.
+db/generated/
+
+# Python bytecode cache
+__pycache__/
+*.pyc
