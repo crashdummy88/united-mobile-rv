@@ -1,0 +1,48 @@
+name: UMRT Commerce Catalog Sync
+
+on:
+  schedule:
+    - cron: "17 0 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: umrt-commerce-catalog
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Synchronize catalog
+        env:
+          UMRT_MIN_MARGIN: "0.15"
+        run: python3 commerce/monitor.py
+
+      - name: Commit catalog changes only when changed
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add catalog.csv
+          if git diff --cached --quiet -- catalog.csv; then
+            echo "No catalog change."
+            exit 0
+          fi
+          git diff --cached --check
+          git diff --cached -- catalog.csv
+          git commit -m "Sync UMRT commerce catalog"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
