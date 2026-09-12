@@ -1,73 +1,32 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Mod Queue | United Mobile RV</title>
-<meta name="robots" content="noindex,nofollow">
-<link rel="icon" href="/favicon.png" type="image/png">
-<link rel="stylesheet" href="/css/site.css">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>UMRT Moderator Queue</title><meta name="robots" content="noindex,nofollow"><link rel="stylesheet" href="/css/site.css">
+<style>
+.mod-shell{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:end}.mod-card{background:#1d1d1d;border:1px solid #333;border-radius:14px;padding:18px;margin:14px 0}.mod-meta{font-size:13px;color:#999}.mod-reason{color:#E8B84B}.mod-actions{display:flex;gap:10px;flex-wrap:wrap}.queue-count{font-size:28px;font-weight:800;color:#E8B84B}.danger{border-color:#7a3937!important}.empty-state{text-align:center;padding:35px 15px;border:1px dashed #444;border-radius:14px}.mod-help{font-size:13px;color:#aaa}
+</style>
 </head>
 <body>
-<header class="site-header">
-  <div class="wrap nav-bar">
-    <a class="brand" href="/"><img class="brand-logo" src="/assets/brand/umrt-logo.webp" alt="United Mobile RV" width="40" height="40"><span class="brand-text">United Mobile <span>RV</span></span></a>
-    <ul class="nav-links"><li><a href="/forum/">Back to Forum</a></li></ul>
-  </div>
-</header>
-<main id="main">
-<section class="page-hero">
-  <div class="wrap">
-    <h1>Moderation Queue</h1>
-    <p class="lead">Posts the AI classifier auto-held for review. Approve to publish, remove to keep hidden.</p>
-  </div>
-</section>
-<section class="band">
-  <div class="wrap wrap-narrow" id="queue">
-    <p class="muted">Loading&hellip;</p>
-  </div>
-</section>
-</main>
+<header class="site-header"><div class="wrap nav-bar"><a class="brand" href="/"><img class="brand-logo" src="/assets/brand/umrt-logo.webp" alt="United Mobile RV" width="40" height="40"><span class="brand-text">United Mobile <span>RV</span></span></a><ul class="nav-links"><li><a href="/forum/">Back to Forum</a></li></ul></div></header>
+<main id="main"><section class="page-hero"><div class="wrap"><span class="eyebrow">UMRT Moderation</span><h1>Review Queue</h1><p class="lead">Real held content from the forum. Review it, approve it, or leave it hidden. Moderator actions are server-authorized.</p></div></section>
+<section class="band"><div class="wrap wrap-narrow"><div class="mod-shell"><div><h2>Held content</h2><p class="mod-help" id="access">Checking moderator access…</p></div><div class="queue-count" id="count">—</div></div><div id="queue"><p class="muted">Loading…</p></div></div></section></main>
 <script>
-function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
-
-async function load() {
-  const el = document.getElementById('queue');
-  const res = await fetch('/api/mod/queue');
-  const data = await res.json();
-  if (!data.success) {
-    el.innerHTML = '<p class="muted">' + (data.error === 'forbidden' ? 'You are not a moderator, or you are not signed in.' : 'Queue unavailable.') + '</p>';
-    return;
-  }
-  if (!data.items.length) {
-    el.innerHTML = '<p class="muted">Nothing waiting for review.</p>';
-    return;
-  }
-  el.innerHTML = data.items.map(function(item){
-    return '<div class="faq-item" data-kind="'+item.kind+'" data-id="'+item.id+'">' +
-      '<p class="mb-0"><strong>' + esc(item.kind) + '</strong> by ' + esc(item.author) + ' &mdash; ' + esc(item.created_at) + '</p>' +
-      '<p class="muted" style="font-size:13px">Flag reason: ' + esc(item.ai_reason || 'n/a') + '</p>' +
-      '<p>' + esc(item.preview).slice(0,400) + '</p>' +
-      '<div class="btn-row">' +
-        '<button class="btn btn-gold" data-action="approve">Approve</button>' +
-        '<button class="btn btn-ghost" data-action="remove">Keep Removed</button>' +
-      '</div>' +
-    '</div>';
-  }).join('');
-
-  el.querySelectorAll('button[data-action]').forEach(function(btn){
-    btn.addEventListener('click', async function(){
-      const card = btn.closest('[data-id]');
-      await fetch('/api/mod/queue', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ kind: card.dataset.kind, id: card.dataset.id, action: btn.dataset.action })
-      });
-      card.remove();
-    });
-  });
-}
-load();
-</script>
-</body>
-</html>
+(function(){
+ const q=document.getElementById('queue'), access=document.getElementById('access'), count=document.getElementById('count');
+ function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+ async function load(){
+  const me=await fetch('/api/me',{cache:'no-store'}).then(r=>r.json()).catch(()=>({user:null}));
+  if(!me.user){access.textContent='Sign in with the moderator account to review the queue.';q.innerHTML='<div class="empty-state"><p>Moderator sign-in required.</p><a class="btn btn-gold" href="/forum/">Return to forum</a></div>';count.textContent='—';return;}
+  if(!me.user.is_mod){access.textContent='This account does not have moderator permissions.';q.innerHTML='<div class="empty-state"><p>403 — moderator access required.</p><a class="btn btn-ghost" href="/forum/">Return to forum</a></div>';count.textContent='—';return;}
+  access.textContent='Authenticated moderator: '+me.user.name;
+  const data=await fetch('/api/mod/queue',{cache:'no-store'}).then(r=>r.json()).catch(()=>({success:false}));
+  if(!data.success){q.innerHTML='<div class="empty-state"><p>Queue unavailable.</p></div>';count.textContent='—';return;}
+  count.textContent=data.items.length;
+  if(!data.items.length){q.innerHTML='<div class="empty-state"><h3>Queue clear</h3><p class="muted">Nothing is waiting for human review.</p></div>';return;}
+  q.innerHTML=data.items.map(item=>'<article class="mod-card" data-kind="'+esc(item.kind)+'" data-id="'+esc(item.id)+'"><div class="mod-meta"><strong>'+esc(item.kind)+'</strong> · '+esc(item.author)+' · '+esc(item.created_at)+'</div><p class="mod-reason">'+esc(item.ai_reason||'Flagged for review')+'</p><p>'+esc(item.preview).slice(0,800)+'</p><div class="mod-actions"><button class="btn btn-gold" data-action="approve">Approve &amp; publish</button><button class="btn danger" data-action="remove">Keep hidden</button></div></article>').join('');
+  q.querySelectorAll('button[data-action]').forEach(btn=>btn.onclick=async()=>{const card=btn.closest('[data-id]');btn.disabled=true;const r=await fetch('/api/mod/queue',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind:card.dataset.kind,id:card.dataset.id,action:btn.dataset.action})});if(r.ok){card.remove();const n=Number(count.textContent)||1;count.textContent=Math.max(0,n-1);if(!q.querySelector('[data-id]'))q.innerHTML='<div class="empty-state"><h3>Queue clear</h3><p class="muted">Nothing is waiting for human review.</p></div>';}else{btn.disabled=false;}});
+ }
+ load();
+})();
+</script></body></html>
