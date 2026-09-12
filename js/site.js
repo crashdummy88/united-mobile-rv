@@ -129,10 +129,15 @@
     });
     closeBtn.addEventListener('click', closePanel);
 
+    function escapeHtml(str) {
+      var esc = document.createElement('div');
+      esc.textContent = str;
+      return esc.innerHTML;
+    }
     function addBubble(role, text) {
       var d = document.createElement('div');
       d.className = 'chat-bubble ' + role;
-      d.innerHTML = text.replace(/\n/g, '<br>');
+      d.innerHTML = escapeHtml(text).replace(/\n/g, '<br>');
       msgs.appendChild(d);
       msgs.scrollTop = msgs.scrollHeight;
     }

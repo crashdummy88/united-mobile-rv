@@ -60,7 +60,7 @@ async function runOnce(env) {
 
   let guide;
   try {
-    const result = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
+    const result = await env.AI.run('@cf/meta/llama-3.1-8b-instruct-fast', {
       messages: [
         { role: 'system', content: GUIDE_PROMPT },
         { role: 'user', content: `Topic: ${topic}` },
@@ -70,7 +70,10 @@ async function runOnce(env) {
     });
     guide = (result?.response || '').trim();
   } catch (e) {
-    return { ok: false, error: 'ai_failed', detail: String(e) };
+    // Log full detail server-side only; never return stack/error internals
+    // to the caller (this endpoint is key-gated, but still no reason to leak).
+    console.error('content-bot AI failure:', e);
+    return { ok: false, error: 'ai_failed' };
   }
   if (!guide) return { ok: false, error: 'empty_guide' };
 

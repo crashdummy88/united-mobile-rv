@@ -132,7 +132,7 @@ export async function onRequestGet(context) {
 <link rel="icon" href="/favicon.png" type="image/png">
 <link rel="stylesheet" href="/css/site.css">
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+<script type="application/ld+json">${JSON.stringify(jsonLd).replace(/</g, '\\u003c')}</script>
 <style>
   .thread-badges{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
   .badge{display:inline-flex;align-items:center;gap:6px;font-size:0.8em;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;padding:5px 12px;border-radius:999px}
