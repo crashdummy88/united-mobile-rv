@@ -15,7 +15,8 @@ export async function onRequestGet(context) {
   if (!env.DB) return json({ success: false, error: 'not_configured' }, 503);
 
   const thread = await env.DB.prepare(
-    `SELECT t.id, t.title, t.body, t.category, t.created_at, t.pinned, t.image_keys, u.display_name AS author, u.avatar_url AS author_avatar
+    `SELECT t.id, t.title, t.body, t.category, t.created_at, t.pinned, t.image_keys,
+      t.solved_at, t.solved_by, t.accepted_reply_id, t.locked, u.id AS author_id, u.display_name AS author, u.avatar_url AS author_avatar
      FROM threads t JOIN users u ON u.id = t.author_id
      WHERE t.id = ? AND t.hidden = 0`
   )
@@ -43,10 +44,15 @@ export async function onRequestPost(context) {
   const session = await readSession(request, env.SESSION_SECRET);
   if (!session) return json({ success: false, error: 'auth_required' }, 401);
 
-  const thread = await env.DB.prepare('SELECT id FROM threads WHERE id = ? AND hidden = 0')
+  const thread = await env.DB.prepare('SELECT id, locked FROM threads WHERE id = ? AND hidden = 0')
     .bind(params.id)
     .first();
   if (!thread) return json({ success: false, error: 'not_found' }, 404);
+
+  if (thread.locked) {
+    const modRow = await env.DB.prepare('SELECT is_mod FROM users WHERE id = ?').bind(session.uid).first();
+    if (!modRow || !modRow.is_mod) return json({ success: false, error: 'thread_locked', message: 'This thread is locked — no new replies.' }, 403);
+  }
 
   const recent = await env.DB.prepare(
     `SELECT created_at FROM posts WHERE author_id = ? ORDER BY created_at DESC LIMIT 1`
@@ -90,11 +96,32 @@ export async function onRequestPost(context) {
       .bind(params.id)
       .run();
 
-    const threadRow = await env.DB.prepare('SELECT title FROM threads WHERE id = ?').bind(params.id).first();
+    const threadRow = await env.DB.prepare('SELECT title, author_id FROM threads WHERE id = ?').bind(params.id).first();
     context.waitUntil(notifyForumActivity(env, {
       subject: `New forum reply: ${threadRow ? threadRow.title : params.id}`,
-      message: `New reply from ${session.name || 'a member'}:\n\n${text}\n\nhttps://united-mobile-rv.pages.dev/forum/`,
+      message: `New reply from ${session.name || 'a member'}:\n\n${text}\n\nhttps://united-mobile-rv.pages.dev/forum/t/${params.id}`,
     }));
+
+    // Notify the thread author and anyone else who has posted in this thread
+    // (skipping whoever just replied). Best-effort -- never blocks the reply.
+    try {
+      const notifyIds = new Set();
+      if (threadRow && threadRow.author_id && threadRow.author_id !== session.uid) notifyIds.add(threadRow.author_id);
+      const { results: participants } = await env.DB.prepare(
+        `SELECT DISTINCT author_id FROM posts WHERE thread_id = ? AND author_id != ?`
+      ).bind(params.id, session.uid).all();
+      for (const row of participants || []) {
+        if (row.author_id !== (threadRow && threadRow.author_id)) notifyIds.add(row.author_id);
+      }
+      for (const uid of notifyIds) {
+        const type = threadRow && uid === threadRow.author_id ? 'thread_reply' : 'participated_reply';
+        await env.DB.prepare(
+          `INSERT INTO notifications (id, user_id, type, thread_id, post_id) VALUES (?, ?, ?, ?, ?)`
+        ).bind(randomId(), uid, type, params.id, id).run();
+      }
+    } catch (e) {
+      // Notifications are a nice-to-have -- never let them break a reply post.
+    }
   }
 
   if (mod.flagged) {

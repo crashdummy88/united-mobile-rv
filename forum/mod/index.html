@@ -23,8 +23,11 @@
   </div>
 </section>
 <section class="band">
-  <div class="wrap wrap-narrow" id="queue">
-    <p class="muted">Loading&hellip;</p>
+  <div class="wrap wrap-narrow">
+    <h2>AI-flagged content</h2>
+    <div id="queue"><p class="muted">Loading&hellip;</p></div>
+    <h2 style="margin-top:32px">Member reports</h2>
+    <div id="reports"><p class="muted">Loading&hellip;</p></div>
   </div>
 </section>
 </main>
@@ -67,7 +70,41 @@ async function load() {
     });
   });
 }
+function loadReports() {
+  return fetch('/api/mod/queue').then(function(r){ return r.json(); }).then(function(data){
+    var el = document.getElementById('reports');
+    if (!data.success) { el.innerHTML = ''; return; }
+    if (!data.reports || !data.reports.length) { el.innerHTML = '<p class="muted">No open reports.</p>'; return; }
+    el.innerHTML = data.reports.map(function(r){
+      return '<div class="faq-item" data-report-id="'+r.id+'">' +
+        '<p class="mb-0"><strong>Reported: ' + esc(r.reason) + '</strong> by ' + esc(r.reporter) + ' &mdash; ' + esc(r.created_at) + '</p>' +
+        (r.thread_title ? '<p class="muted" style="font-size:13px"><a class="text-link" href="/forum/t/'+esc(r.thread_id)+'" target="_blank">' + esc(r.thread_title) + '</a></p>' : '') +
+        '<div class="btn-row">' +
+          '<button class="btn btn-ghost" data-report-action="dismiss">Dismiss</button>' +
+          (r.thread_id ? '<button class="btn btn-ghost" data-report-action="lock">Lock thread</button>' : '') +
+        '</div>' +
+      '</div>';
+    }).join('');
+    el.querySelectorAll('[data-report-action]').forEach(function(btn){
+      btn.addEventListener('click', async function(){
+        var card = btn.closest('[data-report-id]');
+        var reportId = card.dataset.reportId;
+        if (btn.dataset.reportAction === 'dismiss') {
+          await fetch('/api/mod/queue', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ kind:'report', id: reportId, action:'dismiss_report' }) });
+          card.remove();
+        } else if (btn.dataset.reportAction === 'lock') {
+          var threadId = card.querySelector('a')?.getAttribute('href')?.split('/').pop();
+          if (threadId) await fetch('/api/mod/queue', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ kind:'thread', id: threadId, action:'lock' }) });
+          await fetch('/api/mod/queue', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ kind:'report', id: reportId, action:'dismiss_report' }) });
+          card.remove();
+        }
+      });
+    });
+  });
+}
+
 load();
+loadReports();
 </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 
 CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY,
-  provider TEXT NOT NULL,             -- 'google' | 'github' | 'meta'
+  provider TEXT NOT NULL,             -- 'google' (github/meta OAuth scaffolding was removed; see a063ecd)
   provider_id TEXT NOT NULL,
   email TEXT,
   display_name TEXT NOT NULL,
@@ -28,7 +28,13 @@ CREATE TABLE IF NOT EXISTS threads (
   hidden INTEGER NOT NULL DEFAULT 0,
   ai_flagged INTEGER NOT NULL DEFAULT 0,
   ai_reason TEXT,
-  image_keys TEXT
+  image_keys TEXT,
+  solved_at TEXT,
+  solved_by TEXT,
+  reopened_at TEXT,
+  reopened_by TEXT,
+  accepted_reply_id TEXT,
+  locked INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS posts (
@@ -56,6 +62,44 @@ CREATE TABLE IF NOT EXISTS moderation_log (
 CREATE INDEX IF NOT EXISTS idx_posts_thread ON posts(thread_id);
 CREATE INDEX IF NOT EXISTS idx_threads_updated ON threads(updated_at DESC);
 CREATE INDEX IF NOT EXISTS idx_modlog_created ON moderation_log(created_at DESC);
+
+-- P1-P7 additions (see db/migrations/002_p1_p7.sql for the additive ALTER
+-- TABLE statements that bring an already-provisioned production DB up to
+-- this same shape without dropping data).
+
+CREATE TABLE IF NOT EXISTS reports (
+  id TEXT PRIMARY KEY,
+  reporter_id TEXT NOT NULL REFERENCES users(id),
+  thread_id TEXT REFERENCES threads(id),
+  post_id TEXT REFERENCES posts(id),
+  reason TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'open',
+  moderator_id TEXT REFERENCES users(id),
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  resolved_at TEXT
+);
+
+CREATE TABLE IF NOT EXISTS saves (
+  user_id TEXT NOT NULL REFERENCES users(id),
+  thread_id TEXT NOT NULL REFERENCES threads(id),
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  PRIMARY KEY (user_id, thread_id)
+);
+
+CREATE TABLE IF NOT EXISTS notifications (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id),
+  type TEXT NOT NULL,
+  thread_id TEXT REFERENCES threads(id),
+  post_id TEXT REFERENCES posts(id),
+  read_at TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_reports_status ON reports(status, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_saves_thread ON saves(thread_id);
+CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id, read_at, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_threads_solved ON threads(solved_at);
 
 -- Shared status + pricing, read by united-mobile-rv, umrt-areas, umrt-go, umrt-quote
 -- via /api/status. Single source of truth so satellite sites never go stale.

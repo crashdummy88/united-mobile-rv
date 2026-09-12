@@ -30,7 +30,15 @@ export async function onRequestGet(context) {
      FROM posts p JOIN users u ON u.id = p.author_id WHERE p.hidden = 1 ORDER BY p.created_at DESC LIMIT 50`
   ).all();
 
-  return json({ success: true, items: [...threads, ...posts] });
+  const { results: reports } = await env.DB.prepare(
+    `SELECT r.id, r.reason, r.thread_id, r.post_id, r.created_at, u.display_name AS reporter,
+       t.title AS thread_title
+     FROM reports r JOIN users u ON u.id = r.reporter_id
+     LEFT JOIN threads t ON t.id = r.thread_id
+     WHERE r.status = 'open' ORDER BY r.created_at DESC LIMIT 50`
+  ).all();
+
+  return json({ success: true, items: [...threads, ...posts], reports });
 }
 
 export async function onRequestPost(context) {
@@ -45,9 +53,29 @@ export async function onRequestPost(context) {
   } catch {
     return json({ success: false, error: 'invalid_json' }, 400);
   }
-  const { kind, id, action } = body; // kind: 'thread'|'post', action: 'approve'|'remove'
-  if (!kind || !id || !['approve', 'remove'].includes(action)) {
+  const { kind, id, action } = body;
+  // kind: 'thread'|'post'|'report' , action: 'approve'|'remove'|'dismiss_report'|'lock'|'unlock'
+  if (!kind || !id || !['approve', 'remove', 'dismiss_report', 'lock', 'unlock'].includes(action)) {
     return json({ success: false, error: 'missing_fields' }, 400);
+  }
+
+  if (kind === 'report') {
+    if (action === 'dismiss_report') {
+      await env.DB.prepare(`UPDATE reports SET status = 'dismissed', moderator_id = ?, resolved_at = datetime('now') WHERE id = ?`)
+        .bind(session.uid, id)
+        .run();
+      return json({ success: true });
+    }
+    return json({ success: false, error: 'invalid_action_for_kind' }, 400);
+  }
+
+  if (['lock', 'unlock'].includes(action)) {
+    if (kind !== 'thread') return json({ success: false, error: 'invalid_action_for_kind' }, 400);
+    await env.DB.prepare(`UPDATE threads SET locked = ? WHERE id = ?`).bind(action === 'lock' ? 1 : 0, id).run();
+    await env.DB.prepare(
+      `INSERT INTO moderation_log (id, thread_id, action, reason) VALUES (?, ?, ?, ?)`
+    ).bind(crypto.randomUUID(), id, `mod_${action}`, `by ${session.name}`).run();
+    return json({ success: true });
   }
 
   const table = kind === 'thread' ? 'threads' : 'posts';

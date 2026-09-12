@@ -19,7 +19,8 @@ export async function onRequestGet(context) {
   const limit = Math.min(parseInt(url.searchParams.get('limit') || '30', 10) || 30, 100);
 
   const { results } = await env.DB.prepare(
-    `SELECT t.id, t.title, t.category, t.created_at, t.updated_at, t.pinned, t.image_keys, u.display_name AS author, u.avatar_url AS author_avatar,
+    `SELECT t.id, t.title, t.category, t.created_at, t.updated_at, t.pinned, t.image_keys,
+      t.solved_at, t.locked, u.id AS author_id, u.display_name AS author, u.avatar_url AS author_avatar,
       (SELECT COUNT(*) FROM posts p WHERE p.thread_id = t.id AND p.hidden = 0) AS reply_count
      FROM threads t JOIN users u ON u.id = t.author_id
      WHERE t.hidden = 0
