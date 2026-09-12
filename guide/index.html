@@ -20,6 +20,32 @@
 <link rel="stylesheet" href="/css/site.css">
 
 
+<style>
+.start-here-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}
+@media (max-width:900px){.start-here-grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:600px){.start-here-grid{grid-template-columns:1fr}}
+.start-card{display:flex;flex-direction:column;gap:6px;padding:16px 18px;border:1px solid var(--rule);border-radius:10px;background:rgba(255,255,255,0.03);transition:border-color .2s var(--ease),transform .2s var(--ease)}
+.start-card:hover{border-color:var(--gold);transform:translateY(-2px)}
+.start-card-title{color:var(--white);font-weight:600;font-size:1rem}
+.start-card:hover .start-card-title{color:var(--gold)}
+.start-card-desc{color:var(--gray);font-size:0.85rem;line-height:1.45}
+.guide-toolbar{margin-top:18px;display:flex;flex-direction:column;gap:14px}
+.guide-search{width:100%;max-width:480px;padding:11px 16px;border-radius:999px;border:1px solid var(--rule);background:rgba(255,255,255,0.04);color:var(--white);font-size:0.95rem;font-family:var(--font)}
+.guide-search::placeholder{color:var(--gray)}
+.guide-search:focus{outline:2px solid var(--gold);outline-offset:2px}
+.chip-row{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--rule);background:transparent;color:var(--gray);font-family:var(--font);font-size:0.82rem;padding:6px 12px;border-radius:999px;cursor:pointer;transition:all .15s var(--ease)}
+.chip span{opacity:0.65;margin-left:3px}
+.chip:hover{border-color:var(--gold);color:var(--white)}
+.chip.is-active{background:var(--gold);border-color:var(--gold);color:var(--black);font-weight:600}
+.chip.is-active span{opacity:0.7}
+.guide-group{margin-top:36px}
+.guide-group:first-child{margin-top:28px}
+.guide-group-title{font-size:0.78rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold);border-bottom:1px solid var(--rule);padding-bottom:10px;margin:0 0 6px}
+.guide-group-count{color:var(--gray);font-weight:400;letter-spacing:0;text-transform:none;font-size:0.78rem}
+.guide-card.is-hidden{display:none}
+.guide-group.is-hidden{display:none}
+</style>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -53,95 +79,230 @@
 
 <section class="band band-tight">
   <div class="wrap">
-    <span class="micro">How to use this library</span>
-    <div class="grid-2">
-      <div>
-        <p>Browse by category below — technical reference charts, electrical &amp; power, lithium &amp; solar, propane, plumbing, roof, appliances, slides, generator, chassis, sanitation, and seasonal maintenance.</p>
-        <p>Use guides to frame the symptom and gather model info. When DIY ends, book mobile diagnostics — thermal imaging, professional metering, and credentialed installs at your location.</p>
-      </div>
-      <div>
-        <p class="muted">Start with symptoms at the <a href="/troubleshoot/">Troubleshooting hub</a>. High-traffic starters: <a href="/guide/electrical-troubleshooting/">Electrical troubleshooting</a>, <a href="/guide/winterization-guide/">Winterization</a>, <a href="/guide/solar-battery-troubleshooting/">Solar &amp; battery</a>, <a href="/guide/starlink-rv-guide/">Starlink for RVs</a>, <a href="/guide/ppi-guide/">PPI guide</a>, <a href="/lithium-battery-buying-guide/">Lithium buying guide</a>.</p>
-        <p>Trip <strong>$75</strong>/30 mi + <strong>$1.50</strong>/mi · Labor ~<strong>$150</strong>/hr · Diagnostic <strong>$175</strong> applied · Winterize <strong>$175</strong> · trip prep <strong>$225</strong>.</p>
-      </div>
+    <span class="micro">Start here</span>
+    <div class="start-here-grid">
+      <a class="start-card" href="/guide/electrical-troubleshooting/"><span class="start-card-title">Electrical troubleshooting</span><span class="start-card-desc">Symptom-first checklist before you start swapping parts.</span></a>
+      <a class="start-card" href="/guide/winterization-guide/"><span class="start-card-title">Winterization</span><span class="start-card-desc">Do this before the first hard freeze.</span></a>
+      <a class="start-card" href="/guide/solar-battery-troubleshooting/"><span class="start-card-title">Solar &amp; battery troubleshooting</span><span class="start-card-desc">Charging faults, BMS trips, and low-voltage shutdowns.</span></a>
+      <a class="start-card" href="/guide/starlink-rv-guide/"><span class="start-card-title">Starlink for RVs</span><span class="start-card-desc">Mounting, power draw, and connectivity on the move.</span></a>
+      <a class="start-card" href="/guide/ppi-guide/"><span class="start-card-title">PPI guide</span><span class="start-card-desc">What a pre-purchase inspection should actually cover.</span></a>
+      <a class="start-card" href="/lithium-battery-buying-guide/"><span class="start-card-title">Lithium battery buying guide</span><span class="start-card-desc">How to compare packs before you spend real money.</span></a>
     </div>
+    <p class="muted" style="margin-top:20px">Not sure where to look? Try the <a href="/troubleshoot/">Troubleshooting hub</a> to work from symptoms instead of parts.</p>
   </div>
 </section>
-<section class="band"><div class="wrap"><div class="guide-list"><article class="guide-card"><div class="cat">Electrical</div><a href="/guide/12v-vs-120v-appliances-guide/">12V vs 120V appliances</a></article>
-<article class="guide-card"><div class="cat">Electrical</div><a href="/guide/30-amp-vs-50-amp-guide/">30-amp vs 50-amp service</a></article>
-<article class="guide-card"><div class="cat">Exterior</div><a href="/guide/awning-fabric-replacement-guide/">Awning fabric replacement</a></article>
-<article class="guide-card"><div class="cat">Exterior</div><a href="/guide/awning-motor-troubleshooting-guide/">Awning motor troubleshooting</a></article>
-<article class="guide-card"><div class="cat">Tech</div><a href="/guide/backup-camera-tpms-install-guide/">Backup camera & TPMS install</a></article>
-<article class="guide-card"><div class="cat">Power</div><a href="/guide/battery-charging-voltage-chart/">Battery charging voltage chart</a></article>
-<article class="guide-card"><div class="cat">Power</div><a href="/guide/best-inverters-guide/">Best inverters guide</a></article>
-<article class="guide-card"><div class="cat">Chassis</div><a href="/guide/best-leveling-systems-guide/">Best leveling systems</a></article>
-<article class="guide-card"><div class="cat">Tires</div><a href="/guide/best-rv-tires-guide/">Best RV tires</a></article>
-<article class="guide-card"><div class="cat">Solar</div><a href="/guide/best-solar-panels-guide/">Best solar panels</a></article>
-<article class="guide-card"><div class="cat">Power</div><a href="/guide/bms-explained-guide/">BMS explained</a></article>
-<article class="guide-card"><div class="cat">Trailer</div><a href="/guide/brake-controller-wiring-guide/">Brake controller wiring</a></article>
-<article class="guide-card"><div class="cat">Tech</div><a href="/guide/canbus-multiplex-systems-guide/">CAN bus / multiplex systems</a></article>
-<article class="guide-card"><div class="cat">Chassis</div><a href="/guide/chassis-engine-maintenance-guide/">Chassis engine maintenance</a></article>
-<article class="guide-card"><div class="cat">Appliances</div><a href="/guide/coleman-mach-ac-guide/">Coleman Mach A/C</a></article>
-<article class="guide-card"><div class="cat">Power</div><a href="/guide/converter-inverter-charger-guide/">Converter / inverter / charger</a></article>
-<article class="guide-card"><div class="cat">Towing</div><a href="/guide/dinghy-towing-guide/">Dinghy towing</a></article>
-<article class="guide-card"><div class="cat">Appliances</div><a href="/guide/dometic-appliance-guide/">Dometic appliance guide</a></article>
-<article class="guide-card"><div class="cat">Seasonal</div><a href="/guide/driving-the-up-winter-guide/">Driving the UP in winter</a></article>
-<article class="guide-card"><div class="cat">Plumbing</div><a href="/guide/dump-station-guide/">Dump station guide</a></article>
-<article class="guide-card"><div class="cat">Electrical</div><a href="/guide/electrical-troubleshooting/">Electrical troubleshooting</a></article>
-<article class="guide-card"><div class="cat">Reference</div><a href="/guide/fault-code-index-dometic-onan/">Fault code index  -  Dometic / Onan</a></article>
-<article class="guide-card"><div class="cat">Trailer</div><a href="/guide/fifth-wheel-hitch-guide/">Fifth-wheel hitch guide</a></article>
-<article class="guide-card"><div class="cat">Plumbing</div><a href="/guide/fresh-water-pump-guide/">Fresh water pump</a></article>
-<article class="guide-card"><div class="cat">Generator</div><a href="/guide/generator-manufacturer-guide/">Generator manufacturer guide</a></article>
-<article class="guide-card"><div class="cat">Generator</div><a href="/guide/generator-troubleshooting/">Generator troubleshooting</a></article>
-<article class="guide-card"><div class="cat">Weight</div><a href="/guide/gvwr-gcwr-payload-guide/">GVWR / GCWR / payload</a></article>
-<article class="guide-card"><div class="cat">Plumbing</div><a href="/guide/holding-tank-sanitation-guide/">Holding tank sanitation</a></article>
-<article class="guide-card"><div class="cat">Power</div><a href="/guide/inverter-sizing-guide/">Inverter sizing</a></article>
-<article class="guide-card"><div class="cat">Power</div><a href="/guide/lithium-agm-lead-acid-comparison/">Lithium vs AGM vs lead-acid</a></article>
-<article class="guide-card"><div class="cat">LP Gas</div><a href="/guide/lp-gas-pressure-specs/">LP gas pressure specs</a></article>
-<article class="guide-card"><div class="cat">LP Gas</div><a href="/guide/lp-gas-troubleshooting/">LP gas troubleshooting</a></article>
-<article class="guide-card"><div class="cat">Solar</div><a href="/guide/mppt-vs-pwm-charge-controller-guide/">MPPT vs PWM</a></article>
-<article class="guide-card"><div class="cat">Appliances</div><a href="/guide/norcold-refrigerator-guide/">Norcold refrigerator</a></article>
-<article class="guide-card"><div class="cat">Power</div><a href="/guide/off-grid-power-budget-guide/">Off-grid power budget</a></article>
-<article class="guide-card"><div class="cat">Plumbing</div><a href="/guide/plumbing-troubleshooting/">Plumbing troubleshooting</a></article>
-<article class="guide-card"><div class="cat">Buying</div><a href="/guide/ppi-guide/">PPI guide</a></article>
-<article class="guide-card"><div class="cat">Safety</div><a href="/guide/propane-co-safety-guide/">Propane & CO safety</a></article>
-<article class="guide-card"><div class="cat">Safety</div><a href="/guide/roadside-kit-guide/">Roadside kit</a></article>
-<article class="guide-card"><div class="cat">Roof</div><a href="/guide/roof-coating-guide/">Roof coating</a></article>
-<article class="guide-card"><div class="cat">Roof</div><a href="/guide/roof-material-comparison-guide/">Roof material comparison</a></article>
-<article class="guide-card"><div class="cat">Roof</div><a href="/guide/roof-troubleshooting/">Roof troubleshooting</a></article>
-<article class="guide-card"><div class="cat">Roof</div><a href="/guide/roof-vent-fan-install-guide/">Roof vent fan install</a></article>
-<article class="guide-card"><div class="cat">Safety</div><a href="/guide/rv-fire-safety-guide/">RV fire safety</a></article>
-<article class="guide-card"><div class="cat">Appliances</div><a href="/guide/rv-furnace-troubleshooting-guide/">RV furnace troubleshooting</a></article>
-<article class="guide-card"><div class="cat">Appliances</div><a href="/guide/rv-microwave-troubleshooting-guide/">RV microwave troubleshooting</a></article>
-<article class="guide-card"><div class="cat">Seasonal</div><a href="/guide/rv-storage-prep-guide/">RV storage prep</a></article>
-<article class="guide-card"><div class="cat">Seasonal</div><a href="/guide/seasonal-maintenance-checklist/">Seasonal maintenance checklist</a></article>
-<article class="guide-card"><div class="cat">Chassis</div><a href="/guide/slide-out-leveling-troubleshooting-guide/">Slide-out & leveling</a></article>
-<article class="guide-card"><div class="cat">Exterior</div><a href="/guide/slide-out-seal-guide/">Slide-out seals</a></article>
-<article class="guide-card"><div class="cat">Solar</div><a href="/guide/solar-battery-troubleshooting/">Solar & battery troubleshooting</a></article>
-<article class="guide-card"><div class="cat">Solar</div><a href="/guide/solar-sizing-installation-guide/">Solar sizing & installation</a></article>
-<article class="guide-card"><div class="cat">Seasonal</div><a href="/guide/spring-dewinterization-checklist/">Spring de-winterization</a></article>
-<article class="guide-card"><div class="cat">Connectivity</div><a href="/guide/peplink-multi-wan-guide/">Peplink multi-WAN bonding &amp; failover</a></article>
-<article class="guide-card"><div class="cat">Connectivity</div><a href="/guide/starlink-rv-guide/">Starlink for RVs</a></article>
-<article class="guide-card"><div class="cat">Electrical</div><a href="/guide/surge-protector-ems-guide/">Surge protector / EMS</a></article>
-<article class="guide-card"><div class="cat">Plumbing</div><a href="/guide/tank-sanitizing-guide/">Tank sanitizing</a></article>
-<article class="guide-card"><div class="cat">Plumbing</div><a href="/guide/tank-sensor-troubleshooting-guide/">Tank sensor troubleshooting</a></article>
-<article class="guide-card"><div class="cat">Tires</div><a href="/guide/tire-aging-guide/">Tire aging</a></article>
-<article class="guide-card"><div class="cat">Tires</div><a href="/guide/tire-pressure-load-chart/">Tire pressure / load chart</a></article>
-<article class="guide-card"><div class="cat">Tires</div><a href="/guide/tires-brakes-tpms-guide/">Tires, brakes & TPMS</a></article>
-<article class="guide-card"><div class="cat">Plumbing</div><a href="/guide/toilet-systems-guide/">Toilet systems</a></article>
-<article class="guide-card"><div class="cat">Reference</div><a href="/guide/torque-spec-chart/">Torque spec chart</a></article>
-<article class="guide-card"><div class="cat">Appliances</div><a href="/guide/truma-combi-guide/">Truma Combi</a></article>
-<article class="guide-card"><div class="cat">Seasonal</div><a href="/guide/underbelly-insulation-guide/">Underbelly insulation</a></article>
-<article class="guide-card"><div class="cat">Electrical</div><a href="/guide/van-build-electrical-troubleshooting/">Van build electrical</a></article>
-<article class="guide-card"><div class="cat">Power</div><a href="/guide/victron-fault-code-guide/">Victron fault codes</a></article>
-<article class="guide-card"><div class="cat">Plumbing</div><a href="/guide/water-filtration-guide/">Water filtration</a></article>
-<article class="guide-card"><div class="cat">Plumbing</div><a href="/guide/water-heater-troubleshooting-guide/">Water heater troubleshooting</a></article>
-<article class="guide-card"><div class="cat">Connectivity</div><a href="/guide/weboost-install-guide/">weBoost install</a></article>
-<article class="guide-card"><div class="cat">Weight</div><a href="/guide/weighing-your-rig-guide/">Weighing your rig</a></article>
-<article class="guide-card"><div class="cat">Towing</div><a href="/guide/weight-distribution-hitch-guide/">Weight distribution hitch</a></article>
-<article class="guide-card"><div class="cat">Exterior</div><a href="/guide/window-seal-replacement-guide/">Window seal replacement</a></article>
-<article class="guide-card"><div class="cat">Seasonal</div><a href="/guide/winterization-guide/">Winterization</a></article>
-<article class="guide-card"><div class="cat">Electrical</div><a href="/guide/wire-ampacity-voltage-drop-chart/">Wire ampacity & voltage drop</a></article>
-</div><p class="mt-8"><a href="/lithium-battery-buying-guide/">Lithium battery buying guide →</a></p></div></section><section class="band band-tight" style="border-top:1px solid var(--rule)">
+
+<section class="band band-tight" style="border-top:1px solid var(--rule)">
+  <div class="wrap">
+    <span class="micro">Browse the library</span>
+    <p class="muted" style="max-width:60ch">75 guides &mdash; filter by system or search by keyword.</p>
+    <div class="guide-toolbar">
+      <input type="search" id="guide-search" class="guide-search" placeholder="Search guides (e.g. &ldquo;water heater&rdquo;, &ldquo;inverter&rdquo;)&hellip;" aria-label="Search guides">
+      <div class="chip-row" id="guide-chips" role="group" aria-label="Filter by category">
+      <button type="button" class="chip is-active" data-filter="all">All <span>75</span></button>
+      <button type="button" class="chip" data-filter="Electrical">Electrical <span>6</span></button>
+      <button type="button" class="chip" data-filter="Power">Power <span>8</span></button>
+      <button type="button" class="chip" data-filter="Solar">Solar <span>4</span></button>
+      <button type="button" class="chip" data-filter="LP Gas">LP Gas <span>2</span></button>
+      <button type="button" class="chip" data-filter="Plumbing">Plumbing <span>9</span></button>
+      <button type="button" class="chip" data-filter="Appliances">Appliances <span>6</span></button>
+      <button type="button" class="chip" data-filter="Roof">Roof <span>4</span></button>
+      <button type="button" class="chip" data-filter="Exterior">Exterior <span>4</span></button>
+      <button type="button" class="chip" data-filter="Chassis">Chassis <span>3</span></button>
+      <button type="button" class="chip" data-filter="Tires">Tires <span>4</span></button>
+      <button type="button" class="chip" data-filter="Weight">Weight <span>2</span></button>
+      <button type="button" class="chip" data-filter="Trailer">Trailer <span>2</span></button>
+      <button type="button" class="chip" data-filter="Towing">Towing <span>2</span></button>
+      <button type="button" class="chip" data-filter="Generator">Generator <span>2</span></button>
+      <button type="button" class="chip" data-filter="Connectivity">Connectivity <span>3</span></button>
+      <button type="button" class="chip" data-filter="Tech">Tech <span>2</span></button>
+      <button type="button" class="chip" data-filter="Seasonal">Seasonal <span>6</span></button>
+      <button type="button" class="chip" data-filter="Safety">Safety <span>3</span></button>
+      <button type="button" class="chip" data-filter="Buying">Buying <span>1</span></button>
+      <button type="button" class="chip" data-filter="Reference">Reference <span>2</span></button>
+      </div>
+    </div>
+    <p id="guide-empty" class="muted" hidden style="margin-top:24px">No guides match that search &mdash; try a different term or category.</p>
+    <div id="guide-groups">
+<div class="guide-group" data-group="Electrical">
+  <h3 class="guide-group-title">Electrical <span class="guide-group-count">6</span></h3>
+  <div class="guide-list">
+    <article class="guide-card" data-cat="Electrical" data-title="12v vs 120v appliances"><div class="cat">Electrical</div><a href="/guide/12v-vs-120v-appliances-guide/">12V vs 120V appliances</a></article>
+    <article class="guide-card" data-cat="Electrical" data-title="30-amp vs 50-amp service"><div class="cat">Electrical</div><a href="/guide/30-amp-vs-50-amp-guide/">30-amp vs 50-amp service</a></article>
+    <article class="guide-card" data-cat="Electrical" data-title="electrical troubleshooting"><div class="cat">Electrical</div><a href="/guide/electrical-troubleshooting/">Electrical troubleshooting</a></article>
+    <article class="guide-card" data-cat="Electrical" data-title="surge protector / ems"><div class="cat">Electrical</div><a href="/guide/surge-protector-ems-guide/">Surge protector / EMS</a></article>
+    <article class="guide-card" data-cat="Electrical" data-title="van build electrical"><div class="cat">Electrical</div><a href="/guide/van-build-electrical-troubleshooting/">Van build electrical</a></article>
+    <article class="guide-card" data-cat="Electrical" data-title="wire ampacity &amp; voltage drop"><div class="cat">Electrical</div><a href="/guide/wire-ampacity-voltage-drop-chart/">Wire ampacity &amp; voltage drop</a></article>
+  </div>
+</div>
+<div class="guide-group" data-group="Power">
+  <h3 class="guide-group-title">Power <span class="guide-group-count">8</span></h3>
+  <div class="guide-list">
+    <article class="guide-card" data-cat="Power" data-title="battery charging voltage chart"><div class="cat">Power</div><a href="/guide/battery-charging-voltage-chart/">Battery charging voltage chart</a></article>
+    <article class="guide-card" data-cat="Power" data-title="best inverters guide"><div class="cat">Power</div><a href="/guide/best-inverters-guide/">Best inverters guide</a></article>
+    <article class="guide-card" data-cat="Power" data-title="bms explained"><div class="cat">Power</div><a href="/guide/bms-explained-guide/">BMS explained</a></article>
+    <article class="guide-card" data-cat="Power" data-title="converter / inverter / charger"><div class="cat">Power</div><a href="/guide/converter-inverter-charger-guide/">Converter / inverter / charger</a></article>
+    <article class="guide-card" data-cat="Power" data-title="inverter sizing"><div class="cat">Power</div><a href="/guide/inverter-sizing-guide/">Inverter sizing</a></article>
+    <article class="guide-card" data-cat="Power" data-title="lithium vs agm vs lead-acid"><div class="cat">Power</div><a href="/guide/lithium-agm-lead-acid-comparison/">Lithium vs AGM vs lead-acid</a></article>
+    <article class="guide-card" data-cat="Power" data-title="off-grid power budget"><div class="cat">Power</div><a href="/guide/off-grid-power-budget-guide/">Off-grid power budget</a></article>
+    <article class="guide-card" data-cat="Power" data-title="victron fault codes"><div class="cat">Power</div><a href="/guide/victron-fault-code-guide/">Victron fault codes</a></article>
+  </div>
+</div>
+<div class="guide-group" data-group="Solar">
+  <h3 class="guide-group-title">Solar <span class="guide-group-count">4</span></h3>
+  <div class="guide-list">
+    <article class="guide-card" data-cat="Solar" data-title="best solar panels"><div class="cat">Solar</div><a href="/guide/best-solar-panels-guide/">Best solar panels</a></article>
+    <article class="guide-card" data-cat="Solar" data-title="mppt vs pwm"><div class="cat">Solar</div><a href="/guide/mppt-vs-pwm-charge-controller-guide/">MPPT vs PWM</a></article>
+    <article class="guide-card" data-cat="Solar" data-title="solar &amp; battery troubleshooting"><div class="cat">Solar</div><a href="/guide/solar-battery-troubleshooting/">Solar &amp; battery troubleshooting</a></article>
+    <article class="guide-card" data-cat="Solar" data-title="solar sizing &amp; installation"><div class="cat">Solar</div><a href="/guide/solar-sizing-installation-guide/">Solar sizing &amp; installation</a></article>
+  </div>
+</div>
+<div class="guide-group" data-group="LP Gas">
+  <h3 class="guide-group-title">LP Gas <span class="guide-group-count">2</span></h3>
+  <div class="guide-list">
+    <article class="guide-card" data-cat="LP Gas" data-title="lp gas pressure specs"><div class="cat">LP Gas</div><a href="/guide/lp-gas-pressure-specs/">LP gas pressure specs</a></article>
+    <article class="guide-card" data-cat="LP Gas" data-title="lp gas troubleshooting"><div class="cat">LP Gas</div><a href="/guide/lp-gas-troubleshooting/">LP gas troubleshooting</a></article>
+  </div>
+</div>
+<div class="guide-group" data-group="Plumbing">
+  <h3 class="guide-group-title">Plumbing <span class="guide-group-count">9</span></h3>
+  <div class="guide-list">
+    <article class="guide-card" data-cat="Plumbing" data-title="dump station guide"><div class="cat">Plumbing</div><a href="/guide/dump-station-guide/">Dump station guide</a></article>
+    <article class="guide-card" data-cat="Plumbing" data-title="fresh water pump"><div class="cat">Plumbing</div><a href="/guide/fresh-water-pump-guide/">Fresh water pump</a></article>
+    <article class="guide-card" data-cat="Plumbing" data-title="holding tank sanitation"><div class="cat">Plumbing</div><a href="/guide/holding-tank-sanitation-guide/">Holding tank sanitation</a></article>
+    <article class="guide-card" data-cat="Plumbing" data-title="plumbing troubleshooting"><div class="cat">Plumbing</div><a href="/guide/plumbing-troubleshooting/">Plumbing troubleshooting</a></article>
+    <article class="guide-card" data-cat="Plumbing" data-title="tank sanitizing"><div class="cat">Plumbing</div><a href="/guide/tank-sanitizing-guide/">Tank sanitizing</a></article>
+    <article class="guide-card" data-cat="Plumbing" data-title="tank sensor troubleshooting"><div class="cat">Plumbing</div><a href="/guide/tank-sensor-troubleshooting-guide/">Tank sensor troubleshooting</a></article>
+    <article class="guide-card" data-cat="Plumbing" data-title="toilet systems"><div class="cat">Plumbing</div><a href="/guide/toilet-systems-guide/">Toilet systems</a></article>
+    <article class="guide-card" data-cat="Plumbing" data-title="water filtration"><div class="cat">Plumbing</div><a href="/guide/water-filtration-guide/">Water filtration</a></article>
+    <article class="guide-card" data-cat="Plumbing" data-title="water heater troubleshooting"><div class="cat">Plumbing</div><a href="/guide/water-heater-troubleshooting-guide/">Water heater troubleshooting</a></article>
+  </div>
+</div>
+<div class="guide-group" data-group="Appliances">
+  <h3 class="guide-group-title">Appliances <span class="guide-group-count">6</span></h3>
+  <div class="guide-list">
+    <article class="guide-card" data-cat="Appliances" data-title="coleman mach a/c"><div class="cat">Appliances</div><a href="/guide/coleman-mach-ac-guide/">Coleman Mach A/C</a></article>
+    <article class="guide-card" data-cat="Appliances" data-title="dometic appliance guide"><div class="cat">Appliances</div><a href="/guide/dometic-appliance-guide/">Dometic appliance guide</a></article>
+    <article class="guide-card" data-cat="Appliances" data-title="norcold refrigerator"><div class="cat">Appliances</div><a href="/guide/norcold-refrigerator-guide/">Norcold refrigerator</a></article>
+    <article class="guide-card" data-cat="Appliances" data-title="rv furnace troubleshooting"><div class="cat">Appliances</div><a href="/guide/rv-furnace-troubleshooting-guide/">RV furnace troubleshooting</a></article>
+    <article class="guide-card" data-cat="Appliances" data-title="rv microwave troubleshooting"><div class="cat">Appliances</div><a href="/guide/rv-microwave-troubleshooting-guide/">RV microwave troubleshooting</a></article>
+    <article class="guide-card" data-cat="Appliances" data-title="truma combi"><div class="cat">Appliances</div><a href="/guide/truma-combi-guide/">Truma Combi</a></article>
+  </div>
+</div>
+<div class="guide-group" data-group="Roof">
+  <h3 class="guide-group-title">Roof <span class="guide-group-count">4</span></h3>
+  <div class="guide-list">
+    <article class="guide-card" data-cat="Roof" data-title="roof coating"><div class="cat">Roof</div><a href="/guide/roof-coating-guide/">Roof coating</a></article>
+    <article class="guide-card" data-cat="Roof" data-title="roof material comparison"><div class="cat">Roof</div><a href="/guide/roof-material-comparison-guide/">Roof material comparison</a></article>
+    <article class="guide-card" data-cat="Roof" data-title="roof troubleshooting"><div class="cat">Roof</div><a href="/guide/roof-troubleshooting/">Roof troubleshooting</a></article>
+    <article class="guide-card" data-cat="Roof" data-title="roof vent fan install"><div class="cat">Roof</div><a href="/guide/roof-vent-fan-install-guide/">Roof vent fan install</a></article>
+  </div>
+</div>
+<div class="guide-group" data-group="Exterior">
+  <h3 class="guide-group-title">Exterior <span class="guide-group-count">4</span></h3>
+  <div class="guide-list">
+    <article class="guide-card" data-cat="Exterior" data-title="awning fabric replacement"><div class="cat">Exterior</div><a href="/guide/awning-fabric-replacement-guide/">Awning fabric replacement</a></article>
+    <article class="guide-card" data-cat="Exterior" data-title="awning motor troubleshooting"><div class="cat">Exterior</div><a href="/guide/awning-motor-troubleshooting-guide/">Awning motor troubleshooting</a></article>
+    <article class="guide-card" data-cat="Exterior" data-title="slide-out seals"><div class="cat">Exterior</div><a href="/guide/slide-out-seal-guide/">Slide-out seals</a></article>
+    <article class="guide-card" data-cat="Exterior" data-title="window seal replacement"><div class="cat">Exterior</div><a href="/guide/window-seal-replacement-guide/">Window seal replacement</a></article>
+  </div>
+</div>
+<div class="guide-group" data-group="Chassis">
+  <h3 class="guide-group-title">Chassis <span class="guide-group-count">3</span></h3>
+  <div class="guide-list">
+    <article class="guide-card" data-cat="Chassis" data-title="best leveling systems"><div class="cat">Chassis</div><a href="/guide/best-leveling-systems-guide/">Best leveling systems</a></article>
+    <article class="guide-card" data-cat="Chassis" data-title="chassis engine maintenance"><div class="cat">Chassis</div><a href="/guide/chassis-engine-maintenance-guide/">Chassis engine maintenance</a></article>
+    <article class="guide-card" data-cat="Chassis" data-title="slide-out &amp; leveling"><div class="cat">Chassis</div><a href="/guide/slide-out-leveling-troubleshooting-guide/">Slide-out &amp; leveling</a></article>
+  </div>
+</div>
+<div class="guide-group" data-group="Tires">
+  <h3 class="guide-group-title">Tires <span class="guide-group-count">4</span></h3>
+  <div class="guide-list">
+    <article class="guide-card" data-cat="Tires" data-title="best rv tires"><div class="cat">Tires</div><a href="/guide/best-rv-tires-guide/">Best RV tires</a></article>
+    <article class="guide-card" data-cat="Tires" data-title="tire aging"><div class="cat">Tires</div><a href="/guide/tire-aging-guide/">Tire aging</a></article>
+    <article class="guide-card" data-cat="Tires" data-title="tire pressure / load chart"><div class="cat">Tires</div><a href="/guide/tire-pressure-load-chart/">Tire pressure / load chart</a></article>
+    <article class="guide-card" data-cat="Tires" data-title="tires, brakes &amp; tpms"><div class="cat">Tires</div><a href="/guide/tires-brakes-tpms-guide/">Tires, brakes &amp; TPMS</a></article>
+  </div>
+</div>
+<div class="guide-group" data-group="Weight">
+  <h3 class="guide-group-title">Weight <span class="guide-group-count">2</span></h3>
+  <div class="guide-list">
+    <article class="guide-card" data-cat="Weight" data-title="gvwr / gcwr / payload"><div class="cat">Weight</div><a href="/guide/gvwr-gcwr-payload-guide/">GVWR / GCWR / payload</a></article>
+    <article class="guide-card" data-cat="Weight" data-title="weighing your rig"><div class="cat">Weight</div><a href="/guide/weighing-your-rig-guide/">Weighing your rig</a></article>
+  </div>
+</div>
+<div class="guide-group" data-group="Trailer">
+  <h3 class="guide-group-title">Trailer <span class="guide-group-count">2</span></h3>
+  <div class="guide-list">
+    <article class="guide-card" data-cat="Trailer" data-title="brake controller wiring"><div class="cat">Trailer</div><a href="/guide/brake-controller-wiring-guide/">Brake controller wiring</a></article>
+    <article class="guide-card" data-cat="Trailer" data-title="fifth-wheel hitch guide"><div class="cat">Trailer</div><a href="/guide/fifth-wheel-hitch-guide/">Fifth-wheel hitch guide</a></article>
+  </div>
+</div>
+<div class="guide-group" data-group="Towing">
+  <h3 class="guide-group-title">Towing <span class="guide-group-count">2</span></h3>
+  <div class="guide-list">
+    <article class="guide-card" data-cat="Towing" data-title="dinghy towing"><div class="cat">Towing</div><a href="/guide/dinghy-towing-guide/">Dinghy towing</a></article>
+    <article class="guide-card" data-cat="Towing" data-title="weight distribution hitch"><div class="cat">Towing</div><a href="/guide/weight-distribution-hitch-guide/">Weight distribution hitch</a></article>
+  </div>
+</div>
+<div class="guide-group" data-group="Generator">
+  <h3 class="guide-group-title">Generator <span class="guide-group-count">2</span></h3>
+  <div class="guide-list">
+    <article class="guide-card" data-cat="Generator" data-title="generator manufacturer guide"><div class="cat">Generator</div><a href="/guide/generator-manufacturer-guide/">Generator manufacturer guide</a></article>
+    <article class="guide-card" data-cat="Generator" data-title="generator troubleshooting"><div class="cat">Generator</div><a href="/guide/generator-troubleshooting/">Generator troubleshooting</a></article>
+  </div>
+</div>
+<div class="guide-group" data-group="Connectivity">
+  <h3 class="guide-group-title">Connectivity <span class="guide-group-count">3</span></h3>
+  <div class="guide-list">
+    <article class="guide-card" data-cat="Connectivity" data-title="peplink multi-wan bonding &amp;amp; failover"><div class="cat">Connectivity</div><a href="/guide/peplink-multi-wan-guide/">Peplink multi-WAN bonding &amp;amp; failover</a></article>
+    <article class="guide-card" data-cat="Connectivity" data-title="starlink for rvs"><div class="cat">Connectivity</div><a href="/guide/starlink-rv-guide/">Starlink for RVs</a></article>
+    <article class="guide-card" data-cat="Connectivity" data-title="weboost install"><div class="cat">Connectivity</div><a href="/guide/weboost-install-guide/">weBoost install</a></article>
+  </div>
+</div>
+<div class="guide-group" data-group="Tech">
+  <h3 class="guide-group-title">Tech <span class="guide-group-count">2</span></h3>
+  <div class="guide-list">
+    <article class="guide-card" data-cat="Tech" data-title="backup camera &amp; tpms install"><div class="cat">Tech</div><a href="/guide/backup-camera-tpms-install-guide/">Backup camera &amp; TPMS install</a></article>
+    <article class="guide-card" data-cat="Tech" data-title="can bus / multiplex systems"><div class="cat">Tech</div><a href="/guide/canbus-multiplex-systems-guide/">CAN bus / multiplex systems</a></article>
+  </div>
+</div>
+<div class="guide-group" data-group="Seasonal">
+  <h3 class="guide-group-title">Seasonal <span class="guide-group-count">6</span></h3>
+  <div class="guide-list">
+    <article class="guide-card" data-cat="Seasonal" data-title="driving the up in winter"><div class="cat">Seasonal</div><a href="/guide/driving-the-up-winter-guide/">Driving the UP in winter</a></article>
+    <article class="guide-card" data-cat="Seasonal" data-title="rv storage prep"><div class="cat">Seasonal</div><a href="/guide/rv-storage-prep-guide/">RV storage prep</a></article>
+    <article class="guide-card" data-cat="Seasonal" data-title="seasonal maintenance checklist"><div class="cat">Seasonal</div><a href="/guide/seasonal-maintenance-checklist/">Seasonal maintenance checklist</a></article>
+    <article class="guide-card" data-cat="Seasonal" data-title="spring de-winterization"><div class="cat">Seasonal</div><a href="/guide/spring-dewinterization-checklist/">Spring de-winterization</a></article>
+    <article class="guide-card" data-cat="Seasonal" data-title="underbelly insulation"><div class="cat">Seasonal</div><a href="/guide/underbelly-insulation-guide/">Underbelly insulation</a></article>
+    <article class="guide-card" data-cat="Seasonal" data-title="winterization"><div class="cat">Seasonal</div><a href="/guide/winterization-guide/">Winterization</a></article>
+  </div>
+</div>
+<div class="guide-group" data-group="Safety">
+  <h3 class="guide-group-title">Safety <span class="guide-group-count">3</span></h3>
+  <div class="guide-list">
+    <article class="guide-card" data-cat="Safety" data-title="propane &amp; co safety"><div class="cat">Safety</div><a href="/guide/propane-co-safety-guide/">Propane &amp; CO safety</a></article>
+    <article class="guide-card" data-cat="Safety" data-title="roadside kit"><div class="cat">Safety</div><a href="/guide/roadside-kit-guide/">Roadside kit</a></article>
+    <article class="guide-card" data-cat="Safety" data-title="rv fire safety"><div class="cat">Safety</div><a href="/guide/rv-fire-safety-guide/">RV fire safety</a></article>
+  </div>
+</div>
+<div class="guide-group" data-group="Buying">
+  <h3 class="guide-group-title">Buying <span class="guide-group-count">1</span></h3>
+  <div class="guide-list">
+    <article class="guide-card" data-cat="Buying" data-title="ppi guide"><div class="cat">Buying</div><a href="/guide/ppi-guide/">PPI guide</a></article>
+  </div>
+</div>
+<div class="guide-group" data-group="Reference">
+  <h3 class="guide-group-title">Reference <span class="guide-group-count">2</span></h3>
+  <div class="guide-list">
+    <article class="guide-card" data-cat="Reference" data-title="fault code index  -  dometic / onan"><div class="cat">Reference</div><a href="/guide/fault-code-index-dometic-onan/">Fault code index  -  Dometic / Onan</a></article>
+    <article class="guide-card" data-cat="Reference" data-title="torque spec chart"><div class="cat">Reference</div><a href="/guide/torque-spec-chart/">Torque spec chart</a></article>
+  </div>
+</div>
+    </div>
+    <p class="mt-8"><a href="/lithium-battery-buying-guide/">Lithium battery buying guide &rarr;</a></p>
+  </div>
+</section><section class="band band-tight" style="border-top:1px solid var(--rule)">
   <div class="wrap-narrow">
     <span class="micro">Pricing teaser</span>
     <p>Trip fee <strong>$75</strong> within 30 miles, then <strong>$1.50/mi</strong>. Labor ~<strong>$150/hr</strong> (1-hour minimum, billed in 30-minute increments). Diagnostic <strong>$175</strong> applied toward repair if you proceed.</p>
@@ -214,6 +375,46 @@
 </div>
 
 <script>window.PUBLIC_WEB3FORMS_KEY = window.PUBLIC_WEB3FORMS_KEY || 'PUBLIC_WEB3FORMS_KEY';</script>
+<script>
+(function () {
+  var search = document.getElementById('guide-search');
+  var chipRow = document.getElementById('guide-chips');
+  var groups = document.querySelectorAll('.guide-group');
+  var empty = document.getElementById('guide-empty');
+  if (!search || !chipRow) return;
+  var activeCat = 'all';
+
+  function apply() {
+    var q = search.value.trim().toLowerCase();
+    var anyVisible = false;
+    groups.forEach(function (group) {
+      var groupCat = group.getAttribute('data-group');
+      var groupMatches = activeCat === 'all' || groupCat === activeCat;
+      var visibleInGroup = 0;
+      group.querySelectorAll('.guide-card').forEach(function (card) {
+        var matchesText = !q || card.getAttribute('data-title').indexOf(q) !== -1;
+        var show = groupMatches && matchesText;
+        card.classList.toggle('is-hidden', !show);
+        if (show) visibleInGroup++;
+      });
+      group.classList.toggle('is-hidden', visibleInGroup === 0);
+      if (visibleInGroup > 0) anyVisible = true;
+    });
+    if (empty) empty.hidden = anyVisible;
+  }
+
+  chipRow.addEventListener('click', function (e) {
+    var btn = e.target.closest('.chip');
+    if (!btn) return;
+    chipRow.querySelectorAll('.chip').forEach(function (c) { c.classList.remove('is-active'); });
+    btn.classList.add('is-active');
+    activeCat = btn.getAttribute('data-filter');
+    apply();
+  });
+
+  search.addEventListener('input', apply);
+})();
+</script>
 <script src="/js/site.js" defer></script>
 </body>
 </html>
