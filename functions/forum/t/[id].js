@@ -88,7 +88,12 @@ export async function onRequestGet(context) {
 
   const repliesHtml = orderedPosts.map((p) => {
     const isAccepted = thread.accepted_reply_id && p.id === thread.accepted_reply_id;
-    return `<article class="faq-item" id="post-${esc(p.id)}" data-post-id="${esc(p.id)}">
+    const isVerified = !!p.author_credentials;
+    const verifiedStyle = isVerified
+      ? 'border:1px solid rgba(201,151,44,0.4);background:rgba(201,151,44,0.06);border-radius:10px;padding:14px 16px;'
+      : '';
+    return `<article class="faq-item" id="post-${esc(p.id)}" data-post-id="${esc(p.id)}" style="${verifiedStyle}">
+      ${isVerified ? '<p class="verified-tag" style="color:#C9972C;font-weight:700;font-size:12px;letter-spacing:0.04em;text-transform:uppercase;margin:0 0 8px">&#10003; Verified RV Tech Response</p>' : ''}
       ${isAccepted ? '<p class="held-note" style="color:#2e9e4f;font-weight:700;margin:0 0 6px">&#10003; Accepted answer</p>' : ''}
       <p class="muted mb-0" style="font-size:13px"><a class="text-link" href="${base}/forum/member/${esc(p.author_id)}">${esc(p.author)}</a>${credBadge(p.author_credentials)} &middot; <time datetime="${esc(p.created_at)}">${esc(p.created_at)}</time></p>
       <p>${esc(p.body).replace(/\n/g, '<br>')}</p>
