@@ -20,11 +20,13 @@ database_id = "0f9da84a-c0bd-48cb-a367-75f8aedce93f"
 binding = "MEDIA"
 bucket_name = "umrt-forum-media"
 
-# Portal accounts DB — read-only cross-reference so the forum can show a
-# "Verified Customer" badge on member profiles for people who've booked a
-# real job through umrt-portal. Same D1 database, bound into a second
-# project (Cloudflare allows one D1 database to be bound to multiple
-# Pages/Workers projects). Forum never writes to this DB, only reads.
+# Portal accounts DB, bound into a second project (Cloudflare allows one D1
+# database to be bound to multiple Pages/Workers projects). Two uses here:
+#  1. Read: forum member profiles show a "Verified Customer" badge when the
+#     email matches a real portal account.
+#  2. Write: /api/book inserts a job record here (the WP /book-service form
+#     posts through this function) so umrt-portal's Track page has real
+#     data to show.
 [[d1_databases]]
 binding = "PORTAL_DB"
 database_name = "umrt-portal-db"

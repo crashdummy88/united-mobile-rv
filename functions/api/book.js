@@ -85,20 +85,11 @@ export async function onRequestPost(context) {
     out.append('subject', 'UMRT Book a Service request');
   }
 
+  let web3formsOk = false;
   try {
     const res = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: out });
     const data = await res.json().catch(() => ({}));
-    if (data && data.success) {
-      return json({ success: true });
-    }
-    return json(
-      {
-        success: false,
-        error: 'upstream',
-        message: 'Could not send. Please call (616) 606-5277.',
-      },
-      200
-    );
+    web3formsOk = !!(data && data.success);
   } catch {
     return json(
       {
@@ -109,6 +100,57 @@ export async function onRequestPost(context) {
       200
     );
   }
+
+  if (!web3formsOk) {
+    return json(
+      {
+        success: false,
+        error: 'upstream',
+        message: 'Could not send. Please call (616) 606-5277.',
+      },
+      200
+    );
+  }
+
+  // Best-effort job record for the portal's Track page. Accepts either this
+  // site's own field names or the WP /book-service form's names. Never lets
+  // a DB hiccup block the customer's request -- the email above already sent.
+  if (env.PORTAL_DB) {
+    try {
+      const g = (k1, k2) => (form.get(k1) || form.get(k2) || '').toString().trim();
+      const fullName = g('name', 'fullName');
+      const phone = g('phone', 'phone');
+      const jobEmail = g('email', 'email');
+      const issue = g('issue', 'issue');
+      const location = g('location', 'street');
+      const city = g('city', 'city');
+      const state = g('state', 'state');
+      const zip = g('zip', 'zip');
+      const rig = g('rig', '');
+      const rvYear = g('rvYear', '');
+      const rvMake = g('rvMake', '');
+      const rvModel = g('rvModel', '');
+      const vin = g('vin', '');
+      const preferredDate = g('preferredDate', '');
+      const preferredTime = g('preferredTime', '');
+      const id = crypto.randomUUID();
+
+      await env.PORTAL_DB.prepare(
+        `INSERT INTO jobs (id, full_name, phone, email, rv_year, rv_make, rv_model, vin, issue, street, city, state, zip, preferred_date, preferred_time, source)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      ).bind(
+        id, fullName, phone, jobEmail || null,
+        rvYear || null, rvMake || null, rvModel || null, vin || null,
+        issue, location || null, city || null, state || null, zip || null,
+        preferredDate || null, preferredTime || null,
+        rig ? 'united-mobile-rv-book' : 'wp_book_service'
+      ).run();
+    } catch (e) {
+      // Swallow -- job tracking is a bonus, not a requirement for booking to work.
+    }
+  }
+
+  return json({ success: true });
 }
 
 export async function onRequestOptions() {
