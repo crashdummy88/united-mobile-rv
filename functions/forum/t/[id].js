@@ -71,7 +71,17 @@ export async function onRequestGet(context) {
   const descRaw = thread.body.replace(/\s+/g, ' ').trim();
   const description = (descRaw.length > 155 ? descRaw.slice(0, 152) + '…' : descRaw) || 'RV repair question and answers from the United Mobile RV community.';
 
-  const repliesHtml = posts.map((p) => {
+  // Gold-standard forums (Discourse, Stack Overflow) float the accepted
+  // answer to the top of the thread instead of leaving it buried in
+  // chronological order -- do the same here.
+  const orderedPosts = thread.accepted_reply_id
+    ? [
+        ...posts.filter((p) => p.id === thread.accepted_reply_id),
+        ...posts.filter((p) => p.id !== thread.accepted_reply_id),
+      ]
+    : posts;
+
+  const repliesHtml = orderedPosts.map((p) => {
     const isAccepted = thread.accepted_reply_id && p.id === thread.accepted_reply_id;
     return `<article class="faq-item" id="post-${esc(p.id)}" data-post-id="${esc(p.id)}">
       ${isAccepted ? '<p class="held-note" style="color:#2e9e4f;font-weight:700;margin:0 0 6px">&#10003; Accepted answer</p>' : ''}

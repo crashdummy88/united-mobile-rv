@@ -99,7 +99,7 @@
   </div>
 </section>
 
-<section class="band band-gray">
+<section class="band">
   <div class="wrap wrap-narrow">
     <div class="cat-nav-wrap">
       <div class="cat-nav-label">Browse by topic</div>
@@ -144,6 +144,7 @@
         </ul>
       </div>
       <input class="forum-input" id="tf-title" placeholder="Title" maxlength="200">
+      <div id="tf-duplicate-hint" style="display:none;margin:-4px 0 10px"></div>
       <select class="forum-input" id="tf-category">
         <option value="general">💬 General</option>
         <option value="repair">🔧 Repair &amp; Diagnostics</option>
@@ -335,6 +336,25 @@
   function updateDiagPrompt(){ diagPrompt.style.display = ['repair','power','connectivity'].indexOf(tfCategorySelect.value) !== -1 ? '' : 'none'; }
   tfCategorySelect.addEventListener('change', updateDiagPrompt);
   updateDiagPrompt();
+
+  var tfTitleInput = document.getElementById('tf-title');
+  var dupHint = document.getElementById('tf-duplicate-hint');
+  var dupTimer = null;
+  tfTitleInput.addEventListener('input', function(){
+    clearTimeout(dupTimer);
+    var q = tfTitleInput.value.trim();
+    if (q.length < 6) { dupHint.style.display = 'none'; dupHint.innerHTML = ''; return; }
+    dupTimer = setTimeout(async function(){
+      try {
+        var res = await fetch('/api/forum/search?q=' + encodeURIComponent(q) + '&limit=3');
+        var data = await res.json();
+        if (!data.success || !data.results.length) { dupHint.style.display = 'none'; dupHint.innerHTML = ''; return; }
+        dupHint.innerHTML = '<p class="muted" style="font-size:13px;margin-bottom:4px">Similar threads already here — might save you a wait:</p>' +
+          data.results.map(function(t){ return '<div><a class="text-link" href="/forum/t/'+esc(t.id)+'" target="_blank">'+esc(t.title)+'</a>' + (t.solved_at ? ' <span style="color:#4CBE6E">&#10003;</span>' : '') + '</div>'; }).join('');
+        dupHint.style.display = '';
+      } catch { dupHint.style.display = 'none'; }
+    }, 400);
+  });
 
   var searchInput = document.getElementById('forum-search');
   var searchResults = document.getElementById('search-results');
