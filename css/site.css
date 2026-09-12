@@ -789,3 +789,32 @@ h1, h2 { font-weight: 400; letter-spacing: -0.03em; }
 .footer-proof-strip img {
   background: #111;
 }
+
+/* ========== Accessibility fixes (PageSpeed audit, 2026-09-12) ========== */
+/* Gold (#C9972C) on white/light bands measures ~2.6:1 contrast, well under
+   the 4.5:1 WCAG AA minimum for normal text. Use a darker amber there. */
+.band-light .micro,
+.band-gray .micro,
+.proof-list .lab {
+  color: #8A6015;
+}
+/* Footer text was too faint against the dark footer background. */
+.footer-quiet,
+.footer .footer-quiet {
+  opacity: 0.85;
+}
+.footer-proof-cap {
+  color: rgba(255,255,255,0.7);
+}
+/* Inline text links shouldn't rely on color alone to read as a link. */
+p a:not(.btn):not(.text-link),
+.lead a:not(.btn) {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+/* Meet the 44x44 minimum touch target on primary nav links. */
+.nav-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
