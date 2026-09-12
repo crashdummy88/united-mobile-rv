@@ -10,9 +10,19 @@
  */
 const INDEXABLE_PREFIXES = ['/forum/', '/forum-live/'];
 
+// Files Google fetches as *resources*, not pages -- a noindex X-Robots-Tag
+// on these makes Google Search Console refuse to process them at all
+// ("Sitemap could not be read"), even though the XML/text body is fine.
+const ROBOTS_HEADER_EXEMPT = ['/sitemap.xml', '/robots.txt'];
+
 export async function onRequest(context) {
   const response = await context.next();
   const path = new URL(context.request.url).pathname;
+
+  if (ROBOTS_HEADER_EXEMPT.includes(path)) {
+    return response;
+  }
+
   const indexable = INDEXABLE_PREFIXES.some((p) => path === p.slice(0, -1) || path.startsWith(p));
 
   const headers = new Headers(response.headers);
