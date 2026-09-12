@@ -3,7 +3,7 @@
  * Real server-side search over D1 — titles, bodies, and categories.
  * Parameterized, bounded, paginated. Never returns hidden content.
  */
-import { json } from '../../../_lib/authz.js';
+import { json } from '../../_lib/authz.js';
 
 export async function onRequestGet(context) {
   const { env, request } = context;
