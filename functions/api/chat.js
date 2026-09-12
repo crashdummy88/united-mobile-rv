@@ -2,7 +2,7 @@
  * Cloudflare Pages Function: POST /api/chat
  * Free open-source LLM via Cloudflare Workers AI (Llama).
  * Binding required: AI (Workers AI) on the Pages project.
- * Optional override: WORKERS_AI_MODEL (default @cf/meta/llama-3.1-8b-instruct)
+ * Optional override: WORKERS_AI_MODEL (default @cf/meta/llama-3.1-8b-instruct-fast)
  * No OpenAI/Anthropic required. Secrets never in client.
  * Domain HOLD: Pages mothership only — do not claim live WP domain attachment.
  *
@@ -25,7 +25,7 @@ function json(data, status = 200) {
 const FALLBACK =
   "Live chat AI is offline right now. Prefer Text (616) 606-5277 — or Book at /book-service/. A human will follow up.";
 
-const DEFAULT_MODEL = '@cf/meta/llama-3.1-8b-instruct';
+const DEFAULT_MODEL = '@cf/meta/llama-3.1-8b-instruct-fast';
 
 export async function onRequestPost(context) {
   const { request, env } = context;
