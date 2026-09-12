@@ -147,7 +147,8 @@ export async function onRequestGet(context) {
       if (qfTurnstileWidgetId == null) {
         qfTurnstileWidgetId = window.turnstile.render(el, {
           sitekey: '0x4AAAAAAEvvXidVbXxlagxj',
-          size: 'invisible',
+          size: 'normal',
+          appearance: 'interaction-only',
           execution: 'execute',
           callback: finish,
           'error-callback': function () { finish(''); },

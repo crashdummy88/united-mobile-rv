@@ -1,4 +1,4 @@
-/* Cloudflare Turnstile -- shared invisible-widget helper.
+/* Cloudflare Turnstile -- shared non-interactive-widget helper.
  * Reuses the same site key already live on the forum forms. One widget per
  * container, re-executed (not re-rendered) on repeat use so chat can fetch
  * a fresh token per message without a visible challenge for real visitors. */
@@ -36,7 +36,8 @@ function umrtGetTurnstileToken(containerId) {
       if (widgetId == null) {
         widgetId = window.turnstile.render(el, {
           sitekey: UMRT_TURNSTILE_SITEKEY,
-          size: 'invisible',
+          size: 'normal',
+          appearance: 'interaction-only',
           execution: 'execute',
           callback: finish,
           'error-callback': function () { finish(''); },
