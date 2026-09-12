@@ -60,7 +60,9 @@ export async function onRequestPost(context) {
     const reply = await callWorkersAI(env.AI, model, leadNote, messages);
     return json({ reply, mode: 'workers-ai', model });
   } catch (err) {
-    return json({ error: 'upstream', reply: FALLBACK, mode: 'fallback' }, 200);
+    const debug = request.headers.get('x-debug') === '1';
+    const detail = debug ? String((err && err.message) || err) : undefined;
+    return json({ error: 'upstream', reply: FALLBACK, mode: 'fallback', ...(detail ? { detail } : {}) }, 200);
   }
 }
 
