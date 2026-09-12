@@ -1,4 +1,5 @@
-import { readSession } from '../../_lib/session.js';
+import { readSession, randomId } from '../../_lib/session.js';
+import { maybeRunNudgeSweep } from '../../_lib/bot-sweep.js';
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -11,6 +12,8 @@ export async function onRequestGet(context) {
   const { env } = context;
   if (!env.DB) return json({ success: false, error: 'not_configured', online: 0 }, 503);
   const row = await env.DB.prepare(`SELECT COUNT(*) AS count FROM online_sessions WHERE last_seen >= datetime('now','-5 minutes')`).first();
+  // Opportunistic, throttled, fire-and-forget: doesn't block or slow this response.
+  context.waitUntil(maybeRunNudgeSweep(env, randomId));
   return json({ success: true, online: row?.count || 0 });
 }
 

@@ -3,6 +3,7 @@ import { moderateText } from '../../_lib/moderate.js';
 import { draftAiReply } from '../../_lib/ai-reply.js';
 import { notifyForumActivity } from '../../_lib/notify.js';
 import { verifyTurnstile } from '../../_lib/turnstile.js';
+import { autoTagCategory } from '../../_lib/bot-sweep.js';
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -66,7 +67,13 @@ export async function onRequestPost(context) {
 
   const title = (body.title || '').toString().trim().slice(0, 200);
   const text = (body.body || '').toString().trim().slice(0, 8000);
-  const category = (body.category || 'general').toString().trim().slice(0, 40) || 'general';
+  let category = (body.category || 'general').toString().trim().slice(0, 40) || 'general';
+  // Auto-tag: only override the default "general" bucket, never a category
+  // the member actively chose, and only when keywords give a clear signal.
+  if (category === 'general') {
+    const suggested = autoTagCategory(title, text);
+    if (suggested) category = suggested;
+  }
   const rawImageKeys = Array.isArray(body.imageKeys) ? body.imageKeys : [];
   const imageKeys = rawImageKeys
     .map((k) => (k || '').toString().trim().slice(0, 200))
