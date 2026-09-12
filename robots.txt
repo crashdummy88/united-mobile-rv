@@ -21,3 +21,5 @@ Allow: /forum-live/
 User-agent: Google-Extended
 Allow: /forum/
 Allow: /forum-live/
+
+Sitemap: https://united-mobile-rv.pages.dev/sitemap.xml
