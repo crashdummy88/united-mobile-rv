@@ -92,12 +92,17 @@ p { margin: 0 0 calc(var(--space) * 2); color: rgba(255,255,255,0.78); max-width
 }
 @media (max-width: 900px) {
   .nav-links, .nav-cta .nav-phone { display: none; }
+  /* The sticky mobile action bar (.mobile-bar) already surfaces Book Now +
+     Text/Call on small screens -- hiding the header's duplicate button
+     here avoids three gold CTAs competing on one mobile screen. */
+  .nav-cta .btn { display: none; }
   .nav-toggle { display: inline-flex; align-items: center; justify-content: center; }
   .site-header.is-open .nav-links {
     display: flex; flex-direction: column; position: absolute; left: 0; right: 0; top: 64px;
     background: var(--black); padding: 24px; border-bottom: 1px solid var(--rule); gap: 20px;
   }
   .site-header.is-open .nav-cta .nav-phone { display: inline; }
+  .site-header.is-open .nav-cta .btn { display: inline-flex; }
 }
 
 /* Buttons */
@@ -195,9 +200,12 @@ textarea { min-height: 120px; resize: vertical; }
 /* Sticky mobile bar */
 .mobile-bar {
   display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
-  background: rgba(26,26,26,0.96); border-top: 1px solid var(--rule);
+  background: rgba(17,17,17,0.98);
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  border-top: 1px solid var(--rule);
   padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
   gap: 10px;
+  box-shadow: 0 -8px 24px rgba(0,0,0,0.35);
 }
 .mobile-bar .btn { flex: 1; min-height: 44px; }
 @media (max-width: 900px) {
