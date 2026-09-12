@@ -27,6 +27,58 @@ const FALLBACK =
 
 const DEFAULT_MODEL = '@cf/meta/llama-3.1-8b-instruct-fast';
 
+// ---------------------------------------------------------------------------
+// Scripted answers: exact, non-negotiable facts (pricing, corridor, safety,
+// discounts, credentials) are matched and returned VERBATIM before the model
+// is ever called. This removes all paraphrase/hallucination risk on the
+// numbers and claims that matter most. Everything else still goes to the AI.
+// ---------------------------------------------------------------------------
+const SCRIPTED_ANSWERS = [
+  {
+    test: /\b(gas smell|smell.*(gas|propane)|propane leak|co alarm|carbon monoxide|carbon monoxide alarm|fire risk|smoke.*(rv|trailer|van))\b/i,
+    reply:
+      "If you smell gas, hear a CO alarm, or see smoke: leave the area right now, ventilate if it's safe to do so, and call emergency services if there's any immediate danger. Once everyone is safe, text (616) 606-5277 and we'll get you scheduled.",
+  },
+  {
+    test: /\b(discount|coupon|deal|cheaper|lower price|price match|any specials)\b/i,
+    reply:
+      "We don't run discounts or coupon codes through chat. If you've got a pricing question specific to your job, I'll flag it for Matt to follow up on directly — go ahead and share your name, phone, and issue and he'll reach out.",
+  },
+  {
+    test: /\b(trip fee|how much.*(cost|charge)|labor rate|hourly rate|diagnostic fee|service call cost|what do you charge)\b/i,
+    reply:
+      "Trip fee is $75 within 30 miles, then $1.50 a mile each way beyond that. Labor is about $150 an hour with a 1-hour minimum and 30-minute increments after. Diagnostic is $175 and applies toward the repair if you move forward. Parts and specialty materials are always quoted before install. Want me to get you booked so we can look at your specific issue?",
+  },
+  {
+    test: /\bwinteriz|trip prep\b/i,
+    reply:
+      "Winterize is $175. Trip prep is $225. Both are flat, separate line items — not priced by coach class (travel trailer vs. fifth-wheel vs. motorhome). Trip fee and any extra labor still apply as quoted. Want me to get you scheduled?",
+  },
+  {
+    test: /\b(do you (cover|service|come to|travel to)|coverage area|service area|what (states|areas) do you (cover|service))\b/i,
+    reply:
+      "We're active on the Montana / Wyoming / Idaho / Washington corridor. Michigan, Wisconsin, South Dakota, Minnesota, North Dakota, and Oregon are case-by-case when the route fits. Tell me your city and ZIP and I'll let you know where you land.",
+  },
+  {
+    test: /\b(certif|credential|licensed|are you (qualified|certified)|what certifications)\b/i,
+    reply:
+      "Matt is a Victron Professional Certified Installer, weBoost Authorized Installer, Peplink Certified Associate, and Dometic Professional Certified installer, with a background in FAA Part 145 / Liebherr Aerospace plus BMW and Mercedes service. Starlink installs are handled with full mount/routing/setup capability — we don't claim a formal \"Starlink Certified\" title since Starlink doesn't issue one.",
+  },
+  {
+    test: /\bare you a shop\b|\bdo you have a shop\b|\bwalk[- ]?in\b|\bdrop.{0,10}off\b/i,
+    reply:
+      "We're owner-operated and fully mobile — no shop, no walk-ins. We come to you at campsites, driveways, or storage lots. Text (616) 606-5277 or share your location and issue here and we'll get you on the schedule.",
+  },
+];
+
+function matchScriptedAnswer(userText) {
+  for (const entry of SCRIPTED_ANSWERS) {
+    if (entry.test.test(userText)) return entry.reply;
+  }
+  return null;
+}
+
+
 export async function onRequestPost(context) {
   const { request, env } = context;
   let body;
@@ -40,6 +92,12 @@ export async function onRequestPost(context) {
   const lead = body.lead || null;
   if (!messages.length) {
     return json({ error: 'empty', reply: FALLBACK }, 400);
+  }
+
+  const lastUser = [...messages].reverse().find((m) => m.role !== 'assistant');
+  const scripted = lastUser ? matchScriptedAnswer(String(lastUser.content || '')) : null;
+  if (scripted) {
+    return json({ reply: scripted, mode: 'scripted' });
   }
 
   const leadNote = lead
