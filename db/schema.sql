@@ -3,7 +3,7 @@
 
 CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY,
-  provider TEXT NOT NULL,             -- 'google' | 'github' | 'meta'
+  provider TEXT NOT NULL,
   provider_id TEXT NOT NULL,
   email TEXT,
   display_name TEXT NOT NULL,
@@ -26,6 +26,10 @@ CREATE TABLE IF NOT EXISTS threads (
   updated_at TEXT NOT NULL DEFAULT (datetime('now')),
   pinned INTEGER NOT NULL DEFAULT 0,
   hidden INTEGER NOT NULL DEFAULT 0,
+  solved INTEGER NOT NULL DEFAULT 0,
+  solved_at TEXT,
+  solved_by TEXT,
+  accepted_post_id TEXT,
   ai_flagged INTEGER NOT NULL DEFAULT 0,
   ai_reason TEXT,
   image_keys TEXT
@@ -48,17 +52,49 @@ CREATE TABLE IF NOT EXISTS moderation_log (
   post_id TEXT,
   thread_id TEXT,
   author_id TEXT,
-  action TEXT NOT NULL,         -- 'auto_hide' | 'mod_hide' | 'mod_unhide' | 'ban'
+  action TEXT NOT NULL,
   reason TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS forum_reports (
+  id TEXT PRIMARY KEY,
+  reporter_id TEXT NOT NULL REFERENCES users(id),
+  thread_id TEXT REFERENCES threads(id),
+  post_id TEXT REFERENCES posts(id),
+  reason TEXT NOT NULL,
+  details TEXT,
+  status TEXT NOT NULL DEFAULT 'open',
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  resolved_at TEXT,
+  resolved_by TEXT
+);
+
+CREATE TABLE IF NOT EXISTS thread_saves (
+  user_id TEXT NOT NULL REFERENCES users(id),
+  thread_id TEXT NOT NULL REFERENCES threads(id),
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  PRIMARY KEY (user_id, thread_id)
+);
+
+CREATE TABLE IF NOT EXISTS forum_notifications (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id),
+  thread_id TEXT,
+  type TEXT NOT NULL,
+  message TEXT NOT NULL,
+  read_at TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
 CREATE INDEX IF NOT EXISTS idx_posts_thread ON posts(thread_id);
 CREATE INDEX IF NOT EXISTS idx_threads_updated ON threads(updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_threads_solved_updated ON threads(solved, updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_threads_category_updated ON threads(category, updated_at DESC);
 CREATE INDEX IF NOT EXISTS idx_modlog_created ON moderation_log(created_at DESC);
-
--- Shared status + pricing, read by united-mobile-rv, umrt-areas, umrt-go, umrt-quote
--- via /api/status. Single source of truth so satellite sites never go stale.
+CREATE INDEX IF NOT EXISTS idx_forum_reports_status_created ON forum_reports(status, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_thread_saves_user ON thread_saves(user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_forum_notifications_user ON forum_notifications(user_id, created_at DESC);
 
 CREATE TABLE IF NOT EXISTS site_status (
   id INTEGER PRIMARY KEY CHECK (id = 1),
@@ -70,7 +106,6 @@ CREATE TABLE IF NOT EXISTS site_status (
   updated_at TEXT NOT NULL DEFAULT (datetime('now')),
   updated_by TEXT
 );
-
 INSERT OR IGNORE INTO site_status (id) VALUES (1);
 
 CREATE TABLE IF NOT EXISTS pricing (
@@ -81,7 +116,6 @@ CREATE TABLE IF NOT EXISTS pricing (
   sort_order INTEGER NOT NULL DEFAULT 0,
   updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
-
 INSERT OR IGNORE INTO pricing (key, label, amount, note, sort_order) VALUES
   ('trip_fee', 'Trip fee', '$75', 'Within 30 miles', 1),
   ('mileage', 'Mileage', '$1.50/mi', 'Each way beyond 30 miles', 2),

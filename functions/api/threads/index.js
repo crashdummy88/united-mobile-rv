@@ -19,11 +19,11 @@ export async function onRequestGet(context) {
   const limit = Math.min(parseInt(url.searchParams.get('limit') || '30', 10) || 30, 100);
 
   const { results } = await env.DB.prepare(
-    `SELECT t.id, t.title, t.category, t.created_at, t.updated_at, t.pinned, t.image_keys, u.display_name AS author, u.avatar_url AS author_avatar,
+    `SELECT t.id, t.title, t.category, t.created_at, t.updated_at, t.pinned, t.solved, t.image_keys, u.display_name AS author, u.avatar_url AS author_avatar,
       (SELECT COUNT(*) FROM posts p WHERE p.thread_id = t.id AND p.hidden = 0) AS reply_count
      FROM threads t JOIN users u ON u.id = t.author_id
      WHERE t.hidden = 0
-     ORDER BY t.pinned DESC, t.updated_at DESC
+     ORDER BY t.pinned DESC, t.solved DESC, t.updated_at DESC
      LIMIT ?`
   )
     .bind(limit)
@@ -89,8 +89,6 @@ export async function onRequestPost(context) {
       .run();
   }
 
-  // Auto-welcome: if this is the author's first-ever (visible) thread, have the
-  // UMRT Team bot account drop a friendly first reply so new members don't post into silence.
   if (!hidden) {
     try {
       const countRow = await env.DB.prepare(
@@ -115,12 +113,8 @@ export async function onRequestPost(context) {
           await env.DB.prepare(`UPDATE threads SET updated_at = datetime('now') WHERE id = ?`).bind(id).run();
         }
       }
-    } catch (e) {
-      // Welcome bot is a nice-to-have — never let it break thread creation.
-    }
+    } catch (e) {}
 
-    // AI first-pass technical draft: only for non-general technical categories,
-    // clearly labeled as an automated draft, never posing as Matt.
     try {
       if (category !== 'general') {
         const draft = await draftAiReply(env.AI, title, text);
@@ -135,24 +129,16 @@ export async function onRequestPost(context) {
           }
         }
       }
-    } catch (e) {
-      // AI draft reply is a nice-to-have — never let it break thread creation.
-    }
+    } catch (e) {}
 
-    // Email alert to Matt — fire and forget.
     context.waitUntil(notifyForumActivity(env, {
       subject: `New forum thread: ${title}`,
-      message: `New thread posted in "${category}" by ${session.name || 'a member'}:\n\n${title}\n\n${text}\n\nhttps://united-mobile-rv.pages.dev/forum/ (open the thread from the list)`,
+      message: `New thread posted in "${category}" by ${session.name || 'a member'}:\n\n${title}\n\n${text}\n\nhttps://united-mobile-rv.pages.dev/forum/`,
     }));
   }
 
   if (hidden) {
-    return json({
-      success: true,
-      id,
-      held_for_review: true,
-      message: 'Your post was held for moderator review.',
-    });
+    return json({ success: true, id, held_for_review: true, message: 'Your post was held for moderator review.' });
   }
   return json({ success: true, id });
 }
