@@ -12,7 +12,6 @@
     form.addEventListener('submit', async function (e) {
       e.preventDefault();
       var status = document.getElementById('form-status');
-      var key = (window.PUBLIC_WEB3FORMS_KEY || '').trim();
       var prefer = form.querySelector('[name="prefer"]');
       if (prefer && !prefer.value) {
         status.className = 'form-status err';
@@ -21,14 +20,12 @@
       }
       var data = new FormData(form);
       data.append('subject', 'UMRT Book a Service request');
-      var useClientKey = key && key !== 'PUBLIC_WEB3FORMS_KEY' && key.indexOf('REPLACE') === -1;
-      if (useClientKey) data.append('access_key', key);
       status.className = 'form-status';
       status.textContent = 'Sending...';
       try {
-        // Prefer /api/book (Pages env PUBLIC_WEB3FORMS_KEY). Client key is optional fallback.
-        var endpoint = useClientKey ? 'https://api.web3forms.com/submit' : '/api/book';
-        var res = await fetch(endpoint, { method: 'POST', body: data });
+        // Always go through /api/book -- the Web3Forms key never lives in
+        // client-side JS.
+        var res = await fetch('/api/book', { method: 'POST', body: data });
         var json = await res.json();
         if (json.success) {
           window.location.href = '/book-service/thank-you/';

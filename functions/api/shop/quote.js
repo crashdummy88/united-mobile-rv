@@ -16,10 +16,14 @@ function json(data, status = 200) {
     headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' },
   });
 }
+import { verifyTurnstile } from '../../_lib/turnstile.js';
+import { checkRateLimit } from '../../_lib/rate-limit.js';
+
 function clean(v, max = 300) {
   return String(v || '').trim().slice(0, max);
 }
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const MAX_CART_ITEMS = 25;
 
 export async function onRequestPost(context) {
@@ -28,6 +32,23 @@ export async function onRequestPost(context) {
 
   let body;
   try { body = await request.json(); } catch { return json({ success: false, error: 'invalid_json' }, 400); }
+
+  // Honeypot: real visitors never fill this hidden field. Silent success so
+  // bots don't learn they were caught.
+  if (clean(body.website, 100)) {
+    return json({ success: true, id: null, item_count: 0, message: 'Got it -- Matt will follow up with a real quote, not an automatic charge.' });
+  }
+
+  const rl = await checkRateLimit(env, request, { max: 5, windowMinutes: 10, key: 'quote' });
+  if (rl.limited) {
+    return json({ success: false, error: 'rate_limited', retry_after: rl.retryAfter }, 429);
+  }
+
+  const tsToken = body['cf-turnstile-response'] || body.turnstile_token;
+  const tsResult = await verifyTurnstile(tsToken, env, request.headers.get('CF-Connecting-IP'));
+  if (!tsResult.ok) {
+    return json({ success: false, error: 'captcha_failed' }, 403);
+  }
 
   const name = clean(body.name, 120);
   const email = clean(body.email, 160);
@@ -42,6 +63,9 @@ export async function onRequestPost(context) {
 
   if (!name || (!email && !phone)) {
     return json({ success: false, error: 'missing_fields', message: 'Name and at least a phone or email are required.' }, 400);
+  }
+  if (email && !EMAIL_RE.test(email)) {
+    return json({ success: false, error: 'invalid_email', message: 'Please enter a valid email address.' }, 400);
   }
 
   // Normalize input into a cart line list, whether this came from the

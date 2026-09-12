@@ -4,6 +4,11 @@
  * using the same Web3Forms integration already used by /api/book.
  * Never logs or returns the access key.
  */
+import { verifyTurnstile } from '../_lib/turnstile.js';
+import { checkRateLimit } from '../_lib/rate-limit.js';
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
     status,
@@ -44,6 +49,23 @@ export async function onRequestPost(context) {
     return json({ success: false, error: 'invalid_json' }, 400);
   }
 
+  // Honeypot: real visitors never fill this hidden field. Silent success so
+  // bots don't learn they were caught.
+  if (clean(body.website, 100)) {
+    return json({ success: true });
+  }
+
+  const rl = await checkRateLimit(env, request, { max: 3, windowMinutes: 10, key: 'chat-lead' });
+  if (rl.limited) {
+    return json({ success: false, error: 'rate_limited', retry_after: rl.retryAfter }, 429);
+  }
+
+  const tsToken = body['cf-turnstile-response'] || body.turnstile_token;
+  const tsResult = await verifyTurnstile(tsToken, env, request.headers.get('CF-Connecting-IP'));
+  if (!tsResult.ok) {
+    return json({ success: false, error: 'captcha_failed' }, 403);
+  }
+
   const lead = body.lead || {};
   const name = clean(lead.name, 120);
   const phone = clean(lead.phone, 40);
@@ -56,6 +78,9 @@ export async function onRequestPost(context) {
   // A lead needs at least a name and one way to reach them.
   if (!name || (!phone && !email)) {
     return json({ success: false, error: 'missing_lead_fields' }, 400);
+  }
+  if (email && !EMAIL_RE.test(email)) {
+    return json({ success: false, error: 'invalid_email' }, 400);
   }
 
   const trigger = clean(body.trigger, 40) || 'captured'; // 'captured' | 'transcript'

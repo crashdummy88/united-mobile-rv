@@ -4,6 +4,11 @@
  * (static HTML cannot read Pages env vars).
  * Soft-fails with phone fallback messaging — never log or return the key.
  */
+import { verifyTurnstile } from '../_lib/turnstile.js';
+import { checkRateLimit } from '../_lib/rate-limit.js';
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
     status,
@@ -35,6 +40,27 @@ export async function onRequestPost(context) {
     return json({ success: false, error: 'invalid_form', message: 'Could not send. Please call (616) 606-5277.' }, 400);
   }
 
+  // Honeypot: real visitors never fill this hidden field. Silent success so
+  // bots don't learn they were caught.
+  const honeypot = (form.get('website') || '').toString().trim();
+  if (honeypot) {
+    return json({ success: true });
+  }
+
+  const rl = await checkRateLimit(env, request, { max: 3, windowMinutes: 10, key: 'book' });
+  if (rl.limited) {
+    return json(
+      { success: false, error: 'rate_limited', message: 'Too many requests. Please call (616) 606-5277.', retry_after: rl.retryAfter },
+      429
+    );
+  }
+
+  const tsToken = (form.get('cf-turnstile-response') || '').toString();
+  const tsResult = await verifyTurnstile(tsToken, env, request.headers.get('CF-Connecting-IP'));
+  if (!tsResult.ok) {
+    return json({ success: false, error: 'captcha_failed', message: 'Verification failed. Please try again.' }, 403);
+  }
+
   // Required Book fields (Matt lock)
   const required = ['name', 'phone', 'email', 'location', 'issue', 'rig'];
   for (const field of required) {
@@ -44,9 +70,14 @@ export async function onRequestPost(context) {
     }
   }
 
+  const emailValue = (form.get('email') || '').toString().trim();
+  if (emailValue && !EMAIL_RE.test(emailValue)) {
+    return json({ success: false, error: 'invalid_email', message: 'Please enter a valid email address.' }, 400);
+  }
+
   const out = new FormData();
   for (const [k, v] of form.entries()) {
-    if (k === 'access_key') continue;
+    if (k === 'access_key' || k === 'cf-turnstile-response' || k === 'website') continue;
     out.append(k, v);
   }
   out.append('access_key', key);
