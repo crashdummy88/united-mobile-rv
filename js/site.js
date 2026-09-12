@@ -88,6 +88,7 @@
     var leadGo = document.getElementById('chat-lead-go');
     var history = [];
     var leadData = null;
+    var transcriptSent = false;
 
     function openPanel() {
       panel.classList.add('is-open');
@@ -100,7 +101,26 @@
     function closePanel() {
       panel.classList.remove('is-open');
       fab.setAttribute('aria-expanded', 'false');
+      sendTranscriptIfNeeded();
     }
+
+    function emailLead(trigger) {
+      if (!leadData) return;
+      try {
+        fetch('/api/chat-lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ lead: leadData, trigger: trigger, messages: history })
+        }).catch(function () {});
+      } catch (e) {}
+    }
+
+    function sendTranscriptIfNeeded() {
+      if (!leadData || transcriptSent || history.length < 2) return;
+      transcriptSent = true;
+      emailLead('transcript');
+    }
+    window.addEventListener('beforeunload', sendTranscriptIfNeeded);
     fab.addEventListener('click', function () {
       if (panel.classList.contains('is-open')) closePanel(); else openPanel();
     });
@@ -133,6 +153,7 @@
       addBubble('bot', 'Thanks, ' + name.split(' ')[0] + '. What would you like to know?');
       history.push({ role: 'user', content: 'Lead capture: ' + JSON.stringify(leadData) });
       input.focus();
+      emailLead('captured');
     });
 
     async function sendMessage() {
