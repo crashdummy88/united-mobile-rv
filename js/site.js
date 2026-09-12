@@ -1,3 +1,57 @@
+/* Cloudflare Turnstile -- shared invisible-widget helper.
+ * Reuses the same site key already live on the forum forms. One widget per
+ * container, re-executed (not re-rendered) on repeat use so chat can fetch
+ * a fresh token per message without a visible challenge for real visitors. */
+var UMRT_TURNSTILE_SITEKEY = '0x4AAAAAAEvvXidVbXxlagxj';
+var umrtTurnstileWidgets = {};
+function umrtEnsureTurnstileScript() {
+  if (document.getElementById('cf-turnstile-script')) return;
+  var s = document.createElement('script');
+  s.id = 'cf-turnstile-script';
+  s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+  s.async = true;
+  s.defer = true;
+  document.head.appendChild(s);
+}
+function umrtGetTurnstileToken(containerId) {
+  umrtEnsureTurnstileScript();
+  return new Promise(function (resolve) {
+    var tries = 0;
+    (function waitForApi() {
+      if (window.turnstile) return proceed();
+      tries += 1;
+      if (tries > 40) return resolve(''); // ~4s -- api.js never loaded
+      setTimeout(waitForApi, 100);
+    })();
+    function proceed() {
+      var el = document.getElementById(containerId);
+      if (!el) return resolve('');
+      var done = false;
+      function finish(token) {
+        if (done) return;
+        done = true;
+        resolve(token || '');
+      }
+      var widgetId = umrtTurnstileWidgets[containerId];
+      if (widgetId == null) {
+        widgetId = window.turnstile.render(el, {
+          sitekey: UMRT_TURNSTILE_SITEKEY,
+          size: 'invisible',
+          execution: 'execute',
+          callback: finish,
+          'error-callback': function () { finish(''); },
+          'timeout-callback': function () { finish(''); },
+        });
+        umrtTurnstileWidgets[containerId] = widgetId;
+      } else {
+        window.turnstile.reset(widgetId);
+      }
+      window.turnstile.execute(widgetId);
+      setTimeout(function () { finish(''); }, 5000);
+    }
+  });
+}
+
 (function () {
   var header = document.querySelector('.site-header');
   var toggle = document.querySelector('.nav-toggle');
@@ -23,6 +77,8 @@
       status.className = 'form-status';
       status.textContent = 'Sending...';
       try {
+        var tsToken = await umrtGetTurnstileToken('book-turnstile');
+        data.append('cf-turnstile-response', tsToken);
         // Always go through /api/book -- the Web3Forms key never lives in
         // client-side JS.
         var res = await fetch('/api/book', { method: 'POST', body: data });
@@ -73,6 +129,7 @@
       '    <textarea id="chat-input" rows="2" placeholder="Ask about pricing, services, corridors..."></textarea>',
       '    <button type="button" class="chat-send" id="chat-send">Send</button>',
       '  </div>',
+      '  <div id="chat-turnstile"></div>',
       '</div>'
     ].join('');
     document.body.appendChild(root);
@@ -104,13 +161,18 @@
       sendTranscriptIfNeeded();
     }
 
-    function emailLead(trigger) {
+    async function emailLead(trigger) {
       if (!leadData) return;
+      // 'transcript' fires from beforeunload/close -- no time to await a
+      // fresh Turnstile token there, so it goes through with an empty one
+      // (server will reject with captcha_failed; this send is a background
+      // courtesy copy, never user-facing, so that's an acceptable trade-off).
+      var tsToken = trigger === 'captured' ? await umrtGetTurnstileToken('chat-turnstile') : '';
       try {
         fetch('/api/chat-lead', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ lead: leadData, trigger: trigger, messages: history })
+          body: JSON.stringify({ lead: leadData, trigger: trigger, messages: history, 'cf-turnstile-response': tsToken })
         }).catch(function () {});
       } catch (e) {}
     }
@@ -169,10 +231,11 @@
       history.push({ role: 'user', content: text });
       sendBtn.disabled = true;
       try {
+        var chatTsToken = await umrtGetTurnstileToken('chat-turnstile');
         var res = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ messages: history, lead: leadData })
+          body: JSON.stringify({ messages: history, lead: leadData, 'cf-turnstile-response': chatTsToken })
         });
         var data = await res.json().catch(function () { return {}; });
         if (!res.ok || !data.reply) {

@@ -64,6 +64,7 @@ export async function onRequestGet(context) {
 <meta name="robots" content="noindex,follow">
 <link rel="icon" href="/favicon.png" type="image/png">
 <link rel="stylesheet" href="/css/site.css">
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <style>
   .price-tag{font-size:1.8em;font-weight:800;color:#E8B84B;margin:10px 0}
   .price-note{font-size:12px;color:#9a9a9a;margin-top:-6px;margin-bottom:16px}
@@ -128,6 +129,7 @@ export async function onRequestGet(context) {
       <textarea class="forum-input" id="qf-notes" rows="3" placeholder="Anything else we should know?" maxlength="1500"></textarea>
       <div class="btn-row"><button type="submit" class="btn btn-gold" id="qf-submit">Request Quote</button></div>
       <p class="held-note" id="qf-status"></p>
+      <div id="qf-turnstile"></div>
     </form>
   </div>
 </section>
@@ -135,6 +137,29 @@ export async function onRequestGet(context) {
 <script src="/js/cart.js"></script>
 <script>
 (function () {
+  var qfTurnstileWidgetId = null;
+  function getQuoteTurnstileToken() {
+    return new Promise(function (resolve) {
+      var el = document.getElementById('qf-turnstile');
+      if (!window.turnstile || !el) { resolve(''); return; }
+      var done = false;
+      function finish(token) { if (!done) { done = true; resolve(token || ''); } }
+      if (qfTurnstileWidgetId == null) {
+        qfTurnstileWidgetId = window.turnstile.render(el, {
+          sitekey: '0x4AAAAAAEvvXidVbXxlagxj',
+          size: 'invisible',
+          execution: 'execute',
+          callback: finish,
+          'error-callback': function () { finish(''); },
+          'timeout-callback': function () { finish(''); }
+        });
+      } else {
+        window.turnstile.reset(qfTurnstileWidgetId);
+      }
+      window.turnstile.execute(qfTurnstileWidgetId);
+      setTimeout(function () { finish(''); }, 5000);
+    });
+  }
   var addBtn = document.getElementById('add-cart-btn');
   addBtn.addEventListener('click', function () {
     window.UMRTCart.addToCart(addBtn.dataset.productId, 1);
@@ -155,6 +180,7 @@ export async function onRequestGet(context) {
     var rig = document.getElementById('qf-rig').value.trim().split(' ');
     submitBtn.disabled = true;
     status.textContent = '';
+    var qfToken = await getQuoteTurnstileToken();
     var res = await fetch('/api/shop/quote', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -164,6 +190,7 @@ export async function onRequestGet(context) {
         rv_year: rig[0] || '', rv_make: rig[1] || '', rv_model: rig.slice(2).join(' '),
         service_option: form.querySelector('input[name="service_option"]:checked').value,
         notes: document.getElementById('qf-notes').value.trim(),
+        'cf-turnstile-response': qfToken,
       })
     });
     var data = await res.json().catch(function(){return {};});
