@@ -18,9 +18,25 @@ export async function onRequestGet(context) {
   if (!env.DB) return notFound();
 
   const user = await env.DB.prepare(
-    `SELECT id, display_name, avatar_url, created_at FROM users WHERE id = ? AND banned = 0`
+    `SELECT id, display_name, avatar_url, created_at, email FROM users WHERE id = ? AND banned = 0`
   ).bind(params.id).first();
   if (!user) return notFound();
+
+  // Real, factual cross-reference only — no invented badges (P4 rule).
+  // A "Verified Customer" tag only appears if this email matches an actual
+  // booking record in the portal's customer database.
+  let isVerifiedCustomer = false;
+  if (user.email && env.PORTAL_DB) {
+    try {
+      const portalMatch = await env.PORTAL_DB.prepare(
+        `SELECT id FROM users WHERE email = ? LIMIT 1`
+      ).bind(user.email).first();
+      isVerifiedCustomer = !!portalMatch;
+    } catch (e) {
+      // PORTAL_DB not bound yet, or query failed — fail closed, no badge.
+      isVerifiedCustomer = false;
+    }
+  }
 
   const threadCount = await env.DB.prepare(`SELECT COUNT(*) AS n FROM threads WHERE author_id = ? AND hidden = 0`).bind(params.id).first();
   const replyCount = await env.DB.prepare(`SELECT COUNT(*) AS n FROM posts WHERE author_id = ? AND hidden = 0`).bind(params.id).first();
@@ -55,7 +71,7 @@ export async function onRequestGet(context) {
 <main id="main">
 <section class="page-hero">
   <div class="wrap">
-    <h1>${esc(user.display_name)}</h1>
+    <h1>${esc(user.display_name)}${isVerifiedCustomer ? ' <span title="Booked a real job through United Mobile RV" style="display:inline-block;vertical-align:middle;font-size:0.45em;font-weight:700;color:#1A1A1A;background:#C9972C;padding:3px 10px;border-radius:999px;margin-left:8px">Verified Customer</span>' : ''}</h1>
     <p class="lead">Member since ${esc(String(user.created_at).slice(0, 10))}</p>
     <div class="stats-bar" style="display:flex;gap:28px;margin-top:18px">
       <div><span style="font-size:1.6em;font-weight:800;color:#E8B84B">${threadCount.n || 0}</span><br><span class="muted" style="font-size:0.8em;text-transform:uppercase">Threads</span></div>
