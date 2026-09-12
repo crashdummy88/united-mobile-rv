@@ -51,7 +51,10 @@
     var root = document.createElement('div');
     root.id = 'umrt-chat-root';
     root.innerHTML = [
-      '<button type="button" class="chat-fab" id="chat-fab" aria-haspopup="dialog" aria-controls="chat-panel" aria-expanded="false">Chat</button>',
+      '<button type="button" class="chat-fab" id="chat-fab" aria-haspopup="dialog" aria-controls="chat-panel" aria-expanded="false" aria-label="Chat with us">' +
+      '<svg class="chat-fab-icon" viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>' +
+      '<span class="chat-fab-dot" aria-hidden="true"></span>' +
+      '</button>',
       '<div class="chat-panel" id="chat-panel" role="dialog" aria-label="UMRT assistant" aria-modal="false">',
       '  <div class="chat-head"><div><h2>UMRT Assistant</h2><div class="sub">Pricing · services · booking help</div></div>',
       '  <button type="button" class="chat-close" id="chat-close" aria-label="Close">×</button></div>',

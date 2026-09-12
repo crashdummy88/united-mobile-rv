@@ -249,13 +249,30 @@ textarea { min-height: 120px; resize: vertical; }
 /* AI Chat  -  SpaceX dark panel + gold FAB */
 .chat-fab {
   position: fixed; right: calc(var(--space) * 3); bottom: calc(var(--space) * 3); z-index: 300;
-  width: 56px; height: 56px; border-radius: 50%;
-  background: var(--gold); color: var(--black); border: 0; cursor: pointer;
-  font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
-  box-shadow: 0 8px 28px rgba(0,0,0,0.45);
+  width: 60px; height: 60px; border-radius: 50%;
+  background: linear-gradient(155deg, #F0C767 0%, var(--gold) 55%, #B9852A 100%);
+  color: #1A1400; border: 0; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.4), 0 2px 6px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.35);
+  transition: transform .18s ease, box-shadow .18s ease;
 }
-.chat-fab:hover { background: #e0b04a; }
+.chat-fab:hover {
+  transform: translateY(-3px) scale(1.04);
+  box-shadow: 0 16px 32px rgba(0,0,0,0.45), 0 4px 10px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.4);
+}
+.chat-fab:active { transform: translateY(-1px) scale(0.98); }
+.chat-fab-icon { position: relative; z-index: 1; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.15)); }
+.chat-fab-dot {
+  position: absolute; top: 6px; right: 6px; width: 12px; height: 12px; border-radius: 50%;
+  background: #3ECF6E; border: 2px solid #1A1A1A;
+  box-shadow: 0 0 0 0 rgba(62,207,110,0.6);
+  animation: chatFabPulse 2.2s infinite;
+}
+@keyframes chatFabPulse {
+  0% { box-shadow: 0 0 0 0 rgba(62,207,110,0.55); }
+  70% { box-shadow: 0 0 0 8px rgba(62,207,110,0); }
+  100% { box-shadow: 0 0 0 0 rgba(62,207,110,0); }
+}
 @media (max-width: 900px) {
   .chat-fab { bottom: 84px; right: 16px; }
 }
