@@ -7,6 +7,12 @@ function esc(s) {
   return String(s || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
+function displayName(manufacturer, title) {
+  const m = String(manufacturer || '').trim();
+  const t = String(title || '').trim();
+  return t.toLowerCase().indexOf(m.toLowerCase()) === 0 ? t : `${m} ${t}`;
+}
+
 function notFoundPage() {
   return new Response(
     `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Product not found | United Mobile RV Shop</title><meta name="robots" content="noindex,follow"><link rel="stylesheet" href="/css/site.css"></head><body><main id="main"><section class="page-hero"><div class="wrap"><h1>Product not found</h1><p class="lead"><a href="/shop/">Back to the shop</a>.</p></div></section></main></body></html>`,
@@ -52,7 +58,7 @@ export async function onRequestGet(context) {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${esc(product.manufacturer)} ${esc(product.title)} | United Mobile RV Shop</title>
+<title>${esc(displayName(product.manufacturer, product.title))} | United Mobile RV Shop</title>
 <meta name="description" content="${esc((product.description || '').slice(0, 150))}">
 <link rel="canonical" href="${base}/shop/p/${esc(product.id)}">
 <meta name="robots" content="noindex,follow">
@@ -84,7 +90,7 @@ export async function onRequestGet(context) {
 <section class="page-hero">
   <div class="wrap wrap-narrow">
     <p class="muted mb-0"><a class="text-link" href="/shop/">&larr; Back to shop</a></p>
-    <h1>${esc(product.manufacturer)} ${esc(product.title)}</h1>
+    <h1>${esc(displayName(product.manufacturer, product.title))}</h1>
     <div class="price-tag">$${Number(product.retail_price).toLocaleString()}</div>
     <p class="price-note">Public reference price (${esc(product.price_source || 'source on file')}) -- your actual quote may differ once availability and shipping are confirmed.</p>
     <p class="muted">${esc(stockNote)}</p>

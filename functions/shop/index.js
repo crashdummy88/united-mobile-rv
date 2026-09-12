@@ -8,6 +8,12 @@ function esc(s) {
   return String(s || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
+function displayName(manufacturer, title) {
+  const m = String(manufacturer || '').trim();
+  const t = String(title || '').trim();
+  return t.toLowerCase().indexOf(m.toLowerCase()) === 0 ? t : `${m} ${t}`;
+}
+
 const CATEGORY_LABELS = {
   'rv-batteries': '🔋 RV Batteries',
   'rv-solar': '☀️ RV Solar',
@@ -20,7 +26,9 @@ const CATEGORY_LABELS = {
 
 export async function onRequestGet(context) {
   const { env, request } = context;
-  const base = new URL(request.url).origin;
+  const url = new URL(request.url);
+  const base = url.origin;
+  const activeCategory = (url.searchParams.get('category') || '').trim();
 
   let products = [];
   if (env.DB) {
@@ -36,11 +44,20 @@ export async function onRequestGet(context) {
     (byCategory[p.category] = byCategory[p.category] || []).push(p);
   }
 
-  const sectionsHtml = Object.keys(byCategory).map((cat) => {
+  const chipsHtml = Object.keys(byCategory).length
+    ? `<div class="shop-chip-row">
+        <a class="shop-chip${activeCategory ? '' : ' is-active'}" href="${base}/shop/">All</a>
+        ${Object.keys(byCategory).map((cat) => `<a class="shop-chip${activeCategory === cat ? ' is-active' : ''}" href="${base}/shop/?category=${encodeURIComponent(cat)}">${esc(CATEGORY_LABELS[cat] || cat)}</a>`).join('')}
+      </div>`
+    : '';
+
+  const categoriesToShow = activeCategory && byCategory[activeCategory] ? [activeCategory] : Object.keys(byCategory);
+
+  const sectionsHtml = categoriesToShow.map((cat) => {
     const label = CATEGORY_LABELS[cat] || cat;
     const cards = byCategory[cat].map((p) => `
       <a class="shop-card" href="${base}/shop/p/${esc(p.id)}">
-        <div class="shop-card-title">${esc(p.manufacturer)} ${esc(p.title)}</div>
+        <div class="shop-card-title">${esc(displayName(p.manufacturer, p.title))}</div>
         <div class="shop-card-price">$${Number(p.retail_price).toLocaleString()}</div>
         <div class="shop-card-meta">${p.product_type === 'kit' ? 'Complete kit' : 'Component'} &middot; price shown is a public reference price, not a live quote</div>
       </a>`).join('');
@@ -68,6 +85,10 @@ export async function onRequestGet(context) {
   .shop-card-title{font-weight:700;margin-bottom:6px}
   .shop-card-price{color:#E8B84B;font-weight:800;font-size:1.1em;margin-bottom:6px}
   .shop-card-meta{font-size:12px;color:#9a9a9a}
+  .shop-chip-row{display:flex;flex-wrap:wrap;gap:10px}
+  .shop-chip{display:inline-flex;align-items:center;background:rgba(255,255,255,0.03);border:1px solid rgba(201,151,44,0.3);color:#E8B84B;font-size:0.9em;font-weight:600;padding:8px 16px;border-radius:999px;text-decoration:none}
+  .shop-chip:hover{background:rgba(201,151,44,0.16)}
+  .shop-chip.is-active{background:#C9972C;border-color:#C9972C;color:#1A1A1A}
 </style>
 </head>
 <body>
@@ -99,6 +120,7 @@ export async function onRequestGet(context) {
     <p class="muted" style="margin-top:14px">Not sure what you need? <a class="text-link" href="/shop/#quote-help">Tell us the problem instead</a> and skip guessing at part numbers.</p>
   </div>
 </section>
+${chipsHtml ? `<section class="band"><div class="wrap wrap-narrow">${chipsHtml}</div></section>` : ''}
 ${sectionsHtml || '<section class="band"><div class="wrap wrap-narrow"><p class="muted">Products are being added -- check back shortly, or <a class="text-link" href="/book-service/">book a consultation</a> in the meantime.</p></div></section>'}
 </main>
 <footer class="site-footer">
