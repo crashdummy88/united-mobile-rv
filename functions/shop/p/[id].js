@@ -41,7 +41,7 @@ export async function onRequestGet(context) {
     ).bind(params.id).all();
     if (results && results.length) {
       componentsHtml = `<h2>What's in this kit</h2><div class="faq-item"><ul>` +
-        results.map((c) => `<li>${esc(c.quantity)}&times; ${esc(c.manufacturer)} ${esc(c.title)}</li>`).join('') +
+        results.map((c) => `<li>${esc(c.quantity)}&times; ${esc(displayName(c.manufacturer, c.title))}</li>`).join('') +
         `</ul></div>`;
     }
   }

@@ -120,6 +120,13 @@ export async function onRequestGet(context) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
     });
   }
+  // Same dedup rule as /shop/ and /shop/p/:id -- product titles sometimes
+  // already include the manufacturer name; don't repeat it.
+  function displayName(manufacturer, title) {
+    var m = String(manufacturer || '').trim();
+    var t = String(title || '').trim();
+    return t.toLowerCase().indexOf(m.toLowerCase()) === 0 ? t : (m + ' ' + t);
+  }
 
   var itemsEl = document.getElementById('cart-items');
   var totalWrap = document.getElementById('cart-total-wrap');
@@ -132,7 +139,7 @@ export async function onRequestGet(context) {
     line.className = 'cart-line';
     line.dataset.productId = product.id;
     line.innerHTML =
-      '<div class="cart-line-title"><a href="/shop/p/' + esc(product.id) + '">' + esc(product.manufacturer) + ' ' + esc(product.title) + '</a></div>' +
+      '<div class="cart-line-title"><a href="/shop/p/' + esc(product.id) + '">' + esc(displayName(product.manufacturer, product.title)) + '</a></div>' +
       '<input class="cart-line-qty" type="number" min="1" max="99" value="' + esc(qty) + '">' +
       '<div class="cart-line-price">$' + Number(product.retail_price).toLocaleString() + '</div>' +
       '<button type="button" class="cart-line-remove" title="Remove">&times;</button>';

@@ -186,6 +186,7 @@ p { margin: 0 0 calc(var(--space) * 2); color: rgba(255,255,255,0.78); max-width
 .form-grid .full { grid-column: 1 / -1; }
 @media (max-width: 700px) { .form-grid { grid-template-columns: 1fr; } }
 label { display: block; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.55); margin-bottom: 8px; }
+.band-gray label, .band-light label { color: rgba(26,26,26,0.65); }
 label .req { color: var(--gold); }
 input, select, textarea {
   width: 100%; background: transparent; border: 0; border-bottom: 1px solid var(--rule);
