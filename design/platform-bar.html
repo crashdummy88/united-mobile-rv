@@ -1,0 +1,31 @@
+<!--
+  UMRT cross-platform bar — shared partial, not a full header replacement.
+  Drop this ABOVE each property's own <header class="site-header">.
+  Pair with platform-bar.css (design/theme.json tokens, no build step needed).
+
+  Usage: set data-platform on the containing element (or the <body>) to one
+  of: hub | shop | forum | software — the matching link gets aria-current.
+  This bar intentionally does NOT replace each site's own nav — it's a thin
+  strip so a visitor always knows which UMRT property they're on and can
+  jump to the other three. Lightweight: no JS required for the base bar.
+-->
+<div class="umrt-platform-bar" role="navigation" aria-label="UMRT properties">
+  <div class="umrt-platform-bar-inner">
+    <a href="https://unitedmobilerv.com/" data-platform-link="hub">Main Hub</a>
+    <a href="https://shop.unitedmobilerv.com/" data-platform-link="shop">Shop</a>
+    <a href="https://forum.unitedmobilerv.com/" data-platform-link="forum">Forum</a>
+    <a href="https://umrt-software.pages.dev/" data-platform-link="software">Software</a>
+  </div>
+</div>
+<script>
+  // Marks the current platform's link with aria-current="page" and a
+  // .is-current class. Reads data-platform off <html> or <body> — set
+  // <html data-platform="hub|shop|forum|software"> once per template.
+  (function () {
+    var root = document.documentElement;
+    var current = root.getAttribute('data-platform') || document.body.getAttribute('data-platform');
+    if (!current) return;
+    var link = document.querySelector('.umrt-platform-bar [data-platform-link="' + current + '"]');
+    if (link) { link.setAttribute('aria-current', 'page'); link.classList.add('is-current'); }
+  })();
+</script>
