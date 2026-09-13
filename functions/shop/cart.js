@@ -32,9 +32,10 @@ export async function onRequestGet(context) {
   .cart-line-remove:hover{color:#e05555}
   .cart-empty{color:#9a9a9a;padding:24px 0}
   .cart-total{font-size:1.3em;font-weight:800;color:#E8B84B;margin:16px 0}
-  .service-tier{display:block;border:1px solid #333;border-radius:10px;padding:14px 16px;margin-bottom:10px;cursor:pointer}
+  .service-tier{display:block;border:1px solid #333;border-radius:10px;padding:14px 16px;margin-bottom:10px;cursor:pointer;font-size:0.95em;text-transform:none;letter-spacing:normal;color:#f2f2f2}
   .service-tier:hover{border-color:rgba(201,151,44,0.5)}
   .service-tier input{margin-right:10px}
+  .service-tier strong{color:#fff}
   textarea.forum-input,input.forum-input{width:100%;padding:14px 16px;border-radius:10px;border:1px solid #333;background:#111;color:#f2f2f2;font-family:inherit;font-size:1.05em;line-height:1.5;margin-bottom:10px}
   .held-note{color:#C9972C;font-size:0.85em}
   .cart-badge-count{display:inline-block;background:#E8B84B;color:#111;border-radius:999px;font-size:0.75em;font-weight:800;padding:1px 7px;margin-left:6px}
