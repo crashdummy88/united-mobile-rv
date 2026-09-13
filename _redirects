@@ -57,3 +57,24 @@
 /go/areas/     https://umrt-areas.pages.dev/  302
 /go/quote      https://umrt-quote.pages.dev/  302
 /go/quote/     https://umrt-quote.pages.dev/  302
+
+# ---------------------------------------------------------------------------
+# Root-domain cutover safety net (added ahead of time; inert until
+# unitedmobilerv.com DNS actually points here — nothing on the current
+# .pages.dev / shop./forum. hosts requests these WP-only system paths today).
+# Catches old WordPress infrastructure URLs that have no Cloudflare
+# equivalent and would otherwise 404 once this repo is live at the root
+# domain, instead of leaving visitors/crawlers at a dead end.
+# ---------------------------------------------------------------------------
+/wp-admin/*    /  301
+/wp-login.php  /  301
+/wp-json/*     /  301
+/wp-content/*  /  301
+/wp-includes/* /  301
+/feed/         /  301
+/feed/*        /  301
+/xmlrpc.php    /  301
+# NOTE: old WP query-string permalinks (/?p=123) are NOT handled here —
+# Cloudflare Pages _redirects doesn't reliably match on query parameters.
+# If those links get real traffic, they'll need Cloudflare Bulk Redirects
+# (dashboard) or a Pages Function instead. Flagging, not solving here.
