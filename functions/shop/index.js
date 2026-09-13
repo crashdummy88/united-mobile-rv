@@ -124,7 +124,7 @@ export async function onRequestGet(context) {
     <span class="eyebrow"><span class="dot"></span>RV Systems Shop</span>
     <h1>Not a parts store. A systems integrator.</h1>
     <p class="lead">Tell us what your RV is trying to do and we'll tell you what equipment actually works together -- then handle sourcing, configuration, and installation if you want it. Every listing here is a real, cited reference price -- not a guess, and not a live checkout yet. Submit a quote request and Matt follows up directly.</p>
-    <p class="muted" style="margin-top:14px">Not sure what you need? <a class="text-link" href="/shop/#quote-help">Tell us the problem instead</a> and skip guessing at part numbers.</p>
+    <p class="muted" style="margin-top:14px">Not sure what you need? <a class="text-link" href="/book-service/">Tell us the problem</a> and skip guessing at part numbers -- Matt will spec it for you.</p>
   </div>
 </section>
 ${chipsHtml ? `<section class="band"><div class="wrap wrap-narrow">${chipsHtml}</div></section>` : ''}
