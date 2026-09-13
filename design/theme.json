@@ -1,0 +1,109 @@
+{
+  "$schema": "UMRT design tokens — extracted from production, not invented",
+  "_source": {
+    "note": "Every value below is pulled from live united-mobile-rv/css/site.css and the hex colors actually rendered in functions/**/*.js. Nothing here is a new guess at brand color — see _inconsistencies for the one place real usage disagreed with itself.",
+    "extracted": "2026-09-13"
+  },
+
+  "color": {
+    "brand": {
+      "black": "#1A1A1A",
+      "white": "#FFFFFF",
+      "gold": "#C9972C",
+      "goldHover": "#E0B04A",
+      "gray": "#666666",
+      "light": "#F5F5F5"
+    },
+    "surface": {
+      "canvasDark": "#1A1A1A",
+      "canvasLight": "#F5F5F5",
+      "cardOnDark": "#222222",
+      "cardOnDarkAlt": "#0C0C0C",
+      "cardOnLight": "#FFFFFF"
+    },
+    "text": {
+      "onDarkPrimary": "rgba(255,255,255,0.85)",
+      "onDarkBody": "rgba(255,255,255,0.78)",
+      "onDarkMuted": "rgba(255,255,255,0.55)",
+      "onDarkFaint": "rgba(255,255,255,0.35)",
+      "onLightBody": "#555555",
+      "onLightMuted": "#666666"
+    },
+    "border": {
+      "onDark": "rgba(255,255,255,0.12)",
+      "onLight": "rgba(26,26,26,0.12)",
+      "onDarkStrong": "rgba(255,255,255,0.35)"
+    },
+    "safety": {
+      "_comment": "Consolidated tokens — real usage today is inconsistent (see _inconsistencies below). New work should standardize on these two.",
+      "error": "#E05555",
+      "errorBg": "rgba(224,85,85,0.12)",
+      "success": "#4CBE6E",
+      "successBg": "rgba(76,190,110,0.16)",
+      "warning": "#C9972C",
+      "warningBg": "rgba(201,151,44,0.12)"
+    },
+    "_inconsistencies_found_in_prod": {
+      "error_red_variants": ["#ff6b6b (css/site.css .form-status.err)", "#e05555 (functions/shop/cart.js remove-hover)"],
+      "success_green_variants": ["#3ECF6E (online indicator dot)", "#2e9e4f (forum accepted-answer note)", "#4CBE6E (forum solved badge text, badge bg rgba(46,158,79,.16))"],
+      "recommendation": "Pick one error red and one success green (proposed above) and replace the ad hoc variants next time those files are touched — don't do a repo-wide find/replace blind, each site is production."
+    }
+  },
+
+  "typography": {
+    "fontFamily": "\"Inter\", \"Helvetica Neue\", Helvetica, Arial, system-ui, sans-serif",
+    "scale": {
+      "h1": { "size": "clamp(2.25rem, 5.5vw, 5rem)", "px_range": "36–80px", "weight": 400, "letterSpacing": "-0.03em", "lineHeight": 1.05 },
+      "h2": { "size": "clamp(2rem, 4vw, 3.5rem)", "px_range": "32–56px", "weight": 400, "letterSpacing": "-0.03em", "lineHeight": 1.05 },
+      "h3": { "size": "clamp(1.375rem, 2vw, 1.75rem)", "px_range": "22–28px", "weight": 500, "letterSpacing": "-0.03em", "lineHeight": 1.05 },
+      "h4": { "weight": 500, "letterSpacing": "-0.03em", "lineHeight": 1.05, "note": "no explicit size rule in prod CSS — inherits browser default; needs a rule if used standalone" },
+      "lead": { "size": "clamp(1.05rem, 1.6vw, 1.25rem)", "px_range": "16.8–20px", "color": "rgba(255,255,255,0.85)", "maxWidth": "48ch" },
+      "body": { "color": "rgba(255,255,255,0.78)", "maxWidth": "62ch" },
+      "micro": { "size": "11px", "letterSpacing": "0.22em", "transform": "uppercase", "weight": 500, "color": "var(--gold)" },
+      "label": { "size": "11px", "letterSpacing": "0.16em", "transform": "uppercase", "color": "rgba(255,255,255,0.55)" },
+      "nav": { "size": "13px", "letterSpacing": "0.06em", "transform": "uppercase" },
+      "caption": { "size": "12px", "color": "rgba(255,255,255,0.4)" },
+      "footnote": { "size": "13px", "color": "rgba(255,255,255,0.45)" },
+      "dense_table": {
+        "size": "13px",
+        "note": "no dedicated table rule exists in prod CSS today — this is a recommended addition, not an extracted value. Use for system/log/spec tables (Field Guide, Software app): 13px body, 11px uppercase letter-spaced headers matching .micro, 1px border in --rule, no zebra striping (keeps it 'technical', not 'consumer table')."
+      }
+    }
+  },
+
+  "spacing": {
+    "unit": "8px",
+    "scale": [8, 16, 24, 32, 48, 64, 96],
+    "bandPaddingLoose": "calc(8px * 12)",
+    "bandPaddingTight": "calc(8px * 8)"
+  },
+
+  "layout": {
+    "maxWidth": "1160px",
+    "maxWidthNarrow": "760px",
+    "gutter": "24px",
+    "note": "wrap = min(100% - 48px, 1160px); wrap-narrow = min(100% - 48px, 760px)"
+  },
+
+  "motion": {
+    "ease": "cubic-bezier(0.22, 1, 0.36, 1)",
+    "duration": "0.2s"
+  },
+
+  "components": {
+    "button": {
+      "gold": { "bg": "#C9972C", "text": "#1A1A1A", "hoverBg": "#E0B04A", "shadow": "0 10px 28px rgba(201,151,44,0.28)" },
+      "ghost": { "bg": "transparent", "text": "#FFFFFF", "border": "rgba(255,255,255,0.35)", "hoverBorder": "#FFFFFF" },
+      "dark": { "bg": "#1A1A1A", "text": "#FFFFFF", "hoverBg": "#000000" }
+    },
+    "card": {
+      "onDark": { "bg": "#222222", "borderLeft": "4px solid #C9972C" },
+      "onLight": { "bg": "#FFFFFF", "borderLeft": "4px solid #C9972C" },
+      "note": "This 4px left-accent-border card is the house pattern seen across service pages and WP alike — reuse for any new 'card row' UI (forum thread rows, product cards) rather than inventing a new card shape."
+    },
+    "badge": {
+      "credential": { "text": "#C9972C", "bg": "rgba(201,151,44,0.12)", "border": "1px solid rgba(201,151,44,0.3)", "radius": "999px" },
+      "solved": { "text": "#4CBE6E", "bg": "rgba(46,158,79,0.16)", "border": "1px solid rgba(46,158,79,0.4)" }
+    }
+  }
+}
