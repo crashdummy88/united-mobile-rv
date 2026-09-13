@@ -16,7 +16,11 @@ export async function onRequestGet(context) {
   const host = new URL(context.request.url).hostname;
   const target = HOST_HOME_REDIRECTS[host];
   if (target) {
-    return Response.redirect(new URL(target, context.request.url), 302);
+    // 301 (permanent): this is the real, permanent home for this hostname --
+    // not a temporary experiment -- so search engines consolidate ranking
+    // signal onto the target path instead of treating the two as separate,
+    // competing URLs.
+    return Response.redirect(new URL(target, context.request.url), 301);
   }
   return context.next();
 }
