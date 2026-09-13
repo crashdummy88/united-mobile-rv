@@ -18,7 +18,17 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/site.css?v=20260912b">
-
+<style>
+  /* Scoped FAQ accordion -- no site-wide <details> pattern exists yet;
+     kept local to this page rather than touching shared css/site.css. */
+  details{border-bottom:1px solid var(--rule);padding:16px 0}
+  details:first-of-type{border-top:1px solid var(--rule)}
+  summary{cursor:pointer;font-weight:600;list-style:none}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"+";float:right;color:var(--gold)}
+  details[open] summary::after{content:"–"}
+  details p{margin:12px 0 0}
+</style>
 
 </head>
 <body>
@@ -107,6 +117,17 @@
   </div>
 </section>
 <section class="band" style="border-top:1px solid var(--rule)">
+  <div class="wrap-narrow">
+    <span class="micro">FAQ</span>
+    <h2>Generator service questions we get a lot</h2>
+    <details><summary>How much does RV generator repair cost?</summary><p>Depends entirely on what's wrong — a fuel system service and annual maintenance run far less than a carbon-brush or AVR replacement. We diagnose on-site before quoting any repair. See <a href="/pricing/">pricing</a> for base rates.</p></details>
+    <details><summary>Why won't my RV generator start?</summary><p>Most common: stale or ethanol-degraded fuel gumming up the carburetor, a stuck choke, a failed fuel pump, or a control-board fault code you can't see without a proper diagnostic read. Generators that sat all winter without a fuel treatment are the most common no-start call every spring.</p></details>
+    <details><summary>Why does my generator shut down when I turn on the AC?</summary><p>Classic overload-under-load symptom — usually low output voltage, a failing AVR, worn carbon brushes, or a genuinely overloaded circuit. We load-test output voltage and frequency to isolate engine-side vs. generator-head faults before recommending a repair.</p></details>
+    <details><summary>Do you work on Onan, Generac, and Kohler generators?</summary><p>Yes — Onan is the most common brand we service, followed by Generac and Kohler. Also NPS-certified for the full NPS line, plus portables from Honda, Champion, and Westinghouse.</p></details>
+    <details><summary>Do I need a full service if it's been sitting all winter?</summary><p>A post-storage inspection and fuel system service is worth doing before the first trip of the season — it catches the fuel-gumming and hard-starting issues that develop from sitting, before they strand you at a campsite with no shore power.</p></details>
+  </div>
+</section>
+<section class="band" style="border-top:1px solid var(--rule)">
   <div class="wrap">
     <span class="micro">Next step</span>
     <h2>Book a Service</h2>
@@ -161,5 +182,6 @@
 
 <script>window.PUBLIC_WEB3FORMS_KEY = window.PUBLIC_WEB3FORMS_KEY || 'PUBLIC_WEB3FORMS_KEY';</script>
 <script src="/js/site.js?v=20260912b" defer></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How much does RV generator repair cost?","acceptedAnswer":{"@type":"Answer","text":"It depends entirely on what's wrong - a fuel system service and annual maintenance run far less than a carbon brush or AVR replacement. Diagnosis happens on-site before any work is quoted."}},{"@type":"Question","name":"Why won't my RV generator start?","acceptedAnswer":{"@type":"Answer","text":"The most common causes are stale or ethanol-degraded fuel gumming up the carburetor, a stuck choke, a failed fuel pump, or a control board fault code. Generators that sat all winter without a fuel system treatment are the most common no-start call every spring."}},{"@type":"Question","name":"Why does my generator shut down when I turn on the AC?","acceptedAnswer":{"@type":"Answer","text":"That's a classic overload-under-load symptom - usually low output voltage, a failing AVR, worn carbon brushes, or an overloaded circuit. Load-testing output voltage and frequency isolates whether the fault is on the engine side or inside the generator head."}},{"@type":"Question","name":"Do you work on Onan, Generac, and Kohler generators?","acceptedAnswer":{"@type":"Answer","text":"Yes - Onan is the most common RV generator brand serviced, followed by Generac and Kohler, plus NPS certified service and portable units from Honda, Champion, and Westinghouse."}},{"@type":"Question","name":"Do I need a full generator service if it's been sitting all winter?","acceptedAnswer":{"@type":"Answer","text":"A post-storage inspection and fuel system service is strongly worth doing before the first trip of the season - it catches the fuel gumming and hard-starting issues that develop from sitting."}}]}</script>
 </body>
 </html>
