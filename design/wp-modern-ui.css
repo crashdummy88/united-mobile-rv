@@ -1,0 +1,148 @@
+/**
+ * wp-modern-ui.css -- shared design tokens + component overrides, meant to
+ * be loaded by unitedmobilerv.com (WordPress) so its typography/spacing/
+ * component styling matches the Cloudflare Pages app without duplicating
+ * the palette by hand in WP content blocks.
+ *
+ * Every value below is copied from design/theme.json -- the token set
+ * already extracted from this repo's own production CSS (css/site.css)
+ * and JS, not invented for this file. See that file's own comments for
+ * where each value actually came from.
+ *
+ * NOT YET WIRED INTO WORDPRESS. This file only does anything once
+ * something on unitedmobilerv.com actually loads it. See the open
+ * question in the PR description / chat before assuming this is live --
+ * this site is a classic theme (Varia/Hever), not a block theme, so there
+ * is no header template-part to add a <link> tag to via the WP.com MCP
+ * tools used elsewhere this session. The real wiring mechanism (Jetpack's
+ * Custom CSS panel via @import, a header/footer code snippet, or
+ * something else) has not been confirmed reachable yet.
+ */
+
+:root {
+  /* Brand */
+  --umrt-black: #1A1A1A;
+  --umrt-white: #FFFFFF;
+  --umrt-gold: #C9972C;
+  --umrt-gold-hover: #E0B04A;
+  --umrt-gray: #666666;
+  --umrt-light: #F5F5F5;
+
+  /* Surfaces */
+  --umrt-canvas-dark: #1A1A1A;
+  --umrt-canvas-light: #F5F5F5;
+  --umrt-card-on-dark: #222222;
+  --umrt-card-on-light: #FFFFFF;
+
+  /* Text */
+  --umrt-text-on-dark: rgba(255,255,255,0.85);
+  --umrt-text-on-dark-body: rgba(255,255,255,0.78);
+  --umrt-text-on-dark-muted: rgba(255,255,255,0.55);
+  --umrt-text-on-light-body: #555555;
+  --umrt-text-on-light-muted: #666666;
+
+  /* Borders */
+  --umrt-border-on-dark: rgba(255,255,255,0.12);
+  --umrt-border-on-light: rgba(26,26,26,0.12);
+
+  /* Type */
+  --umrt-font: "Inter", "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+
+  /* Spacing (8px base unit) */
+  --umrt-space: 8px;
+
+  /* Layout */
+  --umrt-max-width: 1160px;
+  --umrt-max-width-narrow: 760px;
+  --umrt-gutter: 24px;
+
+  /* Motion */
+  --umrt-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---- Typography scale (design/theme.json:typography.scale) ---- */
+.umrt-h1, h1.umrt-modern {
+  font-size: clamp(2.25rem, 5.5vw, 5rem);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  font-family: var(--umrt-font);
+}
+.umrt-h2, h2.umrt-modern {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  font-family: var(--umrt-font);
+}
+.umrt-micro {
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--umrt-gold);
+}
+.umrt-lead {
+  font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+  color: var(--umrt-text-on-dark);
+  max-width: 48ch;
+}
+
+/* ---- Component patterns (design/theme.json:components) ---- */
+.umrt-btn-gold {
+  display: inline-block;
+  background-color: var(--umrt-gold);
+  color: var(--umrt-black);
+  font-weight: bold;
+  padding: 14px 32px;
+  text-decoration: none;
+  letter-spacing: 0.05em;
+  border: none;
+  transition: background-color var(--umrt-ease);
+}
+.umrt-btn-gold:hover { background-color: var(--umrt-gold-hover); }
+
+.umrt-btn-ghost {
+  display: inline-block;
+  background-color: transparent;
+  color: var(--umrt-white);
+  font-weight: bold;
+  padding: 12px 30px;
+  text-decoration: none;
+  letter-spacing: 0.05em;
+  border: 2px solid rgba(255,255,255,0.35);
+  transition: border-color var(--umrt-ease);
+}
+.umrt-btn-ghost:hover { border-color: var(--umrt-white); }
+
+.umrt-btn-dark {
+  display: inline-block;
+  background-color: var(--umrt-black);
+  color: var(--umrt-gold);
+  font-weight: bold;
+  padding: 14px 32px;
+  text-decoration: none;
+  letter-spacing: 0.05em;
+  border: 2px solid var(--umrt-gold);
+}
+
+.umrt-card {
+  background-color: var(--umrt-card-on-light);
+  border-left: 4px solid var(--umrt-gold);
+  padding: 24px;
+  text-align: left;
+}
+.umrt-card.on-dark { background-color: var(--umrt-card-on-dark); }
+
+.umrt-badge {
+  display: inline-block;
+  color: var(--umrt-gold);
+  background: rgba(201,151,44,0.12);
+  border: 1px solid rgba(201,151,44,0.3);
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-size: 0.85em;
+  font-weight: bold;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
