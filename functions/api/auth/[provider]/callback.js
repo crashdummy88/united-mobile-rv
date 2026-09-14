@@ -1,5 +1,6 @@
 import { getProviderConfig } from '../../../_lib/oauth.js';
 import { createSessionCookie, randomId } from '../../../_lib/session.js';
+import { createSsoCookie } from '../../../_lib/sso.js';
 
 async function upsertUser(db, provider, mapped) {
   const existing = await db
@@ -95,6 +96,25 @@ export async function onRequestGet(context) {
     const headers = new Headers({ Location: '/forum/' });
     headers.append('Set-Cookie', cookie);
     headers.append('Set-Cookie', 'umrt_oauth_state=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0');
+
+    // Cross-subdomain SSO recognition cookie, additive -- only meaningful
+    // for Google (the only provider forum supports; provider_id is Google's
+    // stable `sub`, shared identity space with portal/docs). Never blocks
+    // login if the shared secret isn't configured yet.
+    if (provider === 'google' && env.SSO_SHARED_SECRET) {
+      const ssoCookie = await createSsoCookie(
+        {
+          sub: mapped.provider_id,
+          email: mapped.email,
+          name: mapped.display_name,
+          avatar: mapped.avatar_url,
+          provider: 'google',
+        },
+        env.SSO_SHARED_SECRET
+      );
+      headers.append('Set-Cookie', ssoCookie);
+    }
+
     return new Response(null, { status: 302, headers });
   } catch (err) {
     return new Response('Login failed: unexpected error. Please try again.', { status: 500 });
