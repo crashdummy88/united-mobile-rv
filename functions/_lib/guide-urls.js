@@ -2,7 +2,7 @@
 export const GUIDE_URLS = [
   {
     "path": "/guide/",
-    "lastmod": "2026-09-13"
+    "lastmod": "2026-09-14"
   },
   {
     "path": "/guide/12v-vs-120v-appliances-guide/",
@@ -99,6 +99,10 @@ export const GUIDE_URLS = [
   {
     "path": "/guide/fresh-water-pump-guide/",
     "lastmod": "2026-09-13"
+  },
+  {
+    "path": "/guide/gear-we-recommend/",
+    "lastmod": "2026-09-14"
   },
   {
     "path": "/guide/generator-manufacturer-guide/",
