@@ -18,6 +18,7 @@ const CATEGORY_LABELS = {
   'rv-climate': '❄️ RV Climate & A/C',
   'rv-refrigeration': '🧊 RV Refrigeration',
   'rv-roof-ventilation': '🌬️ RV Roof & Ventilation',
+  'rv-precision-stack': '⚙️ Precision Stack',
 };
 
 function cardImageHtml(p) {
