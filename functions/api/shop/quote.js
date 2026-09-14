@@ -18,6 +18,7 @@ function json(data, status = 200) {
 }
 import { verifyTurnstile } from '../../_lib/turnstile.js';
 import { checkRateLimit } from '../../_lib/rate-limit.js';
+import { formatPrice } from '../../_lib/shop.js';
 
 function clean(v, max = 300) {
   return String(v || '').trim().slice(0, max);
@@ -116,7 +117,7 @@ export async function onRequestPost(context) {
   if (key && !key.includes('REPLACE')) {
     try {
       const itemsSummary = items.length
-        ? items.map((i) => `${i.quantity}x ${i.product.manufacturer} ${i.product.title} (ref $${i.product.retail_price})`).join('\n')
+        ? items.map((i) => `${i.quantity}x ${i.product.manufacturer} ${i.product.title} (ref ${formatPrice(i.product)})`).join('\n')
         : 'general / no specific product';
       const form = new FormData();
       form.append('access_key', key);

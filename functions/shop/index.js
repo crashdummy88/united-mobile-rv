@@ -4,6 +4,8 @@
  * per the ecommerce spec's "category pages around customer problems" rule.
  * Phase 1: no live checkout -- every product routes to a quote request.
  */
+import { formatPrice } from '../_lib/shop.js';
+
 function esc(s) {
   return String(s || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
@@ -59,7 +61,7 @@ export async function onRequestGet(context) {
       <div class="shop-card">
         <a class="shop-card-link" href="${base}/shop/p/${esc(p.id)}">
           <div class="shop-card-title">${esc(displayName(p.manufacturer, p.title))}</div>
-          <div class="shop-card-price">$${Number(p.retail_price).toLocaleString()}</div>
+          <div class="shop-card-price">${formatPrice(p)}</div>
           <div class="shop-card-meta">${p.product_type === 'kit' ? 'Complete kit' : 'Component'} &middot; price shown is a public reference price, not a live quote</div>
         </a>
         <button type="button" class="btn btn-ghost shop-add-btn" data-product-id="${esc(p.id)}">Add to Cart</button>

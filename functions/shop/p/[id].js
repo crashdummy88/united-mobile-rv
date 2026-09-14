@@ -3,6 +3,8 @@
  * Phase 1: reference pricing + a quote-request form (four service tiers per
  * the "Product + Service" model) instead of a live checkout charge.
  */
+import { formatPrice, priceNote } from '../../_lib/shop.js';
+
 function esc(s) {
   return String(s || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
@@ -95,8 +97,8 @@ export async function onRequestGet(context) {
   <div class="wrap wrap-narrow">
     <p class="muted mb-0"><a class="text-link" href="/shop/">&larr; Back to shop</a></p>
     <h1>${esc(displayName(product.manufacturer, product.title))}</h1>
-    <div class="price-tag">$${Number(product.retail_price).toLocaleString()}</div>
-    <p class="price-note">Public reference price (${esc(product.price_source || 'source on file')}) -- your actual quote may differ once availability and shipping are confirmed.</p>
+    <div class="price-tag">${esc(formatPrice(product))}</div>
+    <p class="price-note">${esc(priceNote(product))}</p>
     <p class="muted">${esc(stockNote)}</p>
     <button type="button" class="btn btn-gold add-cart-btn" id="add-cart-btn" data-product-id="${esc(product.id)}">Add to Cart</button>
   </div>

@@ -63,7 +63,10 @@ export async function onRequestGet(context) {
 <section class="band">
   <div class="wrap wrap-narrow">
     <div id="cart-items"><p class="cart-empty">Loading your cart&hellip;</p></div>
-    <div id="cart-total-wrap" hidden><div class="cart-total">Reference subtotal: $<span id="cart-total">0</span></div></div>
+    <div id="cart-total-wrap" hidden>
+      <div class="cart-total">Reference subtotal: $<span id="cart-total">0</span></div>
+      <p id="cart-total-note" class="muted" hidden>Plus one or more items priced on request -- your real quote will include those once we follow up.</p>
+    </div>
   </div>
 </section>
 <section class="band band-gray" id="quote" hidden>
@@ -121,6 +124,14 @@ export async function onRequestGet(context) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
     });
   }
+  // Same null-price handling as /shop/ and /shop/p/:id (functions/_lib/shop.js) --
+  // duplicated here since this runs client-side, not through that server module.
+  function hasPrice(product) {
+    return product && product.retail_price !== null && product.retail_price !== undefined;
+  }
+  function formatPrice(product) {
+    return hasPrice(product) ? '$' + Number(product.retail_price).toLocaleString() : 'Contact for pricing';
+  }
   // Same dedup rule as /shop/ and /shop/p/:id -- product titles sometimes
   // already include the manufacturer name; don't repeat it.
   function displayName(manufacturer, title) {
@@ -142,7 +153,7 @@ export async function onRequestGet(context) {
     line.innerHTML =
       '<div class="cart-line-title"><a href="/shop/p/' + esc(product.id) + '">' + esc(displayName(product.manufacturer, product.title)) + '</a></div>' +
       '<input class="cart-line-qty" type="number" min="1" max="99" value="' + esc(qty) + '">' +
-      '<div class="cart-line-price">$' + Number(product.retail_price).toLocaleString() + '</div>' +
+      '<div class="cart-line-price">' + esc(formatPrice(product)) + '</div>' +
       '<button type="button" class="cart-line-remove" title="Remove">&times;</button>';
 
     line.querySelector('.cart-line-qty').addEventListener('change', function (e) {
@@ -172,6 +183,7 @@ export async function onRequestGet(context) {
 
     var total = 0;
     var anyLoaded = false;
+    var anyUnpriced = false;
     for (var i = 0; i < ids.length; i++) {
       var id = ids[i];
       try {
@@ -180,7 +192,11 @@ export async function onRequestGet(context) {
         if (data && data.success && data.product) {
           loadedProducts[id] = data.product;
           itemsEl.appendChild(renderLine(data.product, cart[id]));
-          total += Number(data.product.retail_price || 0) * cart[id];
+          if (hasPrice(data.product)) {
+            total += Number(data.product.retail_price) * cart[id];
+          } else {
+            anyUnpriced = true;
+          }
           anyLoaded = true;
         } else {
           // Product no longer active/available -- drop it from the cart silently.
@@ -200,6 +216,7 @@ export async function onRequestGet(context) {
 
     totalEl.textContent = total.toLocaleString();
     totalWrap.hidden = false;
+    document.getElementById('cart-total-note').hidden = !anyUnpriced;
     quoteSection.hidden = false;
   }
 
