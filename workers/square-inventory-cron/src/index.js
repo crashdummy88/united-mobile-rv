@@ -39,11 +39,20 @@ export default {
   },
 
   // Manual trigger for testing (`wrangler dev --test-scheduled`, or a
-  // direct request to the deployed Worker) -- same auth requirement, so
-  // this can't be hit by anyone without the secret either.
+  // direct request to the deployed Worker). This Worker gets a public
+  // workers_dev URL by default (nothing in wrangler.toml disables it), so
+  // this handler needs its OWN auth check -- the SYNC_ADMIN_SECRET sent to
+  // the downstream endpoint inside runSync() only gates that outbound
+  // call, it does not gate who's allowed to reach this fetch() at all.
+  // (Fixed 2026-09-14 security review: this previously had no check here,
+  // letting anyone who found the workers.dev URL trigger a sync for free.)
   async fetch(request, env) {
     if (request.method !== 'POST') {
       return new Response('POST only', { status: 405 });
+    }
+    const secret = request.headers.get('X-Sync-Secret') || '';
+    if (!env.SYNC_ADMIN_SECRET || secret !== env.SYNC_ADMIN_SECRET) {
+      return new Response('forbidden', { status: 403 });
     }
     const result = await runSync(env);
     return new Response(JSON.stringify(result), {
