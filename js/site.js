@@ -159,16 +159,16 @@ function umrtGetTurnstileToken(containerId) {
     function closePanel() {
       panel.classList.remove('is-open');
       fab.setAttribute('aria-expanded', 'false');
-      sendTranscriptIfNeeded();
+      sendTranscriptIfNeeded(false);
     }
 
-    async function emailLead(trigger) {
+    async function emailLead(trigger, unloading) {
       if (!leadData) return;
-      // 'transcript' fires from beforeunload/close -- no time to await a
-      // fresh Turnstile token there, so it goes through with an empty one
-      // (server will reject with captcha_failed; this send is a background
-      // courtesy copy, never user-facing, so that's an acceptable trade-off).
-      var tsToken = trigger === 'captured' ? await umrtGetTurnstileToken('chat-turnstile') : '';
+      // /api/chat-lead rejects an empty Turnstile token, so fetch a fresh one
+      // whenever there is time to: on lead capture and on a panel close.
+      // Only the beforeunload path (page is going away, nothing to await)
+      // sends without one -- that copy is best-effort.
+      var tsToken = unloading ? '' : await umrtGetTurnstileToken('chat-turnstile');
       try {
         fetch('/api/chat-lead', {
           method: 'POST',
@@ -178,12 +178,12 @@ function umrtGetTurnstileToken(containerId) {
       } catch (e) {}
     }
 
-    function sendTranscriptIfNeeded() {
+    function sendTranscriptIfNeeded(unloading) {
       if (!leadData || transcriptSent || history.length < 2) return;
       transcriptSent = true;
-      emailLead('transcript');
+      emailLead('transcript', unloading === true);
     }
-    window.addEventListener('beforeunload', sendTranscriptIfNeeded);
+    window.addEventListener('beforeunload', function () { sendTranscriptIfNeeded(true); });
     fab.addEventListener('click', function () {
       if (panel.classList.contains('is-open')) closePanel(); else openPanel();
     });

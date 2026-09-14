@@ -100,6 +100,8 @@
         <a class="btn btn-ghost" href="sms:+16166065277">Text (616) 606-5277</a>
       </div>
       <p class="form-note full">Required: Name, Phone, Email, Location, Rig, Issue. Prefer defaults to Text  -  we will reply that way unless you pick Call or Email. Prefer text/call anytime if the form is slow: we never bury the number.</p>
+      <!-- Honeypot: /api/book silently drops any submission that fills this. -->
+      <div class="hp-field" aria-hidden="true" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden"><label for="website">Website</label><input id="website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
       <div id="form-status" class="form-status full" role="status" aria-live="polite"></div>
       <div id="book-turnstile"></div>
     </form>
