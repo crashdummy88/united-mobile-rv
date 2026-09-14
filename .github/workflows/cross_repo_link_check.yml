@@ -1,0 +1,28 @@
+name: UMRT Cross-Repo Link Health Check
+
+on:
+  schedule:
+    - cron: "0 13 * * 1" # weekly, Monday 13:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-links:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout this repo (for the check script)
+        uses: actions/checkout@v4
+
+      - name: Clone all UMRT properties (public repos, no auth needed)
+        run: |
+          set -e
+          mkdir -p /tmp/umrt-repos
+          for repo in united-mobile-rv umrt-portal umrt-docs umrt-status umrt-software \
+                      umrt-go umrt-quote umrt-pay umrt-areas umrt-community; do
+            git clone --depth 1 "https://github.com/crashdummy88/${repo}.git" "/tmp/umrt-repos/${repo}"
+          done
+
+      - name: Run cross-repo link check
+        run: bash scripts/check_cross_links.sh /tmp/umrt-repos
