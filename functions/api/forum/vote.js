@@ -1,4 +1,4 @@
-import { readSession } from '../../_lib/session.js';
+import { requireSession } from '../../_lib/authz.js';
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -11,7 +11,8 @@ export async function onRequestPost(context) {
   const { env, request } = context;
   if (!env.DB) return json({ success: false, error: 'not_configured' }, 503);
 
-  const session = await readSession(request, env.SESSION_SECRET);
+  // requireSession re-checks the banned flag, like every other forum write.
+  const session = await requireSession(request, env);
   if (!session) return json({ success: false, error: 'auth_required' }, 401);
 
   let body;

@@ -1,4 +1,5 @@
-import { readSession, randomId } from '../../_lib/session.js';
+import { randomId } from '../../_lib/session.js';
+import { requireSession } from '../../_lib/authz.js';
 import { maybeRunNudgeSweep } from '../../_lib/bot-sweep.js';
 
 function json(data, status = 200) {
@@ -20,7 +21,7 @@ export async function onRequestGet(context) {
 export async function onRequestPost(context) {
   const { env, request } = context;
   if (!env.DB) return json({ success: false, error: 'not_configured' }, 503);
-  const session = await readSession(request, env.SESSION_SECRET);
+  const session = await requireSession(request, env);
   if (!session) return json({ success: false, error: 'auth_required' }, 401);
   await env.DB.prepare(`INSERT INTO online_sessions (user_id, last_seen) VALUES (?, datetime('now')) ON CONFLICT(user_id) DO UPDATE SET last_seen = datetime('now')`).bind(session.uid).run();
   return json({ success: true });

@@ -137,6 +137,7 @@ export async function onRequestGet(context) {
       <input class="forum-input" id="qf-location" placeholder="City / State" maxlength="160">
       <input class="forum-input" id="qf-rig" placeholder="RV year / make / model" maxlength="160">
       <textarea class="forum-input" id="qf-notes" rows="3" placeholder="Anything else we should know?" maxlength="1500"></textarea>
+      <div aria-hidden="true" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden"><label for="qf-website">Website</label><input id="qf-website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
       <div class="btn-row"><button type="submit" class="btn btn-gold" id="qf-submit">Request Quote</button></div>
       <p class="held-note" id="qf-status"></p>
       <div id="qf-turnstile"></div>
@@ -175,7 +176,7 @@ export async function onRequestGet(context) {
   addBtn.addEventListener('click', function () {
     window.UMRTCart.addToCart(addBtn.dataset.productId, 1);
     var original = addBtn.textContent;
-    addBtn.textContent = 'Added to Cart \u2713';
+    addBtn.textContent = 'Added to Cart ✓';
     setTimeout(function () { addBtn.textContent = original; }, 1200);
   });
 
@@ -201,6 +202,7 @@ export async function onRequestGet(context) {
         rv_year: rig[0] || '', rv_make: rig[1] || '', rv_model: rig.slice(2).join(' '),
         service_option: form.querySelector('input[name="service_option"]:checked').value,
         notes: document.getElementById('qf-notes').value.trim(),
+        website: document.getElementById('qf-website').value,
         'cf-turnstile-response': qfToken,
       })
     });

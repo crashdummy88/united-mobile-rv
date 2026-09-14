@@ -1,7 +1,7 @@
 /**
  * GET/POST /api/admin/status — mod-only. Updates the shared status row.
  */
-import { readSession } from '../../_lib/session.js';
+import { requireMod } from '../../_lib/authz.js';
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -10,12 +10,6 @@ function json(data, status = 200) {
   });
 }
 
-async function requireMod(request, env) {
-  const session = await readSession(request, env.SESSION_SECRET);
-  if (!session) return null;
-  const user = await env.DB.prepare('SELECT is_mod FROM users WHERE id = ?').bind(session.uid).first();
-  return user && user.is_mod ? session : null;
-}
 
 export async function onRequestGet(context) {
   const { env, request } = context;
