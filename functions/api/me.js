@@ -1,11 +1,27 @@
 import { readSession } from '../_lib/session.js';
+import { readSsoCookie } from '../_lib/sso.js';
 
 export async function onRequestGet(context) {
   const { request, env } = context;
-  if (!env.SESSION_SECRET) return json({ user: null });
-  const session = await readSession(request, env.SESSION_SECRET);
-  if (!session) return json({ user: null });
-  return json({ user: { name: session.name, avatar: session.avatar, provider: session.provider } });
+  if (env.SESSION_SECRET) {
+    const session = await readSession(request, env.SESSION_SECRET);
+    if (session) {
+      return json({ user: { name: session.name, avatar: session.avatar, provider: session.provider } });
+    }
+  }
+
+  // Fallback: no forum session yet, but recognized via the shared
+  // cross-subdomain SSO cookie (e.g. logged in on portal/docs first).
+  // Display-only -- does NOT grant forum posting/mod rights, which still
+  // require a real forum account and session (see _lib/authz.js).
+  if (env.SSO_SHARED_SECRET) {
+    const identity = await readSsoCookie(request, env.SSO_SHARED_SECRET);
+    if (identity) {
+      return json({ user: { name: identity.name, avatar: identity.avatar, provider: identity.provider, ssoOnly: true } });
+    }
+  }
+
+  return json({ user: null });
 }
 
 function json(data, status = 200) {
