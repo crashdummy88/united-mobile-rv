@@ -152,6 +152,27 @@ p { margin: 0 0 calc(var(--space) * 2); color: rgba(255,255,255,0.78); max-width
   .grid-4 { grid-template-columns: repeat(2, 1fr); }
 }
 
+/* City service-page hub (homepage) */
+.city-hub {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--space) * 6) calc(var(--space) * 8);
+  margin-top: calc(var(--space) * 6);
+}
+.city-hub-state { min-width: 150px; }
+.city-hub-state h3 {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--gold);
+  margin: 0 0 calc(var(--space) * 2);
+}
+.city-hub-state ul { list-style: none; margin: 0; padding: 0; }
+.city-hub-state li { margin: 0 0 calc(var(--space) * 1); }
+.city-hub-state a { color: inherit; text-decoration: none; border-bottom: 1px solid transparent; }
+.city-hub-state a:hover { color: var(--gold); border-bottom-color: var(--gold); }
+
 .offer-card, .service-card, .price-card, .step, .faq-item, .guide-card, .area-card {
   border-top: 1px solid var(--rule); padding-top: calc(var(--space) * 3);
 }
