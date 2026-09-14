@@ -24,6 +24,9 @@ export async function onRequestGet(context) {
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <style>
   .cart-line{display:flex;align-items:center;gap:14px;border:1px solid #333;border-radius:10px;padding:12px 16px;margin-bottom:10px}
+  .cart-line-thumb{flex:none;width:48px;height:48px;border-radius:8px;background:#0f0f0f;display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .cart-line-thumb img{width:100%;height:100%;object-fit:contain;padding:4px}
+  .cart-line-thumb.is-fallback{background:linear-gradient(160deg,rgba(201,151,44,0.14),rgba(255,255,255,0.02));font-size:1.3rem;opacity:.55}
   .cart-line-title{flex:1;min-width:0}
   .cart-line-title a{color:inherit;text-decoration:none}
   .cart-line-price{font-weight:700;color:#E8B84B;white-space:nowrap}
@@ -166,7 +169,11 @@ export async function onRequestGet(context) {
     var line = document.createElement('div');
     line.className = 'cart-line';
     line.dataset.productId = product.id;
+    var thumbHtml = product.image_url
+      ? '<img src="' + esc(product.image_url) + '" alt="" loading="lazy" onerror="this.parentElement.classList.add(\'is-fallback\');this.remove()">'
+      : '<span aria-hidden="true">🔧</span>'; // generic wrench -- cart thumbnails are too small to justify a full per-category icon set
     line.innerHTML =
+      '<div class="cart-line-thumb' + (product.image_url ? '' : ' is-fallback') + '">' + thumbHtml + '</div>' +
       '<div class="cart-line-title"><a href="/shop/p/' + esc(product.id) + '">' + esc(displayName(product.manufacturer, product.title)) + '</a></div>' +
       '<input class="cart-line-qty" type="number" min="1" max="99" value="' + esc(qty) + '">' +
       '<div class="cart-line-price">' + esc(formatPrice(product)) + '</div>' +
