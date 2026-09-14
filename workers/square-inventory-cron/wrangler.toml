@@ -1,0 +1,23 @@
+# Standalone Worker whose only job is firing the Square inventory sync on a
+# schedule. Separate from the main `united-mobile-rv` Cloudflare Pages
+# project deliberately -- Pages Functions have no scheduled()/Cron Trigger
+# support (confirmed against Cloudflare's own docs 2026-09-14; that's a
+# Workers-only feature requiring a `main` entrypoint exporting
+# { fetch, scheduled }, which a file-routed Pages `functions/` app doesn't
+# have). This Worker does the one HTTP call; all the real sync logic stays
+# in functions/_lib/square.js, called via the protected
+# /api/admin/sync-square-inventory endpoint.
+name = "square-inventory-cron"
+main = "src/index.js"
+compatibility_date = "2026-09-14"
+
+[triggers]
+crons = ["0 */6 * * *"]
+
+# SYNC_ADMIN_SECRET must be set here via:
+#   wrangler secret put SYNC_ADMIN_SECRET
+# and must match the SAME value set on the `united-mobile-rv` Pages project
+# (functions/api/admin/sync-square-inventory.js reads it from there). Two
+# separate secret stores, one shared value -- never committed, never
+# hardcoded, set with `wrangler secret put` in both places per project
+# convention (see CLAUDE.md: "Never commit secrets -- use wrangler secret put").
