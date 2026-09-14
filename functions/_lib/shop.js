@@ -32,6 +32,15 @@ export function priceNote(product) {
  * "Victron Energy Victron GX Touch 50..." on every card, the cart, and
  * the product page. Now also checks manufacturer's first word alone.
  */
+// Stand-in for a product's card/hero image when it has no image_url yet --
+// keeps the shop's visual rhythm uniform without ever presenting a
+// placeholder as if it were a real photo of the part.
+export const CATEGORY_ICONS = {
+  'rv-batteries': '🔋', 'rv-solar': '☀️', 'rv-power-protection': '⚡',
+  'rv-connectivity': '📡', 'rv-climate': '❄️', 'rv-refrigeration': '🧊',
+  'rv-roof-ventilation': '🌬️', 'rv-precision-stack': '⚙️',
+};
+
 export function displayName(manufacturer, title) {
   const m = String(manufacturer || '').trim();
   const t = String(title || '').trim();

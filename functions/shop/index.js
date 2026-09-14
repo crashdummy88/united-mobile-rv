@@ -4,7 +4,7 @@
  * per the ecommerce spec's "category pages around customer problems" rule.
  * Phase 1: no live checkout -- every product routes to a quote request.
  */
-import { formatPrice, displayName } from '../_lib/shop.js';
+import { formatPrice, displayName, CATEGORY_ICONS } from '../_lib/shop.js';
 
 function esc(s) {
   return String(s || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -20,6 +20,14 @@ const CATEGORY_LABELS = {
   'rv-roof-ventilation': '🌬️ RV Roof & Ventilation',
 };
 
+function cardImageHtml(p) {
+  if (p.image_url) {
+    return `<img class="shop-card-img" src="${esc(p.image_url)}" alt="" loading="lazy" width="220" height="220"
+      onerror="this.closest('.shop-card-imgwrap').classList.add('is-fallback');this.remove()">`;
+  }
+  return `<span class="shop-card-img-fallback" aria-hidden="true">${CATEGORY_ICONS[p.category] || '🔧'}</span>`;
+}
+
 export async function onRequestGet(context) {
   const { env, request } = context;
   const url = new URL(request.url);
@@ -29,7 +37,7 @@ export async function onRequestGet(context) {
   let products = [];
   if (env.DB) {
     const { results } = await env.DB.prepare(
-      `SELECT id, manufacturer, title, category, retail_price, product_type, stock_status
+      `SELECT id, manufacturer, title, category, retail_price, product_type, stock_status, image_url
        FROM products WHERE active = 1 ORDER BY category, manufacturer, title`
     ).all();
     products = results || [];
@@ -54,9 +62,12 @@ export async function onRequestGet(context) {
     const cards = byCategory[cat].map((p) => `
       <div class="shop-card">
         <a class="shop-card-link" href="${base}/shop/p/${esc(p.id)}">
-          <div class="shop-card-title">${esc(displayName(p.manufacturer, p.title))}</div>
-          <div class="shop-card-price">${formatPrice(p)}</div>
-          <div class="shop-card-meta">${p.product_type === 'kit' ? 'Complete kit' : 'Component'} &middot; price shown is a public reference price, not a live quote</div>
+          <div class="shop-card-imgwrap${p.image_url ? '' : ' is-fallback'}">${cardImageHtml(p)}</div>
+          <div class="shop-card-body">
+            <div class="shop-card-title">${esc(displayName(p.manufacturer, p.title))}</div>
+            <div class="shop-card-price">${formatPrice(p)}</div>
+            <div class="shop-card-meta">${p.product_type === 'kit' ? 'Complete kit' : 'Component'} &middot; price shown is a public reference price, not a live quote</div>
+          </div>
         </a>
         <button type="button" class="btn btn-ghost shop-add-btn" data-product-id="${esc(p.id)}">Add to Cart</button>
       </div>`).join('');
@@ -79,11 +90,17 @@ export async function onRequestGet(context) {
 <link rel="stylesheet" href="/css/site.css">
 <style>
   .shop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-top:16px}
-  .shop-card{display:block;background:rgba(255,255,255,0.03);border:1px solid rgba(201,151,44,0.25);border-radius:12px;padding:16px;text-decoration:none;color:inherit;transition:border-color .15s}
+  .shop-card{display:flex;flex-direction:column;background:rgba(255,255,255,0.03);border:1px solid rgba(201,151,44,0.25);border-radius:12px;overflow:hidden;text-decoration:none;color:inherit;transition:border-color .15s}
   .shop-card:hover{border-color:rgba(201,151,44,0.6)}
+  .shop-card-imgwrap{aspect-ratio:1/1;background:#0f0f0f;display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .shop-card-img{width:100%;height:100%;object-fit:contain;padding:10px}
+  .shop-card-imgwrap.is-fallback{background:linear-gradient(160deg,rgba(201,151,44,0.14),rgba(255,255,255,0.02))}
+  .shop-card-img-fallback{font-size:2.6rem;opacity:.55}
+  .shop-card-body{padding:14px 16px}
   .shop-card-title{font-weight:700;margin-bottom:6px}
   .shop-card-price{color:#E8B84B;font-weight:800;font-size:1.1em;margin-bottom:6px}
   .shop-card-meta{font-size:12px;color:#9a9a9a}
+  .shop-add-btn{margin:0 16px 16px;width:auto}
   .shop-chip-row{display:flex;flex-wrap:wrap;gap:10px}
   .shop-chip{display:inline-flex;align-items:center;background:rgba(255,255,255,0.03);border:1px solid rgba(201,151,44,0.3);color:#E8B84B;font-size:0.9em;font-weight:600;padding:8px 16px;border-radius:999px;text-decoration:none}
   .shop-chip:hover{background:rgba(201,151,44,0.16)}
@@ -95,7 +112,6 @@ export async function onRequestGet(context) {
   .shop-category-band:first-of-type{padding-top:8px}
   .shop-chip.is-active{background:#C9972C;border-color:#C9972C;color:#1A1A1A}
   .shop-card-link{display:block;text-decoration:none;color:inherit}
-  .shop-add-btn{margin-top:10px;width:100%}
   .cart-badge-count{display:inline-block;background:#E8B84B;color:#111;border-radius:999px;font-size:0.75em;font-weight:800;padding:1px 7px;margin-left:6px}
 </style>
 </head>

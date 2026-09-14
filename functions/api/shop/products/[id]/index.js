@@ -10,7 +10,7 @@ export async function onRequestGet(context) {
 
   const product = await env.DB.prepare(
     `SELECT id, sku, manufacturer, model, title, description, category, product_type,
-       retail_price, price_source, stock_status, installation_required, compatibility, image_key
+       retail_price, price_source, stock_status, installation_required, compatibility, image_key, image_url
      FROM products WHERE id = ? AND active = 1`
   ).bind(params.id).first();
   if (!product) return json({ success: false, error: 'not_found' }, 404);
