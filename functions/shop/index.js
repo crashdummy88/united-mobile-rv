@@ -60,11 +60,7 @@ export async function onRequestGet(context) {
         </a>
         <button type="button" class="btn btn-ghost shop-add-btn" data-product-id="${esc(p.id)}">Add to Cart</button>
       </div>`).join('');
-    // .band-tight, not .band -- .band's 12x padding is meant for one hero-style
-    // section per page. With N stacked categories each getting .band, the
-    // top+bottom padding compounds into a huge dead-space gap between every
-    // category (visible between any two adjacent categories on /shop/).
-    return `<section class="band-tight"><div class="wrap wrap-narrow">
+    return `<section class="shop-category-band"><div class="wrap wrap-narrow">
       <h2>${esc(label)}</h2>
       <div class="shop-grid">${cards}</div>
     </div></section>`;
@@ -91,6 +87,12 @@ export async function onRequestGet(context) {
   .shop-chip-row{display:flex;flex-wrap:wrap;gap:10px}
   .shop-chip{display:inline-flex;align-items:center;background:rgba(255,255,255,0.03);border:1px solid rgba(201,151,44,0.3);color:#E8B84B;font-size:0.9em;font-weight:600;padding:8px 16px;border-radius:999px;text-decoration:none}
   .shop-chip:hover{background:rgba(201,151,44,0.16)}
+  /* Purpose-built spacing for stacked category sections -- .band/.band-tight
+     are shared sitewide classes sized for one hero-style section per page;
+     reusing either here (even band-tight) still compounds into 120px+ of
+     dead space between every category when several stack in a row. */
+  .shop-category-band{padding:28px 0}
+  .shop-category-band:first-of-type{padding-top:8px}
   .shop-chip.is-active{background:#C9972C;border-color:#C9972C;color:#1A1A1A}
   .shop-card-link{display:block;text-decoration:none;color:inherit}
   .shop-add-btn{margin-top:10px;width:100%}
