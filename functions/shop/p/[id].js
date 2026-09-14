@@ -3,16 +3,10 @@
  * Phase 1: reference pricing + a quote-request form (four service tiers per
  * the "Product + Service" model) instead of a live checkout charge.
  */
-import { formatPrice, priceNote } from '../../_lib/shop.js';
+import { formatPrice, priceNote, displayName, CATEGORY_ICONS } from '../../_lib/shop.js';
 
 function esc(s) {
   return String(s || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-}
-
-function displayName(manufacturer, title) {
-  const m = String(manufacturer || '').trim();
-  const t = String(title || '').trim();
-  return t.toLowerCase().indexOf(m.toLowerCase()) === 0 ? t : `${m} ${t}`;
 }
 
 function notFoundPage() {
@@ -29,7 +23,7 @@ export async function onRequestGet(context) {
 
   const product = await env.DB.prepare(
     `SELECT id, sku, manufacturer, model, title, description, category, product_type,
-       retail_price, price_source, stock_status, installation_required, compatibility
+       retail_price, price_source, stock_status, installation_required, compatibility, image_url
      FROM products WHERE id = ? AND active = 1`
   ).bind(params.id).first();
   if (!product) return notFoundPage();
@@ -77,6 +71,11 @@ export async function onRequestGet(context) {
   .held-note{color:#C9972C;font-size:0.85em}
   .cart-badge-count{display:inline-block;background:#E8B84B;color:#111;border-radius:999px;font-size:0.75em;font-weight:800;padding:1px 7px;margin-left:6px}
   .add-cart-btn{margin:10px 0 4px}
+  .product-hero-grid{display:grid;grid-template-columns:minmax(0,280px) 1fr;gap:32px;align-items:start}
+  .product-hero-img{aspect-ratio:1/1;background:#0f0f0f;border:1px solid rgba(201,151,44,0.25);border-radius:14px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .product-hero-img img{width:100%;height:100%;object-fit:contain;padding:18px}
+  .product-hero-img.is-fallback{background:linear-gradient(160deg,rgba(201,151,44,0.14),rgba(255,255,255,0.02));font-size:4rem;opacity:.55}
+  @media (max-width:640px){.product-hero-grid{grid-template-columns:1fr;gap:16px}.product-hero-img{max-width:220px;margin:0 auto}}
 </style>
 </head>
 <body>
@@ -96,11 +95,20 @@ export async function onRequestGet(context) {
 <section class="page-hero">
   <div class="wrap wrap-narrow">
     <p class="muted mb-0"><a class="text-link" href="/shop/">&larr; Back to shop</a></p>
-    <h1>${esc(displayName(product.manufacturer, product.title))}</h1>
-    <div class="price-tag">${esc(formatPrice(product))}</div>
-    <p class="price-note">${esc(priceNote(product))}</p>
-    <p class="muted">${esc(stockNote)}</p>
-    <button type="button" class="btn btn-gold add-cart-btn" id="add-cart-btn" data-product-id="${esc(product.id)}">Add to Cart</button>
+    <div class="product-hero-grid">
+      <div class="product-hero-img${product.image_url ? '' : ' is-fallback'}">${
+        product.image_url
+          ? `<img src="${esc(product.image_url)}" alt="" loading="eager" onerror="this.closest('.product-hero-img').classList.add('is-fallback');this.remove()">`
+          : `<span aria-hidden="true">${CATEGORY_ICONS[product.category] || '🔧'}</span>`
+      }</div>
+      <div>
+        <h1>${esc(displayName(product.manufacturer, product.title))}</h1>
+        <div class="price-tag">${esc(formatPrice(product))}</div>
+        <p class="price-note">${esc(priceNote(product))}</p>
+        <p class="muted">${esc(stockNote)}</p>
+        <button type="button" class="btn btn-gold add-cart-btn" id="add-cart-btn" data-product-id="${esc(product.id)}">Add to Cart</button>
+      </div>
+    </div>
   </div>
 </section>
 <section class="band">
