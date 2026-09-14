@@ -219,3 +219,143 @@ export async function createDraftEstimateForBooking(env, booking) {
     return { attempted: true, error: String(err && err.message || err) };
   }
 }
+
+/**
+ * Inventory sync -- SKELETON, 2026-09-14, not wired to any cron/endpoint yet.
+ *
+ * Direction is READ from Square, WRITE to D1 -- never the reverse. Square's
+ * catalog/inventory are the source of truth Matt manages from the Square
+ * dashboard/POS; this only pulls stock/price reference data into `products`
+ * so /shop/ pages (functions/api/shop/*.js, which already SELECT straight
+ * from `products`) can reflect it. Nothing here ever calls a Square catalog
+ * or inventory WRITE endpoint -- catalog is Matt's, not the website's, to
+ * change. Requires ITEMS_READ + INVENTORY_READ scopes on the access token.
+ *
+ * Same no-op-until-configured gate as every other function in this file,
+ * and the same raw-fetch pattern (squareRequest) -- no SDK dependency. This
+ * repo has no package.json/npm build step at all; introducing the official
+ * Square Node SDK would mean adding one from scratch, which is a bigger,
+ * separate decision than writing this function.
+ *
+ * Needs migration 015 (products.square_catalog_object_id) applied first so
+ * matched items can be upserted by ID instead of by name.
+ */
+export async function searchSquareCatalogItems(env, cursor) {
+  if (!isConfigured(env)) return { skipped: true, reason: 'not_configured' };
+  const data = await squareRequest(env, '/v2/catalog/search-catalog-objects', {
+    object_types: ['ITEM', 'ITEM_VARIATION'],
+    include_related_objects: false,
+    cursor: cursor || undefined,
+    limit: 100,
+  });
+  return { skipped: false, objects: data.objects || [], cursor: data.cursor || null };
+}
+
+export async function getSquareInventoryCounts(env, catalogObjectIds) {
+  if (!isConfigured(env)) return { skipped: true, reason: 'not_configured' };
+  if (!catalogObjectIds || !catalogObjectIds.length) return { skipped: false, counts: [] };
+  const data = await squareRequest(env, '/v2/inventory/counts/batch-retrieve', {
+    catalog_object_ids: catalogObjectIds,
+    location_ids: [env.SQUARE_LOCATION_ID],
+  });
+  return { skipped: false, counts: data.counts || [] };
+}
+
+/**
+ * Orchestrates a single pull-and-upsert pass.
+ *
+ * Match key is SKU, as specified -- but checked live against real data
+ * first (2026-09-14): only 2 of 34 products in `products` currently have
+ * a non-null `sku`. That's not a bug in this function, it's the actual
+ * state of the catalog -- most rows were hand-seeded from supplier feeds
+ * (commerce/sync.py) or cited public pricing (004/011/013_*.sql) without
+ * a SKU on file. Practical effect: this sync will only touch ~6% of the
+ * catalog until more SKUs are backfilled. A Square variation with no
+ * matching D1 SKU is SKIPPED and counted, never fuzzy-matched by name and
+ * never used to auto-create a new product -- a wrong SKU match would
+ * silently overwrite the wrong item's price, which is worse than no sync.
+ *
+ * Updates retail_price + stock_status (there's no numeric stock_count
+ * column -- see products schema; Square's quantity is mapped to the
+ * existing 'in_stock' / 'special_order' enum, documented inline below).
+ * price_source is overwritten too, on purpose: leaving the old hand-
+ * verified citation in place while silently changing the price next to
+ * it would make the provenance field actively misleading.
+ */
+export async function syncShopInventoryFromSquare(env, db) {
+  if (!isConfigured(env)) return { attempted: false };
+  try {
+    let cursor;
+    const allItems = [];
+    do {
+      const page = await searchSquareCatalogItems(env, cursor);
+      allItems.push(...page.objects);
+      cursor = page.cursor;
+    } while (cursor);
+
+    const variations = allItems.filter((o) => o.type === 'ITEM_VARIATION');
+    const variationIds = variations.map((o) => o.id);
+    const { counts } = await getSquareInventoryCounts(env, variationIds);
+
+    const countByObjectId = new Map();
+    for (const c of counts) {
+      if (c.state === 'IN_STOCK') countByObjectId.set(c.catalog_object_id, Number(c.quantity) || 0);
+    }
+
+    const now = new Date().toISOString();
+    let matched = 0;
+    let updated = 0;
+    let skippedNoSku = 0;
+    let skippedNoMatch = 0;
+
+    for (const v of variations) {
+      const data = v.item_variation_data || {};
+      const sku = (data.sku || '').trim();
+      if (!sku) { skippedNoSku++; continue; }
+
+      const existing = await db
+        .prepare('SELECT id FROM products WHERE sku = ? LIMIT 1')
+        .bind(sku)
+        .first();
+      if (!existing) { skippedNoMatch++; continue; }
+      matched++;
+
+      const qty = countByObjectId.has(v.id) ? countByObjectId.get(v.id) : null;
+      // No numeric stock_count column exists (see products schema) -- map
+      // Square's quantity onto the existing enum. qty > 0 -> in_stock;
+      // qty === 0 -> special_order (still orderable, not assumed dead);
+      // no IN_STOCK count returned at all -> leave stock_status untouched
+      // rather than guess.
+      const stockStatus = qty === null ? null : (qty > 0 ? 'in_stock' : 'special_order');
+
+      const priceMoney = data.price_money;
+      const retailPrice = priceMoney && typeof priceMoney.amount === 'number'
+        ? priceMoney.amount / 100
+        : null;
+
+      const sets = ['square_catalog_object_id = ?', 'square_stock_synced_at = ?', 'updated_at = ?'];
+      const binds = [v.id, now, now];
+      if (stockStatus !== null) { sets.push('stock_status = ?'); binds.push(stockStatus); }
+      if (retailPrice !== null) {
+        sets.push('retail_price = ?', 'price_source = ?');
+        binds.push(retailPrice, `Square catalog sync, ${now}`);
+      }
+      binds.push(existing.id);
+
+      await db.prepare(`UPDATE products SET ${sets.join(', ')} WHERE id = ?`).bind(...binds).run();
+      updated++;
+    }
+
+    return {
+      attempted: true,
+      itemsSeen: allItems.length,
+      variationsSeen: variations.length,
+      matched,
+      updated,
+      skippedNoSku,
+      skippedNoMatch,
+    };
+  } catch (err) {
+    return { attempted: true, error: String(err && err.message || err) };
+  }
+}
