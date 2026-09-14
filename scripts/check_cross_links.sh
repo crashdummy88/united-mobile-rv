@@ -45,6 +45,15 @@ LIVE_URLS=(
 )
 
 REPOS_DIR="${1:-/tmp/umrt-repos}"
+# Set to any non-empty value to skip Check 2. Needed in CI: Cloudflare's
+# Bot Fight Mode (deliberately on for this zone) hard-403s every request
+# from GitHub Actions' shared runner IPs, regardless of site health --
+# confirmed 2026-09-14 by actually running this workflow and watching it
+# fail on every URL while the same sites returned 200 everywhere else.
+# That's the protection working correctly, not a bug -- so CI only runs
+# the static check; run this script with SKIP_LIVE_CHECK unset locally
+# (from a normal, non-datacenter IP) for the live check to mean anything.
+SKIP_LIVE_CHECK="${SKIP_LIVE_CHECK:-}"
 failures=0
 
 echo "== Check 1: static grep for legacy .pages.dev cross-links in tracked HTML =="
@@ -66,16 +75,21 @@ else
 fi
 
 echo
-echo "== Check 2: live HTTP check on every canonical property URL =="
-for url in "${LIVE_URLS[@]}"; do
-  code=$(curl -s -o /dev/null -L --max-time 15 -w "%{http_code}" "$url" || echo "000")
-  if [ "$code" = "200" ]; then
-    echo "  [OK] $url -> $code"
-  else
-    echo "  [FAIL] $url -> $code"
-    failures=$((failures + 1))
-  fi
-done
+if [ -n "$SKIP_LIVE_CHECK" ]; then
+  echo "== Check 2: live HTTP check -- SKIPPED (SKIP_LIVE_CHECK set, e.g. running in CI where"
+  echo "   Cloudflare Bot Fight Mode 403s every request from datacenter/runner IPs) =="
+else
+  echo "== Check 2: live HTTP check on every canonical property URL =="
+  for url in "${LIVE_URLS[@]}"; do
+    code=$(curl -s -o /dev/null -L --max-time 15 -w "%{http_code}" "$url" || echo "000")
+    if [ "$code" = "200" ]; then
+      echo "  [OK] $url -> $code"
+    else
+      echo "  [FAIL] $url -> $code"
+      failures=$((failures + 1))
+    fi
+  done
+fi
 
 echo
 if [ "$failures" -gt 0 ]; then

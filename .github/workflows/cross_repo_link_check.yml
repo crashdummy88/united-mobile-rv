@@ -24,5 +24,11 @@ jobs:
             git clone --depth 1 "https://github.com/crashdummy88/${repo}.git" "/tmp/umrt-repos/${repo}"
           done
 
-      - name: Run cross-repo link check
+      - name: Run cross-repo link check (static only -- see script comments)
+        env:
+          # Cloudflare Bot Fight Mode (deliberately on) 403s every request
+          # from GitHub Actions' runner IPs -- confirmed by actually running
+          # this workflow. Live-URL check only means anything from a normal
+          # IP; run it locally when you need it.
+          SKIP_LIVE_CHECK: "1"
         run: bash scripts/check_cross_links.sh /tmp/umrt-repos
