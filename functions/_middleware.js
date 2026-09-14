@@ -8,7 +8,10 @@
  * regardless of the other value. This middleware builds a single clean
  * header on every response instead.
  */
-const INDEXABLE_PREFIXES = ['/forum/', '/forum-live/'];
+// /guide/ added 2026-09-14: the 20-category guide reorg is done and per
+// the business doc this content is meant to be indexed, but it was left
+// off this list -- confirmed via live curl that it was still noindex.
+const INDEXABLE_PREFIXES = ['/forum/', '/forum-live/', '/guide/'];
 
 // Files Google fetches as *resources*, not pages -- a noindex X-Robots-Tag
 // on these makes Google Search Console refuse to process them at all
