@@ -125,6 +125,75 @@ export async function createDraftInvoice(env, orderId, booking) {
 }
 
 /**
+ * Builds and creates a Square Order for a shop quote request -- Phase 3,
+ * 2026-09-14. One line item per cart product, using the site's own
+ * verified reference retail_price (already validated server-side in
+ * quote.js against the products table -- never client-supplied) as a
+ * STARTING price on the draft, not a final one: every note says so, and
+ * (same rule as bookings) nothing here ever calls Square's publish
+ * endpoint. Matt confirms/adjusts real pricing before sending anything.
+ * A product with no retail_price on file gets no price on its line item,
+ * same as the booking flow's unpriced diagnostic line.
+ */
+export async function createDraftOrderForQuote(env, quote, items) {
+  if (!isConfigured(env)) return { skipped: true, reason: 'not_configured' };
+  if (!items || !items.length) return { skipped: true, reason: 'no_items' };
+
+  const idempotencyKey = `quote-order-${quote.id}`;
+
+  const lineItems = items.map(({ product, quantity }) => {
+    const item = {
+      name: `${product.manufacturer} ${product.title}`.trim().slice(0, 512),
+      quantity: String(quantity || 1),
+      note: 'Reference price only -- confirm before publishing'.slice(0, 500),
+    };
+    if (typeof product.retail_price === 'number' && product.retail_price > 0) {
+      item.base_price_money = { amount: Math.round(product.retail_price * 100), currency: 'USD' };
+    }
+    return item;
+  });
+
+  const data = await squareRequest(env, '/v2/orders', {
+    idempotency_key: idempotencyKey,
+    order: {
+      location_id: env.SQUARE_LOCATION_ID,
+      reference_id: quote.id,
+      line_items: lineItems,
+    },
+  });
+  return { skipped: false, orderId: data.order && data.order.id };
+}
+
+/**
+ * Convenience wrapper for quote.js: best-effort, never throws. Returns
+ * { attempted, orderId, invoiceId, invoiceUrl, status, error }.
+ */
+export async function createDraftEstimateForQuote(env, quote, items) {
+  if (!isConfigured(env)) return { attempted: false };
+  try {
+    const order = await createDraftOrderForQuote(env, quote, items);
+    if (order.skipped) return { attempted: false };
+    const rig = [quote.rvYear, quote.rvMake, quote.rvModel].filter(Boolean).join(' ');
+    const invoice = await createDraftInvoice(env, order.orderId, {
+      fullName: quote.name,
+      issue: [rig && `Rig: ${rig}`, quote.location && `Location: ${quote.location}`, quote.notes]
+        .filter(Boolean).join(' | ') || 'Shop quote request',
+    });
+    return {
+      attempted: true,
+      orderId: order.orderId,
+      invoiceId: invoice.invoiceId,
+      invoiceUrl: invoice.invoiceUrl,
+      status: invoice.status,
+    };
+  } catch (err) {
+    // Best-effort by design -- a Square hiccup must never block the
+    // customer's quote confirmation (same principle as createDraftEstimateForBooking).
+    return { attempted: true, error: String(err && err.message || err) };
+  }
+}
+
+/**
  * Convenience wrapper for book.js: best-effort, never throws. Returns
  * { attempted, orderId, invoiceId, invoiceUrl, status, error }.
  */

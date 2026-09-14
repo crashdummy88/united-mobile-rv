@@ -19,6 +19,7 @@ function json(data, status = 200) {
 import { verifyTurnstile } from '../../_lib/turnstile.js';
 import { checkRateLimit } from '../../_lib/rate-limit.js';
 import { formatPrice } from '../../_lib/shop.js';
+import { createDraftEstimateForQuote } from '../../_lib/square.js';
 
 function clean(v, max = 300) {
   return String(v || '').trim().slice(0, max);
@@ -111,6 +112,23 @@ export async function onRequestPost(context) {
     await env.DB.prepare(
       `INSERT OR REPLACE INTO quote_request_items (quote_request_id, product_id, quantity) VALUES (?, ?, ?)`
     ).bind(id, product.id, quantity).run();
+  }
+
+  // Phase 3 (2026-09-14): best-effort draft Square estimate, same
+  // never-block-the-customer principle as the inserts above. No-op until
+  // SQUARE_ACCESS_TOKEN + SQUARE_LOCATION_ID are configured -- see
+  // functions/_lib/square.js for why this stays inert by default and
+  // never auto-publishes/charges.
+  try {
+    const square = await createDraftEstimateForQuote(env, { id, name, location, rvYear, rvMake, rvModel, notes }, items);
+    if (square.attempted && square.invoiceId) {
+      await env.DB.prepare(
+        `UPDATE quote_requests SET square_order_id = ?, square_invoice_id = ?, square_invoice_url = ?, square_invoice_status = ? WHERE id = ?`
+      ).bind(square.orderId || null, square.invoiceId, square.invoiceUrl || null, (square.status || 'draft').toLowerCase(), id).run();
+    }
+  } catch (e) {
+    // Swallow -- the Square draft is a bonus, not a requirement for the
+    // quote request to succeed.
   }
 
   const key = (env.PUBLIC_WEB3FORMS_KEY || env.WEB3FORMS_ACCESS_KEY || '').trim();
