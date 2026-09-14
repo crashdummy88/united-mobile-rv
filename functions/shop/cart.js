@@ -134,10 +134,20 @@ export async function onRequestGet(context) {
   }
   // Same dedup rule as /shop/ and /shop/p/:id -- product titles sometimes
   // already include the manufacturer name; don't repeat it.
+  // Same fix as functions/_lib/shop.js displayName() -- also check the
+  // manufacturer's first word alone, not just the full string, so
+  // "Victron Energy" + "Victron GX Touch 50..." doesn't render as
+  // "Victron Energy Victron GX Touch 50...".
   function displayName(manufacturer, title) {
     var m = String(manufacturer || '').trim();
     var t = String(title || '').trim();
-    return t.toLowerCase().indexOf(m.toLowerCase()) === 0 ? t : (m + ' ' + t);
+    var tLower = t.toLowerCase();
+    var mLower = m.toLowerCase();
+    var mFirstWord = mLower.split(/\s+/)[0] || mLower;
+    if (tLower.indexOf(mLower) === 0 || (mFirstWord && tLower.indexOf(mFirstWord) === 0)) {
+      return t;
+    }
+    return m + ' ' + t;
   }
 
   var itemsEl = document.getElementById('cart-items');

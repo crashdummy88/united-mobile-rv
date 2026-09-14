@@ -3,16 +3,10 @@
  * Phase 1: reference pricing + a quote-request form (four service tiers per
  * the "Product + Service" model) instead of a live checkout charge.
  */
-import { formatPrice, priceNote } from '../../_lib/shop.js';
+import { formatPrice, priceNote, displayName } from '../../_lib/shop.js';
 
 function esc(s) {
   return String(s || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-}
-
-function displayName(manufacturer, title) {
-  const m = String(manufacturer || '').trim();
-  const t = String(title || '').trim();
-  return t.toLowerCase().indexOf(m.toLowerCase()) === 0 ? t : `${m} ${t}`;
 }
 
 function notFoundPage() {

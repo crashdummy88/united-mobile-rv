@@ -4,16 +4,10 @@
  * per the ecommerce spec's "category pages around customer problems" rule.
  * Phase 1: no live checkout -- every product routes to a quote request.
  */
-import { formatPrice } from '../_lib/shop.js';
+import { formatPrice, displayName } from '../_lib/shop.js';
 
 function esc(s) {
   return String(s || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-}
-
-function displayName(manufacturer, title) {
-  const m = String(manufacturer || '').trim();
-  const t = String(title || '').trim();
-  return t.toLowerCase().indexOf(m.toLowerCase()) === 0 ? t : `${m} ${t}`;
 }
 
 const CATEGORY_LABELS = {
@@ -66,7 +60,11 @@ export async function onRequestGet(context) {
         </a>
         <button type="button" class="btn btn-ghost shop-add-btn" data-product-id="${esc(p.id)}">Add to Cart</button>
       </div>`).join('');
-    return `<section class="band"><div class="wrap wrap-narrow">
+    // .band-tight, not .band -- .band's 12x padding is meant for one hero-style
+    // section per page. With N stacked categories each getting .band, the
+    // top+bottom padding compounds into a huge dead-space gap between every
+    // category (visible between any two adjacent categories on /shop/).
+    return `<section class="band-tight"><div class="wrap wrap-narrow">
       <h2>${esc(label)}</h2>
       <div class="shop-grid">${cards}</div>
     </div></section>`;
