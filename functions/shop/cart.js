@@ -143,11 +143,11 @@ export async function onRequestGet(context) {
     var t = String(title || '').trim();
     var tLower = t.toLowerCase();
     var mLower = m.toLowerCase();
-    // NOTE: this whole file's HTML (including this inline <script>) is one
-    // big JS template literal server-side (see `html = \`...\`` below) --
-    // \s here would have its backslash silently eaten when THAT outer
-    // literal is parsed, shipping a literal "/s+/" to the browser instead
-    // of a whitespace regex. Needs the doubled backslash to survive.
+    // NOTE: this whole file's HTML (including this inline script) is one big
+    // JS template literal on the server side. A single backslash-s here
+    // would have its backslash silently eaten when that outer literal is
+    // parsed, shipping a literal slash-s-plus-slash to the browser instead
+    // of a whitespace regex -- needs the doubled backslash to survive.
     var mFirstWord = mLower.split(/\\s+/)[0] || mLower;
     if (tLower.indexOf(mLower) === 0 || (mFirstWord && tLower.indexOf(mFirstWord) === 0)) {
       return t;
