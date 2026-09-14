@@ -6,6 +6,7 @@
  */
 import { verifyTurnstile } from '../_lib/turnstile.js';
 import { checkRateLimit } from '../_lib/rate-limit.js';
+import { createDraftEstimateForBooking } from '../_lib/square.js';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -176,8 +177,23 @@ export async function onRequestPost(context) {
         preferredDate || null, preferredTime || null,
         isWpSource ? 'wp_book_service' : 'united-mobile-rv-book'
       ).run();
+
+      // Phase 2 (2026-09-14): best-effort draft Square estimate, same
+      // never-block-the-customer principle as the insert above. No-op
+      // until SQUARE_ACCESS_TOKEN + SQUARE_LOCATION_ID are configured --
+      // see functions/_lib/square.js for why this stays inert by default.
+      const square = await createDraftEstimateForBooking(env, {
+        id, fullName: nameVal, issue: issueVal, location: locationVal,
+        rvYear, rvMake, rvModel,
+      });
+      if (square.attempted && square.invoiceId) {
+        await env.PORTAL_DB.prepare(
+          `UPDATE jobs SET square_order_id = ?, square_invoice_id = ?, square_invoice_url = ?, square_invoice_status = ? WHERE id = ?`
+        ).bind(square.orderId || null, square.invoiceId, square.invoiceUrl || null, (square.status || 'draft').toLowerCase(), id).run();
+      }
     } catch (e) {
-      // Swallow -- job tracking is a bonus, not a requirement for booking to work.
+      // Swallow -- job tracking (and its Square draft) is a bonus, not a
+      // requirement for booking to work.
     }
   }
 
