@@ -31,15 +31,30 @@ const SHOP_HOST = 'shop.unitedmobilerv.com';
 const SHOP_ALLOWED_EXACT = ['/', '/favicon.png', '/robots.txt', '/sitemap.xml'];
 const SHOP_ALLOWED_PREFIXES = ['/shop/', '/api/shop/', '/css/', '/js/', '/assets/', '/fonts/'];
 
+// Same gate for forum.unitedmobilerv.com (found 2026-09-14: /pricing/ and
+// every other hub page answered on the forum host). The forum needs its own
+// pages, the API (sign-in, threads, uploads), R2 media and shared assets;
+// anything else on this host goes to /forum/.
+const FORUM_HOST = 'forum.unitedmobilerv.com';
+const FORUM_ALLOWED_EXACT = ['/', '/favicon.png', '/robots.txt', '/sitemap.xml', '/feed.xml'];
+const FORUM_ALLOWED_PREFIXES = ['/forum/', '/forum-live/', '/api/', '/r2/', '/css/', '/js/', '/assets/', '/fonts/'];
+
+function allowedOn(path, exact, prefixes) {
+  if (exact.includes(path)) return true;
+  return prefixes.some((p) => path === p.slice(0, -1) || path.startsWith(p));
+}
+
 function isShopAllowed(path) {
-  if (SHOP_ALLOWED_EXACT.includes(path)) return true;
-  return SHOP_ALLOWED_PREFIXES.some((p) => path === p.slice(0, -1) || path.startsWith(p));
+  return allowedOn(path, SHOP_ALLOWED_EXACT, SHOP_ALLOWED_PREFIXES);
 }
 
 export async function onRequest(context) {
   const requestUrl = new URL(context.request.url);
   if (requestUrl.hostname === SHOP_HOST && !isShopAllowed(requestUrl.pathname)) {
     return Response.redirect(new URL('/shop/', requestUrl), 301);
+  }
+  if (requestUrl.hostname === FORUM_HOST && !allowedOn(requestUrl.pathname, FORUM_ALLOWED_EXACT, FORUM_ALLOWED_PREFIXES)) {
+    return Response.redirect(new URL('/forum/', requestUrl), 301);
   }
 
   const response = await context.next();

@@ -1,12 +1,14 @@
 /**
  * GET /sitemap.xml — dynamically generated so it always reflects reality.
- * /forum/ and /forum-live/ are always listed (see functions/_middleware.js
+ * /forum/, /forum-live/ and every /guide/ page are always listed (see functions/_middleware.js
  * and robots.txt for the noindex-everywhere-else policy). Individual forum
  * threads now have real server-rendered URLs (functions/forum/t/[id].js),
  * so every public, non-hidden thread gets its own <url> entry here too --
  * this is the P7 knowledge-engine piece: solved threads become permanent,
  * crawlable technical resources instead of dead ends behind client-side JS.
  */
+import { GUIDE_URLS } from './_lib/guide-urls.js';
+
 function xmlEscape(s) {
   return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
@@ -20,6 +22,17 @@ export async function onRequestGet(context) {
     { loc: `${base}/forum/`, changefreq: 'hourly', priority: '0.9' },
     { loc: `${base}/forum-live/`, changefreq: 'hourly', priority: '0.7' },
   ];
+  // /guide/ is indexable (functions/_middleware.js INDEXABLE_PREFIXES) but
+  // static, so its URL list is generated at commit time by
+  // scripts/gen-guide-urls.mjs rather than discovered here.
+  for (const g of GUIDE_URLS) {
+    urls.push({
+      loc: `${base}${g.path}`,
+      lastmod: g.lastmod || undefined,
+      changefreq: 'monthly',
+      priority: g.path === '/guide/' ? '0.8' : '0.6',
+    });
+  }
 
   if (env.DB) {
     try {

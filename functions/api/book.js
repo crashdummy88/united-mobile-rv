@@ -11,10 +11,16 @@ import { createDraftEstimateForBooking } from '../_lib/square.js';
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 // unitedmobilerv.com (WordPress) posts here cross-origin for the live
-// /book-service form; this site's own /book-service page posts same-origin.
-// Allow both explicitly rather than a wildcard, since this endpoint writes
-// to the jobs DB and sends email.
-const ALLOWED_ORIGINS = ['https://unitedmobilerv.com', 'https://united-mobile-rv.pages.dev'];
+// /book-service form; this site's own /book-service page posts same-origin;
+// the customer portal's /book/ posts here too so every booking lands in the
+// one jobs ledger. Allow each explicitly rather than a wildcard, since this
+// endpoint writes to the jobs DB and sends email.
+const ALLOWED_ORIGINS = [
+  'https://unitedmobilerv.com',
+  'https://united-mobile-rv.pages.dev',
+  'https://umrt-portal.pages.dev',
+  'https://portal.unitedmobilerv.com',
+];
 
 function corsHeaders(request) {
   const origin = request && request.headers.get('Origin');
@@ -81,7 +87,9 @@ export async function onRequestPost(context) {
   // flagged by the hidden form_source field). Rig is required for this
   // site's own form (Matt lock); WP submissions carry year/make/model
   // instead, which is optional metadata there, not a hard requirement.
-  const isWpSource = (form.get('form_source') || '').toString().trim() === 'wp_book_service';
+  const formSource = (form.get('form_source') || '').toString().trim();
+  const isWpSource = formSource === 'wp_book_service';
+  const isPortalSource = formSource === 'portal_book';
   const nameVal = (form.get('name') || form.get('fullName') || '').toString().trim();
   const phoneVal = (form.get('phone') || '').toString().trim();
   const emailVal = (form.get('email') || '').toString().trim();
@@ -175,7 +183,7 @@ export async function onRequestPost(context) {
         rvYear || null, rvMake || null, rvModel || null, vin || null,
         issueVal, (street || locationVal) || null, city || null, state || null, zip || null,
         preferredDate || null, preferredTime || null,
-        isWpSource ? 'wp_book_service' : 'united-mobile-rv-book'
+        isWpSource ? 'wp_book_service' : isPortalSource ? 'portal_book' : 'united-mobile-rv-book'
       ).run();
 
       // Phase 2 (2026-09-14): best-effort draft Square estimate, same

@@ -24,9 +24,6 @@ export async function onRequestGet(context) {
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <style>
   .cart-line{display:flex;align-items:center;gap:14px;border:1px solid #333;border-radius:10px;padding:12px 16px;margin-bottom:10px}
-  .cart-line-thumb{flex:none;width:48px;height:48px;border-radius:8px;background:#0f0f0f;display:flex;align-items:center;justify-content:center;overflow:hidden}
-  .cart-line-thumb img{width:100%;height:100%;object-fit:contain;padding:4px}
-  .cart-line-thumb.is-fallback{background:linear-gradient(160deg,rgba(201,151,44,0.14),rgba(255,255,255,0.02));font-size:1.3rem;opacity:.55}
   .cart-line-title{flex:1;min-width:0}
   .cart-line-title a{color:inherit;text-decoration:none}
   .cart-line-price{font-weight:700;color:#E8B84B;white-space:nowrap}
@@ -88,6 +85,7 @@ export async function onRequestGet(context) {
       <input class="forum-input" id="qf-location" placeholder="City / State" maxlength="160">
       <input class="forum-input" id="qf-rig" placeholder="RV year / make / model" maxlength="160">
       <textarea class="forum-input" id="qf-notes" rows="3" placeholder="Anything else we should know?" maxlength="1500"></textarea>
+      <div aria-hidden="true" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden"><label for="qf-website">Website</label><input id="qf-website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
       <div class="btn-row"><button type="submit" class="btn btn-gold" id="qf-submit">Request Quote</button></div>
       <p class="held-note" id="qf-status"></p>
       <div id="qf-turnstile"></div>
@@ -168,11 +166,7 @@ export async function onRequestGet(context) {
     var line = document.createElement('div');
     line.className = 'cart-line';
     line.dataset.productId = product.id;
-    var thumbHtml = product.image_url
-      ? '<img src="' + esc(product.image_url) + '" alt="" loading="lazy" onerror="this.parentElement.classList.add(\'is-fallback\');this.remove()">'
-      : '<span aria-hidden="true">🔧</span>'; // generic wrench -- cart thumbnails are too small to justify a full per-category icon set
     line.innerHTML =
-      '<div class="cart-line-thumb' + (product.image_url ? '' : ' is-fallback') + '">' + thumbHtml + '</div>' +
       '<div class="cart-line-title"><a href="/shop/p/' + esc(product.id) + '">' + esc(displayName(product.manufacturer, product.title)) + '</a></div>' +
       '<input class="cart-line-qty" type="number" min="1" max="99" value="' + esc(qty) + '">' +
       '<div class="cart-line-price">' + esc(formatPrice(product)) + '</div>' +
@@ -270,6 +264,7 @@ export async function onRequestGet(context) {
         rv_year: rig[0] || '', rv_make: rig[1] || '', rv_model: rig.slice(2).join(' '),
         service_option: document.querySelector('input[name="service_option"]:checked').value,
         notes: document.getElementById('qf-notes').value.trim(),
+        website: document.getElementById('qf-website').value,
         'cf-turnstile-response': qfToken,
       })
     });
