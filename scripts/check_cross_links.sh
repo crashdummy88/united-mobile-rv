@@ -21,13 +21,16 @@ set -uo pipefail
 
 # legacy_pages_dev_host -> canonical unitedmobilerv.com URL
 declare -A LEGACY_MAP=(
-  ["umrt-software.pages.dev"]="https://software.unitedmobilerv.com/"
-  ["united-mobile-rv.pages.dev/forum"]="https://forum.unitedmobilerv.com/"
-  ["united-mobile-rv.pages.dev/shop"]="https://shop.unitedmobilerv.com/"
-  ["umrt-portal.pages.dev"]="https://portal.unitedmobilerv.com/"
-  ["umrt-docs.pages.dev"]="https://docs.unitedmobilerv.com/"
-  ["umrt-status.pages.dev"]="https://status.unitedmobilerv.com/"
+  ["umrt-software.pages.dev/"]="https://software.unitedmobilerv.com/"
+  ["united-mobile-rv.pages.dev/forum/"]="https://forum.unitedmobilerv.com/"
+  ["united-mobile-rv.pages.dev/shop/"]="https://shop.unitedmobilerv.com/"
+  ["umrt-portal.pages.dev/"]="https://portal.unitedmobilerv.com/"
+  ["umrt-docs.pages.dev/"]="https://docs.unitedmobilerv.com/"
+  ["umrt-status.pages.dev/"]="https://status.unitedmobilerv.com/"
 )
+# Trailing slash on every key is deliberate: "united-mobile-rv.pages.dev/forum"
+# (no slash) would also match "/forum-live/" as a substring -- a real false
+# positive hit during this script's own first dry run.
 
 # Canonical URLs that must always resolve live, regardless of what's linked
 # to them from where -- the actual property list.
