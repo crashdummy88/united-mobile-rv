@@ -125,13 +125,13 @@ export async function onRequestGet(context) {
 <section class="band band-gray" id="quote">
   <div class="wrap wrap-narrow">
     <h2>Request a quote</h2>
-    <p class="muted">This isn't a live checkout yet -- submit your info and Matt follows up with real pricing, availability, and next steps. No charge happens here.</p>
+    <p class="muted">This isn't a live checkout yet -- submit your info and our team follows up with real pricing, availability, and next steps. No charge happens here.</p>
     <form id="quote-form">
       <input type="hidden" id="qf-product-id" value="${esc(product.id)}">
       <label class="service-tier"><input type="radio" name="service_option" value="hardware_only" checked> <strong>Hardware only</strong> -- ships to you, you install</label>
-      <label class="service-tier"><input type="radio" name="service_option" value="hardware_plus_config"> <strong>Hardware + remote configuration</strong> -- Matt configures it with you remotely</label>
-      <label class="service-tier"><input type="radio" name="service_option" value="hardware_plus_install"> <strong>Hardware + UMRT installation</strong> -- Matt installs it on-site</label>
-      <label class="service-tier"><input type="radio" name="service_option" value="full_design_install"> <strong>Full system design + installation</strong> -- Matt designs the whole system around this and installs it</label>
+      <label class="service-tier"><input type="radio" name="service_option" value="hardware_plus_config"> <strong>Hardware + remote configuration</strong> -- we configure it with you remotely</label>
+      <label class="service-tier"><input type="radio" name="service_option" value="hardware_plus_install"> <strong>Hardware + UMRT installation</strong> -- we install it on-site</label>
+      <label class="service-tier"><input type="radio" name="service_option" value="full_design_install"> <strong>Full system design + installation</strong> -- we design the whole system around this and install it</label>
 
       <input class="forum-input" id="qf-name" placeholder="Your name" maxlength="120">
       <input class="forum-input" id="qf-phone" placeholder="Phone" maxlength="40">

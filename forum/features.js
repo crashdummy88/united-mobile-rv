@@ -11,7 +11,7 @@
     cta.innerHTML = '<h3>\uD83D\uDD27 Got an RV problem right now?</h3>' +
       '<p>Post it in Repair &amp; Diagnostics and get a real answer from a certified tech — or text direct.</p>' +
       '<a class="btn" href="#new-thread-form">Ask the community</a> &nbsp; ' +
-      '<a class="btn" href="sms:+16166065277">Text Matt</a>';
+      '<a class="btn" href="sms:+16166065277">Text Us</a>';
     hero.appendChild(cta);
   }
 
