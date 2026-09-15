@@ -41,6 +41,22 @@ export const CATEGORY_ICONS = {
   'rv-roof-ventilation': '🌬️', 'rv-precision-stack': '⚙️',
 };
 
+/**
+ * Services (added 2026-09-15) price display -- separate rules from
+ * products' formatPrice/priceNote above: services use price_type
+ * ('flat' | 'starting_at' | 'quote') instead of a bare nullable price,
+ * since "no price on file" and "this is deliberately quote-only" are
+ * different states here (every quote-only service has price_type set
+ * on purpose at seed time, not left null by omission).
+ */
+export function formatServicePrice(service) {
+  if (service.price_type === 'quote' || service.price === null || service.price === undefined) {
+    return 'Contact for quote';
+  }
+  const amt = `$${Number(service.price).toLocaleString()}`;
+  return service.price_type === 'starting_at' ? `Starting at ${amt}` : amt;
+}
+
 export function displayName(manufacturer, title) {
   const m = String(manufacturer || '').trim();
   const t = String(title || '').trim();

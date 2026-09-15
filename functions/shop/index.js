@@ -4,7 +4,7 @@
  * per the ecommerce spec's "category pages around customer problems" rule.
  * Phase 1: no live checkout -- every product routes to a quote request.
  */
-import { formatPrice, displayName, CATEGORY_ICONS } from '../_lib/shop.js';
+import { formatPrice, displayName, CATEGORY_ICONS, formatServicePrice } from '../_lib/shop.js';
 
 function esc(s) {
   return String(s || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -21,6 +21,19 @@ const CATEGORY_LABELS = {
   'rv-precision-stack': '⚙️ Precision Stack',
 };
 
+// Services tab -- added 2026-09-15. Site-owned content (db/migrations/
+// 016_services.sql), deliberately NOT synced from Square: Square stays
+// Matt's own internal invoicing tool. See that migration's header for
+// the full reasoning.
+const SERVICE_CATEGORY_LABELS = {
+  diagnostics: '🔍 Diagnostics & Planning',
+  seasonal: '🗓️ Seasonal & Inspection',
+  'power-solar': '☀️ Power & Solar Installation',
+  'electrical-repair': '⚡ Electrical Repair',
+  'systems-repair': '🔧 Systems Repair',
+  connectivity: '📡 Connectivity',
+};
+
 function cardImageHtml(p) {
   if (p.image_url) {
     return `<img class="shop-card-img" src="${esc(p.image_url)}" alt="" loading="lazy" width="220" height="220"
@@ -34,15 +47,30 @@ export async function onRequestGet(context) {
   const url = new URL(request.url);
   const base = url.origin;
   const activeCategory = (url.searchParams.get('category') || '').trim();
+  const activeTab = url.searchParams.get('tab') === 'services' ? 'services' : 'parts';
 
   let products = [];
+  let services = [];
   if (env.DB) {
-    const { results } = await env.DB.prepare(
-      `SELECT id, manufacturer, title, category, retail_price, product_type, stock_status, image_url
-       FROM products WHERE active = 1 ORDER BY category, manufacturer, title`
-    ).all();
-    products = results || [];
+    if (activeTab === 'services') {
+      const { results } = await env.DB.prepare(
+        `SELECT id, title, description, category, price, price_type, price_note
+         FROM services WHERE active = 1 ORDER BY category, display_order, title`
+      ).all();
+      services = results || [];
+    } else {
+      const { results } = await env.DB.prepare(
+        `SELECT id, manufacturer, title, category, retail_price, product_type, stock_status, image_url
+         FROM products WHERE active = 1 ORDER BY category, manufacturer, title`
+      ).all();
+      products = results || [];
+    }
   }
+
+  const tabsHtml = `<div class="shop-tab-row">
+    <a class="shop-tab${activeTab === 'parts' ? ' is-active' : ''}" href="${base}/shop/">Parts</a>
+    <a class="shop-tab${activeTab === 'services' ? ' is-active' : ''}" href="${base}/shop/?tab=services">Services</a>
+  </div>`;
 
   const byCategory = {};
   for (const p of products) {
@@ -58,7 +86,7 @@ export async function onRequestGet(context) {
 
   const categoriesToShow = activeCategory && byCategory[activeCategory] ? [activeCategory] : Object.keys(byCategory);
 
-  const sectionsHtml = categoriesToShow.map((cat) => {
+  const partsSectionsHtml = categoriesToShow.map((cat) => {
     const label = CATEGORY_LABELS[cat] || cat;
     const cards = byCategory[cat].map((p) => `
       <div class="shop-card">
@@ -78,14 +106,44 @@ export async function onRequestGet(context) {
     </div></section>`;
   }).join('\n');
 
+  const servicesByCategory = {};
+  for (const s of services) {
+    (servicesByCategory[s.category] = servicesByCategory[s.category] || []).push(s);
+  }
+
+  const servicesSectionsHtml = Object.keys(servicesByCategory).map((cat) => {
+    const label = SERVICE_CATEGORY_LABELS[cat] || cat;
+    const cards = servicesByCategory[cat].map((s) => `
+      <div class="shop-card service-card">
+        <div class="shop-card-body">
+          <div class="shop-card-title">${esc(s.title)}</div>
+          <div class="shop-card-price">${esc(formatServicePrice(s))}${s.price_note ? ` <span class="shop-card-price-note">${esc(s.price_note)}</span>` : ''}</div>
+          <p class="shop-card-desc">${esc(s.description || '')}</p>
+        </div>
+        <a class="btn btn-ghost" href="${base}/book-service/?issue=${encodeURIComponent(s.title)}">Book this service</a>
+      </div>`).join('');
+    return `<section class="shop-category-band"><div class="wrap wrap-narrow">
+      <h2>${esc(label)}</h2>
+      <div class="shop-grid">${cards}</div>
+    </div></section>`;
+  }).join('\n');
+
+  const servicesNoteHtml = `<section class="band"><div class="wrap wrap-narrow">
+    <p class="muted">Shop labor is billed at <strong>$150/hr</strong> after the initial diagnostic. A trip fee applies beyond 30 miles ($1.50/mi each way) -- confirmed with you before any work starts.</p>
+  </div></section>`;
+
+  const sectionsHtml = activeTab === 'services'
+    ? (services.length ? `${servicesNoteHtml}\n${servicesSectionsHtml}` : '')
+    : partsSectionsHtml;
+
   const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>RV Systems Shop | United Mobile RV</title>
-<meta name="description" content="Curated RV power, solar, and climate systems -- tell us what your rig needs to do and we'll tell you what equipment actually works together.">
-<link rel="canonical" href="${base}/shop/">
+<title>${activeTab === 'services' ? 'RV Repair & Install Services' : 'RV Systems Shop'} | United Mobile RV</title>
+<meta name="description" content="${activeTab === 'services' ? 'Diagnostics, installs, winterization, and repair -- real UMRT service rates, book straight from the list.' : "Curated RV power, solar, and climate systems -- tell us what your rig needs to do and we'll tell you what equipment actually works together."}">
+<link rel="canonical" href="${base}/shop/${activeTab === 'services' ? '?tab=services' : ''}">
 <meta name="robots" content="noindex,follow">
 <link rel="icon" href="/favicon.png" type="image/png">
 <link rel="stylesheet" href="/css/site.css">
@@ -114,6 +172,15 @@ export async function onRequestGet(context) {
   .shop-chip.is-active{background:#C9972C;border-color:#C9972C;color:#1A1A1A}
   .shop-card-link{display:block;text-decoration:none;color:inherit}
   .cart-badge-count{display:inline-block;background:#E8B84B;color:#111;border-radius:999px;font-size:0.75em;font-weight:800;padding:1px 7px;margin-left:6px}
+  .shop-tab-row{display:flex;gap:8px;margin-top:18px}
+  .shop-tab{padding:10px 22px;border-radius:999px;border:1px solid rgba(201,151,44,0.3);color:#c9c9c9;font-weight:700;text-decoration:none;font-size:0.95em}
+  .shop-tab:hover{border-color:rgba(201,151,44,0.6);color:#f2f2f2}
+  .shop-tab.is-active{background:#C9972C;border-color:#C9972C;color:#1A1A1A}
+  .service-card{padding-bottom:16px}
+  .service-card .shop-card-body{padding-bottom:8px}
+  .shop-card-price-note{color:#9a9a9a;font-weight:600;font-size:0.7em;text-transform:uppercase;letter-spacing:.04em}
+  .shop-card-desc{color:#c9c9c9;font-size:0.9em;line-height:1.5;margin:0}
+  .service-card .btn{margin:12px 16px 0}
 </style>
 </head>
 <body>
@@ -142,13 +209,18 @@ export async function onRequestGet(context) {
 <section class="page-hero">
   <div class="wrap">
     <span class="eyebrow"><span class="dot"></span>RV Systems Shop</span>
+    ${activeTab === 'services' ? `
+    <h1>Real rates. Book straight from the list.</h1>
+    <p class="lead">Diagnostics, installs, winterization, and repair -- these are UMRT's actual current service rates, the same ones Matt invoices against. Pick one and book it; he'll confirm scope and schedule with you directly.</p>
+    <p class="muted" style="margin-top:14px">Shopping for hardware instead? <a class="text-link" href="/shop/">See Parts</a>.</p>` : `
     <h1>Not a parts store. A systems integrator.</h1>
     <p class="lead">Tell us what your RV is trying to do and we'll tell you what equipment actually works together -- then handle sourcing, configuration, and installation if you want it. Every listing here is a real, cited reference price -- not a guess, and not a live checkout yet. Submit a quote request and Matt follows up directly.</p>
-    <p class="muted" style="margin-top:14px">Not sure what you need? <a class="text-link" href="/book-service/">Tell us the problem</a> and skip guessing at part numbers -- Matt will spec it for you.</p>
+    <p class="muted" style="margin-top:14px">Not sure what you need? <a class="text-link" href="/book-service/">Tell us the problem</a> and skip guessing at part numbers -- Matt will spec it for you.</p>`}
+    ${tabsHtml}
   </div>
 </section>
 ${chipsHtml ? `<section class="band"><div class="wrap wrap-narrow">${chipsHtml}</div></section>` : ''}
-${sectionsHtml || '<section class="band"><div class="wrap wrap-narrow"><p class="muted">Products are being added -- check back shortly, or <a class="text-link" href="/book-service/">book a consultation</a> in the meantime.</p></div></section>'}
+${sectionsHtml || `<section class="band"><div class="wrap wrap-narrow"><p class="muted">${activeTab === 'services' ? 'Services are being added -- check back shortly, or' : 'Products are being added -- check back shortly, or'} <a class="text-link" href="/book-service/">book a consultation</a> in the meantime.</p></div></section>`}
 </main>
 <footer class="site-footer">
   <div class="wrap footer-grid">

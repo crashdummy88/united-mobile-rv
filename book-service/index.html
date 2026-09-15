@@ -160,6 +160,20 @@
 </div>
 
 <script>window.PUBLIC_WEB3FORMS_KEY = window.PUBLIC_WEB3FORMS_KEY || 'PUBLIC_WEB3FORMS_KEY';</script>
+<script>
+// Prefills the Issue field when arriving from a specific service link, e.g.
+// /book-service/?issue=Diagnostic%20Visit (added 2026-09-15 for the shop's
+// new Services tab -- "Book this service" buttons). No-op with no param.
+(function () {
+  var params = new URLSearchParams(window.location.search);
+  var issue = params.get('issue');
+  var field = document.getElementById('issue');
+  if (issue && field && !field.value) {
+    field.value = issue + ' -- ';
+    field.setSelectionRange(field.value.length, field.value.length);
+  }
+})();
+</script>
 <script src="/js/site.js?v=20260912b" defer></script>
 </body>
 </html>
