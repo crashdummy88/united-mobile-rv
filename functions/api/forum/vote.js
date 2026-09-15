@@ -1,4 +1,5 @@
 import { requireSession } from '../../_lib/authz.js';
+import { checkRateLimit } from '../../_lib/rate-limit.js';
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -18,6 +19,14 @@ export async function onRequestPost(context) {
   // for up to 30 days.
   const session = await requireSession(request, env);
   if (!session) return json({ success: false, error: 'auth_required' }, 401);
+
+  // Added 2026-09-15: votes had no throttle at all -- a real gap for
+  // rapid ranking manipulation. Generous enough for normal browsing/
+  // upvoting, tight enough to block bot-like spamming.
+  const rl = await checkRateLimit(env, request, { max: 30, windowMinutes: 5, key: 'forum-vote' });
+  if (rl.limited) {
+    return json({ success: false, error: 'rate_limited', message: 'Too many votes -- please slow down.', retry_after: rl.retryAfter }, 429);
+  }
 
   let body;
   try { body = await request.json(); } catch { return json({ success: false, error: 'invalid_json' }, 400); }

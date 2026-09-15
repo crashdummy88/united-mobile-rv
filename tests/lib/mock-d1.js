@@ -6,6 +6,7 @@
  * shape is needed.
  */
 export function makeMockD1(state) {
+  state.rate_limit_log = state.rate_limit_log || [];
   function prepare(sql) {
     let boundArgs = [];
     const stmt = {
@@ -14,6 +15,17 @@ export function makeMockD1(state) {
         return stmt;
       },
       async first() {
+        if (/SELECT COUNT\(\*\) AS n FROM rate_limit_log/.test(sql)) {
+          const [ip, key] = boundArgs;
+          // Real query filters by a `datetime('now', ?)` window; this mock
+          // doesn't parse the window clause, it just counts every logged
+          // hit for (ip, key) -- tests control the count directly by how
+          // many times they call the handler, which is enough to exercise
+          // the max/limited behavior without reimplementing SQLite's date
+          // math.
+          const n = state.rate_limit_log.filter((r) => r.ip === ip && r.endpoint === key).length;
+          return { n };
+        }
         if (/SELECT banned FROM users WHERE id = \?/.test(sql)) {
           const u = state.users.find((u) => u.id === boundArgs[0]);
           return u ? { banned: u.banned ? 1 : 0 } : undefined;
@@ -35,9 +47,31 @@ export function makeMockD1(state) {
         if (/SELECT total_bytes FROM media_usage WHERE id = 1/.test(sql)) {
           return state.media_usage ? { total_bytes: state.media_usage.total_bytes } : undefined;
         }
+        if (/SELECT id FROM threads WHERE id = \?/.test(sql)) {
+          const t = (state.threads || []).find((t) => t.id === boundArgs[0]);
+          return t ? { id: t.id } : undefined;
+        }
+        if (/SELECT id FROM posts WHERE id = \? AND thread_id = \?/.test(sql)) {
+          const p = (state.posts || []).find((p) => p.id === boundArgs[0] && p.thread_id === boundArgs[1]);
+          return p ? { id: p.id } : undefined;
+        }
+        if (/SELECT id FROM reports WHERE reporter_id = \?/.test(sql)) {
+          const r = (state.reports || []).find(
+            (r) => r.reporter_id === boundArgs[0] && r.thread_id === boundArgs[1] && r.status === 'open'
+          );
+          return r ? { id: r.id } : undefined;
+        }
         throw new Error(`mock D1: unhandled .first() query: ${sql}`);
       },
       async run() {
+        if (/INSERT INTO rate_limit_log/.test(sql)) {
+          const [ip, endpoint] = boundArgs;
+          state.rate_limit_log.push({ ip, endpoint });
+          return { success: true };
+        }
+        if (/DELETE FROM rate_limit_log/.test(sql)) {
+          return { success: true }; // opportunistic cleanup -- no-op is fine in tests
+        }
         if (/INSERT INTO post_votes/.test(sql)) {
           state.post_votes = state.post_votes || [];
           state.post_votes.push({ user_id: boundArgs[0], post_id: boundArgs[1] });
@@ -52,6 +86,12 @@ export function makeMockD1(state) {
         if (/UPDATE media_usage SET total_bytes/.test(sql)) {
           state.media_usage = state.media_usage || { total_bytes: 0 };
           state.media_usage.total_bytes += boundArgs[0];
+          return { success: true };
+        }
+        if (/INSERT INTO reports/.test(sql)) {
+          const [id, reporter_id, thread_id, post_id, reason] = boundArgs;
+          state.reports = state.reports || [];
+          state.reports.push({ id, reporter_id, thread_id, post_id, reason, status: 'open' });
           return { success: true };
         }
         throw new Error(`mock D1: unhandled .run() query: ${sql}`);
