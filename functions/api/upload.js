@@ -3,7 +3,8 @@
  * requires an authenticated session, stores it in R2, returns its key.
  * Images are served back publicly (read-only) via GET /r2/<key>.
  */
-import { readSession, randomId } from '../_lib/session.js';
+import { randomId } from '../_lib/session.js';
+import { requireSession } from '../_lib/authz.js';
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -29,7 +30,12 @@ export async function onRequestPost(context) {
   if (!env.MEDIA) return json({ success: false, error: 'not_configured' }, 503);
   if (!env.SESSION_SECRET) return json({ success: false, error: 'not_configured' }, 503);
 
-  const session = await readSession(request, env.SESSION_SECRET);
+  // requireSession() (not readSession()) -- re-checks users.banned on every
+  // call, same as every other authenticated write route. Fixed 2026-09-15:
+  // this previously used readSession() directly, which skipped the ban
+  // re-check, letting a banned member keep uploading on an old session
+  // cookie for up to 30 days.
+  const session = await requireSession(request, env);
   if (!session) return json({ success: false, error: 'auth_required' }, 401);
 
   let form;

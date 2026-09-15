@@ -1,4 +1,4 @@
-import { readSession } from '../../_lib/session.js';
+import { requireSession } from '../../_lib/authz.js';
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -11,7 +11,12 @@ export async function onRequestPost(context) {
   const { env, request } = context;
   if (!env.DB) return json({ success: false, error: 'not_configured' }, 503);
 
-  const session = await readSession(request, env.SESSION_SECRET);
+  // requireSession() (not readSession()) -- re-checks users.banned on every
+  // call, same as every other authenticated write route. Fixed 2026-09-15:
+  // this previously used readSession() directly, which skipped the ban
+  // re-check, letting a banned member keep voting on an old session cookie
+  // for up to 30 days.
+  const session = await requireSession(request, env);
   if (!session) return json({ success: false, error: 'auth_required' }, 401);
 
   let body;
