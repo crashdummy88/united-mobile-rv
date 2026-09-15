@@ -159,6 +159,26 @@ test('middleware: shop-host lockdown redirect (pre-existing behavior) still work
   assert.equal(res.headers.get('Location'), 'https://shop.unitedmobilerv.com/shop/');
 });
 
+test('middleware: identity resolution is skipped for static assets (avoids doubling D1 reads on every CSS/JS/image request)', async () => {
+  const { DB, PORTAL_DB } = makeMockDbAndPortalDb({
+    forumUsers: [{ id: 'f6', email: 'static-test@example.com' }],
+    centralUsers: [{ id: 'central-6', email: 'static-test@example.com', is_mod: 0, banned: 0 }],
+  });
+  // If resolution ran, these mocks would resolve a real identity -- so a
+  // passing test here proves the skip, not just an absence of a session.
+  const env = { SESSION_SECRET: SECRET, DB, PORTAL_DB };
+  const { next, calls } = makeNextCapture();
+  const cookie = await cookieFor('f6');
+  for (const path of ['/css/site.css', '/js/site.js', '/assets/brand/logo.webp', '/fonts/inter.woff2', '/favicon.png']) {
+    const request = makeRequest(`https://forum.unitedmobilerv.com${path}`, { cookie });
+    await middleware({ request, env, next });
+  }
+  assert.equal(calls.length, 5);
+  for (const call of calls) {
+    assert.equal(call.headers.get('X-User-Id'), null, `expected no identity resolution for a static asset path`);
+  }
+});
+
 test('middleware: X-Robots-Tag indexing behavior (pre-existing) still works, unaffected by Stage 2', async () => {
   const { DB, PORTAL_DB } = makeMockDbAndPortalDb({ forumUsers: [], centralUsers: [] });
   const env = { SESSION_SECRET: SECRET, DB, PORTAL_DB };

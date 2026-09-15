@@ -78,7 +78,13 @@ export async function onRequest(context) {
     return Response.redirect(new URL('/shop/', requestUrl), 301);
   }
 
-  const identity = await resolveCentralIdentity(request, context.env);
+  // Skip identity resolution (2 D1 reads) for static assets -- this
+  // middleware runs on every request including CSS/JS/images, and a
+  // logged-in user's page load pulls many of those. Flagged in security
+  // review as real, avoidable D1 read volume on the free plan; header
+  // stripping above still always runs regardless (that's free).
+  const isStaticAsset = /^\/(css|js|assets|fonts)\//.test(requestUrl.pathname) || /\.[a-z0-9]{2,5}$/i.test(requestUrl.pathname);
+  const identity = isStaticAsset ? null : await resolveCentralIdentity(request, context.env);
   if (identity) {
     const enrichedHeaders = new Headers(request.headers);
     enrichedHeaders.set('X-User-Id', identity.id);
