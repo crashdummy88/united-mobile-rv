@@ -5,6 +5,7 @@
  */
 import { randomId } from '../_lib/session.js';
 import { requireSession } from '../_lib/authz.js';
+import { checkRateLimit } from '../_lib/rate-limit.js';
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -37,6 +38,14 @@ export async function onRequestPost(context) {
   // cookie for up to 30 days.
   const session = await requireSession(request, env);
   if (!session) return json({ success: false, error: 'auth_required' }, 401);
+
+  // Added 2026-09-15: uploads had no throttle at all -- the heaviest write
+  // in the app (R2 storage cost, not just a DB row), so this gets a
+  // tighter limit than lighter actions like voting.
+  const rl = await checkRateLimit(env, request, { max: 10, windowMinutes: 10, key: 'upload' });
+  if (rl.limited) {
+    return json({ success: false, error: 'rate_limited', message: 'Too many uploads -- please slow down.', retry_after: rl.retryAfter }, 429);
+  }
 
   let form;
   try {

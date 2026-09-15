@@ -4,6 +4,7 @@
  * avoid pile-ons; a fresh report can still be filed once a prior one resolves.
  */
 import { requireSession, json } from '../../../../_lib/authz.js';
+import { checkRateLimit } from '../../../../_lib/rate-limit.js';
 
 const REASONS = new Set(['spam', 'abuse', 'misinformation', 'inappropriate', 'dangerous_advice', 'other']);
 
@@ -12,6 +13,14 @@ export async function onRequestPost(context) {
   if (!env.DB) return json({ success: false, error: 'not_configured' }, 503);
   const session = await requireSession(request, env);
   if (!session) return json({ success: false, error: 'auth_required' }, 401);
+
+  // Added 2026-09-15: the one-open-report-per-thread check below already
+  // stops repeat reports of the SAME thread, but did nothing to stop rapid
+  // reports across many DIFFERENT threads -- a way to flood the mod queue.
+  const rl = await checkRateLimit(env, request, { max: 10, windowMinutes: 10, key: 'forum-report' });
+  if (rl.limited) {
+    return json({ success: false, error: 'rate_limited', message: 'Too many reports -- please slow down.', retry_after: rl.retryAfter }, 429);
+  }
 
   const thread = await env.DB.prepare('SELECT id FROM threads WHERE id = ?').bind(params.id).first();
   if (!thread) return json({ success: false, error: 'not_found' }, 404);
