@@ -4,7 +4,7 @@ import { readSsoCookie } from '../_lib/sso.js';
 export async function onRequestGet(context) {
   const { request, env } = context;
   if (env.SESSION_SECRET) {
-    const session = await readSession(request, env.SESSION_SECRET);
+    const session = await readSession(request, env); // Stage 3: readSession() now takes env, not just the secret
     if (session) {
       return json({ user: { name: session.name, avatar: session.avatar, provider: session.provider } });
     }

@@ -1,5 +1,5 @@
 import { getProviderConfig } from '../../../_lib/oauth.js';
-import { createSessionCookie, randomId } from '../../../_lib/session.js';
+import { createCentralSessionCookie, randomId } from '../../../_lib/session.js';
 import { createSsoCookie } from '../../../_lib/sso.js';
 
 async function upsertUser(db, provider, mapped) {
@@ -14,7 +14,7 @@ async function upsertUser(db, provider, mapped) {
       .prepare('UPDATE users SET display_name = ?, avatar_url = ?, email = ? WHERE id = ?')
       .bind(mapped.display_name, mapped.avatar_url, mapped.email, existing.id)
       .run();
-    return { id: existing.id, banned: false };
+    return { id: existing.id, banned: false, centralUserId: existing.central_user_id || null };
   }
 
   const id = randomId();
@@ -24,7 +24,45 @@ async function upsertUser(db, provider, mapped) {
     )
     .bind(id, provider, mapped.provider_id, mapped.email, mapped.display_name, mapped.avatar_url, '1.0')
     .run();
-  return { id, banned: false };
+  return { id, banned: false, centralUserId: null };
+}
+
+// Stage 3 of the auth-unification migration (2026-09-15). Upserts the
+// CENTRAL identity (PORTAL_DB.users, already bound here) by (provider,
+// provider_sub) first -- exact match, matches how the portal's own
+// upsertOAuthUser resolves identity -- falling back to email only if
+// that's unset (shouldn't happen for a real Google profile, but never
+// assume). Also links the forum's own local user row to this central
+// id so future logins (and Stage 2's read-side correlation) find it
+// directly instead of re-deriving it by email every time.
+export async function upsertCentralUser(portalDb, forumDb, forumUserId, provider, mapped) {
+  let central = await portalDb
+    .prepare('SELECT id FROM users WHERE provider = ? AND provider_sub = ?')
+    .bind(provider, mapped.provider_id)
+    .first();
+
+  if (!central && mapped.email) {
+    central = await portalDb.prepare('SELECT id FROM users WHERE email = ?').bind(mapped.email).first();
+  }
+
+  if (central) {
+    await portalDb
+      .prepare('UPDATE users SET name = ?, picture = ?, updated_at = datetime(\'now\') WHERE id = ?')
+      .bind(mapped.display_name, mapped.avatar_url, central.id)
+      .run();
+  } else {
+    const id = randomId();
+    await portalDb
+      .prepare(
+        'INSERT INTO users (id, email, name, picture, provider, provider_sub) VALUES (?, ?, ?, ?, ?, ?)'
+      )
+      .bind(id, mapped.email || null, mapped.display_name, mapped.avatar_url, provider, mapped.provider_id)
+      .run();
+    central = { id };
+  }
+
+  await forumDb.prepare('UPDATE users SET central_user_id = ? WHERE id = ?').bind(central.id, forumUserId).run();
+  return central.id;
 }
 
 export async function onRequestGet(context) {
@@ -88,10 +126,16 @@ export async function onRequestGet(context) {
       return new Response('This account has been banned from the forum.', { status: 403 });
     }
 
-    const cookie = await createSessionCookie(
-      { uid: user.id, name: mapped.display_name, avatar: mapped.avatar_url, provider },
-      env.SESSION_SECRET
-    );
+    // Stage 3: link/create the central identity and issue a central,
+    // Domain-wide session -- falls back to leaving the user logged out
+    // (not to the old per-host cookie) if PORTAL_DB isn't reachable,
+    // since silently issuing a host-only session here would just
+    // recreate the fragmentation this migration exists to fix.
+    if (!env.PORTAL_DB) {
+      return new Response('Central identity store is not configured yet.', { status: 503 });
+    }
+    const centralUserId = await upsertCentralUser(env.PORTAL_DB, env.DB, user.id, provider, mapped);
+    const cookie = await createCentralSessionCookie(centralUserId, env);
 
     const headers = new Headers({ Location: '/forum/' });
     headers.append('Set-Cookie', cookie);

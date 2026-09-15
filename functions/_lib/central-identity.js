@@ -28,7 +28,7 @@ import { readSession } from './session.js';
 
 export async function resolveCentralIdentity(request, env) {
   if (!env.SESSION_SECRET || !env.DB) return null;
-  const session = await readSession(request, env.SESSION_SECRET);
+  const session = await readSession(request, env); // Stage 3: readSession() now takes env, not just the secret
   if (!session) return null;
 
   try {

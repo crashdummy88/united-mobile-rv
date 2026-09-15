@@ -8,7 +8,7 @@ function json(data, status = 200) {
 }
 
 async function requireMod(request, env) {
-  const session = await readSession(request, env.SESSION_SECRET);
+  const session = await readSession(request, env); // Stage 3: readSession() now takes env, not just the secret
   if (!session) return null;
   const user = await env.DB.prepare('SELECT is_mod FROM users WHERE id = ?').bind(session.uid).first();
   if (!user || !user.is_mod) return null;

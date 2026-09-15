@@ -20,7 +20,7 @@ export async function onRequestGet(context) {
 export async function onRequestPost(context) {
   const { env, request } = context;
   if (!env.DB) return json({ success: false, error: 'not_configured' }, 503);
-  const session = await readSession(request, env.SESSION_SECRET);
+  const session = await readSession(request, env); // Stage 3: readSession() now takes env, not just the secret
   if (!session) return json({ success: false, error: 'auth_required' }, 401);
   await env.DB.prepare(`INSERT INTO online_sessions (user_id, last_seen) VALUES (?, datetime('now')) ON CONFLICT(user_id) DO UPDATE SET last_seen = datetime('now')`).bind(session.uid).run();
   return json({ success: true });
