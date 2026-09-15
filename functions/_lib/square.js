@@ -249,7 +249,7 @@ export async function createDraftEstimateForBooking(env, booking) {
  */
 export async function searchSquareCatalogItems(env, cursor) {
   if (!isConfigured(env)) return { skipped: true, reason: 'not_configured' };
-  const data = await squareRequest(env, '/v2/catalog/search-catalog-objects', {
+  const data = await squareRequest(env, '/v2/catalog/search', {
     object_types: ['ITEM', 'ITEM_VARIATION'],
     include_related_objects: false,
     cursor: cursor || undefined,
