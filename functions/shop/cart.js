@@ -47,7 +47,8 @@ export async function onRequestGet(context) {
 <body>
 <header class="site-header">
   <div class="wrap nav-bar">
-    <a class="brand" href="/"><img class="brand-logo" src="/assets/brand/umrt-logo.webp" alt="United Mobile RV" width="40" height="40"><span class="brand-text">United Mobile <span>RV</span></span></a>
+    <!-- Absolute URL on purpose, not "/" -- see functions/shop/index.js -->
+    <a class="brand" href="https://unitedmobilerv.com/"><img class="brand-logo" src="/assets/brand/umrt-logo.webp" alt="United Mobile RV" width="40" height="40"><span class="brand-text">United Mobile <span>RV</span></span></a>
     <ul class="nav-links">
       <li><a href="/shop/">&larr; Shop</a></li>
       <li><a href="/shop/cart">Cart <span class="cart-badge-count" hidden></span></a></li>

@@ -6,17 +6,31 @@
  * so every public, non-hidden thread gets its own <url> entry here too --
  * this is the P7 knowledge-engine piece: solved threads become permanent,
  * crawlable technical resources instead of dead ends behind client-side JS.
+ *
+ * STATIC_PAGES added 2026-09-15 (apex-cutover prep) -- the site's full
+ * homepage/city-page/guide/pricing/service inventory (178 pages, matched
+ * 1:1 against WordPress's live sitemap). Previously this sitemap only
+ * ever listed the forum, which was fine while this project only served
+ * shop./forum. subdomains, but silently wrong for a full site.
+ *
+ * `base` is derived from the actual request host instead of hardcoded,
+ * so the sitemap is correct on every host this project answers on
+ * (raw pages.dev, shop./forum. subdomains, and unitedmobilerv.com once
+ * the apex points here) without needing a code change per host.
  */
+import { STATIC_PAGES } from './_lib/static-pages.js';
+
 function xmlEscape(s) {
   return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
 export async function onRequestGet(context) {
-  const { env } = context;
-  const base = 'https://united-mobile-rv.pages.dev';
+  const { env, request } = context;
+  const base = new URL(request.url).origin;
 
   let indexLastmod = new Date().toISOString().slice(0, 10);
   const urls = [
+    ...STATIC_PAGES.map((p) => ({ loc: `${base}${p.loc}`, changefreq: p.changefreq, priority: p.priority })),
     { loc: `${base}/forum/`, changefreq: 'hourly', priority: '0.9' },
     { loc: `${base}/forum-live/`, changefreq: 'hourly', priority: '0.7' },
   ];

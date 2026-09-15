@@ -13,6 +13,18 @@
 // off this list -- confirmed via live curl that it was still noindex.
 const INDEXABLE_PREFIXES = ['/forum/', '/forum-live/', '/guide/'];
 
+// Apex cutover prep, 2026-09-15: this project's own robots.txt has said
+// since 2026-09-10 that "mothership pages.dev is noindex... live convert
+// lives on unitedmobilerv.com" -- the intent to index everything once the
+// real domain points here was already decided, just never implemented as
+// actual host-aware logic until now. Once unitedmobilerv.com/www resolve
+// here, INDEXABLE_PREFIXES above (a narrow allowlist, correct for the raw
+// pages.dev/shop./forum. hosts) no longer applies -- on the apex hosts we
+// index everything BY DEFAULT and explicitly carve out the few paths that
+// aren't real content, the reverse of the allowlist model.
+const APEX_HOSTS = ['unitedmobilerv.com', 'www.unitedmobilerv.com'];
+const APEX_NOINDEX_PREFIXES = ['/api/', '/shop/cart', '/forum/mod/'];
+
 // Files Google fetches as *resources*, not pages -- a noindex X-Robots-Tag
 // on these makes Google Search Console refuse to process them at all
 // ("Sitemap could not be read"), even though the XML/text body is fine.
@@ -55,7 +67,9 @@ export async function onRequest(context) {
     return response;
   }
 
-  const indexable = INDEXABLE_PREFIXES.some((p) => path === p.slice(0, -1) || path.startsWith(p));
+  const indexable = APEX_HOSTS.includes(requestUrl.hostname)
+    ? !APEX_NOINDEX_PREFIXES.some((p) => path === p || path.startsWith(p))
+    : INDEXABLE_PREFIXES.some((p) => path === p.slice(0, -1) || path.startsWith(p));
 
   const headers = new Headers(response.headers);
   headers.delete('X-Robots-Tag');
