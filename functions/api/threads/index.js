@@ -39,7 +39,7 @@ export async function onRequestPost(context) {
   if (!env.DB) return json({ success: false, error: 'not_configured' }, 503);
   if (!env.SESSION_SECRET) return json({ success: false, error: 'not_configured' }, 503);
 
-  const session = await readSession(request, env.SESSION_SECRET);
+  const session = await readSession(request, env); // Stage 3: readSession() now takes env, not just the secret
   if (!session) return json({ success: false, error: 'auth_required' }, 401);
 
   // Re-check banned status on every write -- a ban must actually cut off

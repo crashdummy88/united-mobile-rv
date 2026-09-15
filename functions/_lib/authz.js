@@ -11,7 +11,7 @@ import { readSession } from './session.js';
 // mostly handles for us" does NOT cover: app-level abuse enforcement.
 export async function requireSession(request, env) {
   if (!env.SESSION_SECRET) return null;
-  const session = await readSession(request, env.SESSION_SECRET);
+  const session = await readSession(request, env); // Stage 3: readSession() now takes env, not just the secret
   if (!session) return null;
   if (env.DB) {
     const user = await env.DB.prepare('SELECT banned FROM users WHERE id = ?').bind(session.uid).first();
