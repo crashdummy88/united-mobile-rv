@@ -48,7 +48,7 @@ async function squareRequest(env, path, body) {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${env.SQUARE_ACCESS_TOKEN}`,
-      'Square-Version': '2025-01-23',
+      'Square-Version': '2026-08-19',
     },
     body: JSON.stringify(body),
   });
