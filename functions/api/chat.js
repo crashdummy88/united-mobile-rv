@@ -132,9 +132,14 @@ export async function onRequestPost(context) {
     const reply = await callWorkersAI(env.AI, model, leadNote, messages);
     return json({ reply, mode: 'workers-ai', model });
   } catch (err) {
-    const debug = request.headers.get('x-debug') === '1';
-    const detail = debug ? String((err && err.message) || err) : undefined;
-    return json({ error: 'upstream', reply: FALLBACK, mode: 'fallback', ...(detail ? { detail } : {}) }, 200);
+    // Fixed 2026-09-15: this used to return the raw Workers-AI error message
+    // to the client whenever the request carried `x-debug: 1` -- a header
+    // any unauthenticated caller can set themselves, so it was a real
+    // internal-error-disclosure path, not a real debug gate. Detail now
+    // stays server-side only (Cloudflare Functions log), never in the
+    // response -- clients always get the same generic fallback.
+    console.error('chat: Workers AI call failed', err && err.message ? err.message : err);
+    return json({ error: 'upstream', reply: FALLBACK, mode: 'fallback' }, 200);
   }
 }
 
