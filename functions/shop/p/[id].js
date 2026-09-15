@@ -85,9 +85,10 @@ export async function onRequestGet(context) {
     <ul class="nav-links">
       <li><a href="/shop/">&larr; Shop</a></li>
       <li><a href="/shop/cart">Cart <span class="cart-badge-count" hidden></span></a></li>
-      <li><a href="/forum/">Forum</a></li>
-      <li><a href="/guide/">Guides</a></li>
     </ul>
+    <!-- Forum/Guides removed 2026-09-15: dead links on this host, see
+         functions/_middleware.js SHOP_ALLOWED_PREFIXES. -->
+
     <div class="nav-cta"><a class="nav-phone" href="tel:+16166065277">Prefer Text (616) 606-5277</a></div>
   </div>
 </header>

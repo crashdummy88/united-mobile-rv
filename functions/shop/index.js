@@ -123,14 +123,15 @@ export async function onRequestGet(context) {
     <a class="brand" href="/"><img class="brand-logo" src="/assets/brand/umrt-logo.webp" alt="United Mobile RV" width="40" height="40"><span class="brand-text">United Mobile <span>RV</span></span></a>
     <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">☰</button>
     <ul class="nav-links">
-      <li><a href="/">Home</a></li>
-      <li><a href="/service/">Services</a></li>
-      <li><a href="/guide/">Guides</a></li>
-      <li><a href="/forum/">Forum</a></li>
-      <li><a href="/shop/" aria-current="page">Shop</a></li>
+      <li><a href="/" aria-current="page">Shop</a></li>
       <li><a href="/shop/cart">Cart <span class="cart-badge-count" hidden></span></a></li>
-      <li><a href="/about/">About</a></li>
     </ul>
+    <!-- Services/Guides/Forum/About removed 2026-09-15: on this host every
+         path outside /shop/, /book-service/, and static assets 301s back
+         to /shop/ (see functions/_middleware.js SHOP_ALLOWED_PREFIXES) --
+         those links were silently dead. Book stays below since
+         /book-service/ is now exempted from the lockdown. -->
+
     <div class="nav-cta">
       <a class="nav-phone" href="tel:+16166065277">Prefer Text (616) 606-5277</a>
       <a class="btn btn-ghost" href="/book-service/">Book</a>
