@@ -1,3 +1,5 @@
+import { resolveCentralIdentity } from './_lib/central-identity.js';
+
 /**
  * Sets X-Robots-Tag exactly once per response, path-aware.
  * Replaces the old _headers-based approach: Cloudflare Pages merges
@@ -54,13 +56,43 @@ function isShopAllowed(path) {
   return SHOP_ALLOWED_PREFIXES.some((p) => path === p.slice(0, -1) || path.startsWith(p));
 }
 
+// Auth-unification stage 2 (2026-09-15) -- see functions/_lib/central-identity.js
+// for the full explanation. LOG-ONLY this stage: resolves a central identity
+// (when one exists) and attaches it as X-User-Id/X-User-Role on the request
+// passed downstream, but NO route reads those headers yet -- existing auth
+// (functions/_lib/authz.js) remains the sole real authorization check through
+// Stage 3. The only behavior change live right now is defensive: any
+// client-supplied X-User-Id/X-User-Role on the INCOMING request is always
+// stripped, whether or not identity resolution finds anything -- this closes
+// the header-spoofing hole before anything downstream is ever built to trust
+// these headers, rather than as an afterthought once something does.
 export async function onRequest(context) {
   const requestUrl = new URL(context.request.url);
+
+  const strippedHeaders = new Headers(context.request.headers);
+  strippedHeaders.delete('X-User-Id');
+  strippedHeaders.delete('X-User-Role');
+  let request = new Request(context.request, { headers: strippedHeaders });
+
   if (requestUrl.hostname === SHOP_HOST && !isShopAllowed(requestUrl.pathname)) {
     return Response.redirect(new URL('/shop/', requestUrl), 301);
   }
 
-  const response = await context.next();
+  // Skip identity resolution (2 D1 reads) for static assets -- this
+  // middleware runs on every request including CSS/JS/images, and a
+  // logged-in user's page load pulls many of those. Flagged in security
+  // review as real, avoidable D1 read volume on the free plan; header
+  // stripping above still always runs regardless (that's free).
+  const isStaticAsset = /^\/(css|js|assets|fonts)\//.test(requestUrl.pathname) || /\.[a-z0-9]{2,5}$/i.test(requestUrl.pathname);
+  const identity = isStaticAsset ? null : await resolveCentralIdentity(request, context.env);
+  if (identity) {
+    const enrichedHeaders = new Headers(request.headers);
+    enrichedHeaders.set('X-User-Id', identity.id);
+    enrichedHeaders.set('X-User-Role', identity.role);
+    request = new Request(request, { headers: enrichedHeaders });
+  }
+
+  const response = await context.next(request);
   const path = new URL(context.request.url).pathname;
 
   if (ROBOTS_HEADER_EXEMPT.includes(path)) {
