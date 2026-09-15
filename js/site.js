@@ -245,7 +245,7 @@ function umrtGetTurnstileToken(containerId) {
         addBubble('bot', data.reply);
         history.push({ role: 'assistant', content: data.reply });
       } catch (e) {
-        addBubble('bot', 'Chat is briefly unavailable. Call or text <a href="tel:+16166065277">(616) 606-5277</a>  -  Matt answers. Or use <a href="/book-service/">Book a Service</a>.');
+        addBubble('bot', 'Chat is briefly unavailable. Call or text <a href="tel:+16166065277">(616) 606-5277</a>  -  our team answers. Or use <a href="/book-service/">Book a Service</a>.');
       } finally {
         sendBtn.disabled = false;
       }

@@ -121,7 +121,7 @@ export async function onRequestPost(context) {
             route: "Good to have another voice on route and service-area talk.",
           };
           const line = catWelcome[category] || catWelcome.general;
-          const welcomeBody = `Welcome to the forum, ${firstName}! ${line} If you don't hear back right away, hang tight — someone (often Matt) will chime in.`;
+          const welcomeBody = `Welcome to the forum, ${firstName}! ${line} If you don't hear back right away, hang tight — someone from the team will chime in.`;
           await env.DB.prepare(
             `INSERT INTO posts (id, thread_id, author_id, body, hidden, ai_flagged, ai_reason) VALUES (?, ?, ?, ?, 0, 0, NULL)`
           ).bind(randomId(), id, bot.id, welcomeBody).run();
@@ -140,7 +140,7 @@ export async function onRequestPost(context) {
         if (draft) {
           const bot = await env.DB.prepare(`SELECT id FROM users WHERE id = 'bot-umrt-team'`).first();
           if (bot) {
-            const draftBody = `🤖 Automated first-pass from the UMRT assistant (not Matt, not a full diagnosis):\n\n${draft}\n\nWant eyes and a meter on it? Text/call (616) 606-5277.`;
+            const draftBody = `🤖 Automated first-pass from the UMRT assistant (not a tech, not a full diagnosis):\n\n${draft}\n\nWant eyes and a meter on it? Text/call (616) 606-5277.`;
             await env.DB.prepare(
               `INSERT INTO posts (id, thread_id, author_id, body, hidden, ai_flagged, ai_reason) VALUES (?, ?, ?, ?, 0, 0, NULL)`
             ).bind(randomId(), id, bot.id, draftBody).run();

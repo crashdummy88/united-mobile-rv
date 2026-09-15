@@ -215,11 +215,11 @@ export async function onRequestGet(context) {
     <span class="eyebrow"><span class="dot"></span>RV Systems Shop</span>
     ${activeTab === 'services' ? `
     <h1>Real rates. Book straight from the list.</h1>
-    <p class="lead">Diagnostics, installs, winterization, and repair -- these are UMRT's actual current service rates, the same ones Matt invoices against. Pick one and book it; he'll confirm scope and schedule with you directly.</p>
+    <p class="lead">Diagnostics, installs, winterization, and repair -- these are UMRT's actual current service rates, the same ones we invoice against. Pick one and book it; we'll confirm scope and schedule with you directly.</p>
     <p class="muted" style="margin-top:14px">Shopping for hardware instead? <a class="text-link" href="/shop/">See Parts</a>.</p>` : `
     <h1>Not a parts store. A systems integrator.</h1>
-    <p class="lead">Tell us what your RV is trying to do and we'll tell you what equipment actually works together -- then handle sourcing, configuration, and installation if you want it. Every listing here is a real, cited reference price -- not a guess, and not a live checkout yet. Submit a quote request and Matt follows up directly.</p>
-    <p class="muted" style="margin-top:14px">Not sure what you need? <a class="text-link" href="/book-service/">Tell us the problem</a> and skip guessing at part numbers -- Matt will spec it for you.</p>`}
+    <p class="lead">Tell us what your RV is trying to do and we'll tell you what equipment actually works together -- then handle sourcing, configuration, and installation if you want it. Every listing here is a real, cited reference price -- not a guess, and not a live checkout yet. Submit a quote request and our team follows up directly.</p>
+    <p class="muted" style="margin-top:14px">Not sure what you need? <a class="text-link" href="/book-service/">Tell us the problem</a> and skip guessing at part numbers -- we'll spec it for you.</p>`}
     ${tabsHtml}
   </div>
 </section>
