@@ -54,7 +54,14 @@ async function squareRequest(env, path, body) {
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
-    const detail = (data && data.errors && data.errors[0] && data.errors[0].detail) || res.statusText;
+    // Surface the FULL errors array (category + code + detail per Square's
+    // error model), not just the first detail string -- a bare "Resource
+    // not found" with nothing else was hiding the actual category/code
+    // (e.g. AUTHENTICATION_ERROR vs NOT_FOUND) needed to diagnose failures.
+    const errors = (data && data.errors) || [];
+    const detail = errors.length
+      ? errors.map((e) => `${e.category || '?'}/${e.code || '?'}: ${e.detail || '(no detail)'}`).join('; ')
+      : res.statusText;
     throw new Error(`Square ${path} failed (${res.status}): ${detail}`);
   }
   return data;
