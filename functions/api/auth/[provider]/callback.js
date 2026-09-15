@@ -131,7 +131,7 @@ export async function onRequestGet(context) {
     // (not to the old per-host cookie) if PORTAL_DB isn't reachable,
     // since silently issuing a host-only session here would just
     // recreate the fragmentation this migration exists to fix.
-    if (!env.PORTAL_DB) {
+    if (!env.PORTAL_DB || !env.CENTRAL_SESSION_SECRET) {
       return new Response('Central identity store is not configured yet.', { status: 503 });
     }
     const centralUserId = await upsertCentralUser(env.PORTAL_DB, env.DB, user.id, provider, mapped);

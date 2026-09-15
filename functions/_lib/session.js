@@ -8,6 +8,15 @@
  * session is valid across every *.unitedmobilerv.com subdomain, not
  * just whichever one you happened to sign in on.
  *
+ * Central sessions are signed with env.CENTRAL_SESSION_SECRET, a NEW
+ * secret (added 2026-09-15) set to the SAME value on both this project
+ * and umrt-portal's Cloudflare Pages project -- deliberately NOT this
+ * project's own SESSION_SECRET (kept for the legacy format only) or
+ * SSO_SHARED_SECRET (that one's documented contract is display-only,
+ * never real auth). Without a shared secret, a session either app issues
+ * could never be verified by the other, which defeats the point of this
+ * stage -- see umrt-portal's _lib/auth.js for the mirrored logic there.
+ *
  * BACKWARD COMPATIBLE ON PURPOSE: readSession() tries the new DB-backed
  * format first, and falls back to the OLD stateless-HMAC verification
  * (no DB lookup, host-only cookie, no Domain attribute) if that fails.
@@ -74,14 +83,14 @@ export async function createCentralSessionCookie(centralUserId, env) {
     `INSERT INTO sessions (id, user_id, expires_at) VALUES (?, ?, ?)`
   ).bind(rawId, centralUserId, expiresAt).run();
 
-  const key = await hmacKey(env.SESSION_SECRET);
+  const key = await hmacKey(env.CENTRAL_SESSION_SECRET);
   const sig = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(rawId));
   const token = `${rawId}.${b64url(sig)}`;
   return `${COOKIE_NAME}=${token}; Domain=.unitedmobilerv.com; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${MAX_AGE_SECONDS}`;
 }
 
 async function readCentralSession(request, env) {
-  if (!env.PORTAL_DB || !env.SESSION_SECRET) return null;
+  if (!env.PORTAL_DB || !env.CENTRAL_SESSION_SECRET) return null;
   const cookieHeader = request.headers.get('Cookie') || '';
   const match = cookieHeader.match(new RegExp(`${COOKIE_NAME}=([^;]+)`));
   if (!match) return null;
@@ -93,7 +102,7 @@ async function readCentralSession(request, env) {
   if (!UUID_RE.test(rawId)) return null;
 
   try {
-    const key = await hmacKey(env.SESSION_SECRET);
+    const key = await hmacKey(env.CENTRAL_SESSION_SECRET);
     const valid = await crypto.subtle.verify('HMAC', key, b64urlToBytes(sigB64), new TextEncoder().encode(rawId));
     if (!valid) return null;
 
@@ -198,7 +207,7 @@ export function clearCentralSessionCookie() {
 
 /** Best-effort: deletes the central session row too, if this cookie is one. */
 export async function destroyCentralSessionIfAny(request, env) {
-  if (!env.PORTAL_DB || !env.SESSION_SECRET) return;
+  if (!env.PORTAL_DB) return;
   const cookieHeader = request.headers.get('Cookie') || '';
   const match = cookieHeader.match(new RegExp(`${COOKIE_NAME}=([^;]+)`));
   if (!match) return;
