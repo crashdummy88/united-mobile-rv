@@ -187,7 +187,11 @@ export async function onRequestGet(context) {
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header">
   <div class="wrap nav-bar">
-    <a class="brand" href="/"><img class="brand-logo" src="/assets/brand/umrt-logo.webp" alt="United Mobile RV" width="40" height="40"><span class="brand-text">United Mobile <span>RV</span></span></a>
+    <!-- Absolute URL on purpose, not "/" -- on shop.unitedmobilerv.com "/"
+         loops right back into /shop/ (see SHOP_ALLOWED_PREFIXES lockdown
+         in _middleware.js), so a relative link here trapped visitors with
+         no way back to the main site. Reported 2026-09-15. -->
+    <a class="brand" href="https://unitedmobilerv.com/"><img class="brand-logo" src="/assets/brand/umrt-logo.webp" alt="United Mobile RV" width="40" height="40"><span class="brand-text">United Mobile <span>RV</span></span></a>
     <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">☰</button>
     <ul class="nav-links">
       <li><a href="/" aria-current="page">Shop</a></li>
