@@ -49,13 +49,23 @@ const SCRIPTED_ANSWERS = [
   },
   {
     test: /\b(trip fee|how much.*(cost|charge)|labor rate|hourly rate|diagnostic fee|service call cost|what do you charge)\b/i,
-    reply:
-      "Trip fee is $75 within 30 miles, then $1.50 a mile each way beyond that. Labor is about $150 an hour with a 1-hour minimum and 30-minute increments after. Diagnostic is $175 and applies toward the repair if you move forward. Parts and specialty materials are always quoted before install. Want me to get you booked so we can look at your specific issue?",
+    // Fixed 2026-09-15 (data-authority pass): these numbers used to be
+    // hardcoded here, separately from DB.pricing (the table /api/status and
+    // the admin pricing editor already use) -- same numbers, no reason for
+    // a second copy that could silently go stale. Now reads live from
+    // DB.pricing; falls back to the last-known-correct text only if the DB
+    // is unreachable, so a chat outage never blocks a real customer.
+    reply: (p) =>
+      p
+        ? `Trip fee is ${p.trip_fee} within 30 miles, then ${p.mileage} each way beyond that. Labor is ${p.labor} with a 1-hour minimum and 30-minute increments after. Diagnostic is ${p.diagnostic} and applies toward the repair if you move forward. Parts and specialty materials are always quoted before install. Want me to get you booked so we can look at your specific issue?`
+        : "Trip fee is $75 within 30 miles, then $1.50 a mile each way beyond that. Labor is about $150 an hour with a 1-hour minimum and 30-minute increments after. Diagnostic is $175 and applies toward the repair if you move forward. Parts and specialty materials are always quoted before install. Want me to get you booked so we can look at your specific issue?",
   },
   {
     test: /\bwinteriz|trip prep\b/i,
-    reply:
-      "Winterize is $175. Trip prep is $225. Both are flat, separate line items — not priced by coach class (travel trailer vs. fifth-wheel vs. motorhome). Trip fee and any extra labor still apply as quoted. Want me to get you scheduled?",
+    reply: (p) =>
+      p
+        ? `Winterize is ${p.winterize}. Trip prep is ${p.trip_prep}. Both are flat, separate line items — not priced by coach class (travel trailer vs. fifth-wheel vs. motorhome). Trip fee and any extra labor still apply as quoted. Want me to get you scheduled?`
+        : "Winterize is $175. Trip prep is $225. Both are flat, separate line items — not priced by coach class (travel trailer vs. fifth-wheel vs. motorhome). Trip fee and any extra labor still apply as quoted. Want me to get you scheduled?",
   },
   {
     test: /\b(do you (cover|service|come to|travel to)|coverage area|service area|what (states|areas) do you (cover|service))\b/i,
@@ -74,9 +84,32 @@ const SCRIPTED_ANSWERS = [
   },
 ];
 
-function matchScriptedAnswer(userText) {
+// Fetches DB.pricing once per request, only when a matched scripted answer
+// actually needs it -- returns null (not throw) on any failure so a DB
+// hiccup degrades to the last-known-correct hardcoded text in the reply
+// functions above rather than breaking chat.
+async function getPricingMap(env) {
+  if (!env.DB) return null;
+  try {
+    const { results } = await env.DB.prepare('SELECT key, amount FROM pricing').all();
+    if (!results || !results.length) return null;
+    const map = {};
+    for (const row of results) map[row.key] = row.amount;
+    return map;
+  } catch {
+    return null;
+  }
+}
+
+async function matchScriptedAnswer(userText, env) {
   for (const entry of SCRIPTED_ANSWERS) {
-    if (entry.test.test(userText)) return entry.reply;
+    if (entry.test.test(userText)) {
+      if (typeof entry.reply === 'function') {
+        const pricing = await getPricingMap(env);
+        return entry.reply(pricing);
+      }
+      return entry.reply;
+    }
   }
   return null;
 }
@@ -109,7 +142,7 @@ export async function onRequestPost(context) {
   }
 
   const lastUser = [...messages].reverse().find((m) => m.role !== 'assistant');
-  const scripted = lastUser ? matchScriptedAnswer(String(lastUser.content || '')) : null;
+  const scripted = lastUser ? await matchScriptedAnswer(String(lastUser.content || ''), env) : null;
   if (scripted) {
     return json({ reply: scripted, mode: 'scripted' });
   }
