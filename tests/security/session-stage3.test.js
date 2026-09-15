@@ -119,6 +119,14 @@ function makeRequest(cookieValue) {
   return { headers };
 }
 
+// createCentralSessionCookie() reads request.url to decide whether the
+// Domain attribute is safe to set (security review finding, 2026-09-15:
+// a browser silently drops a Set-Cookie whose Domain doesn't domain-match
+// the responding host). FORUM_HOST is a real, live custom domain; a
+// *.pages.dev host models what the portal app is still running on today.
+const FORUM_HOST_REQUEST = { url: 'https://forum.unitedmobilerv.com/api/auth/google/callback' };
+const PAGES_DEV_REQUEST = { url: 'https://united-mobile-rv.pages.dev/api/auth/google/callback' };
+
 // --- readSession(): legacy format still works ------------------------------
 
 test('readSession: pre-Stage-3 legacy cookie still authenticates (backward compatibility promise)', async () => {
@@ -151,7 +159,7 @@ test('readSession: new central (Stage 3) cookie authenticates via PORTAL_DB.sess
   const forumDb = makeForumDb({ users: [{ id: 'forum-user-2', central_user_id: 'central-7', display_name: 'Central User', avatar_url: 'a.png' }] });
   const env = { SESSION_SECRET: SECRET, CENTRAL_SESSION_SECRET: CENTRAL_SECRET, DB: forumDb, PORTAL_DB: portalDb };
 
-  const cookie = await createCentralSessionCookie('central-7', env);
+  const cookie = await createCentralSessionCookie('central-7', env, FORUM_HOST_REQUEST);
   assert.match(cookie, /Domain=\.unitedmobilerv\.com/, 'central session cookie must be scoped to the whole domain tree');
   const cookieValue = cookie.split('umrt_session=')[1].split(';')[0];
 
@@ -159,11 +167,30 @@ test('readSession: new central (Stage 3) cookie authenticates via PORTAL_DB.sess
   assert.deepEqual(session, { uid: 'forum-user-2', name: 'Central User', avatar: 'a.png' });
 });
 
+test('createCentralSessionCookie: NEVER sets Domain when served from a *.pages.dev host (security review finding, 2026-09-15)', async () => {
+  // A browser silently drops a Set-Cookie whose Domain doesn't domain-match
+  // the responding host -- so a Domain=.unitedmobilerv.com cookie issued
+  // from *.pages.dev would never actually be stored, breaking login there
+  // with no visible error. This is exactly the bug the portal side of this
+  // migration shipped with before this fix (portal has no custom domain
+  // attached yet, so EVERY portal login would have silently failed).
+  const env = { CENTRAL_SESSION_SECRET: CENTRAL_SECRET, PORTAL_DB: makePortalDb() };
+  const cookie = await createCentralSessionCookie('c', env, PAGES_DEV_REQUEST);
+  assert.equal(/Domain=/.test(cookie), false, 'must be host-only when not on a real unitedmobilerv.com subdomain');
+  assert.match(cookie, /^umrt_session=/, 'the cookie itself must still be set -- just without Domain');
+});
+
+test('createCentralSessionCookie: also host-only with no request at all (safe default, never assumes a real subdomain)', async () => {
+  const env = { CENTRAL_SESSION_SECRET: CENTRAL_SECRET, PORTAL_DB: makePortalDb() };
+  const cookie = await createCentralSessionCookie('c', env);
+  assert.equal(/Domain=/.test(cookie), false);
+});
+
 test('readSession: central session row exists but no linked forum user -> null (fails closed rather than guessing)', async () => {
   const portalDb = makePortalDb();
   const forumDb = makeForumDb({ users: [] }); // no forum user links to this central id
   const env = { SESSION_SECRET: SECRET, CENTRAL_SESSION_SECRET: CENTRAL_SECRET, DB: forumDb, PORTAL_DB: portalDb };
-  const cookie = await createCentralSessionCookie('central-orphan', env);
+  const cookie = await createCentralSessionCookie('central-orphan', env, FORUM_HOST_REQUEST);
   const cookieValue = cookie.split('umrt_session=')[1].split(';')[0];
   const session = await readSession(makeRequest(cookieValue), env);
   assert.equal(session, null);
@@ -173,7 +200,7 @@ test('readSession: tampered central session signature fails closed', async () =>
   const portalDb = makePortalDb();
   const forumDb = makeForumDb({ users: [{ id: 'f', central_user_id: 'c', display_name: 'X', avatar_url: null }] });
   const env = { SESSION_SECRET: SECRET, CENTRAL_SESSION_SECRET: CENTRAL_SECRET, DB: forumDb, PORTAL_DB: portalDb };
-  const cookie = await createCentralSessionCookie('c', env);
+  const cookie = await createCentralSessionCookie('c', env, FORUM_HOST_REQUEST);
   const [rawId] = cookie.split('umrt_session=')[1].split(';')[0].split('.');
   const tampered = `${rawId}.tamperedSignatureXXXXXXXXXXXXXXXXXXX`;
   const session = await readSession(makeRequest(tampered), env);
@@ -184,7 +211,7 @@ test('readSession: a central session cookie only verifies against the SAME CENTR
   const portalDb = makePortalDb();
   const forumDb = makeForumDb({ users: [{ id: 'f', central_user_id: 'c', display_name: 'X', avatar_url: null }] });
   const issuingEnv = { CENTRAL_SESSION_SECRET: 'shared-secret-v1', PORTAL_DB: portalDb };
-  const cookie = await createCentralSessionCookie('c', issuingEnv);
+  const cookie = await createCentralSessionCookie('c', issuingEnv, FORUM_HOST_REQUEST);
   const cookieValue = cookie.split('umrt_session=')[1].split(';')[0];
 
   const mismatchedEnv = { SESSION_SECRET: SECRET, CENTRAL_SESSION_SECRET: 'a-DIFFERENT-secret', DB: forumDb, PORTAL_DB: portalDb };
@@ -200,7 +227,7 @@ test('readSession: expired central session fails closed and deletes the row', as
   const portalDb = makePortalDb();
   const forumDb = makeForumDb({ users: [{ id: 'f', central_user_id: 'c', display_name: 'X', avatar_url: null }] });
   const env = { SESSION_SECRET: SECRET, CENTRAL_SESSION_SECRET: CENTRAL_SECRET, DB: forumDb, PORTAL_DB: portalDb };
-  const cookie = await createCentralSessionCookie('c', env);
+  const cookie = await createCentralSessionCookie('c', env, FORUM_HOST_REQUEST);
   const cookieValue = cookie.split('umrt_session=')[1].split(';')[0];
   // Backdate the row's expiry.
   portalDb._sessions[0].expires_at = new Date(Date.now() - 1000).toISOString();
@@ -228,7 +255,7 @@ test('readSession: unconfigured PORTAL_DB/SESSION_SECRET on the central path doe
 
 test('clearSessionCookie / clearCentralSessionCookie: Domain attributes exactly mirror their create-side counterparts', async () => {
   const legacy = await createSessionCookie({ uid: 'x' }, SECRET);
-  const central = await createCentralSessionCookie('c', { SESSION_SECRET: SECRET, CENTRAL_SESSION_SECRET: CENTRAL_SECRET, PORTAL_DB: makePortalDb() });
+  const central = await createCentralSessionCookie('c', { SESSION_SECRET: SECRET, CENTRAL_SESSION_SECRET: CENTRAL_SECRET, PORTAL_DB: makePortalDb() }, FORUM_HOST_REQUEST);
   assert.equal(/Domain=/.test(legacy), false, 'legacy cookie is host-only, no Domain attribute');
   assert.equal(/Domain=/.test(clearSessionCookie()), false, 'legacy clear must also be host-only to actually match and clear it');
   assert.match(central, /Domain=\.unitedmobilerv\.com/);
@@ -240,7 +267,7 @@ test('clearSessionCookie / clearCentralSessionCookie: Domain attributes exactly 
 test('destroyCentralSessionIfAny: deletes the row for a new-format cookie', async () => {
   const portalDb = makePortalDb();
   const env = { SESSION_SECRET: SECRET, CENTRAL_SESSION_SECRET: CENTRAL_SECRET, PORTAL_DB: portalDb };
-  const cookie = await createCentralSessionCookie('c', env);
+  const cookie = await createCentralSessionCookie('c', env, FORUM_HOST_REQUEST);
   const cookieValue = cookie.split('umrt_session=')[1].split(';')[0];
   assert.equal(portalDb._sessions.length, 1);
   await destroyCentralSessionIfAny(makeRequest(cookieValue), env);
@@ -261,7 +288,7 @@ test('destroyCentralSessionIfAny: no-ops harmlessly for a legacy cookie (nothing
 test('logout: clears legacy, central, and SSO cookies (three Set-Cookie headers) and deletes the central session row', async () => {
   const portalDb = makePortalDb();
   const env = { SESSION_SECRET: SECRET, CENTRAL_SESSION_SECRET: CENTRAL_SECRET, PORTAL_DB: portalDb };
-  const cookie = await createCentralSessionCookie('c', env);
+  const cookie = await createCentralSessionCookie('c', env, FORUM_HOST_REQUEST);
   const cookieValue = cookie.split('umrt_session=')[1].split(';')[0];
   assert.equal(portalDb._sessions.length, 1);
 

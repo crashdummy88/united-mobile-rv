@@ -36,6 +36,28 @@ const COOKIE_NAME = 'umrt_session';
 const MAX_AGE_SECONDS = 60 * 60 * 24 * 30; // 30 days
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
+/**
+ * True only for a real *.unitedmobilerv.com subdomain (forum., portal.,
+ * shop., docs., ...) -- false for the bare apex (unitedmobilerv.com,
+ * WordPress, a different trust boundary entirely) and false for any
+ * *.pages.dev host. This matters for two reasons, found in security
+ * review (2026-09-15): (1) a browser silently DROPS a Set-Cookie whose
+ * Domain attribute doesn't domain-match the responding host -- a
+ * Domain=.unitedmobilerv.com cookie sent from a *.pages.dev origin never
+ * actually gets stored, so issuing it unconditionally there would have
+ * silently broken login on any property not yet on its custom domain
+ * (this shipped safely here only because forum's custom domain is
+ * already live -- the portal side of this migration was not so lucky,
+ * see umrt-portal's _lib/auth.js). (2) Domain=.unitedmobilerv.com also
+ * covers the bare apex itself, i.e. the WordPress marketing site -- a
+ * separate, less-trusted piece of infrastructure that should never see
+ * a real session token. Scoping the cookie to only fire on an actual
+ * *.unitedmobilerv.com subdomain request keeps both failure modes closed.
+ */
+function isRealSubdomainHost(hostname) {
+  return /\.unitedmobilerv\.com$/i.test(hostname || '');
+}
+
 function b64url(bytes) {
   let bin = '';
   const arr = new Uint8Array(bytes);
@@ -72,11 +94,17 @@ export function randomId() {
 
 /**
  * Creates a session row in the shared PORTAL_DB.sessions table and
- * returns a Set-Cookie value referencing it, scoped to the whole
- * unitedmobilerv.com domain tree. `centralUserId` is a row id in
- * PORTAL_DB.users (NOT this forum's own local user id).
+ * returns a Set-Cookie value referencing it. Domain-wide
+ * (Domain=.unitedmobilerv.com, valid across every *.unitedmobilerv.com
+ * subdomain) ONLY when `request` shows we're actually being served from
+ * a real *.unitedmobilerv.com host; host-only otherwise (e.g. still on
+ * *.pages.dev) -- see isRealSubdomainHost() above for why this can't be
+ * unconditional. `centralUserId` is a row id in PORTAL_DB.users (NOT
+ * this forum's own local user id). `request` is optional for backward
+ * compatibility with existing callers/tests, but its absence means
+ * "assume not a real subdomain" (host-only) -- always pass it in real code.
  */
-export async function createCentralSessionCookie(centralUserId, env) {
+export async function createCentralSessionCookie(centralUserId, env, request) {
   const rawId = randomId();
   const expiresAt = new Date(Date.now() + MAX_AGE_SECONDS * 1000).toISOString();
   await env.PORTAL_DB.prepare(
@@ -86,7 +114,9 @@ export async function createCentralSessionCookie(centralUserId, env) {
   const key = await hmacKey(env.CENTRAL_SESSION_SECRET);
   const sig = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(rawId));
   const token = `${rawId}.${b64url(sig)}`;
-  return `${COOKIE_NAME}=${token}; Domain=.unitedmobilerv.com; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${MAX_AGE_SECONDS}`;
+  const hostname = request ? new URL(request.url).hostname : '';
+  const domainPart = isRealSubdomainHost(hostname) ? ' Domain=.unitedmobilerv.com;' : '';
+  return `${COOKIE_NAME}=${token};${domainPart} Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${MAX_AGE_SECONDS}`;
 }
 
 async function readCentralSession(request, env) {

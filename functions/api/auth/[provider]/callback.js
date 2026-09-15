@@ -135,7 +135,7 @@ export async function onRequestGet(context) {
       return new Response('Central identity store is not configured yet.', { status: 503 });
     }
     const centralUserId = await upsertCentralUser(env.PORTAL_DB, env.DB, user.id, provider, mapped);
-    const cookie = await createCentralSessionCookie(centralUserId, env);
+    const cookie = await createCentralSessionCookie(centralUserId, env, request);
 
     const headers = new Headers({ Location: '/forum/' });
     headers.append('Set-Cookie', cookie);
