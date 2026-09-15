@@ -29,7 +29,13 @@ const ROBOTS_HEADER_EXEMPT = ['/sitemap.xml', '/robots.txt'];
 // it just falls through to that unchanged.
 const SHOP_HOST = 'shop.unitedmobilerv.com';
 const SHOP_ALLOWED_EXACT = ['/', '/favicon.png', '/robots.txt', '/sitemap.xml'];
-const SHOP_ALLOWED_PREFIXES = ['/shop/', '/api/shop/', '/css/', '/js/', '/assets/', '/fonts/'];
+// /book-service/ added 2026-09-15: the shop's own hero copy already links
+// to it ("Tell us the problem" -> Matt specs it for you) as a deliberate
+// browse-to-conversion path, same as the header's Book button -- it was
+// being caught by this same lockdown and silently bouncing back to /shop/,
+// which is a bug, not the "don't let people wander off" behavior this
+// gate exists for.
+const SHOP_ALLOWED_PREFIXES = ['/shop/', '/api/shop/', '/book-service/', '/api/book', '/css/', '/js/', '/assets/', '/fonts/'];
 
 function isShopAllowed(path) {
   if (SHOP_ALLOWED_EXACT.includes(path)) return true;
