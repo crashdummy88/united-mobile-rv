@@ -170,13 +170,18 @@ export async function onRequestGet(context) {
     <a class="brand" href="/"><img class="brand-logo" src="/assets/brand/umrt-logo.webp" alt="United Mobile RV" width="40" height="40"><span class="brand-text">United Mobile <span>RV</span></span></a>
     <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">☰</button>
     <ul class="nav-links">
-      <li><a href="/">Home</a></li>
+      <li><a href="https://unitedmobilerv.com/">Home</a></li>
       <li><a href="/service/">Services</a></li>
       <li><a href="/pricing/">Pricing</a></li>
       <li><a href="/guide/">Guides</a></li>
       <li><a href="/service-areas/">Areas</a></li>
-      <li><a href="/forum/" aria-current="page">Forum</a></li>
+      <li><a href="https://forum.unitedmobilerv.com/" aria-current="page">Forum</a></li>
       <li><a href="/about/">About</a></li>
+      <li><a href="https://shop.unitedmobilerv.com/">Shop</a></li>
+      <li><a href="https://software.unitedmobilerv.com/">Software</a></li>
+      <li><a href="https://status.unitedmobilerv.com/">Status</a></li>
+      <li><a href="https://portal.unitedmobilerv.com/">Portal</a></li>
+      <li><a href="https://docs.unitedmobilerv.com/">Docs</a></li>
     </ul>
     <div class="nav-cta">
       <a class="nav-phone" href="tel:+16166065277">Prefer Text (616) 606-5277</a>
@@ -235,11 +240,17 @@ export async function onRequestGet(context) {
     </div>
     <div>
       <div class="micro">Navigate</div>
+      <a href="https://unitedmobilerv.com/">Home</a>
       <a href="/service/">Services</a>
       <a href="/pricing/">Pricing</a>
       <a href="https://book.unitedmobilerv.com/">Book a Service</a>
       <a href="/guide/">Guides</a>
-      <a href="/forum/">Forum</a>
+      <a href="https://forum.unitedmobilerv.com/">Forum</a>
+      <a href="https://shop.unitedmobilerv.com/">Shop</a>
+      <a href="https://software.unitedmobilerv.com/">Software</a>
+      <a href="https://status.unitedmobilerv.com/">Status</a>
+      <a href="https://portal.unitedmobilerv.com/">Portal</a>
+      <a href="https://docs.unitedmobilerv.com/">Docs</a>
       <a href="/about/">About</a>
       <a href="/privacy-policy/">Privacy</a>
       <a href="/terms-of-use/">Terms of Use</a>
@@ -254,7 +265,7 @@ export async function onRequestGet(context) {
   <a class="btn btn-ghost" href="tel:+16166065277">Text / Call</a>
   <a class="btn btn-gold" href="https://book.unitedmobilerv.com/">Book Now</a>
 </div>
-<script src="/js/site.js" defer></script>
+<script src="/js/site.js?v=20260916mesh" defer></script>
 <script>
 (function () {
   var THREAD_ID = ${JSON.stringify(thread.id)};

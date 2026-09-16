@@ -5,6 +5,7 @@
  * Phase 1: no live checkout -- every product routes to a quote request.
  */
 import { formatPrice, displayName, CATEGORY_ICONS, formatServicePrice } from '../_lib/shop.js';
+import { islandHeader, islandFooter, islandMobileBar, shopCartNavItem } from '../_lib/mesh-chrome.js';
 
 function esc(s) {
   return String(s || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -185,30 +186,7 @@ export async function onRequestGet(context) {
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
-<header class="site-header">
-  <div class="wrap nav-bar">
-    <!-- Absolute URL on purpose, not "/" -- on shop.unitedmobilerv.com "/"
-         loops right back into /shop/ (see SHOP_ALLOWED_PREFIXES lockdown
-         in _middleware.js), so a relative link here trapped visitors with
-         no way back to the main site. Reported 2026-09-15. -->
-    <a class="brand" href="https://unitedmobilerv.com/"><img class="brand-logo" src="/assets/brand/umrt-logo.webp" alt="United Mobile RV" width="40" height="40"><span class="brand-text">United Mobile <span>RV</span></span></a>
-    <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">☰</button>
-    <ul class="nav-links">
-      <li><a href="/" aria-current="page">Shop</a></li>
-      <li><a href="/shop/cart">Cart <span class="cart-badge-count" hidden></span></a></li>
-    </ul>
-    <!-- Services/Guides/Forum/About removed 2026-09-15: on this host every
-         path outside /shop/, /book-service/, and static assets 301s back
-         to /shop/ (see functions/_middleware.js SHOP_ALLOWED_PREFIXES) --
-         those links were silently dead. Book now goes to the live
-         book.unitedmobilerv.com suite (Square stays BOOK ONLINE inside). -->
-
-    <div class="nav-cta">
-      <a class="nav-phone" href="tel:+16166065277">Prefer Text (616) 606-5277</a>
-      <a class="btn btn-ghost" href="https://book.unitedmobilerv.com/">Book</a>
-    </div>
-  </div>
-</header>
+${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem() })}
 <main id="main">
 <section class="page-hero">
   <div class="wrap">
@@ -226,18 +204,10 @@ export async function onRequestGet(context) {
 ${chipsHtml ? `<section class="band"><div class="wrap wrap-narrow">${chipsHtml}</div></section>` : ''}
 ${sectionsHtml || `<section class="band"><div class="wrap wrap-narrow"><p class="muted">${activeTab === 'services' ? 'Services are being added -- check back shortly, or' : 'Products are being added -- check back shortly, or'} <a class="text-link" href="https://book.unitedmobilerv.com/">book a consultation</a> in the meantime.</p></div></section>`}
 </main>
-<footer class="site-footer">
-  <div class="wrap footer-grid">
-    <div>
-      <div class="footer-brand">United Mobile RV LLC</div>
-      <p class="mb-0">Active MT · WY · ID · WA corridor. Case-by-case beyond.</p>
-      <p class="mt-6 mb-0"><a href="tel:+16166065277">(616) 606-5277</a><br>
-      <a href="mailto:unitedrvnetwork@gmail.com">unitedrvnetwork@gmail.com</a></p>
-    </div>
-  </div>
-</footer>
+${islandFooter({ current: 'shop' })}
+${islandMobileBar()}
 <script src="/js/cart.js"></script>
-<script src="/js/site.js" defer></script>
+<script src="/js/site.js?v=20260916mesh" defer></script>
 <script>
 (function () {
   document.querySelectorAll('.shop-add-btn').forEach(function (btn) {

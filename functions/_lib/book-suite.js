@@ -45,8 +45,12 @@ function mothershipNav() {
       <li><a href="/guide/">Guides</a></li>
       <li><a href="/service-areas/">Areas</a></li>
       <li><a href="/about/">About</a></li>
+      <li><a href="https://forum.unitedmobilerv.com/">Forum</a></li>
       <li><a href="https://shop.unitedmobilerv.com/">Shop</a></li>
+      <li><a href="https://software.unitedmobilerv.com/">Software</a></li>
+      <li><a href="https://status.unitedmobilerv.com/">Status</a></li>
       <li><a href="https://portal.unitedmobilerv.com/">Portal</a></li>
+      <li><a href="https://docs.unitedmobilerv.com/">Docs</a></li>
     </ul>
     <div class="nav-cta">
       <a class="nav-phone" href="sms:${BOOK_PHONE_E164}">Prefer Text ${BOOK_PHONE_DISPLAY}</a>
@@ -73,7 +77,13 @@ function mothershipFooter() {
       <div class="micro">Navigate</div>
       <a href="/service/">Services</a>
       <a href="/pricing/">Pricing</a>
-      <a href="/book-service/">Book a Service</a>
+      <a href="https://book.unitedmobilerv.com/">Book a Service</a>
+      <a href="https://forum.unitedmobilerv.com/">Forum</a>
+      <a href="https://shop.unitedmobilerv.com/">Shop</a>
+      <a href="https://software.unitedmobilerv.com/">Software</a>
+      <a href="https://status.unitedmobilerv.com/">Status</a>
+      <a href="https://portal.unitedmobilerv.com/">Portal</a>
+      <a href="https://docs.unitedmobilerv.com/">Docs</a>
       <a href="/guide/">Guides</a>
       <a href="/service-areas/">Service Areas</a>
       <a href="/about/">About</a>

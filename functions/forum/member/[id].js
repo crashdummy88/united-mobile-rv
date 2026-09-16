@@ -64,8 +64,21 @@ export async function onRequestGet(context) {
 <body>
 <header class="site-header">
   <div class="wrap nav-bar">
-    <a class="brand" href="/"><img class="brand-logo" src="/assets/brand/umrt-logo.webp" alt="United Mobile RV" width="40" height="40"><span class="brand-text">United Mobile <span>RV</span></span></a>
-    <ul class="nav-links"><li><a href="/forum/">Back to Forum</a></li></ul>
+    <a class="brand" href="https://unitedmobilerv.com/"><img class="brand-logo" src="/assets/brand/umrt-logo.webp" alt="United Mobile RV" width="40" height="40"><span class="brand-text">United Mobile <span>RV</span></span></a>
+    <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">☰</button>
+    <ul class="nav-links">
+      <li><a href="https://unitedmobilerv.com/">Home</a></li>
+      <li><a href="https://forum.unitedmobilerv.com/">Forum</a></li>
+      <li><a href="https://software.unitedmobilerv.com/">Software</a></li>
+      <li><a href="https://status.unitedmobilerv.com/">Status</a></li>
+      <li><a href="https://portal.unitedmobilerv.com/">Portal</a></li>
+      <li><a href="https://shop.unitedmobilerv.com/">Shop</a></li>
+      <li><a href="https://docs.unitedmobilerv.com/">Docs</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a class="nav-phone" href="tel:+16166065277">Prefer Text (616) 606-5277</a>
+      <a class="btn btn-ghost" href="https://book.unitedmobilerv.com/">Book</a>
+    </div>
   </div>
 </header>
 <main id="main">
@@ -87,6 +100,32 @@ export async function onRequestGet(context) {
   </div>
 </section>
 </main>
+<footer class="site-footer">
+  <div class="wrap footer-grid">
+    <div>
+      <div class="footer-brand">United Mobile RV LLC</div>
+      <p class="mb-0">Active MT · WY · ID · WA corridor. Case-by-case beyond.</p>
+      <p class="mt-6 mb-0"><a href="tel:+16166065277">Prefer Text (616) 606-5277</a><br>
+      <a href="mailto:unitedrvnetwork@gmail.com">unitedrvnetwork@gmail.com</a></p>
+    </div>
+    <div>
+      <div class="micro">Network</div>
+      <a href="https://unitedmobilerv.com/">Home</a>
+      <a href="https://forum.unitedmobilerv.com/">Forum</a>
+      <a href="https://software.unitedmobilerv.com/">Software</a>
+      <a href="https://status.unitedmobilerv.com/">Status</a>
+      <a href="https://portal.unitedmobilerv.com/">Portal</a>
+      <a href="https://shop.unitedmobilerv.com/">Shop</a>
+      <a href="https://docs.unitedmobilerv.com/">Docs</a>
+      <a href="https://book.unitedmobilerv.com/">Book</a>
+    </div>
+  </div>
+</footer>
+<div class="mobile-bar" aria-label="Quick actions">
+  <a class="btn btn-ghost" href="tel:+16166065277">Prefer Text (616) 606-5277</a>
+  <a class="btn btn-gold" href="https://book.unitedmobilerv.com/">Book</a>
+</div>
+<script src="/js/site.js?v=20260916mesh" defer></script>
 </body>
 </html>`;
 

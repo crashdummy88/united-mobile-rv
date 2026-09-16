@@ -1,3 +1,5 @@
+import { islandHeader, islandFooter, islandMobileBar, shopCartNavItem } from '../_lib/mesh-chrome.js';
+
 /**
  * GET /shop/cart -- skeleton cart page.
  *
@@ -45,20 +47,7 @@ export async function onRequestGet(context) {
 </style>
 </head>
 <body>
-<header class="site-header">
-  <div class="wrap nav-bar">
-    <!-- Absolute URL on purpose, not "/" -- see functions/shop/index.js -->
-    <a class="brand" href="https://unitedmobilerv.com/"><img class="brand-logo" src="/assets/brand/umrt-logo.webp" alt="United Mobile RV" width="40" height="40"><span class="brand-text">United Mobile <span>RV</span></span></a>
-    <ul class="nav-links">
-      <li><a href="/shop/">&larr; Shop</a></li>
-      <li><a href="/shop/cart">Cart <span class="cart-badge-count" hidden></span></a></li>
-    </ul>
-    <!-- Forum removed 2026-09-15: dead link on this host, see
-         functions/_middleware.js SHOP_ALLOWED_PREFIXES. -->
-
-    <div class="nav-cta"><a class="nav-phone" href="tel:+16166065277">Prefer Text (616) 606-5277</a></div>
-  </div>
-</header>
+${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem() })}
 <main id="main">
 <section class="page-hero">
   <div class="wrap wrap-narrow">
@@ -98,7 +87,10 @@ export async function onRequestGet(context) {
   </div>
 </section>
 </main>
+${islandFooter({ current: 'shop' })}
+${islandMobileBar()}
 <script src="/js/cart.js"></script>
+<script src="/js/site.js?v=20260916mesh" defer></script>
 <script>
 (function () {
   var qfTurnstileWidgetId = null;
