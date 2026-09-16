@@ -123,11 +123,23 @@ export async function onRequestPost(context) {
     out.append('subject', 'UMRT Book a Service request');
   }
 
+  // This Web3Forms access key has a "Redirect URL" configured on its own
+  // dashboard (to this site's /book-service/thank-you/ page) -- confirmed
+  // live 2026-09-16, consistently, regardless of Accept/Content-Type
+  // headers or FormData-vs-JSON body: Web3Forms always 302s there on a
+  // successful submission for this key rather than returning JSON, and
+  // never redirects on failure. fetch() follows the redirect (default
+  // behavior) and lands on a 200 with that page's HTML, so success is
+  // signaled by res.redirected, not by a JSON body -- there isn't one.
   let web3formsOk = false;
   try {
     const res = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: out });
-    const data = await res.json().catch(() => ({}));
-    web3formsOk = !!(data && data.success);
+    if (res.redirected) {
+      web3formsOk = true;
+    } else {
+      const data = await res.json().catch(() => ({}));
+      web3formsOk = !!(data && data.success);
+    }
   } catch {
     return j(
       {

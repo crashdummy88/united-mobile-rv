@@ -90,6 +90,14 @@ export async function createDraftOrder(env, booking) {
         {
           name: `Diagnostic / service request -- ${booking.issue}`.slice(0, 512),
           quantity: '1',
+          // Square requires base_price_money on any ad-hoc (non-catalog)
+          // line item -- confirmed live 2026-09-16, order creation was
+          // failing 400 MISSING_REQUIRED_PARAMETER without it. $0 here is
+          // a placeholder, not a real quote: the line item's own name/note
+          // already say "diagnostic / service request", and Matt sets the
+          // actual price when he reviews the draft in the Square dashboard,
+          // same as before this fix.
+          base_price_money: { amount: 0, currency: 'USD' },
           note: noteParts.join(' | ').slice(0, 500) || undefined,
         },
       ],
@@ -109,6 +117,13 @@ export async function createDraftInvoice(env, orderId, booking) {
   if (!isConfigured(env) || !orderId) return { skipped: true, reason: 'not_configured_or_no_order' };
 
   const idempotencyKey = `book-invoice-${booking.id}`;
+  // Square requires payment_requests + accepted_payment_methods on invoice
+  // creation even for an unpublished draft -- confirmed live 2026-09-16
+  // (400 MISSING_REQUIRED_PARAMETER on both without them). due_date is
+  // itself required on a BALANCE request; 14 days out is a placeholder,
+  // same spirit as the $0 line item -- Matt sets the real due date, price,
+  // and accepted methods when he reviews and publishes from the dashboard.
+  const dueDate = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
   const data = await squareRequest(env, '/v2/invoices', {
     idempotency_key: idempotencyKey,
     invoice: {
@@ -117,9 +132,16 @@ export async function createDraftInvoice(env, orderId, booking) {
       title: `UMRT service request -- ${booking.fullName || booking.name || ''}`.trim(),
       description: booking.issue,
       delivery_method: 'EMAIL',
-      // No accepted_payment_methods / payment_requests here on purpose --
-      // an unpublished draft doesn't need them yet, and Matt sets the real
-      // price + terms when he reviews it in the Square dashboard.
+      payment_requests: [
+        { request_type: 'BALANCE', due_date: dueDate, tipping_enabled: false },
+      ],
+      accepted_payment_methods: {
+        card: true,
+        square_gift_card: false,
+        bank_account: false,
+        buy_now_pay_later: false,
+        cash_app_pay: true,
+      },
     },
   });
   const invoice = data.invoice || {};
@@ -154,9 +176,15 @@ export async function createDraftOrderForQuote(env, quote, items) {
       quantity: String(quantity || 1),
       note: 'Reference price only -- confirm before publishing'.slice(0, 500),
     };
-    if (typeof product.retail_price === 'number' && product.retail_price > 0) {
-      item.base_price_money = { amount: Math.round(product.retail_price * 100), currency: 'USD' };
-    }
+    // base_price_money is required by Square on every ad-hoc line item, not
+    // just priced ones -- confirmed live 2026-09-16 (see createDraftOrder's
+    // note above). $0 for an unpriced product is a placeholder Matt
+    // overwrites before publishing, same as the "Reference price only" note
+    // already says.
+    item.base_price_money =
+      typeof product.retail_price === 'number' && product.retail_price > 0
+        ? { amount: Math.round(product.retail_price * 100), currency: 'USD' }
+        : { amount: 0, currency: 'USD' };
     return item;
   });
 

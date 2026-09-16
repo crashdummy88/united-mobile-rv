@@ -1,0 +1,6 @@
+# Cloudflare Pages upload exclusions (separate from .gitignore -- wrangler
+# pages deploy uploads the whole working directory regardless of git status,
+# so untracked-but-present local tooling has to be excluded here too).
+ai-env/
+.wrangler/
+node_modules/

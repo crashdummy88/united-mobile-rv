@@ -13,3 +13,10 @@ db/generated/
 # Python bytecode cache
 __pycache__/
 *.pyc
+
+# Local crewai orchestrator experiment -- not part of the deployed site,
+# never belongs in this public repo. (Was already caught by a global
+# gitignore rule outside this repo; added here explicitly so it's not
+# silently dependent on that from a different machine/checkout.)
+ai-env/
+orchestrator.py
