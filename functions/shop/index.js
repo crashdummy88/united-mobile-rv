@@ -5,7 +5,7 @@
  * Phase 1: no live checkout -- every product routes to a quote request.
  */
 import { formatPrice, displayName, CATEGORY_ICONS, formatServicePrice } from '../_lib/shop.js';
-import { islandHeader, islandFooter, islandMobileBar, shopCartNavItem } from '../_lib/mesh-chrome.js';
+import { islandHeader, islandFooter, islandMobileBar, shopCartNavItem, BOOK_PUBLIC_HREF } from '../_lib/mesh-chrome.js';
 
 function esc(s) {
   return String(s || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -121,7 +121,7 @@ export async function onRequestGet(context) {
           <div class="shop-card-price">${esc(formatServicePrice(s))}${s.price_note ? ` <span class="shop-card-price-note">${esc(s.price_note)}</span>` : ''}</div>
           <p class="shop-card-desc">${esc(s.description || '')}</p>
         </div>
-        <a class="btn btn-ghost" href="https://book.unitedmobilerv.com/">Book this service</a>
+        <a class="btn btn-ghost" href="${BOOK_PUBLIC_HREF}" target="_blank" rel="noopener">Book this service</a>
       </div>`).join('');
     return `<section class="shop-category-band"><div class="wrap wrap-narrow">
       <h2>${esc(label)}</h2>
@@ -197,17 +197,17 @@ ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem() })}
     <p class="muted" style="margin-top:14px">Shopping for hardware instead? <a class="text-link" href="/shop/">See Parts</a>.</p>` : `
     <h1>Not a parts store. A systems integrator.</h1>
     <p class="lead">Tell us what your RV is trying to do and we'll tell you what equipment actually works together -- then handle sourcing, configuration, and installation if you want it. Every listing here is a real, cited reference price -- not a guess, and not a live checkout yet. Submit a quote request and our team follows up directly.</p>
-    <p class="muted" style="margin-top:14px">Not sure what you need? <a class="text-link" href="https://book.unitedmobilerv.com/">Tell us the problem</a> and skip guessing at part numbers -- we'll spec it for you.</p>`}
+    <p class="muted" style="margin-top:14px">Not sure what you need? <a class="text-link" href="${BOOK_PUBLIC_HREF}" target="_blank" rel="noopener">Tell us the problem</a> and skip guessing at part numbers -- we'll spec it for you.</p>`}
     ${tabsHtml}
   </div>
 </section>
 ${chipsHtml ? `<section class="band"><div class="wrap wrap-narrow">${chipsHtml}</div></section>` : ''}
-${sectionsHtml || `<section class="band"><div class="wrap wrap-narrow"><p class="muted">${activeTab === 'services' ? 'Services are being added -- check back shortly, or' : 'Products are being added -- check back shortly, or'} <a class="text-link" href="https://book.unitedmobilerv.com/">book a consultation</a> in the meantime.</p></div></section>`}
+${sectionsHtml || `<section class="band"><div class="wrap wrap-narrow"><p class="muted">${activeTab === 'services' ? 'Services are being added -- check back shortly, or' : 'Products are being added -- check back shortly, or'} <a class="text-link" href="${BOOK_PUBLIC_HREF}" target="_blank" rel="noopener">book a consultation</a> in the meantime.</p></div></section>`}
 </main>
 ${islandFooter({ current: 'shop' })}
 ${islandMobileBar()}
 <script src="/js/cart.js"></script>
-<script src="/js/site.js?v=20260916mesh" defer></script>
+<script src="/js/site.js?v=20260916viz" defer></script>
 <script>
 (function () {
   document.querySelectorAll('.shop-add-btn').forEach(function (btn) {

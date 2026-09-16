@@ -1,23 +1,23 @@
 /**
- * Shared ecosystem chrome for mothership islands (shop + forum).
+ * Shared ecosystem chrome for mothership islands (shop + forum + book suite).
  *
  * Absolute URLs on purpose: shop.unitedmobilerv.com lockdown
  * (SHOP_ALLOWED_PREFIXES in _middleware.js) 301s any relative
  * /forum/, /guide/, etc. back to /shop/. Do not add those paths
  * to the shop allowlist -- link off-host instead.
  *
- * Public Book CTAs in header/footer/mobile-bar use the live book
- * suite. Square stays BOOK ONLINE inside that suite only
- * (see functions/_lib/book-suite.js).
+ * Public Book CTAs in header/footer/mobile-bar go to Square
+ * appointment intake. Prefer Text (tel:) is the primary convert.
  */
 
-export const BOOK_PUBLIC_HREF = 'https://book.unitedmobilerv.com/';
+export const SQUARE_BOOK_URL = 'https://united-mobile-rv-llc.square.site/';
+export const BOOK_PUBLIC_HREF = SQUARE_BOOK_URL;
 export const PREFER_TEXT_HREF = 'tel:+16166065277';
 export const PREFER_TEXT_LABEL = 'Prefer Text (616) 606-5277';
 export const MAIN_HOME_HREF = 'https://unitedmobilerv.com/';
 
 export const MESH_LINKS = [
-  { key: 'home', href: MAIN_HOME_HREF, label: 'Home' },
+  { key: 'home', href: MAIN_HOME_HREF, label: 'Main' },
   { key: 'forum', href: 'https://forum.unitedmobilerv.com/', label: 'Forum' },
   { key: 'software', href: 'https://software.unitedmobilerv.com/', label: 'Software' },
   { key: 'status', href: 'https://status.unitedmobilerv.com/', label: 'Status' },
@@ -42,7 +42,7 @@ export function meshFooterAnchors({ current } = {}) {
   const mesh = MESH_LINKS.map(
     (item) => `<a href="${item.href}"${currentAttr(item, current)}>${item.label}</a>`
   ).join('\n      ');
-  return `${mesh}\n      <a href="${BOOK_PUBLIC_HREF}">Book</a>`;
+  return `${mesh}\n      <a href="${PREFER_TEXT_HREF}">Prefer Text</a>\n      <a href="${BOOK_PUBLIC_HREF}" target="_blank" rel="noopener">Book</a>`;
 }
 
 export function islandHeader({ current, extraNavHtml = '' } = {}) {
@@ -54,8 +54,8 @@ export function islandHeader({ current, extraNavHtml = '' } = {}) {
       ${meshNavLis({ current, extraAfter: extraNavHtml })}
     </ul>
     <div class="nav-cta">
-      <a class="nav-phone" href="${PREFER_TEXT_HREF}">${PREFER_TEXT_LABEL}</a>
-      <a class="btn btn-ghost" href="${BOOK_PUBLIC_HREF}">Book</a>
+      <a class="btn btn-gold" href="${PREFER_TEXT_HREF}">${PREFER_TEXT_LABEL}</a>
+      <a class="btn btn-ghost" href="${BOOK_PUBLIC_HREF}" target="_blank" rel="noopener">Book</a>
     </div>
   </div>
 </header>`;
@@ -80,8 +80,8 @@ export function islandFooter({ current } = {}) {
 
 export function islandMobileBar() {
   return `<div class="mobile-bar" aria-label="Quick actions">
-  <a class="btn btn-ghost" href="${PREFER_TEXT_HREF}">${PREFER_TEXT_LABEL}</a>
-  <a class="btn btn-gold" href="${BOOK_PUBLIC_HREF}">Book</a>
+  <a class="btn btn-gold" href="${PREFER_TEXT_HREF}">${PREFER_TEXT_LABEL}</a>
+  <a class="btn btn-ghost" href="${BOOK_PUBLIC_HREF}" target="_blank" rel="noopener">Book</a>
 </div>`;
 }
 

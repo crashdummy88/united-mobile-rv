@@ -54,33 +54,48 @@ function umrtGetTurnstileToken(containerId) {
 }
 
 (function () {
-  /* Public Book CTAs in header/footer/mobile-bar go to the live book
-     suite. Square stays BOOK ONLINE inside that suite only -- do not
-     rewrite that label. */
-  var BOOK_PUBLIC = 'https://book.unitedmobilerv.com/';
-  var chromeRoots = document.querySelectorAll('.site-header, .site-footer, .mobile-bar');
+  /* Public Book CTAs in header/footer/mobile-bar go to Square
+     appointment intake. Do not rewrite BOOK ONLINE (already Square).
+     Prefer Text stays tel:+16166065277 -- gold in header/mobile-bar. */
+  var BOOK_PUBLIC = 'https://united-mobile-rv-llc.square.site/';
+  var PREFER_TEXT_HREF = 'tel:+16166065277';
+  var PREFER_TEXT_LABEL = 'Prefer Text (616) 606-5277';
+  var chromeRoots = document.querySelectorAll('.site-header, .site-footer, .mobile-bar, .umrt-platform-bar');
   for (var ci = 0; ci < chromeRoots.length; ci++) {
     var chromeLinks = chromeRoots[ci].querySelectorAll('a[href]');
     for (var cj = 0; cj < chromeLinks.length; cj++) {
       var chromeA = chromeLinks[cj];
       var chromeLabel = (chromeA.textContent || '').replace(/\s+/g, ' ').trim();
-      if (!/^(Book|Book Now|Book a Service)$/i.test(chromeLabel)) continue;
-      chromeA.setAttribute('href', BOOK_PUBLIC);
-      chromeA.removeAttribute('target');
-      chromeA.removeAttribute('rel');
+      if (/^(Book|Book Now|Book a Service)$/i.test(chromeLabel)) {
+        chromeA.setAttribute('href', BOOK_PUBLIC);
+        chromeA.setAttribute('target', '_blank');
+        chromeA.setAttribute('rel', 'noopener');
+        continue;
+      }
+      if (/^(Text\s*\/\s*Call|Call)$/i.test(chromeLabel) || /^Prefer Text/i.test(chromeLabel)) {
+        chromeA.setAttribute('href', PREFER_TEXT_HREF);
+        if (/^(Text\s*\/\s*Call|Call)$/i.test(chromeLabel)) {
+          chromeA.textContent = PREFER_TEXT_LABEL;
+        }
+        if (chromeA.closest('.nav-cta') || chromeA.closest('.mobile-bar')) {
+          chromeA.classList.remove('nav-phone', 'btn-ghost');
+          chromeA.classList.add('btn', 'btn-gold');
+        }
+      }
     }
   }
 
-  /* Shop/forum islands: relative Home stays on the island. Point Home
-     at the apex, and append any missing ecosystem links as absolute
-     URLs so shop lockdown cannot swallow them. */
+  /* Shop/forum/book islands: relative Home stays on the island. Point
+     Main at the apex, and append any missing ecosystem links as
+     absolute URLs so shop lockdown cannot swallow them. */
   var islandHost = location.hostname === 'shop.unitedmobilerv.com'
-    || location.hostname === 'forum.unitedmobilerv.com';
+    || location.hostname === 'forum.unitedmobilerv.com'
+    || location.hostname === 'book.unitedmobilerv.com';
   if (islandHost) {
     var meshNav = document.querySelector('.nav-links');
     if (meshNav) {
       var meshItems = [
-        ['Home', 'https://unitedmobilerv.com/'],
+        ['Main', 'https://unitedmobilerv.com/'],
         ['Forum', 'https://forum.unitedmobilerv.com/'],
         ['Software', 'https://software.unitedmobilerv.com/'],
         ['Status', 'https://status.unitedmobilerv.com/'],
@@ -95,9 +110,12 @@ function umrtGetTurnstileToken(containerId) {
       meshItems.forEach(function (pair) {
         var name = pair[0];
         var href = pair[1];
-        var found = have[name.toLowerCase()];
+        var found = have[name.toLowerCase()] || (name === 'Main' ? have.home : null);
         if (found) {
-          if (name === 'Home') found.setAttribute('href', href);
+          if (name === 'Main') {
+            found.setAttribute('href', href);
+            found.textContent = 'Main';
+          }
           return;
         }
         var li = document.createElement('li');
