@@ -6,10 +6,10 @@
  * /forum/, /guide/, etc. back to /shop/. Do not add those paths
  * to the shop allowlist -- link off-host instead.
  *
- * Matt LOCK 2026-09-16 convert stack:
- *   Text Now → sms:+16166065277
- *   Phone number → tel:+16166065277 (header call)
- *   Book → Square appointment intake
+ * Matt LOCK 2026-09-16 convert stack (header + mobile bar, every surface):
+ *   Call (616) 606-5277 → tel:+16166065277 (older clients; number is the call control)
+ *   Text Now            → sms:+16166065277 (gold primary; compact label exact)
+ *   Book                → Square appointment intake (ghost/secondary; label exact Book)
  */
 
 export const SQUARE_BOOK_URL = 'https://united-mobile-rv-llc.square.site/';
@@ -18,8 +18,24 @@ export const TEXT_NOW_HREF = 'sms:+16166065277';
 export const TEXT_NOW_LABEL = 'Text Now (616) 606-5277';
 export const TEXT_NOW_COMPACT = 'Text Now';
 export const CALL_HREF = 'tel:+16166065277';
-export const CALL_LABEL = '(616) 606-5277';
+export const CALL_LABEL = 'Call (616) 606-5277';
 export const MAIN_HOME_HREF = 'https://unitedmobilerv.com/';
+
+export function convertNavCta() {
+  return `<div class="nav-cta">
+      <a class="nav-phone" href="${CALL_HREF}">${CALL_LABEL}</a>
+      <a class="btn btn-gold nav-text-now" href="${TEXT_NOW_HREF}">${TEXT_NOW_COMPACT}</a>
+      <a class="btn btn-ghost" href="${BOOK_PUBLIC_HREF}" target="_blank" rel="noopener">Book</a>
+    </div>`;
+}
+
+export function convertMobileBar() {
+  return `<div class="mobile-bar" aria-label="Quick actions">
+  <a class="btn btn-ghost" href="${CALL_HREF}">${CALL_LABEL}</a>
+  <a class="btn btn-gold" href="${TEXT_NOW_HREF}">${TEXT_NOW_COMPACT}</a>
+  <a class="btn btn-ghost" href="${BOOK_PUBLIC_HREF}" target="_blank" rel="noopener">Book</a>
+</div>`;
+}
 
 export const MESH_LINKS = [
   { key: 'home', href: MAIN_HOME_HREF, label: 'Main' },
@@ -58,11 +74,7 @@ export function islandHeader({ current, extraNavHtml = '' } = {}) {
     <ul class="nav-links">
       ${meshNavLis({ current, extraAfter: extraNavHtml })}
     </ul>
-    <div class="nav-cta">
-      <a class="nav-phone" href="${CALL_HREF}">${CALL_LABEL}</a>
-      <a class="btn btn-gold nav-text-now" href="${TEXT_NOW_HREF}">${TEXT_NOW_COMPACT}</a>
-      <a class="btn btn-ghost" href="${BOOK_PUBLIC_HREF}" target="_blank" rel="noopener">Book</a>
-    </div>
+    ${convertNavCta()}
   </div>
 </header>`;
 }
@@ -85,10 +97,7 @@ export function islandFooter({ current } = {}) {
 }
 
 export function islandMobileBar() {
-  return `<div class="mobile-bar" aria-label="Quick actions">
-  <a class="btn btn-gold" href="${TEXT_NOW_HREF}">${TEXT_NOW_LABEL}</a>
-  <a class="btn btn-ghost" href="${BOOK_PUBLIC_HREF}" target="_blank" rel="noopener">Book</a>
-</div>`;
+  return convertMobileBar();
 }
 
 export function shopCartNavItem() {
