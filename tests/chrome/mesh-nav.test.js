@@ -1,5 +1,6 @@
 /**
  * Shop + forum + book mesh chrome: absolute ecosystem links, Book → Square.
+ * Convert stack: Text Now sms: + tel: number + Square Book.
  * Run: node tests/chrome/mesh-nav.test.js
  */
 import { readFileSync } from 'node:fs';
@@ -8,8 +9,11 @@ import {
   BOOK_PUBLIC_HREF,
   SQUARE_BOOK_URL,
   MESH_LINKS,
-  PREFER_TEXT_HREF,
-  PREFER_TEXT_LABEL,
+  TEXT_NOW_HREF,
+  TEXT_NOW_LABEL,
+  TEXT_NOW_COMPACT,
+  CALL_HREF,
+  CALL_LABEL,
   islandHeader,
   islandFooter,
   islandMobileBar,
@@ -32,9 +36,12 @@ test('public Book CTA is Square appointment intake, not book. or /book-service/'
   assert.doesNotMatch(BOOK_PUBLIC_HREF, /pages\.dev/);
 });
 
-test('Prefer Text stays tel:+16166065277 (HARD convert)', () => {
-  assert.equal(PREFER_TEXT_HREF, 'tel:+16166065277');
-  assert.match(PREFER_TEXT_LABEL, /Prefer Text \(616\) 606-5277/);
+test('Text Now is sms:+16166065277; number is tel:+16166065277', () => {
+  assert.equal(TEXT_NOW_HREF, 'sms:+16166065277');
+  assert.equal(TEXT_NOW_LABEL, 'Text Now (616) 606-5277');
+  assert.equal(TEXT_NOW_COMPACT, 'Text Now');
+  assert.equal(CALL_HREF, 'tel:+16166065277');
+  assert.equal(CALL_LABEL, '(616) 606-5277');
 });
 
 test('mesh helper lists Main/Forum/Software/Status/Portal/Shop/Docs as absolute hosts', () => {
@@ -54,16 +61,19 @@ test('mesh helper lists Main/Forum/Software/Status/Portal/Shop/Docs as absolute 
   }
   for (const html of [header, footer, mobile]) {
     assert.match(html, /united-mobile-rv-llc\.square\.site/);
-    assert.match(html, /tel:\+16166065277/);
-    assert.match(html, /Prefer Text/);
+    assert.doesNotMatch(html, /Prefer Text/);
     assert.doesNotMatch(html, /href="\/book-service\//);
     assert.doesNotMatch(html, /pages\.dev/);
     assert.doesNotMatch(html, /Text \/ Call/);
     assert.doesNotMatch(html, /staging site/i);
   }
-  assert.match(header, /btn btn-gold[^>]+tel:\+16166065277/);
+  assert.match(header, /nav-phone[^>]+tel:\+16166065277/);
+  assert.match(header, /nav-text-now[^>]+sms:\+16166065277/);
   assert.match(header, /btn btn-ghost[^>]+united-mobile-rv-llc\.square\.site/);
-  assert.match(mobile, /btn btn-gold[^>]+tel:\+16166065277/);
+  assert.match(mobile, /btn btn-gold[^>]+sms:\+16166065277/);
+  assert.match(mobile, /Text Now \(616\) 606-5277/);
+  assert.match(footer, /tel:\+16166065277/);
+  assert.match(footer, /sms:\+16166065277/);
 });
 
 test('shop + forum templates include mesh-chrome (or static mesh + Square)', () => {
@@ -78,6 +88,7 @@ test('shop + forum templates include mesh-chrome (or static mesh + Square)', () 
     assert.match(html, /islandHeader/, file);
     assert.match(html, /islandFooter/, file);
     assert.doesNotMatch(html, /pages\.dev/, file);
+    assert.doesNotMatch(html, /Prefer Text/, file);
   }
   const forumSsr = [
     'functions/forum/t/[id].js',
@@ -89,6 +100,7 @@ test('shop + forum templates include mesh-chrome (or static mesh + Square)', () 
     assert.match(html, /islandHeader/, file);
     assert.match(html, /islandFooter/, file);
     assert.doesNotMatch(html, /Text \/ Call/, file);
+    assert.doesNotMatch(html, /Prefer Text/, file);
   }
   const forum = src('forum/index.html');
   assert.match(forum, /https:\/\/forum\.unitedmobilerv\.com\//);
@@ -98,7 +110,10 @@ test('shop + forum templates include mesh-chrome (or static mesh + Square)', () 
   assert.match(forum, /https:\/\/shop\.unitedmobilerv\.com\//);
   assert.match(forum, /https:\/\/docs\.unitedmobilerv\.com\//);
   assert.match(forum, /united-mobile-rv-llc\.square\.site/);
-  assert.match(forum, /Prefer Text \(616\) 606-5277/);
+  assert.match(forum, /sms:\+16166065277/);
+  assert.match(forum, /tel:\+16166065277/);
+  assert.match(forum, /Text Now/);
+  assert.doesNotMatch(forum, /Prefer Text/);
   assert.doesNotMatch(forum, /class="(?:btn[^"]*|nav-phone)"[^>]*href="\/book-service\//);
   assert.doesNotMatch(forum, /Text \/ Call/);
   assert.doesNotMatch(forum, /href="https:\/\/united-mobile-rv\.pages\.dev/);
@@ -109,20 +124,25 @@ test('shop lockdown allowlist is unchanged (no /forum/ or /design/ added)', () =
   assert.match(mw, /const SHOP_ALLOWED_PREFIXES = \['\/shop\/', '\/api\/shop\/', '\/book-service\/', '\/api\/book', '\/css\/', '\/js\/', '\/assets\/', '\/fonts\/'\]/);
 });
 
-test('site.js rewrites chrome Book labels to Square, not BOOK ONLINE', () => {
+test('site.js rewrites chrome Book to Square and Text Now to sms:', () => {
   const js = src('js/site.js');
   assert.match(js, /https:\/\/united-mobile-rv-llc\.square\.site\//);
+  assert.match(js, /sms:\+16166065277/);
+  assert.match(js, /tel:\+16166065277/);
   assert.match(js, /\^\(Book\|Book Now\|Book a Service\)\$/);
   assert.match(js, /umrt-platform-bar/);
   assert.doesNotMatch(js, /BOOK_PUBLIC = 'https:\/\/book\.unitedmobilerv\.com\//);
+  assert.doesNotMatch(js, /PREFER_TEXT_HREF = 'tel:/);
   assert.doesNotMatch(js, /pages\.dev/);
 });
 
-test('mothership home + platform-bar Book chrome hits Square', () => {
+test('mothership home + platform-bar convert stack: Text Now sms + tel + Square', () => {
   for (const file of ['index.html', 'design/platform-bar.html']) {
     const html = src(file);
     assert.match(html, /united-mobile-rv-llc\.square\.site/, file);
-    assert.match(html, /Prefer Text/, file);
+    assert.match(html, /sms:\+16166065277/, file);
+    assert.match(html, /tel:\+16166065277/, file);
+    assert.doesNotMatch(html, /Prefer Text/, file);
     assert.doesNotMatch(html, /data-platform-link="book"[^>]*book\.unitedmobilerv\.com/, file);
     assert.doesNotMatch(html, /class="btn btn-ghost"[^>]*book\.unitedmobilerv\.com/, file);
   }
