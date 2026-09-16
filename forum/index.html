@@ -551,6 +551,17 @@
   loadThreadList();
   loadStats();
   loadLeaderboard();
+
+  // Revalidate login state on tab focus -- without this, loadMe() only
+  // ever ran once at page load, so signing out on the portal (or another
+  // property) left the forum showing a stale "signed in" state until a
+  // hard refresh, since the session is centrally validated server-side
+  // but nothing told this tab to re-check. visibilitychange covers both
+  // switching back to this tab and switching apps on mobile; a plain
+  // 'focus' listener misses the latter on some browsers.
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible') loadMe();
+  });
 })();
 </script>
 <script src="/forum/features.js?v=20260912b" defer></script>
