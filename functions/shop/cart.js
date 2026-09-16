@@ -44,6 +44,7 @@ export async function onRequestGet(context) {
   .cart-line-qty{width:64px;padding:8px 6px;border-radius:8px;border:1px solid rgba(201,151,44,0.3);background:#111;color:#f2f2f2;text-align:center}
   .cart-line-remove{background:none;border:none;color:#9a9a9a;cursor:pointer;font-size:1.25em;padding:8px 10px;line-height:1}
   .cart-line-remove:hover{color:#e05555}
+  .cart-status{margin:0 0 16px}
   .cart-empty{padding:12px 0 8px}
   .cart-empty-title{font-size:1.15rem;font-weight:600;color:#f2f2f2;margin:0 0 8px}
   .cart-empty .btn{margin-top:16px}
@@ -66,6 +67,9 @@ export async function onRequestGet(context) {
   .held-note{color:#C9972C;font-size:0.85em}
   .cart-quote-alt{margin-top:14px}
   .cart-badge-count{display:inline-block;background:#E8B84B;color:#111;border-radius:999px;font-size:0.75em;font-weight:800;padding:1px 7px;margin-left:6px}
+  @media (max-width:900px){
+    .cart-quote{padding-bottom:calc(var(--space) * 14)}
+  }
   @media (max-width:700px){
     .quote-fields{grid-template-columns:1fr}
     .cart-line{grid-template-columns:48px minmax(0,1fr) auto;align-items:start}
@@ -89,6 +93,7 @@ ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem() })}
 </section>
 <section class="cart-section">
   <div class="wrap wrap-narrow">
+    <p class="held-note cart-status" id="cart-status" hidden></p>
     <div id="cart-items"><p class="cart-empty muted">Loading your cart&hellip;</p></div>
     <div id="cart-total-wrap" class="cart-total-wrap" hidden>
       <div class="cart-total">Reference subtotal: $<span id="cart-total">0</span></div>
@@ -213,7 +218,18 @@ ${islandMobileBar()}
   var totalWrap = document.getElementById('cart-total-wrap');
   var totalEl = document.getElementById('cart-total');
   var quoteSection = document.getElementById('quote');
+  var cartStatus = document.getElementById('cart-status');
   var loadedProducts = {}; // product_id -> product
+
+  function setCartStatus(message) {
+    if (!message) {
+      cartStatus.hidden = true;
+      cartStatus.textContent = '';
+      return;
+    }
+    cartStatus.hidden = false;
+    cartStatus.textContent = message;
+  }
 
   function emptyStateHtml() {
     return '<div class="cart-empty">' +
@@ -305,6 +321,7 @@ ${islandMobileBar()}
       return;
     }
 
+    setCartStatus('');
     totalEl.textContent = total.toLocaleString();
     totalWrap.hidden = false;
     document.getElementById('cart-total-note').hidden = !anyUnpriced;
@@ -345,10 +362,11 @@ ${islandMobileBar()}
     var data = await res.json().catch(function () { return {}; });
     submitBtn.disabled = false;
     if (!data.success) { status.textContent = data.message || 'Could not submit. ${PREFER_TEXT_LABEL} and we will take the request that way.'; return; }
-    status.textContent = data.message;
+    var okMessage = data.message || 'Got it. Our team will follow up with a real quote, not an automatic charge.';
     window.UMRTCart.clearCart();
     document.getElementById('quote-form').reset();
     loadCart();
+    setCartStatus(okMessage);
   });
 
   loadCart();

@@ -22,6 +22,8 @@ function customerFacingScriptCopy(html) {
   const body = (html.match(/<script>\s*\(function \(\) \{([\s\S]*?)\}\)\(\);\s*<\/script>/) || [])[1] || '';
   return [
     ...body.matchAll(/status\.textContent = ([^;]+);/g),
+    ...body.matchAll(/setCartStatus\(([^)]+)\)/g),
+    ...body.matchAll(/okMessage = ([^;]+);/g),
     ...body.matchAll(/innerHTML = ([^;]+);/g),
     ...body.matchAll(/emptyStateHtml\(\) \{([\s\S]*?)return /g),
   ].map((m) => m[1]);
@@ -39,6 +41,7 @@ test('cart page renders a quote-request shell, not live checkout', () => {
   assert.match(visible, /id="quote-form"/);
   assert.match(html, /\/api\/shop\/quote/);
   assert.match(html, /qf-turnstile/);
+  assert.match(html, /id="cart-status"/);
   assert.match(html, /challenges\.cloudflare\.com\/turnstile/);
   assert.doesNotMatch(visible, /checkout now|pay now|place order/i);
 });
