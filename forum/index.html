@@ -210,7 +210,7 @@
   </div>
 </section>
 
-<section class="band">
+<section class="band" id="threads">
   <div class="wrap wrap-narrow">
 
     <form id="new-thread-form">
@@ -506,7 +506,8 @@
     threadView.classList.remove('is-open');
     threadList.classList.remove('is-hidden');
     renderThreadList();
-    threadList.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    var threadsBand = document.getElementById('threads');
+    (threadsBand || threadList).scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
   document.querySelectorAll('.cat-pill[data-cat], .board-card[data-cat]').forEach(function(btn){
     btn.addEventListener('click', function(){ setActiveCategory(btn.dataset.cat); });

@@ -204,6 +204,7 @@
   color: rgba(255,255,255,0.42);
 }
 .forum-proof .online-badge { align-self: center; }
+#threads { scroll-margin-top: 80px; }
 .boards-heading { margin-bottom: 10px; }
 .boards-lede {
   color: rgba(255,255,255,0.7);
