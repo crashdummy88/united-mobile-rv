@@ -120,7 +120,7 @@ export async function onRequestGet(context) {
           <div class="shop-card-price">${esc(formatServicePrice(s))}${s.price_note ? ` <span class="shop-card-price-note">${esc(s.price_note)}</span>` : ''}</div>
           <p class="shop-card-desc">${esc(s.description || '')}</p>
         </div>
-        <a class="btn btn-ghost" href="https://united-mobile-rv-llc.square.site/">Book this service</a>
+        <a class="btn btn-ghost" href="https://book.unitedmobilerv.com/">Book this service</a>
       </div>`).join('');
     return `<section class="shop-category-band"><div class="wrap wrap-narrow">
       <h2>${esc(label)}</h2>
@@ -200,12 +200,12 @@ export async function onRequestGet(context) {
     <!-- Services/Guides/Forum/About removed 2026-09-15: on this host every
          path outside /shop/, /book-service/, and static assets 301s back
          to /shop/ (see functions/_middleware.js SHOP_ALLOWED_PREFIXES) --
-         those links were silently dead. Book stays below since
-         /book-service/ is now exempted from the lockdown. -->
+         those links were silently dead. Book now goes to the live
+         book.unitedmobilerv.com suite (Square stays BOOK ONLINE inside). -->
 
     <div class="nav-cta">
       <a class="nav-phone" href="tel:+16166065277">Prefer Text (616) 606-5277</a>
-      <a class="btn btn-ghost" href="/book-service/">Book</a>
+      <a class="btn btn-ghost" href="https://book.unitedmobilerv.com/">Book</a>
     </div>
   </div>
 </header>
@@ -219,12 +219,12 @@ export async function onRequestGet(context) {
     <p class="muted" style="margin-top:14px">Shopping for hardware instead? <a class="text-link" href="/shop/">See Parts</a>.</p>` : `
     <h1>Not a parts store. A systems integrator.</h1>
     <p class="lead">Tell us what your RV is trying to do and we'll tell you what equipment actually works together -- then handle sourcing, configuration, and installation if you want it. Every listing here is a real, cited reference price -- not a guess, and not a live checkout yet. Submit a quote request and our team follows up directly.</p>
-    <p class="muted" style="margin-top:14px">Not sure what you need? <a class="text-link" href="/book-service/">Tell us the problem</a> and skip guessing at part numbers -- we'll spec it for you.</p>`}
+    <p class="muted" style="margin-top:14px">Not sure what you need? <a class="text-link" href="https://book.unitedmobilerv.com/">Tell us the problem</a> and skip guessing at part numbers -- we'll spec it for you.</p>`}
     ${tabsHtml}
   </div>
 </section>
 ${chipsHtml ? `<section class="band"><div class="wrap wrap-narrow">${chipsHtml}</div></section>` : ''}
-${sectionsHtml || `<section class="band"><div class="wrap wrap-narrow"><p class="muted">${activeTab === 'services' ? 'Services are being added -- check back shortly, or' : 'Products are being added -- check back shortly, or'} <a class="text-link" href="/book-service/">book a consultation</a> in the meantime.</p></div></section>`}
+${sectionsHtml || `<section class="band"><div class="wrap wrap-narrow"><p class="muted">${activeTab === 'services' ? 'Services are being added -- check back shortly, or' : 'Products are being added -- check back shortly, or'} <a class="text-link" href="https://book.unitedmobilerv.com/">book a consultation</a> in the meantime.</p></div></section>`}
 </main>
 <footer class="site-footer">
   <div class="wrap footer-grid">

@@ -3,9 +3,9 @@
 # Keep: book / software / text (+ Prefer Text bounce at /go/text/)
 
 # Live Book + Prefer Text
-# Book→Square now; after book suite live, flip /go/book → https://book.unitedmobilerv.com/
-/go/book       https://united-mobile-rv-llc.square.site/  302
-/go/book/      https://united-mobile-rv-llc.square.site/  302
+# Book→book.unitedmobilerv.com suite; Square stays BOOK ONLINE button inside suite
+/go/book       https://book.unitedmobilerv.com/  302
+/go/book/      https://book.unitedmobilerv.com/  302
 /go/sms        /go/text/  302
 /go/sms/       /go/text/  302
 /go/phone      /go/text/  302
