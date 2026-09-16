@@ -194,9 +194,13 @@ export async function onRequestPost(context) {
       // never-block-the-customer principle as the insert above. No-op
       // until SQUARE_ACCESS_TOKEN + SQUARE_LOCATION_ID are configured --
       // see functions/_lib/square.js for why this stays inert by default.
+      // email/phone/street/city/state/zip added 2026-09-16 so the Square
+      // Customer lookup (Phase 3) has something to match/create against.
       const square = await createDraftEstimateForBooking(env, {
         id, fullName: nameVal, issue: issueVal, location: locationVal,
         rvYear, rvMake, rvModel,
+        email: emailVal, phone: phoneVal,
+        street: street || null, city, state, zip,
       });
       if (square.attempted && square.invoiceId) {
         await env.PORTAL_DB.prepare(

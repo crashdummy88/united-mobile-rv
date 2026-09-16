@@ -1,16 +1,38 @@
 /**
- * square-inventory-cron -- fires every 6 hours, calls the Pages Function
- * that actually runs the Square -> D1 inventory sync
+ * square-inventory-cron -- fires every 6 hours, calls the Pages Functions
+ * that actually run the Square <-> D1 syncs: inventory
  * (functions/_lib/square.js::syncShopInventoryFromSquare, via
- * functions/api/admin/sync-square-inventory.js). This Worker does no
- * inventory logic itself -- it's a thin, authenticated trigger, since
- * Cloudflare Pages Functions have no native Cron Trigger support.
+ * functions/api/admin/sync-square-inventory.js) and, added 2026-09-16,
+ * job/invoice status (syncJobInvoiceStatuses, via
+ * functions/api/admin/sync-square-invoices.js). This Worker does no sync
+ * logic itself -- it's a thin, authenticated trigger, since Cloudflare
+ * Pages Functions have no native Cron Trigger support. Kept as one Worker
+ * (not renamed/split) rather than adding a second cron Worker for one
+ * more endpoint call -- both syncs are cheap, best-effort, and share the
+ * same secret and schedule already.
  *
  * Auth: SYNC_ADMIN_SECRET (wrangler secret put), sent as X-Sync-Secret --
  * must match the same secret set on the united-mobile-rv Pages project.
  */
 
-const TARGET_URL = 'https://united-mobile-rv.pages.dev/api/admin/sync-square-inventory';
+const TARGET_URLS = [
+  'https://united-mobile-rv.pages.dev/api/admin/sync-square-inventory',
+  'https://united-mobile-rv.pages.dev/api/admin/sync-square-invoices',
+];
+
+async function runOne(url, secret) {
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'X-Sync-Secret': secret },
+  });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    console.error(`${url} failed (${res.status}):`, JSON.stringify(body));
+    return { ok: false, url, status: res.status, body };
+  }
+  console.log(`${url} result:`, JSON.stringify(body));
+  return { ok: true, url, body };
+}
 
 async function runSync(env) {
   if (!env.SYNC_ADMIN_SECRET) {
@@ -18,19 +40,11 @@ async function runSync(env) {
     return { ok: false, reason: 'not_configured' };
   }
 
-  const res = await fetch(TARGET_URL, {
-    method: 'POST',
-    headers: { 'X-Sync-Secret': env.SYNC_ADMIN_SECRET },
-  });
-
-  const body = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    console.error(`sync-square-inventory failed (${res.status}):`, JSON.stringify(body));
-    return { ok: false, status: res.status, body };
+  const results = [];
+  for (const url of TARGET_URLS) {
+    results.push(await runOne(url, env.SYNC_ADMIN_SECRET));
   }
-
-  console.log('sync-square-inventory result:', JSON.stringify(body));
-  return { ok: true, body };
+  return { ok: results.every((r) => r.ok), results };
 }
 
 export default {

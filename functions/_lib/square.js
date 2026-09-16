@@ -42,15 +42,15 @@ function isConfigured(env) {
   return !!(env.SQUARE_ACCESS_TOKEN && env.SQUARE_LOCATION_ID);
 }
 
-async function squareRequest(env, path, body) {
+async function squareRequest(env, path, body, method = 'POST') {
   const res = await fetch(`${squareHost(env)}${path}`, {
-    method: 'POST',
+    method,
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${env.SQUARE_ACCESS_TOKEN}`,
       'Square-Version': '2026-08-19',
     },
-    body: JSON.stringify(body),
+    body: method === 'GET' ? undefined : JSON.stringify(body),
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
@@ -68,13 +68,66 @@ async function squareRequest(env, path, body) {
 }
 
 /**
+ * Finds an existing Square Customer by email (exact match) or creates a
+ * new one. Best-effort: returns null (never throws) on any failure or
+ * when not configured, since a missing customer link must never block the
+ * order/invoice draft from being created -- the booking/quote itself is
+ * the priority, the CRM linkage is a bonus. Matching is email-only, on
+ * purpose: phone numbers are entered in too many inconsistent formats to
+ * match reliably, and a wrong match would attach one customer's history
+ * to a different person, which is worse than creating a duplicate.
+ */
+export async function findOrCreateCustomer(env, person) {
+  if (!isConfigured(env)) return null;
+  const emailVal = (person.email || '').toString().trim();
+  const phoneVal = (person.phone || '').toString().trim();
+  const nameVal = (person.fullName || person.name || '').toString().trim();
+
+  try {
+    if (emailVal) {
+      const search = await squareRequest(env, '/v2/customers/search', {
+        query: { filter: { email_address: { exact: emailVal } } },
+        limit: 1,
+      });
+      const found = (search.customers || [])[0];
+      if (found && found.id) return found.id;
+    }
+
+    const nameParts = nameVal.split(/\s+/).filter(Boolean);
+    const body = {
+      idempotency_key: `customer-${emailVal || phoneVal || nameVal || crypto.randomUUID()}`.slice(0, 45),
+      given_name: nameParts[0] || undefined,
+      family_name: nameParts.slice(1).join(' ') || undefined,
+      email_address: emailVal || undefined,
+      phone_number: phoneVal || undefined,
+    };
+    if (person.street) {
+      body.address = {
+        address_line_1: person.street,
+        locality: person.city || undefined,
+        administrative_district_level_1: person.state || undefined,
+        postal_code: person.zip || undefined,
+        country: 'US',
+      };
+    }
+    const created = await squareRequest(env, '/v2/customers', body);
+    return (created.customer && created.customer.id) || null;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Builds and creates a Square Order for a booking -- one ad-hoc line item
  * (no catalog reference needed), no price set. Per UMRT's own pricing
  * rules the diagnostic fee is always standalone and quoted after diagnosis,
  * so this deliberately does NOT invent a dollar amount; Matt fills in the
- * real price when he reviews the draft invoice in Square.
+ * real price when he reviews the draft invoice in Square. customerId is
+ * optional -- when present (Phase 3, 2026-09-16), the order and its
+ * invoice attach to a real Square Customer record instead of floating
+ * free, giving Matt actual booking/purchase history per customer.
  */
-export async function createDraftOrder(env, booking) {
+export async function createDraftOrder(env, booking, customerId) {
   if (!isConfigured(env)) return { skipped: true, reason: 'not_configured' };
 
   const idempotencyKey = `book-order-${booking.id}`;
@@ -86,6 +139,7 @@ export async function createDraftOrder(env, booking) {
     order: {
       location_id: env.SQUARE_LOCATION_ID,
       reference_id: booking.id,
+      customer_id: customerId || undefined,
       line_items: [
         {
           name: `Diagnostic / service request -- ${booking.issue}`.slice(0, 512),
@@ -107,13 +161,14 @@ export async function createDraftOrder(env, booking) {
 }
 
 /**
- * Creates a DRAFT invoice against that order. Never calls publish --
- * see the file-level note above. customer_id is intentionally omitted
- * (Square requires a Customer object, not just a name/email, to attach one;
- * wiring that up is a reasonable follow-on once this is confirmed working,
- * not assumed here to avoid silently creating Square Customer records too).
+ * Creates a DRAFT invoice against that order. Never calls publish -- see
+ * the file-level note above. customerId is optional (Phase 3, 2026-09-16):
+ * when present, the invoice's primary_recipient attaches to that real
+ * Square Customer so it shows up in their history and can actually be
+ * emailed to them once Matt publishes it; without one it's still a valid
+ * draft, just not attached to anyone yet.
  */
-export async function createDraftInvoice(env, orderId, booking) {
+export async function createDraftInvoice(env, orderId, booking, customerId) {
   if (!isConfigured(env) || !orderId) return { skipped: true, reason: 'not_configured_or_no_order' };
 
   const idempotencyKey = `book-invoice-${booking.id}`;
@@ -129,6 +184,7 @@ export async function createDraftInvoice(env, orderId, booking) {
     invoice: {
       location_id: env.SQUARE_LOCATION_ID,
       order_id: orderId,
+      primary_recipient: customerId ? { customer_id: customerId } : undefined,
       title: `UMRT service request -- ${booking.fullName || booking.name || ''}`.trim(),
       description: booking.issue,
       delivery_method: 'EMAIL',
@@ -164,7 +220,7 @@ export async function createDraftInvoice(env, orderId, booking) {
  * A product with no retail_price on file gets no price on its line item,
  * same as the booking flow's unpriced diagnostic line.
  */
-export async function createDraftOrderForQuote(env, quote, items) {
+export async function createDraftOrderForQuote(env, quote, items, customerId) {
   if (!isConfigured(env)) return { skipped: true, reason: 'not_configured' };
   if (!items || !items.length) return { skipped: true, reason: 'no_items' };
 
@@ -193,6 +249,7 @@ export async function createDraftOrderForQuote(env, quote, items) {
     order: {
       location_id: env.SQUARE_LOCATION_ID,
       reference_id: quote.id,
+      customer_id: customerId || undefined,
       line_items: lineItems,
     },
   });
@@ -201,25 +258,32 @@ export async function createDraftOrderForQuote(env, quote, items) {
 
 /**
  * Convenience wrapper for quote.js: best-effort, never throws. Returns
- * { attempted, orderId, invoiceId, invoiceUrl, status, error }.
+ * { attempted, orderId, invoiceId, invoiceUrl, status, error }. Looks up
+ * or creates a Square Customer first (Phase 3, 2026-09-16) so the order
+ * and invoice attach to real customer history, same as bookings.
  */
 export async function createDraftEstimateForQuote(env, quote, items) {
   if (!isConfigured(env)) return { attempted: false };
   try {
-    const order = await createDraftOrderForQuote(env, quote, items);
+    const customerId = await findOrCreateCustomer(env, {
+      fullName: quote.name, email: quote.email, phone: quote.phone,
+      street: quote.street, city: quote.city, state: quote.state, zip: quote.zip,
+    });
+    const order = await createDraftOrderForQuote(env, quote, items, customerId);
     if (order.skipped) return { attempted: false };
     const rig = [quote.rvYear, quote.rvMake, quote.rvModel].filter(Boolean).join(' ');
     const invoice = await createDraftInvoice(env, order.orderId, {
       fullName: quote.name,
       issue: [rig && `Rig: ${rig}`, quote.location && `Location: ${quote.location}`, quote.notes]
         .filter(Boolean).join(' | ') || 'Shop quote request',
-    });
+    }, customerId);
     return {
       attempted: true,
       orderId: order.orderId,
       invoiceId: invoice.invoiceId,
       invoiceUrl: invoice.invoiceUrl,
       status: invoice.status,
+      customerId,
     };
   } catch (err) {
     // Best-effort by design -- a Square hiccup must never block the
@@ -230,22 +294,27 @@ export async function createDraftEstimateForQuote(env, quote, items) {
 
 /**
  * Convenience wrapper for book.js: best-effort, never throws. Returns
- * { attempted, orderId, invoiceId, invoiceUrl, status, error }.
+ * { attempted, orderId, invoiceId, invoiceUrl, status, error }. Looks up
+ * or creates a Square Customer first (Phase 3, 2026-09-16) so repeat
+ * customers accumulate real history in Square instead of every booking
+ * creating an anonymous, disconnected draft.
  */
 export async function createDraftEstimateForBooking(env, booking) {
   if (!isConfigured(env)) {
     return { attempted: false };
   }
   try {
-    const order = await createDraftOrder(env, booking);
+    const customerId = await findOrCreateCustomer(env, booking);
+    const order = await createDraftOrder(env, booking, customerId);
     if (order.skipped) return { attempted: false };
-    const invoice = await createDraftInvoice(env, order.orderId, booking);
+    const invoice = await createDraftInvoice(env, order.orderId, booking, customerId);
     return {
       attempted: true,
       orderId: order.orderId,
       invoiceId: invoice.invoiceId,
       invoiceUrl: invoice.invoiceUrl,
       status: invoice.status,
+      customerId,
     };
   } catch (err) {
     // Best-effort by design -- a Square hiccup must never block the
@@ -390,6 +459,73 @@ export async function syncShopInventoryFromSquare(env, db) {
       skippedNoSku,
       skippedNoMatch,
     };
+  } catch (err) {
+    return { attempted: true, error: String(err && err.message || err) };
+  }
+}
+
+/**
+ * Feeds real Square invoice status back into the portal's `jobs` table
+ * (Phase 2, 2026-09-16) -- so the portal's Track page can show a customer
+ * "Paid" / "Sent" / "Draft" instead of whatever it was at booking time,
+ * which never updates otherwise since this repo never touches an invoice
+ * again after creating it (Matt manages price/status entirely in Square).
+ *
+ * One-way READ from Square, WRITE to D1 -- same direction rule as the
+ * inventory sync above. Only checks jobs not already in a terminal state,
+ * so a healthy steady-state run does very little work. Best-effort per
+ * row: one invoice lookup failing (e.g. deleted in Square) must not stop
+ * the rest of the batch.
+ */
+const TERMINAL_INVOICE_STATUSES = new Set(['paid', 'canceled', 'refunded', 'failed']);
+
+export async function syncJobInvoiceStatuses(env) {
+  if (!isConfigured(env)) return { attempted: false };
+  if (!env.PORTAL_DB) return { attempted: false, reason: 'no_portal_db' };
+
+  try {
+    const { results } = await env.PORTAL_DB.prepare(
+      `SELECT id, square_invoice_id FROM jobs
+       WHERE square_invoice_id IS NOT NULL
+         AND (square_invoice_status IS NULL OR square_invoice_status NOT IN ('paid','canceled','refunded','failed'))`
+    ).all();
+
+    let checked = 0;
+    let updated = 0;
+    const errors = [];
+
+    for (const job of results || []) {
+      checked++;
+      try {
+        const data = await squareRequest(env, `/v2/invoices/${job.square_invoice_id}`, undefined, 'GET');
+        const invoice = data.invoice || {};
+        const status = (invoice.status || '').toLowerCase();
+        if (!status) continue;
+
+        const paymentRequest = (invoice.payment_requests || [])[0] || {};
+        const paidMoney = paymentRequest.total_completed_amount_money;
+        const isPaid = status === 'paid';
+
+        const sets = ['square_invoice_status = ?', 'updated_at = ?'];
+        const now = new Date().toISOString();
+        const binds = [status, now];
+        if (isPaid) {
+          sets.push('paid_at = ?');
+          binds.push(invoice.updated_at || now);
+          if (paidMoney && typeof paidMoney.amount === 'number') {
+            sets.push('final_amount_cents = ?');
+            binds.push(paidMoney.amount);
+          }
+        }
+        binds.push(job.id);
+        await env.PORTAL_DB.prepare(`UPDATE jobs SET ${sets.join(', ')} WHERE id = ?`).bind(...binds).run();
+        updated++;
+      } catch (err) {
+        errors.push({ jobId: job.id, error: String(err && err.message || err) });
+      }
+    }
+
+    return { attempted: true, checked, updated, errors: errors.length ? errors : undefined };
   } catch (err) {
     return { attempted: true, error: String(err && err.message || err) };
   }

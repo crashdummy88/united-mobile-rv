@@ -120,7 +120,7 @@ export async function onRequestPost(context) {
   // functions/_lib/square.js for why this stays inert by default and
   // never auto-publishes/charges.
   try {
-    const square = await createDraftEstimateForQuote(env, { id, name, location, rvYear, rvMake, rvModel, notes }, items);
+    const square = await createDraftEstimateForQuote(env, { id, name, email, phone, location, rvYear, rvMake, rvModel, notes }, items);
     if (square.attempted && square.invoiceId) {
       await env.DB.prepare(
         `UPDATE quote_requests SET square_order_id = ?, square_invoice_id = ?, square_invoice_url = ?, square_invoice_status = ? WHERE id = ?`

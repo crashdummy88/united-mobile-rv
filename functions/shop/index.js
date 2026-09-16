@@ -120,7 +120,7 @@ export async function onRequestGet(context) {
           <div class="shop-card-price">${esc(formatServicePrice(s))}${s.price_note ? ` <span class="shop-card-price-note">${esc(s.price_note)}</span>` : ''}</div>
           <p class="shop-card-desc">${esc(s.description || '')}</p>
         </div>
-        <a class="btn btn-ghost" href="${base}/book-service/?issue=${encodeURIComponent(s.title)}">Book this service</a>
+        <a class="btn btn-ghost" href="https://united-mobile-rv-llc.square.site/">Book this service</a>
       </div>`).join('');
     return `<section class="shop-category-band"><div class="wrap wrap-narrow">
       <h2>${esc(label)}</h2>
