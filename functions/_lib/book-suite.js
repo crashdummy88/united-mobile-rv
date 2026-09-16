@@ -5,13 +5,22 @@
  *   - book.unitedmobilerv.com/          (HOST_HOME_REWRITES in functions/index.js)
  *   - /book-service/ on every other host (functions/book-service/index.js)
  *
- * On book. the page is a dedicated booking product: no mothership mega-nav,
- * canonical/og:url use the request host, noindex until Matt says otherwise.
- * On other hosts the same intake stays, with the normal site chrome.
+ * Shared ecosystem chrome (mesh-chrome) so book. matches forum/shop.
+ * Canonical/og:url use the request host. book. stays noindex until Matt
+ * says otherwise. Prefer Text is tel:+16166065277; Book → Square.
  */
 
+import {
+  islandHeader,
+  islandMobileBar,
+  meshFooterAnchors,
+  PREFER_TEXT_HREF,
+  PREFER_TEXT_LABEL,
+  SQUARE_BOOK_URL,
+} from './mesh-chrome.js';
+
 export const BOOK_HOST = 'book.unitedmobilerv.com';
-export const SQUARE_BOOK_URL = 'https://united-mobile-rv-llc.square.site/';
+export { SQUARE_BOOK_URL };
 export const BOOK_PHONE_DISPLAY = '(616) 606-5277';
 export const BOOK_PHONE_E164 = '+16166065277';
 
@@ -32,85 +41,23 @@ const SUITE_CSS = `
   .book-expect { display:grid; grid-template-columns:repeat(3,1fr); gap:28px; margin-top:28px; }
   @media (max-width:800px) { .book-expect { grid-template-columns:1fr; } }
   .book-expect .step-num { color:#C9972C; font-size:12px; letter-spacing:.18em; text-transform:uppercase; font-weight:600; display:block; margin-bottom:10px; }
-  .book-host-nav .nav-links, .book-host-nav .nav-toggle { display:none; }
-  .book-host-nav .nav-bar { justify-content:space-between; }
 `;
 
-function mothershipNav() {
-  return `<button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">☰</button>
-    <ul class="nav-links">
-      <li><a href="/">Home</a></li>
-      <li><a href="/service/">Services</a></li>
-      <li><a href="/pricing/">Pricing</a></li>
-      <li><a href="/guide/">Guides</a></li>
-      <li><a href="/service-areas/">Areas</a></li>
-      <li><a href="/about/">About</a></li>
-      <li><a href="https://forum.unitedmobilerv.com/">Forum</a></li>
-      <li><a href="https://shop.unitedmobilerv.com/">Shop</a></li>
-      <li><a href="https://software.unitedmobilerv.com/">Software</a></li>
-      <li><a href="https://status.unitedmobilerv.com/">Status</a></li>
-      <li><a href="https://portal.unitedmobilerv.com/">Portal</a></li>
-      <li><a href="https://docs.unitedmobilerv.com/">Docs</a></li>
-    </ul>
-    <div class="nav-cta">
-      <a class="nav-phone" href="sms:${BOOK_PHONE_E164}">Prefer Text ${BOOK_PHONE_DISPLAY}</a>
-      <a class="btn btn-gold" href="${esc(SQUARE_BOOK_URL)}" target="_blank" rel="noopener">BOOK ONLINE</a>
-    </div>`;
-}
-
-function bookHostNav() {
-  return `<div class="nav-cta">
-      <a class="nav-phone" href="sms:${BOOK_PHONE_E164}">Prefer Text ${BOOK_PHONE_DISPLAY}</a>
-      <a class="btn btn-gold" href="${esc(SQUARE_BOOK_URL)}" target="_blank" rel="noopener">BOOK ONLINE</a>
-    </div>`;
-}
-
-function mothershipFooter() {
+function suiteFooter({ bookHost }) {
+  const apexNote = bookHost
+    ? `<p class="mt-6 mb-0 muted">Full site: <a href="https://unitedmobilerv.com/">unitedmobilerv.com</a></p>`
+    : '';
   return `<div class="wrap footer-grid">
     <div>
       <div class="footer-brand">United Mobile RV LLC</div>
       <p class="mb-0">Active MT · WY · ID · WA corridor. Case-by-case beyond.</p>
-      <p class="mt-6 mb-0"><a href="sms:${BOOK_PHONE_E164}">Prefer Text ${BOOK_PHONE_DISPLAY}</a><br>
+      <p class="mt-6 mb-0"><a href="${PREFER_TEXT_HREF}">${PREFER_TEXT_LABEL}</a><br>
       <a href="mailto:unitedrvnetwork@gmail.com">unitedrvnetwork@gmail.com</a></p>
+      ${apexNote}
     </div>
     <div>
-      <div class="micro">Navigate</div>
-      <a href="/service/">Services</a>
-      <a href="/pricing/">Pricing</a>
-      <a href="https://book.unitedmobilerv.com/">Book a Service</a>
-      <a href="https://forum.unitedmobilerv.com/">Forum</a>
-      <a href="https://shop.unitedmobilerv.com/">Shop</a>
-      <a href="https://software.unitedmobilerv.com/">Software</a>
-      <a href="https://status.unitedmobilerv.com/">Status</a>
-      <a href="https://portal.unitedmobilerv.com/">Portal</a>
-      <a href="https://docs.unitedmobilerv.com/">Docs</a>
-      <a href="/guide/">Guides</a>
-      <a href="/service-areas/">Service Areas</a>
-      <a href="/about/">About</a>
-      <a href="/faq/">FAQ</a>
-      <a href="/privacy-policy/">Privacy</a>
-      <a href="/terms-of-use/">Terms of Use</a>
-    </div>
-    <div>
-      <div class="micro">Credentials</div>
-      <p class="muted mb-0" style="font-size:13px;line-height:1.7">
-        Victron Professional Certified Installer<br>
-        weBoost Authorized Installer<br>
-        Peplink Certified Associate<br>
-        Starlink installs (not a Starlink-certified installer)
-      </p>
-    </div>
-  </div>`;
-}
-
-function bookHostFooter() {
-  return `<div class="wrap footer-grid">
-    <div>
-      <div class="footer-brand">United Mobile RV LLC</div>
-      <p class="mb-0">Active MT · WY · ID · WA corridor. Case-by-case beyond.</p>
-      <p class="mt-6 mb-0"><a href="sms:${BOOK_PHONE_E164}">Prefer Text ${BOOK_PHONE_DISPLAY}</a><br>
-      <a href="mailto:unitedrvnetwork@gmail.com">unitedrvnetwork@gmail.com</a></p>
-      <p class="mt-6 mb-0 muted">Full site: <a href="https://unitedmobilerv.com/">unitedmobilerv.com</a></p>
+      <div class="micro">Network</div>
+      ${meshFooterAnchors()}
     </div>
     <div>
       <div class="micro">Credentials</div>
@@ -140,7 +87,7 @@ function suiteMain({ bookHost }) {
   <div class="wrap-narrow" style="text-align:center">
     <div class="book-cta-row">
       <a class="btn btn-gold" href="${esc(SQUARE_BOOK_URL)}" target="_blank" rel="noopener" style="font-size:1.05em;padding:0 40px;">BOOK ONLINE</a>
-      <a class="btn btn-ghost" href="sms:${BOOK_PHONE_E164}">Prefer Text ${BOOK_PHONE_DISPLAY}</a>
+      <a class="btn btn-ghost" href="${PREFER_TEXT_HREF}">${PREFER_TEXT_LABEL}</a>
     </div>
     <p class="muted" style="margin-top:20px">Or <a href="tel:${BOOK_PHONE_E164}">call ${BOOK_PHONE_DISPLAY}</a> — same number, technician directly.</p>
   </div>
@@ -213,12 +160,7 @@ function suiteMain({ bookHost }) {
 </main>`;
 }
 
-function pageShell({ title, description, canonical, bookHost, robotsMeta, mainHtml, homeHref, extraFooter = '' }) {
-  const headerClass = bookHost ? 'site-header book-host-nav' : 'site-header';
-  const nav = bookHost ? bookHostNav() : mothershipNav();
-  const footerInner = bookHost ? bookHostFooter() : mothershipFooter();
-  const siteJs = bookHost ? '' : `<script src="/js/site.js?v=20260912b" defer></script>`;
-  const mobileBookHref = SQUARE_BOOK_URL;
+function pageShell({ title, description, canonical, bookHost, robotsMeta, mainHtml, extraFooter = '' }) {
   const robots = robotsMeta ? `<meta name="robots" content="${esc(robotsMeta)}">\n` : '';
   return `<!DOCTYPE html>
 <html lang="en" data-book-suite="${bookHost ? 'book-host' : 'mothership'}">
@@ -235,30 +177,22 @@ ${robots}<meta name="theme-color" content="#1A1A1A">
 <meta property="og:description" content="${esc(description)}">
 <meta property="og:type" content="website">
 <meta property="og:url" content="${esc(canonical)}">
-<link rel="stylesheet" href="/css/site.css?v=20260916book">
+<link rel="stylesheet" href="/css/site.css?v=20260916viz">
 <style>${SUITE_CSS}</style>
 </head>
 <body class="book-suite">
 <a class="skip-link" href="#main">Skip to content</a>
-<header class="${headerClass}">
-  <div class="wrap nav-bar">
-    <a class="brand" href="${esc(homeHref)}"><img class="brand-logo" src="/assets/brand/umrt-logo.webp" alt="United Mobile RV" width="36" height="36"><span class="brand-text">United Mobile <span>RV</span></span></a>
-    ${nav}
-  </div>
-</header>
+${islandHeader()}
 ${mainHtml}
 <footer class="site-footer">
-  ${footerInner}
+  ${suiteFooter({ bookHost })}
   ${extraFooter}
   <div class="wrap">
     <p class="footer-note"><span class="footer-quiet">United Mobile RV LLC — diagnostic-first mobile RV repair.</span> Official UMRT and Victron Professional Certified Installer marks shown where authorized.</p>
   </div>
 </footer>
-<div class="mobile-bar" aria-label="Quick actions">
-  <a class="btn btn-ghost" href="sms:${BOOK_PHONE_E164}">Prefer Text</a>
-  <a class="btn btn-gold" href="${esc(mobileBookHref)}" target="_blank" rel="noopener">BOOK ONLINE</a>
-</div>
-${siteJs}
+${islandMobileBar()}
+<script src="/js/site.js?v=20260916viz" defer></script>
 </body>
 </html>`;
 }
@@ -267,7 +201,6 @@ export function renderBookSuite(request) {
   const url = new URL(request.url);
   const bookHost = isBookHost(url.hostname);
   const canonical = bookHost ? `${url.origin}/` : `${url.origin}/book-service/`;
-  const homeHref = 'https://unitedmobilerv.com/';
   const title = 'Book a Mobile RV Repair Visit | United Mobile RV';
   const description = 'Book mobile RV repair at your campsite, driveway, or storage yard. BOOK ONLINE on Square, or Prefer Text (616) 606-5277.';
   const html = pageShell({
@@ -277,7 +210,6 @@ export function renderBookSuite(request) {
     bookHost,
     robotsMeta: bookHost ? 'noindex, follow' : '',
     mainHtml: suiteMain({ bookHost }),
-    homeHref,
     extraFooter: `<div class="wrap footer-proof" aria-label="Real job photos">
     <div class="footer-brand-row">
       <img class="footer-logo" src="/assets/brand/umrt-logo.webp" width="40" height="40" alt="United Mobile RV">
@@ -310,7 +242,7 @@ export function renderBookThankYou(request) {
   </div>
 </section>
 <section class="band"><div class="wrap"><div class="btn-row">
-  <a class="btn btn-gold" href="sms:${BOOK_PHONE_E164}">Prefer Text ${BOOK_PHONE_DISPLAY}</a>
+  <a class="btn btn-gold" href="${PREFER_TEXT_HREF}">${PREFER_TEXT_LABEL}</a>
   <a class="btn btn-ghost" href="${esc(backHref)}">Back to booking</a>
 </div></div></section>
 </main>`;
@@ -321,7 +253,6 @@ export function renderBookThankYou(request) {
     bookHost,
     robotsMeta: bookHost ? 'noindex, follow' : '',
     mainHtml,
-    homeHref: 'https://unitedmobilerv.com/',
   });
   return htmlResponse(html);
 }

@@ -121,6 +121,11 @@ test('host home: book. / renders booking suite, not marketing homepage', async (
   assert.match(html, /Peplink Certified Associate/);
   assert.match(html, /Starlink installs \(not a Starlink-certified installer\)/);
   assert.doesNotMatch(html, /Starlink Certified/);
+  assert.match(html, /https:\/\/forum\.unitedmobilerv\.com\//);
+  assert.match(html, /https:\/\/shop\.unitedmobilerv\.com\//);
+  assert.match(html, /https:\/\/software\.unitedmobilerv\.com\//);
+  assert.match(html, /btn btn-gold[^>]+tel:\+16166065277/);
+  assert.doesNotMatch(html, /Text \/ Call/);
 });
 
 test('host home: pages.dev / still falls through (no book rewrite)', async () => {
@@ -150,9 +155,11 @@ test('/book-service/ on mothership keeps reasonable nav + request-host canonical
   assert.match(html, /BOOK ONLINE/);
   assert.match(html, new RegExp(SQUARE_BOOK_URL.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   assert.doesNotMatch(html, /Mobile RV Repair at Your Location/);
+  assert.match(html, /https:\/\/forum\.unitedmobilerv\.com\//);
+  assert.match(html, /Prefer Text \(616\) 606-5277/);
 });
 
-test('thank-you on book host uses book. canonical and no mothership mega-nav', async () => {
+test('thank-you on book host uses book. canonical and mesh nav (no mothership mega-nav)', async () => {
   const res = await bookThankYou({
     request: makeRequest('https://book.unitedmobilerv.com/book-service/thank-you/'),
     env,
@@ -163,6 +170,9 @@ test('thank-you on book host uses book. canonical and no mothership mega-nav', a
   assert.doesNotMatch(html, /united-mobile-rv\.pages\.dev/);
   assert.doesNotMatch(html, /href="\/pricing\/"/);
   assert.match(html, /href="\/"/);
+  assert.match(html, /https:\/\/forum\.unitedmobilerv\.com\//);
+  assert.match(html, /united-mobile-rv-llc\.square\.site/);
+  assert.match(html, /Prefer Text \(616\) 606-5277/);
 });
 
 await run();

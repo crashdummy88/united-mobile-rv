@@ -90,7 +90,7 @@ ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem() })}
 ${islandFooter({ current: 'shop' })}
 ${islandMobileBar()}
 <script src="/js/cart.js"></script>
-<script src="/js/site.js?v=20260916mesh" defer></script>
+<script src="/js/site.js?v=20260916viz" defer></script>
 <script>
 (function () {
   var qfTurnstileWidgetId = null;
