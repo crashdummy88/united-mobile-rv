@@ -4,14 +4,15 @@
   function catEmoji(cat) { return { general: '\uD83D\uDCAC', repair: '\uD83D\uDD27', power: '\u26A1', connectivity: '\uD83D\uDCE1', route: '\uD83D\uDDFA\uFE0F', blog: '\uD83D\uDCDD' }[cat] || '\uD83D\uDCAC'; }
 
   function injectAskTechCTA() {
-    var hero = document.querySelector('.page-hero .wrap');
+    if (document.getElementById('founding-cta')) return;
+    var hero = document.querySelector('.page-hero .wrap, .forum-hero-copy');
     if (!hero) return;
     var cta = document.createElement('div');
     cta.className = 'ask-tech-cta';
-    cta.innerHTML = '<h3>\uD83D\uDD27 Got an RV problem right now?</h3>' +
-      '<p>Post it in Repair &amp; Diagnostics and get a real answer from a certified tech — or text direct.</p>' +
-      '<a class="btn" href="#new-thread-form">Ask the community</a> &nbsp; ' +
-      '<a class="btn" href="sms:+16166065277">Text Us</a>';
+    cta.innerHTML = '<h3>Become a Founding Member today</h3>' +
+      '<p>Sign in with Google to post, or Prefer Text Matt. First voices help shape the boards.</p>' +
+      '<a class="btn" href="/api/auth/google/login">Sign in with Google</a> &nbsp; ' +
+      '<a class="btn" href="sms:+16166065277?body=Hi%20Matt%20%E2%80%94%20I%20want%20to%20become%20a%20Founding%20Member%20today.">Prefer Text</a>';
     hero.appendChild(cta);
   }
 
@@ -63,7 +64,7 @@
     if (!threadView) return;
     var existing = document.querySelector('.share-row');
     if (existing) existing.remove();
-    var url = 'https://united-mobile-rv.pages.dev/forum/t/' + threadId;
+    var url = 'https://forum.unitedmobilerv.com/forum/t/' + threadId;
     var row = document.createElement('div');
     row.className = 'share-row';
     row.innerHTML = '<span class="share-label">Share:</span>' +
