@@ -240,8 +240,10 @@
   object-fit: cover;
   display: block;
 }
-.board-card[data-cat="connectivity"] img { object-position: center 22%; }
-.board-card[data-cat="repair"] img { object-position: center 40%; }
+.board-card[data-cat="power"] img { object-position: center 55%; }
+.board-card[data-cat="connectivity"] img { object-position: center 35%; }
+.board-card[data-cat="general"] img { object-position: center 60%; }
+.board-card[data-cat="repair"] img { object-position: center 45%; }
 .board-card-body {
   padding: 14px 16px 16px;
 }

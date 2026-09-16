@@ -10,9 +10,9 @@
     var cta = document.createElement('div');
     cta.className = 'ask-tech-cta';
     cta.innerHTML = '<h3>Become a Founding Member today</h3>' +
-      '<p>Sign in with Google to post, or Prefer Text Matt. First voices help shape the boards.</p>' +
+      '<p>Sign in with Google to post, or Prefer Text. First voices help shape the boards.</p>' +
       '<a class="btn" href="/api/auth/google/login">Sign in with Google</a> &nbsp; ' +
-      '<a class="btn" href="sms:+16166065277?body=Hi%20Matt%20%E2%80%94%20I%20want%20to%20become%20a%20Founding%20Member%20today.">Prefer Text</a>';
+      '<a class="btn" href="sms:+16166065277?body=Hi%20%E2%80%94%20I%20want%20to%20become%20a%20Founding%20Member%20today.">Prefer Text</a>';
     hero.appendChild(cta);
   }
 
