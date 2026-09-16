@@ -172,7 +172,15 @@ export async function onRequestGet(context) {
     line.className = 'cart-line';
     line.dataset.productId = product.id;
     var thumbHtml = product.image_url
-      ? '<img src="' + esc(product.image_url) + '" alt="" loading="lazy" onerror="this.parentElement.classList.add(\'is-fallback\');this.remove()">'
+      // Double-backslash is deliberate, not a typo -- this whole file is one big
+      // JS template literal server-side (see the displayName() note below for the
+      // same gotcha). A single \' here has its backslash eaten when that outer
+      // literal is parsed, shipping a bare, unescaped ' to the browser -- which
+      // prematurely closes THIS string at classList.add(' and throws
+      // "SyntaxError: Unexpected identifier 'is'", killing the whole inline
+      // <script> block before loadCart() ever runs. That's the exact bug reported
+      // 2026-09-16 as the cart hanging forever on "Loading your cart...".
+      ? '<img src="' + esc(product.image_url) + '" alt="" loading="lazy" onerror="this.parentElement.classList.add(\\'is-fallback\\');this.remove()">'
       : '<span aria-hidden="true">🔧</span>'; // generic wrench -- cart thumbnails are too small to justify a full per-category icon set
     line.innerHTML =
       '<div class="cart-line-thumb' + (product.image_url ? '' : ' is-fallback') + '">' + thumbHtml + '</div>' +
