@@ -56,6 +56,31 @@ function isShopAllowed(path) {
   return SHOP_ALLOWED_PREFIXES.some((p) => path === p.slice(0, -1) || path.startsWith(p));
 }
 
+// book.unitedmobilerv.com is the booking-suite product, not a second copy
+// of the mothership. Same Pages-project problem as shop (2026-09-13):
+// without this gate every marketing URL was reachable here, and '/' was
+// serving the full homepage because HOST_HOME_REWRITES had no book entry.
+// Suite URL is '/' -- /book-service/ 301s here so the address bar does not
+// become book.unitedmobilerv.com/book-service/. /sitemap.xml is NOT
+// allowed (that is the full mothership sitemap). /book-service/thank-you/
+// stays -- it is a booking page, not a marketing page.
+const BOOK_HOST = 'book.unitedmobilerv.com';
+const BOOK_SUITE_HOME = '/';
+const BOOK_ALLOWED_EXACT = ['/', '/favicon.png', '/robots.txt'];
+const BOOK_ALLOWED_PREFIXES = [
+  '/book-service/thank-you/',
+  '/api/book',
+  '/css/',
+  '/js/',
+  '/assets/',
+  '/fonts/',
+];
+
+function isBookAllowed(path) {
+  if (BOOK_ALLOWED_EXACT.includes(path)) return true;
+  return BOOK_ALLOWED_PREFIXES.some((p) => path === p.slice(0, -1) || path.startsWith(p));
+}
+
 // Auth-unification stage 2 (2026-09-15) -- see functions/_lib/central-identity.js
 // for the full explanation. LOG-ONLY this stage: resolves a central identity
 // (when one exists) and attaches it as X-User-Id/X-User-Role on the request
@@ -76,6 +101,10 @@ export async function onRequest(context) {
 
   if (requestUrl.hostname === SHOP_HOST && !isShopAllowed(requestUrl.pathname)) {
     return Response.redirect(new URL('/shop/', requestUrl), 301);
+  }
+
+  if (requestUrl.hostname === BOOK_HOST && !isBookAllowed(requestUrl.pathname)) {
+    return Response.redirect(new URL(BOOK_SUITE_HOME, requestUrl), 301);
   }
 
   // Skip identity resolution (2 D1 reads) for static assets -- this
