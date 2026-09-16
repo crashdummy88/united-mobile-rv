@@ -54,6 +54,62 @@ function umrtGetTurnstileToken(containerId) {
 }
 
 (function () {
+  /* Public Book CTAs in header/footer/mobile-bar go to the live book
+     suite. Square stays BOOK ONLINE inside that suite only -- do not
+     rewrite that label. */
+  var BOOK_PUBLIC = 'https://book.unitedmobilerv.com/';
+  var chromeRoots = document.querySelectorAll('.site-header, .site-footer, .mobile-bar');
+  for (var ci = 0; ci < chromeRoots.length; ci++) {
+    var chromeLinks = chromeRoots[ci].querySelectorAll('a[href]');
+    for (var cj = 0; cj < chromeLinks.length; cj++) {
+      var chromeA = chromeLinks[cj];
+      var chromeLabel = (chromeA.textContent || '').replace(/\s+/g, ' ').trim();
+      if (!/^(Book|Book Now|Book a Service)$/i.test(chromeLabel)) continue;
+      chromeA.setAttribute('href', BOOK_PUBLIC);
+      chromeA.removeAttribute('target');
+      chromeA.removeAttribute('rel');
+    }
+  }
+
+  /* Shop/forum islands: relative Home stays on the island. Point Home
+     at the apex, and append any missing ecosystem links as absolute
+     URLs so shop lockdown cannot swallow them. */
+  var islandHost = location.hostname === 'shop.unitedmobilerv.com'
+    || location.hostname === 'forum.unitedmobilerv.com';
+  if (islandHost) {
+    var meshNav = document.querySelector('.nav-links');
+    if (meshNav) {
+      var meshItems = [
+        ['Home', 'https://unitedmobilerv.com/'],
+        ['Forum', 'https://forum.unitedmobilerv.com/'],
+        ['Software', 'https://software.unitedmobilerv.com/'],
+        ['Status', 'https://status.unitedmobilerv.com/'],
+        ['Portal', 'https://portal.unitedmobilerv.com/'],
+        ['Shop', 'https://shop.unitedmobilerv.com/'],
+        ['Docs', 'https://docs.unitedmobilerv.com/']
+      ];
+      var have = {};
+      meshNav.querySelectorAll('a').forEach(function (a) {
+        have[(a.textContent || '').replace(/\s+/g, ' ').trim().toLowerCase()] = a;
+      });
+      meshItems.forEach(function (pair) {
+        var name = pair[0];
+        var href = pair[1];
+        var found = have[name.toLowerCase()];
+        if (found) {
+          if (name === 'Home') found.setAttribute('href', href);
+          return;
+        }
+        var li = document.createElement('li');
+        var link = document.createElement('a');
+        link.setAttribute('href', href);
+        link.textContent = name;
+        li.appendChild(link);
+        meshNav.appendChild(li);
+      });
+    }
+  }
+
   var header = document.querySelector('.site-header');
   var toggle = document.querySelector('.nav-toggle');
   if (toggle && header) {
