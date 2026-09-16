@@ -1,8 +1,8 @@
 # Soft Pages convert ONLY (never whole hub / never /*)
 # Funnel — united-mobile-rv.pages.dev · Domain HOLD
-# Keep: book / software / text (+ Prefer Text bounce at /go/text/)
+# Keep: book / software / text (+ Text Now bounce at /go/text/)
 
-# Live Book + Prefer Text
+# Live Book + Text Now
 # Book→book.unitedmobilerv.com suite; Square stays BOOK ONLINE button inside suite
 /go/book       https://book.unitedmobilerv.com/  302
 /go/book/      https://book.unitedmobilerv.com/  302

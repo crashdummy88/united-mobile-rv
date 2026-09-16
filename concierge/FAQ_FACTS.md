@@ -66,7 +66,7 @@ Starlink: install capability only (mount, cable routing, power integration, aim/
 ## How we work
 - Mobile: we come to you
 - Diagnostics first, then repair with your go-ahead
-- Lead fields for Book (all required): Name, Phone, Email, Location (City/ZIP), Issue, Rig info — **Prefer Text** default (not optional wording)
+- Lead fields for Book (all required): Name, Phone, Email, Location (City/ZIP), Issue, Rig info — **Text Now** default (not optional wording)
 - Prefer texting (616) 606-5277 for scheduling
 
 ## Connectivity (Network Engineer canon — 2026-09-10)
@@ -86,13 +86,13 @@ Starlink: install capability only (mount, cable routing, power integration, aim/
 ## Common Q&A short answers
 
 **Q: What do you need to book?**  
-A: Name, phone, email, city/ZIP (location), what’s going on (issue), and rig info. **Prefer Text** is the default follow-up — text (616) 606-5277 first; Book is secondary.
+A: Name, phone, email, city/ZIP (location), what’s going on (issue), and rig info. **Text Now** is the default follow-up — text (616) 606-5277 first; Book is secondary.
 
 **Q: How much will my repair cost?**  
 A: Until we diagnose on site we quote structure, not a guess total: trip + labor (~$150/hr, 1 hr min, 30-min increments), diagnostic $150 toward repair if you proceed, parts quoted before install. Seasonal: winterize $175, trip prep $225 (separate line items — not by coach class). Book or text so we can look at your location and symptoms.
 
 **Q: Winterize / trip prep?**  
-A: Winterize is $175. Trip prep is $225. Those are flat separate line items — not TT vs fifth-wheel vs motorhome pricing. Trip fee and any extra labor still apply as quoted. Prefer Text (616) 606-5277.
+A: Winterize is $175. Trip prep is $225. Those are flat separate line items — not TT vs fifth-wheel vs motorhome pricing. Trip fee and any extra labor still apply as quoted. Text Now (616) 606-5277.
 
 **Q: Do you cover [city]?**  
 A: Check active corridor vs case-by-case. Ask for city/ZIP. Always offer Book/text either way.

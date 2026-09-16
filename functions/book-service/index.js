@@ -1,5 +1,5 @@
 /**
- * GET /book-service/ -- booking suite (Square + Prefer Text).
+ * GET /book-service/ -- booking suite (Square + Text Now).
  * On book.unitedmobilerv.com this path 301s to / (see _middleware.js);
  * this handler is the mothership / shop / pages.dev copy of the same page.
  */

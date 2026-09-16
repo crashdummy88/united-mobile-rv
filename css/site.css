@@ -86,6 +86,7 @@ p { margin: 0 0 calc(var(--space) * 2); color: rgba(255,255,255,0.78); max-width
 .nav-links a:hover, .nav-links a[aria-current="page"] { color: var(--white); }
 .nav-cta { display: flex; gap: 12px; align-items: center; }
 .nav-cta .btn { min-height: 40px; padding: 0 16px; letter-spacing: 0.12em; }
+.nav-cta .nav-text-now { min-height: 36px; padding: 0 12px; }
 .nav-phone { color: var(--white) !important; font-size: 13px; letter-spacing: 0.04em; white-space: nowrap; }
 .nav-toggle {
   display: none; background: transparent; border: 1px solid var(--rule);
@@ -94,7 +95,7 @@ p { margin: 0 0 calc(var(--space) * 2); color: rgba(255,255,255,0.78); max-width
 @media (max-width: 900px) {
   .nav-links, .nav-cta .nav-phone { display: none; }
   /* The sticky mobile action bar (.mobile-bar) already surfaces gold
-     Prefer Text + Book on small screens -- hiding the header's duplicate
+     Text Now + Book on small screens -- hiding the header's duplicate
      buttons here avoids three gold CTAs competing on one mobile screen. */
   .nav-cta .btn { display: none; }
   .nav-toggle { display: inline-flex; align-items: center; justify-content: center; }

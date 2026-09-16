@@ -1,5 +1,5 @@
 /**
- * Booking suite HTML -- Square + Prefer Text shell, no replacement form.
+ * Booking suite HTML -- Square + Text Now shell, no replacement form.
  *
  * Served at:
  *   - book.unitedmobilerv.com/          (HOST_HOME_REWRITES in functions/index.js)
@@ -7,15 +7,17 @@
  *
  * Shared ecosystem chrome (mesh-chrome) so book. matches forum/shop.
  * Canonical/og:url use the request host. book. stays noindex until Matt
- * says otherwise. Prefer Text is tel:+16166065277; Book → Square.
+ * says otherwise. Text Now is sms:+16166065277; number is tel:; Book → Square.
  */
 
 import {
   islandHeader,
   islandMobileBar,
   meshFooterAnchors,
-  PREFER_TEXT_HREF,
-  PREFER_TEXT_LABEL,
+  TEXT_NOW_HREF,
+  TEXT_NOW_LABEL,
+  CALL_HREF,
+  CALL_LABEL,
   SQUARE_BOOK_URL,
 } from './mesh-chrome.js';
 
@@ -51,7 +53,7 @@ function suiteFooter({ bookHost }) {
     <div>
       <div class="footer-brand">United Mobile RV LLC</div>
       <p class="mb-0">Active MT · WY · ID · WA corridor. Case-by-case beyond.</p>
-      <p class="mt-6 mb-0"><a href="${PREFER_TEXT_HREF}">${PREFER_TEXT_LABEL}</a><br>
+      <p class="mt-6 mb-0"><a href="${CALL_HREF}">${CALL_LABEL}</a><br>
       <a href="mailto:unitedrvnetwork@gmail.com">unitedrvnetwork@gmail.com</a></p>
       ${apexNote}
     </div>
@@ -80,14 +82,14 @@ function suiteMain({ bookHost }) {
   <div class="wrap">
     <span class="micro">Booking</span>
     <h1>Book a mobile RV visit</h1>
-    <p class="lead">Square is the official booking intake. Prefer Text if you want the technician first. Every request is reviewed personally — trip fee and price confirmed before we roll.</p>
+    <p class="lead">Square is the official booking intake. Text if you want the technician first. Every request is reviewed personally — trip fee and price confirmed before we roll.</p>
   </div>
 </section>
 <section class="band" style="padding-top:48px;padding-bottom:32px">
   <div class="wrap-narrow" style="text-align:center">
     <div class="book-cta-row">
       <a class="btn btn-gold" href="${esc(SQUARE_BOOK_URL)}" target="_blank" rel="noopener" style="font-size:1.05em;padding:0 40px;">BOOK ONLINE</a>
-      <a class="btn btn-ghost" href="${PREFER_TEXT_HREF}">${PREFER_TEXT_LABEL}</a>
+      <a class="btn btn-ghost" href="${TEXT_NOW_HREF}">${TEXT_NOW_LABEL}</a>
     </div>
     <p class="muted" style="margin-top:20px">Or <a href="tel:${BOOK_PHONE_E164}">call ${BOOK_PHONE_DISPLAY}</a> — same number, technician directly.</p>
   </div>
@@ -100,7 +102,7 @@ function suiteMain({ bookHost }) {
       <div>
         <span class="step-num">01</span>
         <h3>Book or text</h3>
-        <p>Use BOOK ONLINE (Square) or Prefer Text. Tell us the issue, City/ZIP, and the rig.</p>
+        <p>Use BOOK ONLINE (Square) or Text Now. Tell us the issue, City/ZIP, and the rig.</p>
       </div>
       <div>
         <span class="step-num">02</span>
@@ -202,7 +204,7 @@ export function renderBookSuite(request) {
   const bookHost = isBookHost(url.hostname);
   const canonical = bookHost ? `${url.origin}/` : `${url.origin}/book-service/`;
   const title = 'Book a Mobile RV Repair Visit | United Mobile RV';
-  const description = 'Book mobile RV repair at your campsite, driveway, or storage yard. BOOK ONLINE on Square, or Prefer Text (616) 606-5277.';
+  const description = 'Book mobile RV repair at your campsite, driveway, or storage yard. BOOK ONLINE on Square, or Text Now (616) 606-5277.';
   const html = pageShell({
     title,
     description,
@@ -238,11 +240,11 @@ export function renderBookThankYou(request) {
   <div class="wrap">
     <span class="micro">Book</span>
     <h1>Request received</h1>
-    <p class="lead">Thanks — we will follow up shortly. Need something sooner? Prefer Text ${BOOK_PHONE_DISPLAY}.</p>
+    <p class="lead">Thanks — we will follow up shortly. Need something sooner? Text Now ${BOOK_PHONE_DISPLAY}.</p>
   </div>
 </section>
 <section class="band"><div class="wrap"><div class="btn-row">
-  <a class="btn btn-gold" href="${PREFER_TEXT_HREF}">${PREFER_TEXT_LABEL}</a>
+  <a class="btn btn-gold" href="${TEXT_NOW_HREF}">${TEXT_NOW_LABEL}</a>
   <a class="btn btn-ghost" href="${esc(backHref)}">Back to booking</a>
 </div></div></section>
 </main>`;

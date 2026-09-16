@@ -32,5 +32,5 @@ If `mode: fallback` + hint about binding → AI binding missing.
 `wrangler.toml` also declares `[ai] binding = "AI"` for local/Pages config.
 
 ## Other
-- Prefer Text (616) 606-5277 · Book on /book-service/
+- Text Now (616) 606-5277 · Book on /book-service/
 - Secrets never in repo

@@ -54,12 +54,15 @@ function umrtGetTurnstileToken(containerId) {
 }
 
 (function () {
-  /* Public Book CTAs in header/footer/mobile-bar go to Square
-     appointment intake. Do not rewrite BOOK ONLINE (already Square).
-     Prefer Text stays tel:+16166065277 -- gold in header/mobile-bar. */
+  /* Matt LOCK 2026-09-16 convert stack in header/footer/mobile-bar:
+     Text Now → sms:+16166065277; number → tel:+16166065277; Book → Square.
+     Do not rewrite BOOK ONLINE (already Square). */
   var BOOK_PUBLIC = 'https://united-mobile-rv-llc.square.site/';
-  var PREFER_TEXT_HREF = 'tel:+16166065277';
-  var PREFER_TEXT_LABEL = 'Prefer Text (616) 606-5277';
+  var TEXT_NOW_HREF = 'sms:+16166065277';
+  var TEXT_NOW_LABEL = 'Text Now (616) 606-5277';
+  var TEXT_NOW_COMPACT = 'Text Now';
+  var CALL_HREF = 'tel:+16166065277';
+  var CALL_LABEL = '(616) 606-5277';
   var chromeRoots = document.querySelectorAll('.site-header, .site-footer, .mobile-bar, .umrt-platform-bar');
   for (var ci = 0; ci < chromeRoots.length; ci++) {
     var chromeLinks = chromeRoots[ci].querySelectorAll('a[href]');
@@ -72,14 +75,17 @@ function umrtGetTurnstileToken(containerId) {
         chromeA.setAttribute('rel', 'noopener');
         continue;
       }
-      if (/^(Text\s*\/\s*Call|Call)$/i.test(chromeLabel) || /^Prefer Text/i.test(chromeLabel)) {
-        chromeA.setAttribute('href', PREFER_TEXT_HREF);
-        if (/^(Text\s*\/\s*Call|Call)$/i.test(chromeLabel)) {
-          chromeA.textContent = PREFER_TEXT_LABEL;
-        }
-        if (chromeA.closest('.nav-cta') || chromeA.closest('.mobile-bar')) {
-          chromeA.classList.remove('nav-phone', 'btn-ghost');
-          chromeA.classList.add('btn', 'btn-gold');
+      if (/^\(?616\)?\s*606[-.\s]?5277$/.test(chromeLabel) || chromeA.classList.contains('nav-phone')) {
+        chromeA.setAttribute('href', CALL_HREF);
+        if (/^\(?616\)?/.test(chromeLabel)) chromeA.textContent = CALL_LABEL;
+        continue;
+      }
+      if (/^(Text\s*\/\s*Call|Call|Text Us|Text|Prefer Text.*|Text Now.*)$/i.test(chromeLabel)) {
+        chromeA.setAttribute('href', TEXT_NOW_HREF);
+        if (/^(Text\s*\/\s*Call|Call|Text Us|Prefer Text)$/i.test(chromeLabel)) {
+          chromeA.textContent = chromeA.closest('.nav-cta') ? TEXT_NOW_COMPACT : TEXT_NOW_LABEL;
+        } else if (/^Prefer Text/i.test(chromeLabel)) {
+          chromeA.textContent = chromeLabel.replace(/^Prefer Text/i, 'Text Now');
         }
       }
     }
@@ -226,7 +232,7 @@ function umrtGetTurnstileToken(containerId) {
       panel.classList.add('is-open');
       fab.setAttribute('aria-expanded', 'true');
       if (!msgs.dataset.welcomed) {
-        addBubble('bot', 'I can help with UMRT pricing, services, service corridors, credentials, and booking. Share your details below  -  Prefer Text is selected by default  -  then ask anything. Or call (616) 606-5277.');
+        addBubble('bot', 'I can help with UMRT pricing, services, service corridors, credentials, and booking. Share your details below  -  Text is selected by default  -  then ask anything. Or call (616) 606-5277.');
         msgs.dataset.welcomed = '1';
       }
     }

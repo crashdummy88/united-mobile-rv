@@ -15,7 +15,7 @@
 ## Funnel/Dev asks
 1. Wire widget on staging (umrt-sales-prototype / Cloudflare Pages), not live WP cores unless Matt names them.
 2. Point model at `SYSTEM_PROMPT.md`; ground answers on `FAQ_FACTS.md`.
-3. Book CTA / chat lead fields (required, match Book): Name, Phone, Email, Location (City/ZIP), Issue, Rig info; Prefer Text default → existing Book / Web3Forms path.
+3. Book CTA / chat lead fields (required, match Book): Name, Phone, Email, Location (City/ZIP), Issue, Rig info; Text default → existing Book / Web3Forms path.
 4. Escalation path: surface “a human will follow up” + still capture the lead; do not auto-approve discounts.
 
 ## Maintenance
