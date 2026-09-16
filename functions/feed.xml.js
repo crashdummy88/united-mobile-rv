@@ -13,7 +13,7 @@ export async function onRequestGet(context) {
   ).all();
 
   const items = (results || []).map((t) => {
-    const link = `https://united-mobile-rv.pages.dev/forum/t/${t.id}`;
+    const link = `https://forum.unitedmobilerv.com/forum/t/${t.id}`;
     const snippet = String(t.body || '').slice(0, 300);
     return `    <item>
       <title>${esc(t.title)}</title>
@@ -30,8 +30,8 @@ export async function onRequestGet(context) {
 <rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>United Mobile RV Community Forum</title>
-    <link>https://united-mobile-rv.pages.dev/forum/</link>
-    <atom:link href="https://united-mobile-rv.pages.dev/feed.xml" rel="self" type="application/rss+xml"/>
+    <link>https://forum.unitedmobilerv.com/</link>
+    <atom:link href="https://forum.unitedmobilerv.com/feed.xml" rel="self" type="application/rss+xml"/>
     <description>RV repair, off-grid power, connectivity, and route talk from a certified mobile RV tech.</description>
     <language>en-us</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>

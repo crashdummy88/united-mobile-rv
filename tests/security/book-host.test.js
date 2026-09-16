@@ -116,6 +116,7 @@ test('host home: book. / renders booking suite, not marketing homepage', async (
   assert.doesNotMatch(html, /href="\/pricing\/"/);
   assert.doesNotMatch(html, /href="\/guide\/"/);
   assert.doesNotMatch(html, /href="\/wireless\/"/);
+  assert.doesNotMatch(html, /umrt-platform-bar/);
   assert.match(html, /Victron Professional Certified Installer/);
   assert.match(html, /weBoost Authorized Installer/);
   assert.match(html, /Peplink Certified Associate/);
@@ -149,6 +150,7 @@ test('/book-service/ on mothership keeps reasonable nav + request-host canonical
   assert.match(html, /href="\/pricing\/"/);
   assert.match(html, /BOOK ONLINE/);
   assert.match(html, new RegExp(SQUARE_BOOK_URL.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.match(html, /umrt-platform-bar/);
   assert.doesNotMatch(html, /Mobile RV Repair at Your Location/);
 });
 

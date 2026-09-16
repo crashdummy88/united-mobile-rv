@@ -4,6 +4,7 @@
  * the "Product + Service" model) instead of a live checkout charge.
  */
 import { formatPrice, priceNote, displayName, CATEGORY_ICONS } from '../../_lib/shop.js';
+import { BOOK_SUITE_URL, PREFER_TEXT_HREF, PREFER_TEXT_LABEL, platformBarHtml, shopFooterHtml } from '../../_lib/platform-chrome.js';
 
 function esc(s) {
   return String(s || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -79,6 +80,8 @@ export async function onRequestGet(context) {
 </style>
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to content</a>
+${platformBarHtml('shop')}
 <header class="site-header">
   <div class="wrap nav-bar">
     <!-- Absolute URL on purpose, not "/" -- see functions/shop/index.js -->
@@ -87,10 +90,10 @@ export async function onRequestGet(context) {
       <li><a href="/shop/">&larr; Shop</a></li>
       <li><a href="/shop/cart">Cart <span class="cart-badge-count" hidden></span></a></li>
     </ul>
-    <!-- Forum/Guides removed 2026-09-15: dead links on this host, see
-         functions/_middleware.js SHOP_ALLOWED_PREFIXES. -->
-
-    <div class="nav-cta"><a class="nav-phone" href="tel:+16166065277">Prefer Text (616) 606-5277</a></div>
+    <div class="nav-cta">
+      <a class="nav-phone" href="${PREFER_TEXT_HREF}">${PREFER_TEXT_LABEL}</a>
+      <a class="btn btn-ghost" href="${BOOK_SUITE_URL}">Book</a>
+    </div>
   </div>
 </header>
 <main id="main">
@@ -214,6 +217,7 @@ export async function onRequestGet(context) {
   });
 })();
 </script>
+${shopFooterHtml()}
 </body>
 </html>`;
 

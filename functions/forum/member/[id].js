@@ -1,3 +1,5 @@
+import { BOOK_SUITE_URL, PREFER_TEXT_HREF, PREFER_TEXT_LABEL, platformBarHtml, shopFooterHtml } from '../../_lib/platform-chrome.js';
+
 /**
  * GET /forum/member/:id — real, server-rendered member profile.
  * Only real data (join date, thread/reply/solved counts, recent threads) --
@@ -62,10 +64,16 @@ export async function onRequestGet(context) {
 <link rel="stylesheet" href="/css/site.css">
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to content</a>
+${platformBarHtml('forum')}
 <header class="site-header">
   <div class="wrap nav-bar">
     <a class="brand" href="/"><img class="brand-logo" src="/assets/brand/umrt-logo.webp" alt="United Mobile RV" width="40" height="40"><span class="brand-text">United Mobile <span>RV</span></span></a>
     <ul class="nav-links"><li><a href="/forum/">Back to Forum</a></li></ul>
+    <div class="nav-cta">
+      <a class="nav-phone" href="${PREFER_TEXT_HREF}">${PREFER_TEXT_LABEL}</a>
+      <a class="btn btn-ghost" href="${BOOK_SUITE_URL}">Book</a>
+    </div>
   </div>
 </header>
 <main id="main">
@@ -87,6 +95,7 @@ export async function onRequestGet(context) {
   </div>
 </section>
 </main>
+${shopFooterHtml()}
 </body>
 </html>`;
 

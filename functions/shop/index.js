@@ -5,6 +5,7 @@
  * Phase 1: no live checkout -- every product routes to a quote request.
  */
 import { formatPrice, displayName, CATEGORY_ICONS, formatServicePrice } from '../_lib/shop.js';
+import { BOOK_SUITE_URL, PREFER_TEXT_HREF, PREFER_TEXT_LABEL, platformBarHtml, shopFooterHtml } from '../_lib/platform-chrome.js';
 
 function esc(s) {
   return String(s || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -120,7 +121,7 @@ export async function onRequestGet(context) {
           <div class="shop-card-price">${esc(formatServicePrice(s))}${s.price_note ? ` <span class="shop-card-price-note">${esc(s.price_note)}</span>` : ''}</div>
           <p class="shop-card-desc">${esc(s.description || '')}</p>
         </div>
-        <a class="btn btn-ghost" href="https://united-mobile-rv-llc.square.site/">Book this service</a>
+        <a class="btn btn-ghost" href="${BOOK_SUITE_URL}">Book this service</a>
       </div>`).join('');
     return `<section class="shop-category-band"><div class="wrap wrap-narrow">
       <h2>${esc(label)}</h2>
@@ -185,6 +186,7 @@ export async function onRequestGet(context) {
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
+${platformBarHtml('shop')}
 <header class="site-header">
   <div class="wrap nav-bar">
     <!-- Absolute URL on purpose, not "/" -- on shop.unitedmobilerv.com "/"
@@ -197,15 +199,13 @@ export async function onRequestGet(context) {
       <li><a href="/" aria-current="page">Shop</a></li>
       <li><a href="/shop/cart">Cart <span class="cart-badge-count" hidden></span></a></li>
     </ul>
-    <!-- Services/Guides/Forum/About removed 2026-09-15: on this host every
-         path outside /shop/, /book-service/, and static assets 301s back
-         to /shop/ (see functions/_middleware.js SHOP_ALLOWED_PREFIXES) --
-         those links were silently dead. Book stays below since
-         /book-service/ is now exempted from the lockdown. -->
+    <!-- In-nav mothership paths stay off this host (SHOP_ALLOWED_PREFIXES
+         301s them back to /shop/). Platform strip + Book suite are absolute
+         custom-domain URLs so the shop is no longer an island. -->
 
     <div class="nav-cta">
-      <a class="nav-phone" href="tel:+16166065277">Prefer Text (616) 606-5277</a>
-      <a class="btn btn-ghost" href="/book-service/">Book</a>
+      <a class="nav-phone" href="${PREFER_TEXT_HREF}">${PREFER_TEXT_LABEL}</a>
+      <a class="btn btn-ghost" href="${BOOK_SUITE_URL}">Book</a>
     </div>
   </div>
 </header>
@@ -219,23 +219,14 @@ export async function onRequestGet(context) {
     <p class="muted" style="margin-top:14px">Shopping for hardware instead? <a class="text-link" href="/shop/">See Parts</a>.</p>` : `
     <h1>Not a parts store. A systems integrator.</h1>
     <p class="lead">Tell us what your RV is trying to do and we'll tell you what equipment actually works together -- then handle sourcing, configuration, and installation if you want it. Every listing here is a real, cited reference price -- not a guess, and not a live checkout yet. Submit a quote request and our team follows up directly.</p>
-    <p class="muted" style="margin-top:14px">Not sure what you need? <a class="text-link" href="/book-service/">Tell us the problem</a> and skip guessing at part numbers -- we'll spec it for you.</p>`}
+    <p class="muted" style="margin-top:14px">Not sure what you need? <a class="text-link" href="${BOOK_SUITE_URL}">Tell us the problem</a> and skip guessing at part numbers -- we'll spec it for you.</p>`}
     ${tabsHtml}
   </div>
 </section>
 ${chipsHtml ? `<section class="band"><div class="wrap wrap-narrow">${chipsHtml}</div></section>` : ''}
-${sectionsHtml || `<section class="band"><div class="wrap wrap-narrow"><p class="muted">${activeTab === 'services' ? 'Services are being added -- check back shortly, or' : 'Products are being added -- check back shortly, or'} <a class="text-link" href="/book-service/">book a consultation</a> in the meantime.</p></div></section>`}
+${sectionsHtml || `<section class="band"><div class="wrap wrap-narrow"><p class="muted">${activeTab === 'services' ? 'Services are being added -- check back shortly, or' : 'Products are being added -- check back shortly, or'} <a class="text-link" href="${BOOK_SUITE_URL}">book a consultation</a> in the meantime.</p></div></section>`}
 </main>
-<footer class="site-footer">
-  <div class="wrap footer-grid">
-    <div>
-      <div class="footer-brand">United Mobile RV LLC</div>
-      <p class="mb-0">Active MT · WY · ID · WA corridor. Case-by-case beyond.</p>
-      <p class="mt-6 mb-0"><a href="tel:+16166065277">(616) 606-5277</a><br>
-      <a href="mailto:unitedrvnetwork@gmail.com">unitedrvnetwork@gmail.com</a></p>
-    </div>
-  </div>
-</footer>
+${shopFooterHtml()}
 <script src="/js/cart.js"></script>
 <script src="/js/site.js" defer></script>
 <script>
