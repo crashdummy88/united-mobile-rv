@@ -13,7 +13,11 @@ import { resolveCentralIdentity } from './_lib/central-identity.js';
 // /guide/ added 2026-09-14: the 20-category guide reorg is done and per
 // the business doc this content is meant to be indexed, but it was left
 // off this list -- confirmed via live curl that it was still noindex.
-const INDEXABLE_PREFIXES = ['/forum/', '/forum-live/', '/guide/'];
+// /shop/ added 2026-09-16: the real product catalog at shop.unitedmobilerv.com/shop/
+// was still noindex,follow like the cart/checkout utility paths around it, but
+// it's genuine public commercial content -- same category as /forum/ and
+// /guide/ above, not a utility page. Confirmed with Matt before flipping it.
+const INDEXABLE_PREFIXES = ['/forum/', '/forum-live/', '/guide/', '/shop/'];
 
 // Apex cutover prep, 2026-09-15: this project's own robots.txt has said
 // since 2026-09-10 that "mothership pages.dev is noindex... live convert
@@ -26,6 +30,14 @@ const INDEXABLE_PREFIXES = ['/forum/', '/forum-live/', '/guide/'];
 // aren't real content, the reverse of the allowlist model.
 const APEX_HOSTS = ['unitedmobilerv.com', 'www.unitedmobilerv.com'];
 const APEX_NOINDEX_PREFIXES = ['/api/', '/shop/cart', '/forum/mod/'];
+
+// Carve-out for the non-apex (shop./forum./staging.) INDEXABLE_PREFIXES
+// branch below, same idea as APEX_NOINDEX_PREFIXES above but scoped to
+// that branch: adding the whole '/shop/' prefix to INDEXABLE_PREFIXES on
+// 2026-09-16 (to index the real catalog) briefly made /shop/cart index,follow
+// too -- caught live via curl right after deploy. Cart is a utility page,
+// never real content, same as it's excluded on the apex hosts above.
+const NON_APEX_NOINDEX_PREFIXES = ['/shop/cart'];
 
 // Files Google fetches as *resources*, not pages -- a noindex X-Robots-Tag
 // on these makes Google Search Console refuse to process them at all
@@ -130,7 +142,8 @@ export async function onRequest(context) {
 
   const indexable = APEX_HOSTS.includes(requestUrl.hostname)
     ? !APEX_NOINDEX_PREFIXES.some((p) => path === p || path.startsWith(p))
-    : INDEXABLE_PREFIXES.some((p) => path === p.slice(0, -1) || path.startsWith(p));
+    : INDEXABLE_PREFIXES.some((p) => path === p.slice(0, -1) || path.startsWith(p))
+      && !NON_APEX_NOINDEX_PREFIXES.some((p) => path === p || path.startsWith(p));
 
   const headers = new Headers(response.headers);
   headers.delete('X-Robots-Tag');

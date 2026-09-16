@@ -58,17 +58,29 @@ export async function onRequestGet(context) {
 <title>${esc(displayName(product.manufacturer, product.title))} | United Mobile RV Shop</title>
 <meta name="description" content="${esc((product.description || '').slice(0, 150))}">
 <link rel="canonical" href="${base}/shop/p/${esc(product.id)}">
-<meta name="robots" content="noindex,follow">
+<!-- 2026-09-16: matches functions/shop/index.js -- /shop/ is now index,follow
+     via the X-Robots-Tag header, so individual product pages follow suit. -->
+<meta name="robots" content="index,follow">
 <link rel="icon" href="/favicon.png" type="image/png">
 <link rel="stylesheet" href="/css/site.css">
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <style>
   .price-tag{font-size:1.8em;font-weight:800;color:#E8B84B;margin:10px 0}
   .price-note{font-size:12px;color:#9a9a9a;margin-top:-6px;margin-bottom:16px}
-  .service-tier{display:block;border:1px solid #333;border-radius:10px;padding:14px 16px;margin-bottom:10px;cursor:pointer}
+  .service-tier{display:flex;align-items:flex-start;gap:12px;border:1px solid #333;border-radius:10px;padding:16px 18px;margin-bottom:10px;cursor:pointer;transition:border-color .15s,background-color .15s}
   .service-tier:hover{border-color:rgba(201,151,44,0.5)}
-  .service-tier input{margin-right:10px}
-  textarea.forum-input,input.forum-input{width:100%;padding:14px 16px;border-radius:10px;border:1px solid #333;background:#111;color:#f2f2f2;font-family:inherit;font-size:1.05em;line-height:1.5;margin-bottom:10px}
+  .service-tier input{margin:3px 0 0;accent-color:#C9972C;flex:none}
+  .service-tier-text{display:flex;flex-direction:column;gap:3px}
+  .service-tier strong{color:#fff;font-size:1.02em}
+  .service-tier small{display:block;color:#9a9a9a;font-size:0.88em;line-height:1.45}
+  .service-tier:has(input:checked){border-color:#C9972C;background:rgba(201,151,44,0.08)}
+  textarea.forum-input,input.forum-input{width:100%;padding:14px 16px;border-radius:10px;border:1px solid #333;background:#111;color:#f2f2f2;font-family:inherit;font-size:1.05em;line-height:1.5;margin-bottom:10px;transition:border-color .15s}
+  input.forum-input:focus,textarea.forum-input:focus{outline:none;border-color:#C9972C}
+  .qf-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+  .qf-field{margin-bottom:14px}
+  .qf-field .forum-input{margin-bottom:0}
+  .qf-label{display:block;color:#9a9a9a;font-size:0.78em;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+  @media (max-width:640px){.qf-grid{grid-template-columns:1fr}}
   .held-note{color:#C9972C;font-size:0.85em}
   .cart-badge-count{display:inline-block;background:#E8B84B;color:#111;border-radius:999px;font-size:0.75em;font-weight:800;padding:1px 7px;margin-left:6px}
   .add-cart-btn{margin:10px 0 4px}
@@ -110,23 +122,25 @@ ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem() })}
     ${product.installation_required ? '<p class="held-note">Professional installation strongly recommended for this item.</p>' : ''}
   </div>
 </section>
-<section class="band band-gray" id="quote">
+<section class="band" id="quote">
   <div class="wrap wrap-narrow">
     <h2>Request a quote</h2>
     <p class="muted">This isn't a live checkout yet -- submit your info and our team follows up with real pricing, availability, and next steps. No charge happens here.</p>
     <form id="quote-form">
       <input type="hidden" id="qf-product-id" value="${esc(product.id)}">
-      <label class="service-tier"><input type="radio" name="service_option" value="hardware_only" checked> <strong>Hardware only</strong> -- ships to you, you install</label>
-      <label class="service-tier"><input type="radio" name="service_option" value="hardware_plus_config"> <strong>Hardware + remote configuration</strong> -- we configure it with you remotely</label>
-      <label class="service-tier"><input type="radio" name="service_option" value="hardware_plus_install"> <strong>Hardware + UMRT installation</strong> -- we install it on-site</label>
-      <label class="service-tier"><input type="radio" name="service_option" value="full_design_install"> <strong>Full system design + installation</strong> -- we design the whole system around this and install it</label>
+      <label class="service-tier"><input type="radio" name="service_option" value="hardware_only" checked><span class="service-tier-text"><strong>Hardware only</strong><small>We ship it to you and you handle the install.</small></span></label>
+      <label class="service-tier"><input type="radio" name="service_option" value="hardware_plus_config"><span class="service-tier-text"><strong>Hardware + remote configuration</strong><small>We ship it and walk you through setup remotely.</small></span></label>
+      <label class="service-tier"><input type="radio" name="service_option" value="hardware_plus_install"><span class="service-tier-text"><strong>Hardware + UMRT installation</strong><small>We ship it and send a technician to install it on-site.</small></span></label>
+      <label class="service-tier"><input type="radio" name="service_option" value="full_design_install"><span class="service-tier-text"><strong>Full system design + installation</strong><small>We design the complete system around your rig and install everything.</small></span></label>
 
-      <input class="forum-input" id="qf-name" placeholder="Your name" maxlength="120">
-      <input class="forum-input" id="qf-phone" placeholder="Phone" maxlength="40">
-      <input class="forum-input" id="qf-email" placeholder="Email" maxlength="160">
-      <input class="forum-input" id="qf-location" placeholder="City / State" maxlength="160">
-      <input class="forum-input" id="qf-rig" placeholder="RV year / make / model" maxlength="160">
-      <textarea class="forum-input" id="qf-notes" rows="3" placeholder="Anything else we should know?" maxlength="1500"></textarea>
+      <div class="qf-grid">
+        <div class="qf-field"><label class="qf-label" for="qf-name">Your name</label><input class="forum-input" id="qf-name" placeholder="Jane Smith" maxlength="120"></div>
+        <div class="qf-field"><label class="qf-label" for="qf-phone">Phone</label><input class="forum-input" id="qf-phone" placeholder="(555) 555-5555" maxlength="40"></div>
+        <div class="qf-field"><label class="qf-label" for="qf-email">Email</label><input class="forum-input" id="qf-email" placeholder="you@email.com" maxlength="160"></div>
+        <div class="qf-field"><label class="qf-label" for="qf-location">City / State</label><input class="forum-input" id="qf-location" placeholder="Missoula, MT" maxlength="160"></div>
+      </div>
+      <div class="qf-field"><label class="qf-label" for="qf-rig">RV year / make / model</label><input class="forum-input" id="qf-rig" placeholder="2021 Forest River Cherokee" maxlength="160"></div>
+      <div class="qf-field"><label class="qf-label" for="qf-notes">Anything else we should know?</label><textarea class="forum-input" id="qf-notes" rows="3" maxlength="1500"></textarea></div>
       <div class="btn-row"><button type="submit" class="btn btn-gold" id="qf-submit">Request Quote</button></div>
       <p class="held-note" id="qf-status"></p>
       <div id="qf-turnstile"></div>

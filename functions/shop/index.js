@@ -145,7 +145,12 @@ export async function onRequestGet(context) {
 <title>${activeTab === 'services' ? 'RV Repair & Install Services' : 'RV Systems Shop'} | United Mobile RV</title>
 <meta name="description" content="${activeTab === 'services' ? 'Diagnostics, installs, winterization, and repair -- real UMRT service rates, book straight from the list.' : "Curated RV power, solar, and climate systems -- tell us what your rig needs to do and we'll tell you what equipment actually works together."}">
 <link rel="canonical" href="${base}/shop/${activeTab === 'services' ? '?tab=services' : ''}">
-<meta name="robots" content="noindex,follow">
+<!-- 2026-09-16: was noindex,follow -- the X-Robots-Tag header in
+     functions/_middleware.js now sends index,follow for /shop/ (real
+     public catalog, confirmed with Matt), so this meta tag is flipped to
+     match rather than left contradicting it -- see that file's own
+     comments on why a stale meta/header mismatch is a real bug here. -->
+<meta name="robots" content="index,follow">
 <link rel="icon" href="/favicon.png" type="image/png">
 <link rel="stylesheet" href="/css/site.css">
 <style>
