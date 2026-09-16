@@ -54,39 +54,47 @@ function umrtGetTurnstileToken(containerId) {
 }
 
 (function () {
-  /* Matt LOCK 2026-09-16 convert stack in header/footer/mobile-bar:
-     Text Now → sms:+16166065277; number → tel:+16166065277; Book → Square.
-     Do not rewrite BOOK ONLINE (already Square). */
+  /* Matt LOCK: every header + mobile bar is Call / Text Now / Book.
+     Do not rewrite a Call control onto sms: — older clients use tel:. */
   var BOOK_PUBLIC = 'https://united-mobile-rv-llc.square.site/';
   var TEXT_NOW_HREF = 'sms:+16166065277';
-  var TEXT_NOW_LABEL = 'Text Now (616) 606-5277';
   var TEXT_NOW_COMPACT = 'Text Now';
   var CALL_HREF = 'tel:+16166065277';
-  var CALL_LABEL = '(616) 606-5277';
-  var chromeRoots = document.querySelectorAll('.site-header, .site-footer, .mobile-bar, .umrt-platform-bar');
+  var CALL_LABEL = 'Call (616) 606-5277';
+  var navCtaHtml = '<a class="nav-phone" href="' + CALL_HREF + '">' + CALL_LABEL + '</a>'
+    + '<a class="btn btn-gold nav-text-now" href="' + TEXT_NOW_HREF + '">' + TEXT_NOW_COMPACT + '</a>'
+    + '<a class="btn btn-ghost" href="' + BOOK_PUBLIC + '" target="_blank" rel="noopener">Book</a>';
+  var mobileBarHtml = '<a class="btn btn-ghost" href="' + CALL_HREF + '">' + CALL_LABEL + '</a>'
+    + '<a class="btn btn-gold" href="' + TEXT_NOW_HREF + '">' + TEXT_NOW_COMPACT + '</a>'
+    + '<a class="btn btn-ghost" href="' + BOOK_PUBLIC + '" target="_blank" rel="noopener">Book</a>';
+  var navCtas = document.querySelectorAll('.nav-cta');
+  for (var ni = 0; ni < navCtas.length; ni++) navCtas[ni].innerHTML = navCtaHtml;
+  var mobileBars = document.querySelectorAll('.mobile-bar');
+  for (var mi = 0; mi < mobileBars.length; mi++) mobileBars[mi].innerHTML = mobileBarHtml;
+
+  var chromeRoots = document.querySelectorAll('.site-footer, .umrt-platform-bar');
   for (var ci = 0; ci < chromeRoots.length; ci++) {
     var chromeLinks = chromeRoots[ci].querySelectorAll('a[href]');
     for (var cj = 0; cj < chromeLinks.length; cj++) {
       var chromeA = chromeLinks[cj];
       var chromeLabel = (chromeA.textContent || '').replace(/\s+/g, ' ').trim();
-      if (/^(Book|Book Now|Book a Service)$/i.test(chromeLabel)) {
+      if (/^(Book|Book Now|Book a Service|BOOK ONLINE|Book Online|Book service)$/i.test(chromeLabel)) {
         chromeA.setAttribute('href', BOOK_PUBLIC);
         chromeA.setAttribute('target', '_blank');
         chromeA.setAttribute('rel', 'noopener');
+        chromeA.textContent = 'Book';
         continue;
       }
-      if (/^\(?616\)?\s*606[-.\s]?5277$/.test(chromeLabel) || chromeA.classList.contains('nav-phone')) {
+      if (/^(Call(\s*\(616\)\s*606[-.\s]?5277)?|\(?616\)?\s*606[-.\s]?5277)$/i.test(chromeLabel)
+        || chromeA.getAttribute('data-platform-link') === 'call') {
         chromeA.setAttribute('href', CALL_HREF);
-        if (/^\(?616\)?/.test(chromeLabel)) chromeA.textContent = CALL_LABEL;
+        chromeA.textContent = CALL_LABEL;
         continue;
       }
-      if (/^(Text\s*\/\s*Call|Call|Text Us|Text|Prefer Text.*|Text Now.*)$/i.test(chromeLabel)) {
+      if (/^(Text\s*\/\s*Call|Call\s*\/\s*Text|Text Us|Text|Prefer Text.*|Text Now.*)$/i.test(chromeLabel)) {
         chromeA.setAttribute('href', TEXT_NOW_HREF);
-        if (/^(Text\s*\/\s*Call|Call|Text Us|Prefer Text)$/i.test(chromeLabel)) {
-          chromeA.textContent = chromeA.closest('.nav-cta') ? TEXT_NOW_COMPACT : TEXT_NOW_LABEL;
-        } else if (/^Prefer Text/i.test(chromeLabel)) {
-          chromeA.textContent = chromeLabel.replace(/^Prefer Text/i, 'Text Now');
-        }
+        chromeA.textContent = chromeA.closest('.umrt-platform-bar') ? TEXT_NOW_COMPACT
+          : (/Text Now \(616\)/i.test(chromeLabel) ? chromeLabel.replace(/^Prefer Text/i, 'Text Now') : TEXT_NOW_COMPACT);
       }
     }
   }

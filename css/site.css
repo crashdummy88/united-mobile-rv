@@ -94,9 +94,9 @@ p { margin: 0 0 calc(var(--space) * 2); color: rgba(255,255,255,0.78); max-width
 }
 @media (max-width: 900px) {
   .nav-links, .nav-cta .nav-phone { display: none; }
-  /* The sticky mobile action bar (.mobile-bar) already surfaces gold
-     Text Now + Book on small screens -- hiding the header's duplicate
-     buttons here avoids three gold CTAs competing on one mobile screen. */
+  /* The sticky mobile action bar (.mobile-bar) already surfaces
+     Call + gold Text Now + Book on small screens -- hiding the
+     header's duplicate buttons here avoids stacked convert CTAs. */
   .nav-cta .btn { display: none; }
   .nav-toggle { display: inline-flex; align-items: center; justify-content: center; }
   .site-header.is-open .nav-links {
@@ -231,7 +231,7 @@ textarea { min-height: 120px; resize: vertical; }
   gap: 10px;
   box-shadow: 0 -8px 24px rgba(0,0,0,0.35);
 }
-.mobile-bar .btn { flex: 1; min-height: 44px; }
+.mobile-bar .btn { flex: 1; min-height: 44px; padding: 0 8px; letter-spacing: 0.08em; font-size: 11px; }
 @media (max-width: 900px) {
   .mobile-bar { display: flex; }
   body { padding-bottom: 72px; }

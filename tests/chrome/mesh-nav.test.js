@@ -41,7 +41,7 @@ test('Text Now is sms:+16166065277; number is tel:+16166065277', () => {
   assert.equal(TEXT_NOW_LABEL, 'Text Now (616) 606-5277');
   assert.equal(TEXT_NOW_COMPACT, 'Text Now');
   assert.equal(CALL_HREF, 'tel:+16166065277');
-  assert.equal(CALL_LABEL, '(616) 606-5277');
+  assert.equal(CALL_LABEL, 'Call (616) 606-5277');
 });
 
 test('mesh helper lists Main/Forum/Software/Status/Portal/Shop/Docs as absolute hosts', () => {
@@ -68,12 +68,19 @@ test('mesh helper lists Main/Forum/Software/Status/Portal/Shop/Docs as absolute 
     assert.doesNotMatch(html, /staging site/i);
   }
   assert.match(header, /nav-phone[^>]+tel:\+16166065277/);
+  assert.match(header, /Call \(616\) 606-5277/);
   assert.match(header, /nav-text-now[^>]+sms:\+16166065277/);
+  assert.match(header, />Text Now</);
   assert.match(header, /btn btn-ghost[^>]+united-mobile-rv-llc\.square\.site/);
+  assert.match(mobile, /Call \(616\) 606-5277/);
+  assert.match(mobile, /tel:\+16166065277/);
   assert.match(mobile, /btn btn-gold[^>]+sms:\+16166065277/);
-  assert.match(mobile, /Text Now \(616\) 606-5277/);
+  assert.match(mobile, />Text Now</);
+  assert.doesNotMatch(mobile, /Text Now \(616\) 606-5277/);
   assert.match(footer, /tel:\+16166065277/);
   assert.match(footer, /sms:\+16166065277/);
+  assert.doesNotMatch(header, /Prefer Text/);
+  assert.doesNotMatch(mobile, /Prefer Text/);
 });
 
 test('shop + forum templates include mesh-chrome (or static mesh + Square)', () => {
@@ -113,6 +120,7 @@ test('shop + forum templates include mesh-chrome (or static mesh + Square)', () 
   assert.match(forum, /sms:\+16166065277/);
   assert.match(forum, /tel:\+16166065277/);
   assert.match(forum, /Text Now/);
+  assert.match(forum, /Call \(616\) 606-5277/);
   assert.doesNotMatch(forum, /Prefer Text/);
   assert.doesNotMatch(forum, /class="(?:btn[^"]*|nav-phone)"[^>]*href="\/book-service\//);
   assert.doesNotMatch(forum, /Text \/ Call/);
@@ -124,12 +132,14 @@ test('shop lockdown allowlist is unchanged (no /forum/ or /design/ added)', () =
   assert.match(mw, /const SHOP_ALLOWED_PREFIXES = \['\/shop\/', '\/api\/shop\/', '\/book-service\/', '\/api\/book', '\/css\/', '\/js\/', '\/assets\/', '\/fonts\/'\]/);
 });
 
-test('site.js rewrites chrome Book to Square and Text Now to sms:', () => {
+test('site.js stamps Call + gold Text Now + Square Book on every nav/mobile bar', () => {
   const js = src('js/site.js');
   assert.match(js, /https:\/\/united-mobile-rv-llc\.square\.site\//);
   assert.match(js, /sms:\+16166065277/);
   assert.match(js, /tel:\+16166065277/);
-  assert.match(js, /\^\(Book\|Book Now\|Book a Service\)\$/);
+  assert.match(js, /Call \(616\) 606-5277/);
+  assert.match(js, /navCtaHtml/);
+  assert.match(js, /mobileBarHtml/);
   assert.match(js, /umrt-platform-bar/);
   assert.doesNotMatch(js, /BOOK_PUBLIC = 'https:\/\/book\.unitedmobilerv\.com\//);
   assert.doesNotMatch(js, /PREFER_TEXT_HREF = 'tel:/);
@@ -142,6 +152,7 @@ test('mothership home + platform-bar convert stack: Text Now sms + tel + Square'
     assert.match(html, /united-mobile-rv-llc\.square\.site/, file);
     assert.match(html, /sms:\+16166065277/, file);
     assert.match(html, /tel:\+16166065277/, file);
+    assert.match(html, /Call \(616\) 606-5277/, file);
     assert.doesNotMatch(html, /Prefer Text/, file);
     assert.doesNotMatch(html, /data-platform-link="book"[^>]*book\.unitedmobilerv\.com/, file);
     assert.doesNotMatch(html, /class="btn btn-ghost"[^>]*book\.unitedmobilerv\.com/, file);
