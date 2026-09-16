@@ -54,16 +54,12 @@ function umrtGetTurnstileToken(containerId) {
 }
 
 (function () {
-  /* Matt LOCK 2026-09-16 convert stack in header/footer/mobile-bar:
-     Text Now → sms:+16166065277; number → tel:+16166065277; Book → Square.
-     Do not rewrite BOOK ONLINE (already Square). */
+  /* Public Book CTAs in header/footer/mobile-bar go to Square.
+     Gold convert is Prefer Text (616) 606-5277 — never Text / Call or Text Now. */
   var BOOK_PUBLIC = 'https://united-mobile-rv-llc.square.site/';
-  var TEXT_NOW_HREF = 'sms:+16166065277';
-  var TEXT_NOW_LABEL = 'Text Now (616) 606-5277';
-  var TEXT_NOW_COMPACT = 'Text Now';
-  var CALL_HREF = 'tel:+16166065277';
-  var CALL_LABEL = '(616) 606-5277';
-  var chromeRoots = document.querySelectorAll('.site-header, .site-footer, .mobile-bar, .umrt-platform-bar');
+  var PREFER_TEXT_HREF = 'tel:+16166065277';
+  var PREFER_TEXT_LABEL = 'Prefer Text (616) 606-5277';
+  var chromeRoots = document.querySelectorAll('.site-header, .site-footer, .mobile-bar, .umrt-platform-bar, .ask-tech-cta');
   for (var ci = 0; ci < chromeRoots.length; ci++) {
     var chromeLinks = chromeRoots[ci].querySelectorAll('a[href]');
     for (var cj = 0; cj < chromeLinks.length; cj++) {
@@ -75,17 +71,13 @@ function umrtGetTurnstileToken(containerId) {
         chromeA.setAttribute('rel', 'noopener');
         continue;
       }
-      if (/^\(?616\)?\s*606[-.\s]?5277$/.test(chromeLabel) || chromeA.classList.contains('nav-phone')) {
-        chromeA.setAttribute('href', CALL_HREF);
-        if (/^\(?616\)?/.test(chromeLabel)) chromeA.textContent = CALL_LABEL;
-        continue;
-      }
-      if (/^(Text\s*\/\s*Call|Call|Text Us|Text|Prefer Text.*|Text Now.*)$/i.test(chromeLabel)) {
-        chromeA.setAttribute('href', TEXT_NOW_HREF);
-        if (/^(Text\s*\/\s*Call|Call|Text Us|Prefer Text)$/i.test(chromeLabel)) {
-          chromeA.textContent = chromeA.closest('.nav-cta') ? TEXT_NOW_COMPACT : TEXT_NOW_LABEL;
-        } else if (/^Prefer Text/i.test(chromeLabel)) {
-          chromeA.textContent = chromeLabel.replace(/^Prefer Text/i, 'Text Now');
+      if (/^(Text\s*\/\s*Call|Call|Text Us|Text|Text Now.*|Prefer Text.*)$/i.test(chromeLabel)
+          || chromeA.classList.contains('nav-text-now')) {
+        chromeA.setAttribute('href', PREFER_TEXT_HREF);
+        chromeA.textContent = PREFER_TEXT_LABEL;
+        chromeA.classList.remove('nav-text-now', 'nav-phone', 'btn-ghost');
+        if (chromeA.closest('.nav-cta') || chromeA.closest('.mobile-bar') || chromeA.closest('.ask-tech-cta')) {
+          chromeA.classList.add('btn', 'btn-gold');
         }
       }
     }
@@ -201,7 +193,7 @@ function umrtGetTurnstileToken(containerId) {
       '      <div><label for="cl-email">Email *</label><input id="cl-email" name="email" type="email" autocomplete="email" required></div>',
       '      <div><label for="cl-location">Location *</label><input id="cl-location" name="location" required placeholder="City / ZIP (e.g. Billings 59101)"></div>',
       '      <div><label for="cl-rig">Rig info *</label><input id="cl-rig" name="rig" required placeholder="Year / make / model (or van/trailer type)"></div>',
-      '      <div><label for="cl-prefer">Prefer *</label><select id="cl-prefer" name="prefer" required><option value="Text" selected>Text</option><option value="Call">Call</option><option value="Email">Email</option></select></div>',
+      '      <div><label for="cl-prefer">Prefer *</label><select id="cl-prefer" name="prefer" required><option value="Text" selected>Prefer Text</option><option value="Call">Call</option><option value="Email">Email</option></select></div>',
       '      <div class="full"><label for="cl-issue">Issue *</label><input id="cl-issue" name="issue" required placeholder="Symptoms, error codes, when it started..."></div>',
       '    </div>',
       '    <button type="button" class="chat-send" id="chat-lead-go" style="width:100%;margin-top:8px">Start chat</button>',
@@ -232,7 +224,7 @@ function umrtGetTurnstileToken(containerId) {
       panel.classList.add('is-open');
       fab.setAttribute('aria-expanded', 'true');
       if (!msgs.dataset.welcomed) {
-        addBubble('bot', 'I can help with UMRT pricing, services, service corridors, credentials, and booking. Share your details below  -  Text is selected by default  -  then ask anything. Or call (616) 606-5277.');
+        addBubble('bot', 'I can help with UMRT pricing, services, service corridors, credentials, and booking. Share your details below  -  Prefer Text is selected by default  -  then ask anything. Or call (616) 606-5277.');
         msgs.dataset.welcomed = '1';
       }
     }
