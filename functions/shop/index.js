@@ -4,7 +4,7 @@
  * per the ecommerce spec's "category pages around customer problems" rule.
  * Phase 1: no live checkout -- every product routes to a quote request.
  */
-import { formatPrice, displayName, CATEGORY_ICONS, formatServicePrice } from '../_lib/shop.js';
+import { formatPrice, displayName, CATEGORY_ICONS, formatServicePrice, stockStatusMeta } from '../_lib/shop.js';
 import { islandHeader, islandFooter, islandMobileBar, shopCartNavItem, BOOK_PUBLIC_HREF } from '../_lib/mesh-chrome.js';
 
 function esc(s) {
@@ -89,18 +89,23 @@ export async function onRequestGet(context) {
 
   const partsSectionsHtml = categoriesToShow.map((cat) => {
     const label = CATEGORY_LABELS[cat] || cat;
-    const cards = byCategory[cat].map((p) => `
+    const cards = byCategory[cat].map((p) => {
+      const stock = stockStatusMeta(p);
+      return `
       <div class="shop-card">
         <a class="shop-card-link" href="${base}/shop/p/${esc(p.id)}">
           <div class="shop-card-imgwrap${p.image_url ? '' : ' is-fallback'}">${cardImageHtml(p)}</div>
           <div class="shop-card-body">
+            ${p.manufacturer ? `<div class="shop-card-brand">${esc(p.manufacturer)}</div>` : ''}
             <div class="shop-card-title">${esc(displayName(p.manufacturer, p.title))}</div>
             <div class="shop-card-price">${formatPrice(p)}</div>
             <div class="shop-card-meta">${p.product_type === 'kit' ? 'Complete kit' : 'Component'} &middot; price shown is a public reference price, not a live quote</div>
+            <span class="shop-stock-chip is-${stock.cls}">${esc(stock.label)}</span>
           </div>
         </a>
         <button type="button" class="btn btn-ghost shop-add-btn" data-product-id="${esc(p.id)}">Add to Cart</button>
-      </div>`).join('');
+      </div>`;
+    }).join('');
     return `<section class="shop-category-band"><div class="wrap wrap-narrow">
       <h2>${esc(label)}</h2>
       <div class="shop-grid">${cards}</div>
@@ -162,9 +167,16 @@ export async function onRequestGet(context) {
   .shop-card-imgwrap.is-fallback{background:linear-gradient(160deg,rgba(201,151,44,0.14),rgba(255,255,255,0.02))}
   .shop-card-img-fallback{font-size:2.6rem;opacity:.55}
   .shop-card-body{padding:14px 16px}
+  .shop-card-brand{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#C9972C;margin-bottom:4px}
   .shop-card-title{font-weight:700;margin-bottom:6px}
   .shop-card-price{color:#E8B84B;font-weight:800;font-size:1.1em;margin-bottom:6px}
-  .shop-card-meta{font-size:12px;color:#9a9a9a}
+  .shop-card-meta{font-size:12px;color:#9a9a9a;margin-bottom:10px}
+  .shop-stock-chip{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;padding:4px 10px;border-radius:999px}
+  .shop-stock-chip::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}
+  .shop-stock-chip.is-ok{color:#4ea36b;background:rgba(78,163,107,0.14)}
+  .shop-stock-chip.is-warn{color:#E8B84B;background:rgba(232,184,75,0.14)}
+  .shop-stock-chip.is-muted{color:#9a9a9a;background:rgba(255,255,255,0.06)}
+  .shop-stock-chip.is-off{color:#d9776f;background:rgba(217,119,111,0.14)}
   .shop-add-btn{margin:0 16px 16px;width:auto}
   .shop-chip-row{display:flex;flex-wrap:wrap;gap:10px}
   .shop-chip{display:inline-flex;align-items:center;background:rgba(255,255,255,0.03);border:1px solid rgba(201,151,44,0.3);color:#E8B84B;font-size:0.9em;font-weight:600;padding:8px 16px;border-radius:999px;text-decoration:none}

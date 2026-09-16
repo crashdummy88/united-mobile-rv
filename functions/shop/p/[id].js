@@ -3,7 +3,7 @@
  * Phase 1: reference pricing + a quote-request form (four service tiers per
  * the "Product + Service" model) instead of a live checkout charge.
  */
-import { formatPrice, priceNote, displayName, CATEGORY_ICONS } from '../../_lib/shop.js';
+import { formatPrice, priceNote, displayName, CATEGORY_ICONS, stockStatusMeta } from '../../_lib/shop.js';
 import { islandHeader, islandFooter, islandMobileBar, shopCartNavItem } from '../../_lib/mesh-chrome.js';
 
 function esc(s) {
@@ -43,12 +43,10 @@ export async function onRequestGet(context) {
     }
   }
 
-  const stockNote = {
-    unverified: 'Availability not yet confirmed with the supplier for this order -- confirmed as part of your quote.',
-    in_stock: 'Currently available.',
-    special_order: 'Special order -- lead time confirmed as part of your quote.',
-    discontinued: 'This item is discontinued; shown for reference only.',
-  }[product.stock_status] || 'Availability confirmed as part of your quote.';
+  // Shared with functions/shop/index.js's card grid -- functions/_lib/shop.js
+  // (2026-09-16) so a product's availability label/copy matches wherever
+  // it's shown instead of two hand-maintained copies drifting apart.
+  const stock = stockStatusMeta(product);
 
   const html = `<!DOCTYPE html>
 <html lang="en">
@@ -65,8 +63,15 @@ export async function onRequestGet(context) {
 <link rel="stylesheet" href="/css/site.css">
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <style>
+  .shop-card-brand{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#C9972C;margin-bottom:6px}
   .price-tag{font-size:1.8em;font-weight:800;color:#E8B84B;margin:10px 0}
-  .price-note{font-size:12px;color:#9a9a9a;margin-top:-6px;margin-bottom:16px}
+  .price-note{font-size:12px;color:#9a9a9a;margin-top:-6px;margin-bottom:12px}
+  .shop-stock-chip{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;padding:4px 10px;border-radius:999px}
+  .shop-stock-chip::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}
+  .shop-stock-chip.is-ok{color:#4ea36b;background:rgba(78,163,107,0.14)}
+  .shop-stock-chip.is-warn{color:#E8B84B;background:rgba(232,184,75,0.14)}
+  .shop-stock-chip.is-muted{color:#9a9a9a;background:rgba(255,255,255,0.06)}
+  .shop-stock-chip.is-off{color:#d9776f;background:rgba(217,119,111,0.14)}
   .service-tier{display:flex;align-items:flex-start;gap:12px;border:1px solid #333;border-radius:10px;padding:16px 18px;margin-bottom:10px;cursor:pointer;transition:border-color .15s,background-color .15s}
   .service-tier:hover{border-color:rgba(201,151,44,0.5)}
   .service-tier input{margin:3px 0 0;accent-color:#C9972C;flex:none}
@@ -104,10 +109,12 @@ ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem() })}
           : `<span aria-hidden="true">${CATEGORY_ICONS[product.category] || '🔧'}</span>`
       }</div>
       <div>
+        ${product.manufacturer ? `<div class="shop-card-brand">${esc(product.manufacturer)}</div>` : ''}
         <h1>${esc(displayName(product.manufacturer, product.title))}</h1>
         <div class="price-tag">${esc(formatPrice(product))}</div>
         <p class="price-note">${esc(priceNote(product))}</p>
-        <p class="muted">${esc(stockNote)}</p>
+        <span class="shop-stock-chip is-${stock.cls}">${esc(stock.label)}</span>
+        <p class="muted" style="margin-top:8px">${esc(stock.note)}</p>
         <button type="button" class="btn btn-gold add-cart-btn" id="add-cart-btn" data-product-id="${esc(product.id)}">Add to Cart</button>
       </div>
     </div>

@@ -57,6 +57,30 @@ export function formatServicePrice(service) {
   return service.price_type === 'starting_at' ? `Starting at ${amt}` : amt;
 }
 
+/**
+ * Availability status display -- added 2026-09-16 for the "frontend
+ * polish" pass. Previously this label/description map lived only inline
+ * in functions/shop/p/[id].js (product page), so the category grid on
+ * functions/shop/index.js pulled `stock_status` from D1 but never
+ * rendered it -- dead data, and the one place customers actually browse
+ * (the grid, not each individual product page) showed no availability
+ * signal at all. Centralized here so both pages render the exact same
+ * label/copy for a given status, matching the file's own price-helper
+ * pattern above. `cls` picks the chip color in each page's CSS.
+ */
+const STOCK_STATUS = {
+  in_stock: { label: 'In Stock', cls: 'ok', note: 'Currently available.' },
+  special_order: { label: 'Special Order', cls: 'warn', note: 'Special order -- lead time confirmed as part of your quote.' },
+  unverified: { label: 'Availability Unverified', cls: 'muted', note: 'Availability not yet confirmed with the supplier for this order -- confirmed as part of your quote.' },
+  discontinued: { label: 'Discontinued', cls: 'off', note: 'This item is discontinued; shown for reference only.' },
+};
+
+export function stockStatusMeta(product) {
+  return (product && STOCK_STATUS[product.stock_status]) || {
+    label: 'Contact for Availability', cls: 'muted', note: 'Availability confirmed as part of your quote.',
+  };
+}
+
 export function displayName(manufacturer, title) {
   const m = String(manufacturer || '').trim();
   const t = String(title || '').trim();

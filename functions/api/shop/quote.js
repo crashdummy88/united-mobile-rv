@@ -46,11 +46,16 @@ export async function onRequestPost(context) {
     return json({ success: false, error: 'rate_limited', retry_after: rl.retryAfter }, 429);
   }
 
+  // Non-fatal by design: Turnstile's own challenge/analytics scripts are
+  // commonly blocked by ad blockers and privacy extensions (confirmed
+  // 2026-09-16 -- a real customer's own browser reproduced this), which
+  // silently locked real quote requests out with no way through. The
+  // honeypot field and rate limit above already carry the spam defense
+  // here, so a failed/missing Turnstile token is logged and the request
+  // still proceeds rather than losing a real lead.
   const tsToken = body['cf-turnstile-response'] || body.turnstile_token;
   const tsResult = await verifyTurnstile(tsToken, env, request.headers.get('CF-Connecting-IP'));
-  if (!tsResult.ok) {
-    return json({ success: false, error: 'captcha_failed' }, 403);
-  }
+  const turnstileVerified = tsResult.ok;
 
   const name = clean(body.name, 120);
   const email = clean(body.email, 160);
@@ -147,7 +152,7 @@ export async function onRequestPost(context) {
       form.append('rig', [rvYear, rvMake, rvModel].filter(Boolean).join(' '));
       form.append('service_option', serviceOption);
       form.append('message',
-        `New shop quote request.\n\nItems:\n${itemsSummary}\n\nService option: ${serviceOption}\nNotes: ${notes || '(none)'}\n\nThis is a QUOTE REQUEST, not a paid order -- no payment has been collected.`
+        `New shop quote request.\n\nItems:\n${itemsSummary}\n\nService option: ${serviceOption}\nNotes: ${notes || '(none)'}\n${turnstileVerified ? '' : '\n(Turnstile did not verify for this submission -- likely an ad blocker on the customer\'s end, not necessarily spam.)\n'}\nThis is a QUOTE REQUEST, not a paid order -- no payment has been collected.`
       );
       form.append('source', 'UMRT Shop');
       context.waitUntil(fetch('https://api.web3forms.com/submit', { method: 'POST', body: form }));
