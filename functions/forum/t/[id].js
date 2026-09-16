@@ -180,7 +180,7 @@ export async function onRequestGet(context) {
     </ul>
     <div class="nav-cta">
       <a class="nav-phone" href="tel:+16166065277">Prefer Text (616) 606-5277</a>
-      <a class="btn btn-ghost" href="/book-service/">Book</a>
+      <a class="btn btn-ghost" href="https://book.unitedmobilerv.com/">Book</a>
     </div>
   </div>
 </header>
@@ -237,7 +237,7 @@ export async function onRequestGet(context) {
       <div class="micro">Navigate</div>
       <a href="/service/">Services</a>
       <a href="/pricing/">Pricing</a>
-      <a href="/book-service/">Book a Service</a>
+      <a href="https://book.unitedmobilerv.com/">Book a Service</a>
       <a href="/guide/">Guides</a>
       <a href="/forum/">Forum</a>
       <a href="/about/">About</a>
@@ -252,7 +252,7 @@ export async function onRequestGet(context) {
 </div>
 <div class="mobile-bar" aria-label="Quick actions">
   <a class="btn btn-ghost" href="tel:+16166065277">Text / Call</a>
-  <a class="btn btn-gold" href="/book-service/">Book Now</a>
+  <a class="btn btn-gold" href="https://book.unitedmobilerv.com/">Book Now</a>
 </div>
 <script src="/js/site.js" defer></script>
 <script>
