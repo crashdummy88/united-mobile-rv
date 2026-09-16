@@ -9,18 +9,25 @@
  *
  * Internal rewrite, NOT a redirect (changed 2026-09-14): a subdomain
  * literally named "shop" bouncing to shop.unitedmobilerv.com/shop/ (or
- * forum -> forum.unitedmobilerv.com/forum/) is a confusing, redundant URL
+ * forum -> forum.unitedmobilerv.com/forum/, or book ->
+ * book.unitedmobilerv.com/book-service/) is a confusing, redundant URL
  * -- the visitor's address bar shouldn't grow a second copy of the
- * subdomain name. Both hostnames now render their target content directly
- * at '/' with no visible redirect. SEO-wise this is a non-issue: there was
- * never a second, separately-rankable page at the bare '/' to consolidate
- * away from -- it's the same one URL either way, just without a hop.
+ * subdomain name. These hostnames now render their target content
+ * directly at '/' with no visible redirect. SEO-wise this is a non-issue:
+ * there was never a second, separately-rankable page at the bare '/' to
+ * consolidate away from -- it's the same one URL either way, just
+ * without a hop.
  */
 import { onRequestGet as shopIndex } from './shop/index.js';
+import { onRequestGet as bookSuite } from './book-service/index.js';
 
 const HOST_HOME_REWRITES = {
   'shop.unitedmobilerv.com': '/shop/',
   'forum.unitedmobilerv.com': '/forum/',
+  // book. follows the shop pattern (dedicated function), not forum's
+  // ASSETS.fetch of a static file -- the suite chrome/canonicals are
+  // host-aware and would be wrong if we just served book-service/index.html.
+  'book.unitedmobilerv.com': '/book-service/',
 };
 
 export async function onRequestGet(context) {
@@ -34,6 +41,14 @@ export async function onRequestGet(context) {
     // than trying to re-route, so it renders identically to visiting
     // /shop/ (same DB query, same category filter handling).
     return shopIndex(context);
+  }
+
+  if (host === 'book.unitedmobilerv.com') {
+    // Same reason as shop: /book-service/ is a Pages Function
+    // (functions/book-service/index.js). Call it directly so book. '/'
+    // renders the suite at the URL the visitor typed -- no visible hop
+    // to book.unitedmobilerv.com/book-service/.
+    return bookSuite(context);
   }
 
   // /forum/ is a static asset directory (forum/index.html) -- fetch it

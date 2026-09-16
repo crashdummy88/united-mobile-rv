@@ -14,7 +14,11 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 // /book-service form; this site's own /book-service page posts same-origin.
 // Allow both explicitly rather than a wildcard, since this endpoint writes
 // to the jobs DB and sends email.
-const ALLOWED_ORIGINS = ['https://unitedmobilerv.com', 'https://united-mobile-rv.pages.dev'];
+const ALLOWED_ORIGINS = [
+  'https://unitedmobilerv.com',
+  'https://united-mobile-rv.pages.dev',
+  'https://book.unitedmobilerv.com',
+];
 
 function corsHeaders(request) {
   const origin = request && request.headers.get('Origin');
