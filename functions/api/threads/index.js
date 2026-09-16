@@ -155,7 +155,7 @@ export async function onRequestPost(context) {
     // Email alert to Matt — fire and forget.
     context.waitUntil(notifyForumActivity(env, {
       subject: `New forum thread: ${title}`,
-      message: `New thread posted in "${category}" by ${session.name || 'a member'}:\n\n${title}\n\n${text}\n\nhttps://united-mobile-rv.pages.dev/forum/ (open the thread from the list)`,
+      message: `New thread posted in "${category}" by ${session.name || 'a member'}:\n\n${title}\n\n${text}\n\nhttps://forum.unitedmobilerv.com/ (open the thread from the list)`,
     }));
   }
 

@@ -1,3 +1,5 @@
+import { BOOK_SUITE_URL, PREFER_TEXT_HREF, PREFER_TEXT_LABEL, platformBarHtml, platformFooterColHtml } from '../../_lib/platform-chrome.js';
+
 /**
  * GET /forum/t/:id — real, server-rendered, permanently linkable thread page.
  * This is the P7 fix: forum content used to live only behind client-side
@@ -165,6 +167,7 @@ export async function onRequestGet(context) {
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
+${platformBarHtml('forum')}
 <header class="site-header">
   <div class="wrap nav-bar">
     <a class="brand" href="/"><img class="brand-logo" src="/assets/brand/umrt-logo.webp" alt="United Mobile RV" width="40" height="40"><span class="brand-text">United Mobile <span>RV</span></span></a>
@@ -179,8 +182,8 @@ export async function onRequestGet(context) {
       <li><a href="/about/">About</a></li>
     </ul>
     <div class="nav-cta">
-      <a class="nav-phone" href="tel:+16166065277">Prefer Text (616) 606-5277</a>
-      <a class="btn btn-ghost" href="/book-service/">Book</a>
+      <a class="nav-phone" href="${PREFER_TEXT_HREF}">${PREFER_TEXT_LABEL}</a>
+      <a class="btn btn-ghost" href="${BOOK_SUITE_URL}">Book</a>
     </div>
   </div>
 </header>
@@ -237,13 +240,14 @@ export async function onRequestGet(context) {
       <div class="micro">Navigate</div>
       <a href="/service/">Services</a>
       <a href="/pricing/">Pricing</a>
-      <a href="/book-service/">Book a Service</a>
+      <a href="${BOOK_SUITE_URL}">Book</a>
       <a href="/guide/">Guides</a>
       <a href="/forum/">Forum</a>
       <a href="/about/">About</a>
       <a href="/privacy-policy/">Privacy</a>
       <a href="/terms-of-use/">Terms of Use</a>
     </div>
+    ${platformFooterColHtml()}
   </div>
 </footer>
 <div id="lightbox-overlay">
@@ -251,8 +255,8 @@ export async function onRequestGet(context) {
   <img id="lightbox-img" src="" alt="">
 </div>
 <div class="mobile-bar" aria-label="Quick actions">
-  <a class="btn btn-ghost" href="tel:+16166065277">Text / Call</a>
-  <a class="btn btn-gold" href="/book-service/">Book Now</a>
+  <a class="btn btn-ghost" href="${PREFER_TEXT_HREF}">Prefer Text</a>
+  <a class="btn btn-gold" href="${BOOK_SUITE_URL}">Book</a>
 </div>
 <script src="/js/site.js" defer></script>
 <script>

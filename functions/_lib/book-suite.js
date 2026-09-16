@@ -10,6 +10,8 @@
  * On other hosts the same intake stays, with the normal site chrome.
  */
 
+import { platformBarHtml, platformFooterColHtml } from './platform-chrome.js';
+
 export const BOOK_HOST = 'book.unitedmobilerv.com';
 export const SQUARE_BOOK_URL = 'https://united-mobile-rv-llc.square.site/';
 export const BOOK_PHONE_DISPLAY = '(616) 606-5277';
@@ -73,7 +75,7 @@ function mothershipFooter() {
       <div class="micro">Navigate</div>
       <a href="/service/">Services</a>
       <a href="/pricing/">Pricing</a>
-      <a href="/book-service/">Book a Service</a>
+      <a href="https://book.unitedmobilerv.com/">Book</a>
       <a href="/guide/">Guides</a>
       <a href="/service-areas/">Service Areas</a>
       <a href="/about/">About</a>
@@ -81,6 +83,7 @@ function mothershipFooter() {
       <a href="/privacy-policy/">Privacy</a>
       <a href="/terms-of-use/">Terms of Use</a>
     </div>
+    ${platformFooterColHtml()}
     <div>
       <div class="micro">Credentials</div>
       <p class="muted mb-0" style="font-size:13px;line-height:1.7">
@@ -230,6 +233,7 @@ ${robots}<meta name="theme-color" content="#1A1A1A">
 </head>
 <body class="book-suite">
 <a class="skip-link" href="#main">Skip to content</a>
+${bookHost ? '' : platformBarHtml('book')}
 <header class="${headerClass}">
   <div class="wrap nav-bar">
     <a class="brand" href="${esc(homeHref)}"><img class="brand-logo" src="/assets/brand/umrt-logo.webp" alt="United Mobile RV" width="36" height="36"><span class="brand-text">United Mobile <span>RV</span></span></a>

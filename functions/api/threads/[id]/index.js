@@ -104,7 +104,7 @@ export async function onRequestPost(context) {
     const threadRow = await env.DB.prepare('SELECT title, author_id FROM threads WHERE id = ?').bind(params.id).first();
     context.waitUntil(notifyForumActivity(env, {
       subject: `New forum reply: ${threadRow ? threadRow.title : params.id}`,
-      message: `New reply from ${session.name || 'a member'}:\n\n${text}\n\nhttps://united-mobile-rv.pages.dev/forum/t/${params.id}`,
+      message: `New reply from ${session.name || 'a member'}:\n\n${text}\n\nhttps://forum.unitedmobilerv.com/forum/t/${params.id}`,
     }));
 
     // Notify the thread author and anyone else who has posted in this thread

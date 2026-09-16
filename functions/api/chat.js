@@ -26,7 +26,7 @@ function json(data, status = 200) {
 }
 
 const FALLBACK =
-  "Live chat AI is offline right now. Prefer Text (616) 606-5277 — or Book at /book-service/. A human will follow up.";
+  "Live chat AI is offline right now. Prefer Text (616) 606-5277 — or Book at https://book.unitedmobilerv.com/. A human will follow up.";
 
 const DEFAULT_MODEL = '@cf/meta/llama-3.1-8b-instruct-fast';
 
