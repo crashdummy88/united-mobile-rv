@@ -138,6 +138,11 @@ test('shop + forum templates include mesh-chrome (or static mesh + Square)', () 
   assert.doesNotMatch(forum, /href="https:\/\/united-mobile-rv\.pages\.dev/);
 });
 
+test('nav labels stay one line so Main Hub does not stack', () => {
+  const css = src('css/site.css');
+  assert.match(css, /\.nav-links a \{[\s\S]*white-space:\s*nowrap/);
+});
+
 test('shop lockdown allowlist is unchanged (no /forum/ or /design/ added)', () => {
   const mw = src('functions/_middleware.js');
   assert.match(mw, /const SHOP_ALLOWED_PREFIXES = \['\/shop\/', '\/api\/shop\/', '\/book-service\/', '\/api\/book', '\/css\/', '\/js\/', '\/assets\/', '\/fonts\/'\]/);
