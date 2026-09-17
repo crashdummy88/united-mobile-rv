@@ -15,7 +15,15 @@
  *   boxes on a pale band = "cards are the wrong color".
  * - Category grids sat in .wrap-narrow (760px) with 220px cards, so three
  *   skinny columns wrapped titles and felt cramped.
+ * - Live cart 2026-09-17: radios at width:100% left a huge empty option
+ *   card and squeezed the label into a right-hand strip, plus a page-level
+ *   horizontal scrollbar. Pin radios and keep every shop container
+ *   min-width:0 / max-width:100%.
  */
+
+/* Shop pages only load this sheet -- clip leftover overflow rather than
+   let a stretched radio or long title grow a horizontal scrollbar. */
+html { overflow-x: clip; }
 
 /* ----- Listing grid ----- */
 .shop-filter-band { padding: calc(var(--space) * 3) 0 calc(var(--space) * 2); }
@@ -25,8 +33,10 @@
 
 .shop-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
-  gap: calc(var(--space) * 3);
+  /* 300px min → ~3 comfortable columns in the 1160 wrap, not 4 skinny ones
+     that wrap Epoch / Victron titles into a cramped stack. */
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: calc(var(--space) * 4);
   margin-top: calc(var(--space) * 2);
 }
 
@@ -347,14 +357,17 @@
   color: var(--white);
 }
 .shop-checkout-panel h2 { color: var(--white); }
-.shop-checkout-panel .muted { color: rgba(255, 255, 255, 0.55); }
-.shop-checkout-panel label { color: rgba(255, 255, 255, 0.55); }
+.shop-checkout-panel .muted { color: rgba(255, 255, 255, 0.72); }
+.shop-checkout-panel label { color: rgba(255, 255, 255, 0.72); }
 
 .service-tier {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  border: 1px solid var(--rule);
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, 0.16);
   background: #0f0f0f;
   border-radius: 12px;
   padding: 16px 18px;
@@ -368,33 +381,44 @@
 }
 .service-tier:hover { border-color: rgba(201, 151, 44, 0.5); }
 .service-tier strong { color: var(--white); font-size: 1.02em; font-weight: 500; }
-.service-tier-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.service-tier-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
 .service-tier small {
   display: block;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.72);
   font-size: 0.88em;
   line-height: 1.45;
 }
 .service-tier:has(input:checked) {
   border-color: var(--gold);
-  background: rgba(201, 151, 44, 0.08);
+  background: rgba(201, 151, 44, 0.12);
+  box-shadow: inset 3px 0 0 var(--gold);
 }
 
-/* Kill the sitewide full-width underline input look on radios. */
-.service-tier input,
-.service-tier input[type="radio"] {
+/* Kill the sitewide full-width underline input look on radios.
+   Live cart: width:100% radios ate the row and parked the copy
+   in a clipped right-hand strip. flex-basis 18px + max-width
+   keeps the control from ever claiming the row. */
+label.service-tier input,
+label.service-tier input[type="radio"] {
   width: 18px;
   min-width: 18px;
   max-width: 18px;
   height: 18px;
   margin: 3px 0 0;
   padding: 0;
-  flex: none;
+  flex: 0 0 18px;
   appearance: auto;
   accent-color: var(--gold);
   background: transparent;
   border: 0;
   border-radius: 0;
+  box-sizing: border-box;
 }
 
 .shop-checkout-panel textarea.forum-input,
@@ -428,7 +452,7 @@ textarea.forum-input:focus {
 .qf-field .forum-input { margin-bottom: 0; }
 .qf-label {
   display: block;
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(255, 255, 255, 0.72);
   font-size: 0.78em;
   font-weight: 500;
   text-transform: uppercase;
