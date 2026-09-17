@@ -97,7 +97,7 @@ ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem() })}
     ${product.installation_required ? '<p class="held-note">Professional installation strongly recommended for this item.</p>' : ''}
   </div>
 </section>
-<section class="band shop-checkout-band" id="quote">
+<section class="shop-checkout-band" id="quote">
   <div class="wrap wrap-narrow">
     <div class="shop-checkout-panel">
     <h2>Request a quote</h2>

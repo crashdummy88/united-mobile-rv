@@ -31,6 +31,7 @@ test('cart quote form stays on the dark theme (no band-gray light wash)', () => 
   assert.doesNotMatch(cart, /band-gray/);
   assert.match(cart, /shop-checkout-panel/);
   assert.match(cart, /shop-checkout-band/);
+  assert.match(cart, /shop-cart-band/);
   assert.match(cart, /Call or text \(616\) 606-5277/);
   assert.match(cart, /service-tier-text/);
 });
@@ -55,6 +56,7 @@ test('shop.css uses site tokens and pins radio inputs so they cannot go full-wid
   assert.match(css, /minmax\(min\(100%, 260px\), 1fr\)/);
   assert.match(css, /\.shop-checkout-panel/);
   assert.match(css, /grid-template-columns:\s*56px minmax\(0, 1fr\)/);
+  assert.match(css, /\.shop-card-imgwrap \{[\s\S]*background:\s*var\(--white\)/);
 });
 
 test('shop lockdown still allows /css/ so shop.css is reachable on shop host', () => {

@@ -35,7 +35,7 @@ ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem() })}
     <p class="muted">Gather what you need, then request one combined quote. Nothing here is a live checkout -- our team follows up with real pricing and availability.</p>
   </div>
 </section>
-<section class="band">
+<section class="shop-cart-band">
   <div class="wrap wrap-narrow">
     <div id="cart-items"><p class="cart-empty">Loading your cart&hellip;</p></div>
     <div id="cart-total-wrap" hidden>
@@ -44,7 +44,7 @@ ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem() })}
     </div>
   </div>
 </section>
-<section class="band shop-checkout-band" id="quote" hidden>
+<section class="shop-checkout-band" id="quote" hidden>
   <div class="wrap wrap-narrow" id="quote-wrap">
     <div class="shop-checkout-panel">
     <h2>Request a quote for this cart</h2>
