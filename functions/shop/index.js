@@ -4,7 +4,7 @@
  * per the ecommerce spec's "category pages around customer problems" rule.
  * Phase 1: no live checkout -- every product routes to a quote request.
  */
-import { formatPrice, displayName, CATEGORY_ICONS, formatServicePrice, stockStatusMeta } from '../_lib/shop.js';
+import { formatPrice, displayName, CATEGORY_ICONS, formatServicePrice, stockStatusMeta, serviceBookHref } from '../_lib/shop.js';
 import { islandHeader, islandFooter, islandMobileBar, shopCartNavItem, BOOK_PUBLIC_HREF } from '../_lib/mesh-chrome.js';
 
 function esc(s) {
@@ -54,11 +54,23 @@ export async function onRequestGet(context) {
   let services = [];
   if (env.DB) {
     if (activeTab === 'services') {
-      const { results } = await env.DB.prepare(
-        `SELECT id, title, description, category, price, price_type, price_note
-         FROM services WHERE active = 1 ORDER BY category, display_order, title`
-      ).all();
-      services = results || [];
+      // book_url is migration 020 -- if D1 hasn't been migrated yet, fall
+      // back so the tab still renders (helper then uses Square homepage + intent).
+      try {
+        const { results } = await env.DB.prepare(
+          `SELECT id, title, description, category, price, price_type, price_note, book_url
+           FROM services WHERE active = 1 ORDER BY category, display_order, title`
+        ).all();
+        services = results || [];
+      } catch (err) {
+        const msg = String((err && err.message) || err);
+        if (!/no such column:\s*book_url/i.test(msg)) throw err;
+        const { results } = await env.DB.prepare(
+          `SELECT id, title, description, category, price, price_type, price_note
+           FROM services WHERE active = 1 ORDER BY category, display_order, title`
+        ).all();
+        services = results || [];
+      }
     } else {
       const { results } = await env.DB.prepare(
         `SELECT id, manufacturer, title, category, retail_price, product_type, stock_status, image_url
@@ -126,7 +138,7 @@ export async function onRequestGet(context) {
           <div class="shop-card-price">${esc(formatServicePrice(s))}${s.price_note ? ` <span class="shop-card-price-note">${esc(s.price_note)}</span>` : ''}</div>
           <p class="shop-card-desc">${esc(s.description || '')}</p>
         </div>
-        <a class="btn btn-ghost" href="${BOOK_PUBLIC_HREF}" target="_blank" rel="noopener">Book this service</a>
+        <a class="btn btn-ghost" href="${esc(serviceBookHref(s, env))}" target="_blank" rel="noopener">Book this service</a>
       </div>`).join('');
     return `<section class="shop-category-band"><div class="wrap">
       <h2>${esc(label)}</h2>
@@ -200,6 +212,16 @@ ${islandMobileBar()}
 </html>`;
 
   return new Response(html, {
+    status: 200,
+    headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'public, max-age=300' },
+  });
+}
+
+// Cloudflare Pages only dispatches onRequestGet to GET. Uptime/CDN HEAD
+// probes on /shop/?tab=services were 404 (GET 200) -- cheap empty 200
+// matches the GET success status without running the D1 listing query.
+export function onRequestHead() {
+  return new Response(null, {
     status: 200,
     headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'public, max-age=300' },
   });

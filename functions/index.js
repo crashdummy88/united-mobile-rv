@@ -18,7 +18,7 @@
  * consolidate away from -- it's the same one URL either way, just
  * without a hop.
  */
-import { onRequestGet as shopIndex } from './shop/index.js';
+import { onRequestGet as shopIndex, onRequestHead as shopHead } from './shop/index.js';
 import { onRequestGet as bookSuite } from './book-service/index.js';
 
 const HOST_HOME_REWRITES = {
@@ -29,6 +29,12 @@ const HOST_HOME_REWRITES = {
   // host-aware and would be wrong if we just served book-service/index.html.
   'book.unitedmobilerv.com': '/book-service/',
 };
+
+export async function onRequestHead(context) {
+  const host = new URL(context.request.url).hostname;
+  if (host === 'shop.unitedmobilerv.com') return shopHead(context);
+  return context.next();
+}
 
 export async function onRequestGet(context) {
   const host = new URL(context.request.url).hostname;

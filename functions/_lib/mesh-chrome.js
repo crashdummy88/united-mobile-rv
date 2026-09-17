@@ -14,6 +14,12 @@
 
 export const SQUARE_BOOK_URL = 'https://united-mobile-rv-llc.square.site/';
 export const BOOK_PUBLIC_HREF = SQUARE_BOOK_URL;
+// Square Online also exposes /s/appointments (GET 200) but the live
+// appointments widget currently errors ("Something went wrong") while the
+// homepage "Request an appointment" form works. Keep this constant for
+// Matt to paste into services.book_url / SQUARE_BOOKING_URL once
+// Appointments is published; do not use it as the default card target.
+export const SQUARE_APPOINTMENTS_HREF = 'https://united-mobile-rv-llc.square.site/s/appointments';
 export const TEXT_NOW_HREF = 'sms:+16166065277';
 export const TEXT_NOW_LABEL = 'Text Now (616) 606-5277';
 export const TEXT_NOW_COMPACT = 'Text Now';

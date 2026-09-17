@@ -99,6 +99,49 @@ function umrtGetTurnstileToken(containerId) {
     }
   }
 
+  /* In-page Book a Service / Book Now still pointed at /book-service/
+     (the suite). Owner lock: Book lands on Square. Keep the existing
+     button labels (no redesign). Optional body[data-book-service] adds
+     SKU intent so related guides (generator, winterize, PPI, …) match
+     shop service cards. Header Book stays the bare Square homepage. */
+  function umrtSquareBookHref(serviceId, serviceName, source) {
+    if (!serviceId) return BOOK_PUBLIC;
+    var u;
+    try { u = new URL(BOOK_PUBLIC); } catch (e) { return BOOK_PUBLIC; }
+    u.searchParams.set('service', serviceId);
+    if (serviceName) u.searchParams.set('service_name', serviceName);
+    u.searchParams.set('utm_source', source || 'umrt_guide');
+    u.searchParams.set('utm_medium', 'book_cta');
+    u.searchParams.set('utm_campaign', 'book_this_service');
+    u.searchParams.set('utm_content', serviceId);
+    return u.toString();
+  }
+  function umrtHrefIsSuiteBook(href) {
+    if (!href) return false;
+    if (href.indexOf('thank-you') !== -1) return false;
+    if (href === '/book-service/' || href === '/book-service') return true;
+    try {
+      var parsed = new URL(href, window.location.origin);
+      if (parsed.hostname === 'book.unitedmobilerv.com') return true;
+      return /\/book-service\/?$/.test(parsed.pathname);
+    } catch (e) {
+      return false;
+    }
+  }
+  var pageService = (document.body && document.body.getAttribute('data-book-service')) || '';
+  var pageServiceName = (document.body && document.body.getAttribute('data-book-service-name')) || '';
+  var pageSource = (document.body && document.body.getAttribute('data-book-source')) || 'umrt_guide';
+  var inPageBook = document.querySelectorAll('main a[href]');
+  for (var bi = 0; bi < inPageBook.length; bi++) {
+    var ba = inPageBook[bi];
+    var blabel = (ba.textContent || '').replace(/\s+/g, ' ').trim();
+    if (!/^(Book|Book Now|Book a Service|BOOK ONLINE|Book Online|Book service)$/i.test(blabel)) continue;
+    if (!umrtHrefIsSuiteBook(ba.getAttribute('href'))) continue;
+    ba.setAttribute('href', umrtSquareBookHref(pageService, pageServiceName, pageSource));
+    ba.setAttribute('target', '_blank');
+    ba.setAttribute('rel', 'noopener');
+  }
+
   /* Shop/forum/book islands: relative Home stays on the island. Point
      Main at the apex, and append any missing ecosystem links as
      absolute URLs so shop lockdown cannot swallow them. */
@@ -333,7 +376,7 @@ function umrtGetTurnstileToken(containerId) {
         addBubble('bot', data.reply);
         history.push({ role: 'assistant', content: data.reply });
       } catch (e) {
-        addBubble('bot', 'Chat is briefly unavailable. Call or text <a href="tel:+16166065277">(616) 606-5277</a>  -  our team answers. Or use <a href="/book-service/">Book a Service</a>.');
+        addBubble('bot', 'Chat is briefly unavailable. Call or text <a href="tel:+16166065277">(616) 606-5277</a>  -  our team answers. Or <a href="https://united-mobile-rv-llc.square.site/" target="_blank" rel="noopener">Book</a>.');
       } finally {
         sendBtn.disabled = false;
       }
