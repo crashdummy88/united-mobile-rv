@@ -9,6 +9,8 @@
  * displayed or totaled.
  */
 
+import { BOOK_PUBLIC_HREF, SQUARE_APPOINTMENTS_HREF } from './mesh-chrome.js';
+
 export function hasPrice(product) {
   return product && product.retail_price !== null && product.retail_price !== undefined;
 }
@@ -91,4 +93,76 @@ export function displayName(manufacturer, title) {
     return t;
   }
   return `${m} ${t}`;
+}
+
+/**
+ * Square-land allowlist for service "Book this service" hrefs.
+ * Owner lock: stay on Square ecosystem URLs. Reject everything else
+ * (including javascript:/relative/portal/book-service) so a bad paste
+ * cannot take Book off Square. Hosts verified against live Square
+ * Online + Appointments + Payment Links -- no catalog IDs invented here.
+ */
+const SQUARE_LAND_HOST_EXACT = new Set([
+  'united-mobile-rv-llc.square.site',
+  'app.squareup.com',
+  'squareup.com',
+  'www.squareup.com',
+  'book.squareup.com',
+  'square.link',
+  'squareupscheduling.com',
+  'www.squareupscheduling.com',
+]);
+
+function squareLandHostOk(hostname) {
+  const host = String(hostname || '').toLowerCase();
+  if (SQUARE_LAND_HOST_EXACT.has(host)) return true;
+  return (
+    host.endsWith('.square.site')
+    || host.endsWith('.squareup.com')
+    || host.endsWith('.square.link')
+    || host.endsWith('.squareupscheduling.com')
+  );
+}
+
+export function isSquareLandUrl(value) {
+  try {
+    const u = new URL(String(value || '').trim());
+    return u.protocol === 'https:' && squareLandHostOk(u.hostname);
+  } catch {
+    return false;
+  }
+}
+
+function appendServiceIntent(href, service) {
+  const u = new URL(href);
+  const id = String((service && service.id) || '').trim();
+  const title = String((service && service.title) || '').trim();
+  if (id && !u.searchParams.has('service')) u.searchParams.set('service', id);
+  if (title && !u.searchParams.has('service_name')) u.searchParams.set('service_name', title);
+  if (!u.searchParams.has('utm_source')) {
+    u.searchParams.set('utm_source', 'umrt_shop');
+    u.searchParams.set('utm_medium', 'service_card');
+    u.searchParams.set('utm_campaign', 'book_this_service');
+    if (id) u.searchParams.set('utm_content', id);
+  }
+  return u.toString();
+}
+
+/**
+ * Per-card Book href. Preference order (no invented Square item IDs):
+ *   1. services.book_url when it is a Square-land https URL (Matt paste)
+ *   2. env.SQUARE_BOOKING_URL when set to a Square-land URL (Pages env)
+ *   3. Square Online /s/appointments (verified GET 200) + service/UTM
+ *      so Matt can see which shop SKU was clicked
+ * Header Book stays BOOK_PUBLIC_HREF (square.site root) -- not this helper.
+ */
+export function serviceBookHref(service, env) {
+  const explicit = service && service.book_url;
+  if (isSquareLandUrl(explicit)) return String(explicit).trim();
+
+  const fromEnv = env && env.SQUARE_BOOKING_URL;
+  const base = isSquareLandUrl(fromEnv)
+    ? String(fromEnv).trim()
+    : (SQUARE_APPOINTMENTS_HREF || BOOK_PUBLIC_HREF);
+  return appendServiceIntent(base, service);
 }

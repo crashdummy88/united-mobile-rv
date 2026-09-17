@@ -14,6 +14,11 @@
 
 export const SQUARE_BOOK_URL = 'https://united-mobile-rv-llc.square.site/';
 export const BOOK_PUBLIC_HREF = SQUARE_BOOK_URL;
+// Verified live 2026-09-17 (GET 200): Square Online appointments intake.
+// Header/mobile "Book" stays on SQUARE_BOOK_URL (owner lock). Shop service
+// cards use this path (or a per-SKU services.book_url) so "Book this service"
+// is not a homepage dump. Do not invent catalog/item IDs.
+export const SQUARE_APPOINTMENTS_HREF = 'https://united-mobile-rv-llc.square.site/s/appointments';
 export const TEXT_NOW_HREF = 'sms:+16166065277';
 export const TEXT_NOW_LABEL = 'Text Now (616) 606-5277';
 export const TEXT_NOW_COMPACT = 'Text Now';
