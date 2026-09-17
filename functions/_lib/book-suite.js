@@ -19,6 +19,8 @@ import {
   CALL_HREF,
   CALL_LABEL,
   SQUARE_BOOK_URL,
+  MAIN_HOME_HREF,
+  MAIN_HOME_LABEL,
 } from './mesh-chrome.js';
 
 export const BOOK_HOST = 'book.unitedmobilerv.com';
@@ -47,7 +49,7 @@ const SUITE_CSS = `
 
 function suiteFooter({ bookHost }) {
   const apexNote = bookHost
-    ? `<p class="mt-6 mb-0 muted">Full site: <a href="https://unitedmobilerv.com/">unitedmobilerv.com</a></p>`
+    ? `<p class="mt-6 mb-0 muted">Return to <a href="${MAIN_HOME_HREF}">${MAIN_HOME_LABEL}</a></p>`
     : '';
   return `<div class="wrap footer-grid">
     <div>
@@ -82,7 +84,7 @@ function suiteMain({ bookHost }) {
   <div class="wrap">
     <span class="micro">Booking</span>
     <h1>Book a mobile RV visit</h1>
-    <p class="lead">Square is the official booking intake. Text if you want the technician first. Every request is reviewed personally — trip fee and price confirmed before we roll.</p>
+    <p class="lead">BOOK ONLINE opens Square in a new tab — that is the official booking intake. You leave this page to finish the request on Square. Text if you want the technician first. Every request is reviewed personally — trip fee and price confirmed before we roll.</p>
   </div>
 </section>
 <section class="band" style="padding-top:48px;padding-bottom:32px">
@@ -91,7 +93,7 @@ function suiteMain({ bookHost }) {
       <a class="btn btn-gold" href="${esc(SQUARE_BOOK_URL)}" target="_blank" rel="noopener" style="font-size:1.05em;padding:0 40px;">BOOK ONLINE</a>
       <a class="btn btn-ghost" href="${TEXT_NOW_HREF}">${TEXT_NOW_LABEL}</a>
     </div>
-    <p class="muted" style="margin-top:20px">Or <a href="tel:${BOOK_PHONE_E164}">call ${BOOK_PHONE_DISPLAY}</a> — same number, technician directly.</p>
+    <p class="muted" style="margin-top:20px">BOOK ONLINE leaves this site for Square (new tab). Or <a href="tel:${BOOK_PHONE_E164}">call ${BOOK_PHONE_DISPLAY}</a> — same number, technician directly.</p>
   </div>
 </section>
 <section class="band" style="padding-top:16px">
@@ -102,7 +104,7 @@ function suiteMain({ bookHost }) {
       <div>
         <span class="step-num">01</span>
         <h3>Book or text</h3>
-        <p>Use BOOK ONLINE (Square) or Text Now. Tell us the issue, City/ZIP, and the rig.</p>
+        <p>Use BOOK ONLINE to continue on Square (new tab), or Text Now. Tell us the issue, City/ZIP, and the rig.</p>
       </div>
       <div>
         <span class="step-num">02</span>
@@ -194,7 +196,7 @@ ${mainHtml}
   </div>
 </footer>
 ${islandMobileBar()}
-<script src="/js/site.js?v=20260916cta" defer></script>
+<script src="/js/site.js?v=20260917nav" defer></script>
 </body>
 </html>`;
 }
@@ -233,6 +235,7 @@ export function renderBookThankYou(request) {
   const bookHost = isBookHost(url.hostname);
   const canonical = `${url.origin}/book-service/thank-you/`;
   const backHref = bookHost ? '/' : '/book-service/';
+  const apexReturn = `<a class="btn btn-ghost" href="${MAIN_HOME_HREF}">${MAIN_HOME_LABEL}</a>`;
   const title = 'Thank you | United Mobile RV';
   const description = 'Booking request received.';
   const mainHtml = `<main id="main">
@@ -246,6 +249,7 @@ export function renderBookThankYou(request) {
 <section class="band"><div class="wrap"><div class="btn-row">
   <a class="btn btn-gold" href="${TEXT_NOW_HREF}">${TEXT_NOW_LABEL}</a>
   <a class="btn btn-ghost" href="${esc(backHref)}">Back to booking</a>
+  ${apexReturn}
 </div></div></section>
 </main>`;
   const html = pageShell({

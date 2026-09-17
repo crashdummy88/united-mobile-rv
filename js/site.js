@@ -143,8 +143,10 @@ function umrtGetTurnstileToken(containerId) {
   }
 
   /* Shop/forum/book islands: relative Home stays on the island. Point
-     Main at the apex, and append any missing ecosystem links as
+     MAIN HUB at the HTTPS apex, and append any missing ecosystem links as
      absolute URLs so shop lockdown cannot swallow them. */
+  var MAIN_HOME_HREF = 'https://unitedmobilerv.com/';
+  var MAIN_HOME_LABEL = 'MAIN HUB';
   var islandHost = location.hostname === 'shop.unitedmobilerv.com'
     || location.hostname === 'forum.unitedmobilerv.com'
     || location.hostname === 'book.unitedmobilerv.com';
@@ -152,7 +154,7 @@ function umrtGetTurnstileToken(containerId) {
     var meshNav = document.querySelector('.nav-links');
     if (meshNav) {
       var meshItems = [
-        ['Main', 'https://unitedmobilerv.com/'],
+        [MAIN_HOME_LABEL, MAIN_HOME_HREF],
         ['Forum', 'https://forum.unitedmobilerv.com/'],
         ['Software', 'https://software.unitedmobilerv.com/'],
         ['Status', 'https://status.unitedmobilerv.com/'],
@@ -168,11 +170,12 @@ function umrtGetTurnstileToken(containerId) {
       meshItems.forEach(function (pair) {
         var name = pair[0];
         var href = pair[1];
-        var found = have[name.toLowerCase()] || (name === 'Main' ? have.home : null);
+        var found = have[name.toLowerCase()]
+          || (name === MAIN_HOME_LABEL ? (have['main hub'] || have.main || have.home) : null);
         if (found) {
-          if (name === 'Main') {
+          if (name === MAIN_HOME_LABEL) {
             found.setAttribute('href', href);
-            found.textContent = 'Main';
+            found.textContent = MAIN_HOME_LABEL;
           }
           return;
         }
@@ -184,6 +187,17 @@ function umrtGetTurnstileToken(containerId) {
         meshNav.appendChild(li);
       });
     }
+  }
+
+  /* Text Now / TEXT NOW controls must open sms:, never tel:. Call stays tel:. */
+  var textNowLinks = document.querySelectorAll('a[href], a.nav-text-now, a[data-platform-link="text"]');
+  for (var ti = 0; ti < textNowLinks.length; ti++) {
+    var textA = textNowLinks[ti];
+    var textLabel = (textA.textContent || '').replace(/\s+/g, ' ').trim();
+    var isTextNow = textA.classList.contains('nav-text-now')
+      || textA.getAttribute('data-platform-link') === 'text'
+      || /^TEXT\s*NOW\b/i.test(textLabel);
+    if (isTextNow) textA.setAttribute('href', TEXT_NOW_HREF);
   }
 
   var header = document.querySelector('.site-header');

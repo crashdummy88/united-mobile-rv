@@ -86,7 +86,7 @@ ${islandHeader({ current: 'forum' })}
 </main>
 ${islandFooter({ current: 'forum' })}
 ${islandMobileBar()}
-<script src="/js/site.js?v=20260916cta" defer></script>
+<script src="/js/site.js?v=20260917nav" defer></script>
 </body>
 </html>`;
 

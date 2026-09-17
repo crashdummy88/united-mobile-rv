@@ -14,12 +14,14 @@ import {
   TEXT_NOW_COMPACT,
   CALL_HREF,
   CALL_LABEL,
+  MAIN_HOME_HREF,
+  MAIN_HOME_LABEL,
   islandHeader,
   islandFooter,
   islandMobileBar,
 } from '../../functions/_lib/mesh-chrome.js';
 
-const REQUIRED = ['Main', 'Forum', 'Software', 'Status', 'Portal', 'Shop', 'Docs', 'Field guides'];
+const REQUIRED = ['MAIN HUB', 'Forum', 'Software', 'Status', 'Portal', 'Shop', 'Docs', 'Field guides'];
 const SQUARE = 'https://united-mobile-rv-llc.square.site/';
 
 function src(rel) {
@@ -42,9 +44,11 @@ test('Text Now is sms:+16166065277; number is tel:+16166065277', () => {
   assert.equal(TEXT_NOW_COMPACT, 'Text Now');
   assert.equal(CALL_HREF, 'tel:+16166065277');
   assert.equal(CALL_LABEL, 'Call (616) 606-5277');
+  assert.equal(MAIN_HOME_HREF, 'https://unitedmobilerv.com/');
+  assert.equal(MAIN_HOME_LABEL, 'MAIN HUB');
 });
 
-test('mesh helper lists Main/Forum/Software/Status/Portal/Shop/Docs/Field guides as absolute hosts', () => {
+test('mesh helper lists MAIN HUB/Forum/Software/Status/Portal/Shop/Docs/Field guides as absolute hosts', () => {
   const labels = MESH_LINKS.map((l) => l.label);
   for (const name of REQUIRED) assert.ok(labels.includes(name), `missing ${name}`);
   const header = islandHeader({ current: 'shop' });
@@ -118,6 +122,8 @@ test('shop + forum templates include mesh-chrome (or static mesh + Square)', () 
   assert.match(forum, /https:\/\/portal\.unitedmobilerv\.com\//);
   assert.match(forum, /https:\/\/shop\.unitedmobilerv\.com\//);
   assert.match(forum, /https:\/\/docs\.unitedmobilerv\.com\//);
+  assert.match(forum, />MAIN HUB</);
+  assert.match(forum, /href="https:\/\/unitedmobilerv\.com\/"[^>]*>MAIN HUB</);
   assert.match(forum, /https:\/\/unitedmobilerv\.com\/guide\//);
   assert.match(forum, />Field guides</);
   assert.match(forum, /united-mobile-rv-llc\.square\.site/);
@@ -142,6 +148,9 @@ test('site.js stamps Call + gold Text Now + Square Book on every nav/mobile bar'
   assert.match(js, /sms:\+16166065277/);
   assert.match(js, /tel:\+16166065277/);
   assert.match(js, /Call \(616\) 606-5277/);
+  assert.match(js, /MAIN HUB/);
+  assert.match(js, /https:\/\/unitedmobilerv\.com\//);
+  assert.doesNotMatch(js, /\['Main', 'https:\/\/unitedmobilerv\.com\/'\]/);
   assert.match(js, /navCtaHtml/);
   assert.match(js, /mobileBarHtml/);
   assert.match(js, /umrt-platform-bar/);
@@ -160,9 +169,29 @@ test('mothership home + platform-bar convert stack: Text Now sms + tel + Square'
     assert.match(html, /sms:\+16166065277/, file);
     assert.match(html, /tel:\+16166065277/, file);
     assert.match(html, /Call \(616\) 606-5277/, file);
+    assert.match(html, />MAIN HUB</, file);
     assert.doesNotMatch(html, /Prefer Text/, file);
     assert.doesNotMatch(html, /data-platform-link="book"[^>]*book\.unitedmobilerv\.com/, file);
     assert.doesNotMatch(html, /class="btn btn-ghost"[^>]*book\.unitedmobilerv\.com/, file);
+  }
+});
+
+test('shop/forum/book Text Now anchors use sms:, not tel:', () => {
+  const files = [
+    'forum/index.html',
+    'functions/_lib/mesh-chrome.js',
+    'functions/_lib/book-suite.js',
+    'js/site.js',
+    'book-service/index.html',
+    'book-service/thank-you/index.html',
+  ];
+  const textNowTel = /<a\b[^>]*href="tel:[^"]*"[^>]*>\s*TEXT\s*NOW/i;
+  const textNowThenTel = /TEXT\s*NOW[\s\S]{0,80}href="tel:/i;
+  for (const file of files) {
+    const html = src(file);
+    assert.match(html, /sms:\+16166065277/, file);
+    assert.doesNotMatch(html, textNowTel, file);
+    assert.doesNotMatch(html, textNowThenTel, file);
   }
 });
 
