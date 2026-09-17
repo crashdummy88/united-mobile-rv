@@ -52,10 +52,12 @@ test('shop.css uses site tokens and pins radio inputs so they cannot go full-wid
   assert.match(css, /var\(--rule\)/);
   assert.doesNotMatch(css, /#E8B84B/);
   assert.match(css, /label\.service-tier input\[type="radio"\]/);
+  assert.match(css, /input\[type="radio"\]/);
   assert.match(css, /max-width:\s*18px/);
   assert.match(css, /flex:\s*0 0 18px/);
   assert.match(css, /minmax\(min\(100%, 300px\), 1fr\)/);
   assert.match(css, /overflow-x:\s*clip/);
+  assert.match(css, /\.nav-links \{ gap: 14px/);
   assert.match(css, /\.shop-checkout-panel/);
   assert.match(css, /grid-template-columns:\s*56px minmax\(0, 1fr\)/);
   assert.match(css, /\.shop-card-imgwrap \{[\s\S]*background:\s*var\(--white\)/);
