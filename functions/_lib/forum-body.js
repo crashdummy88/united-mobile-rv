@@ -5,15 +5,15 @@
  * page escaped HTML. Autolink custom-domain https:// URLs after escape so
  * the Field Guide destination is a real <a>. Also rewrite the live D1 pin
  * if it still names the dead WP /troubleshoot/ hub (404) — locked target
- * is https://unitedmobilerv.com/guide/electrical-troubleshooting/
+ * is https://unitedmobilerv.com/guide/ (RV Owner's Field Guide hub).
  */
 
-export const ELECTRICAL_TS_GUIDE_URL = 'https://unitedmobilerv.com/guide/electrical-troubleshooting/';
+export const FIELD_GUIDE_HUB_URL = 'https://unitedmobilerv.com/guide/';
 export const PIN_TROUBLESHOOT_INDEX_ID = 'pin-troubleshoot-index';
 
 export const PIN_TROUBLESHOOT_INDEX_BODY =
-  'Before opening a new thread, check the Field Guide — Electrical troubleshooting (' +
-  ELECTRICAL_TS_GUIDE_URL +
+  'Before opening a new thread, check the RV Owner\'s Field Guide (' +
+  FIELD_GUIDE_HUB_URL +
   '). If your symptom isn\'t covered there, or you\'ve already been through it and something\'s still off, post the details here: rig, symptom, what you\'ve already checked. If it turns out to need hands-on diagnosis, Book a Service (unitedmobilerv.com/book-service/) and we\'ll get a trip fee + diagnostic quoted upfront.';
 
 export function escForumText(s) {
@@ -26,11 +26,22 @@ export function escForumText(s) {
   }[c]));
 }
 
+function pinHasLockedHubUrl(text) {
+  return /https:\/\/unitedmobilerv\.com\/guide\/(?![\w-])/.test(text);
+}
+
 export function canonicalPinTroubleshootBody(id, body) {
   const text = String(body || '');
   if (id !== PIN_TROUBLESHOOT_INDEX_ID) return text;
-  if (!/unitedmobilerv\.com\/troubleshoot\/?/.test(text)) return text;
-  return PIN_TROUBLESHOOT_INDEX_BODY;
+  if (pinHasLockedHubUrl(text) && !/unitedmobilerv\.com\/troubleshoot\/?/.test(text)) return text;
+  if (
+    /unitedmobilerv\.com\/troubleshoot\/?/.test(text) ||
+    /\/guide\/electrical-troubleshooting/.test(text) ||
+    /Troubleshooting Hub/.test(text)
+  ) {
+    return PIN_TROUBLESHOOT_INDEX_BODY;
+  }
+  return text;
 }
 
 const CUSTOM_URL_RE =

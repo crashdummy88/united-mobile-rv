@@ -12,8 +12,8 @@
 -- Body text uses https:// custom-domain URLs. functions/forum/t/[id].js
 -- escapes then autolinks unitedmobilerv.com / square.site https URLs
 -- (raw HTML/markdown would otherwise show as literal text).
--- BUG-F2: /troubleshoot/ 404s on WP — pin uses the Field Guide lock
--- https://unitedmobilerv.com/guide/electrical-troubleshooting/
+-- BUG-F2: /troubleshoot/ 404s on WP — pin uses the Field Guide hub lock
+-- https://unitedmobilerv.com/guide/ (RV Owner's Field Guide)
 --
 -- NOT YET APPLIED. Apply with:
 --   wrangler d1 execute umrt_forum --remote --file=./db/migrations/014_pinned_silo_bridge_threads.sql
@@ -22,7 +22,7 @@ INSERT INTO threads (id, title, body, category, author_id, pinned) VALUES
 (
   'pin-troubleshoot-index',
   '📌 Troubleshooting Index — start here before you post',
-  'Before opening a new thread, check the Field Guide — Electrical troubleshooting (https://unitedmobilerv.com/guide/electrical-troubleshooting/). If your symptom isn''t covered there, or you''ve already been through it and something''s still off, post the details here: rig, symptom, what you''ve already checked. If it turns out to need hands-on diagnosis, Book a Service (unitedmobilerv.com/book-service/) and we''ll get a trip fee + diagnostic quoted upfront.',
+  'Before opening a new thread, check the RV Owner''s Field Guide (https://unitedmobilerv.com/guide/). If your symptom isn''t covered there, or you''ve already been through it and something''s still off, post the details here: rig, symptom, what you''ve already checked. If it turns out to need hands-on diagnosis, Book a Service (unitedmobilerv.com/book-service/) and we''ll get a trip fee + diagnostic quoted upfront.',
   'repair',
   (SELECT id FROM users WHERE email = 'mattc2896@gmail.com'),
   1

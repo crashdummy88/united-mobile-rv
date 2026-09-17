@@ -7,7 +7,7 @@
 import { readFileSync } from 'node:fs';
 import { test, run, assert } from '../lib/tiny-test.js';
 import {
-  ELECTRICAL_TS_GUIDE_URL,
+  FIELD_GUIDE_HUB_URL,
   PIN_TROUBLESHOOT_INDEX_BODY,
   PIN_TROUBLESHOOT_INDEX_ID,
   canonicalPinTroubleshootBody,
@@ -15,7 +15,7 @@ import {
 } from '../../functions/_lib/forum-body.js';
 
 const SQUARE = 'https://united-mobile-rv-llc.square.site/';
-const GUIDE = 'https://unitedmobilerv.com/guide/electrical-troubleshooting/';
+const GUIDE = 'https://unitedmobilerv.com/guide/';
 
 function src(rel) {
   return readFileSync(new URL('../../' + rel, import.meta.url), 'utf8');
@@ -55,38 +55,52 @@ test('forum chrome Book land remains Square; no pages.dev customer hrefs', () =>
   assert.equal(SQUARE, 'https://united-mobile-rv-llc.square.site/');
 });
 
-test('BUG-F2: pin seed + migration lock Field Guide electrical-troubleshooting URL', () => {
+test('BUG-F2: pin seed + migration lock RV Owner\'s Field Guide hub URL', () => {
   const seed = src('db/migrations/014_pinned_silo_bridge_threads.sql');
   const mig = src('db/migrations/019_pin_troubleshoot_field_guide.sql');
   for (const sql of [seed, mig]) {
     assert.match(sql, /pin-troubleshoot-index/);
-    assert.match(sql, /https:\/\/unitedmobilerv\.com\/guide\/electrical-troubleshooting\//);
-    assert.match(sql, /Field Guide/);
+    assert.match(sql, /https:\/\/unitedmobilerv\.com\/guide\//);
+    assert.match(sql, /RV Owner''s Field Guide/);
     assert.doesNotMatch(sql, /unitedmobilerv\.com\/troubleshoot\/\)/);
     assert.doesNotMatch(sql, /Troubleshooting Hub \(unitedmobilerv\.com\/troubleshoot/);
+    assert.doesNotMatch(sql, /guide\/electrical-troubleshooting/);
   }
-  assert.equal(ELECTRICAL_TS_GUIDE_URL, GUIDE);
+  assert.equal(FIELD_GUIDE_HUB_URL, GUIDE);
 });
 
-test('BUG-F2: dead hub body is rewritten and autolinked to the Field Guide', () => {
+test('BUG-F2: dead hub body is rewritten and autolinked to /guide/', () => {
   const oldBody =
     'Before opening a new thread, check whether your symptom is already covered on the Troubleshooting Hub (unitedmobilerv.com/troubleshoot/) -- leftover.';
   const rewritten = canonicalPinTroubleshootBody(PIN_TROUBLESHOOT_INDEX_ID, oldBody);
   assert.equal(rewritten, PIN_TROUBLESHOOT_INDEX_BODY);
-  assert.match(rewritten, /https:\/\/unitedmobilerv\.com\/guide\/electrical-troubleshooting\//);
+  assert.match(rewritten, /https:\/\/unitedmobilerv\.com\/guide\//);
   assert.doesNotMatch(rewritten, /unitedmobilerv\.com\/troubleshoot\//);
+  assert.doesNotMatch(rewritten, /electrical-troubleshooting/);
 
   const html = renderThreadBodyHtml(PIN_TROUBLESHOOT_INDEX_ID, oldBody);
-  assert.match(html, /href="https:\/\/unitedmobilerv\.com\/guide\/electrical-troubleshooting\/"/);
+  assert.match(html, /href="https:\/\/unitedmobilerv\.com\/guide\/"/);
   assert.match(html, /target="_blank"/);
   assert.doesNotMatch(html, /unitedmobilerv\.com\/troubleshoot\//);
+  assert.doesNotMatch(html, /electrical-troubleshooting/);
   assert.doesNotMatch(html, /pages\.dev/);
+});
+
+test('BUG-F2: prior electrical-troubleshooting lock is rewritten to the hub', () => {
+  const prior =
+    'Before opening a new thread, check the Field Guide — Electrical troubleshooting (https://unitedmobilerv.com/guide/electrical-troubleshooting/). leftover.';
+  const rewritten = canonicalPinTroubleshootBody(PIN_TROUBLESHOOT_INDEX_ID, prior);
+  assert.equal(rewritten, PIN_TROUBLESHOOT_INDEX_BODY);
+  const html = renderThreadBodyHtml(PIN_TROUBLESHOOT_INDEX_ID, prior);
+  assert.match(html, /href="https:\/\/unitedmobilerv\.com\/guide\/"/);
+  assert.doesNotMatch(html, /electrical-troubleshooting/);
 });
 
 test('BUG-F2: already-updated pin body is left alone and still linkified', () => {
   const html = renderThreadBodyHtml(PIN_TROUBLESHOOT_INDEX_ID, PIN_TROUBLESHOOT_INDEX_BODY);
-  assert.match(html, /href="https:\/\/unitedmobilerv\.com\/guide\/electrical-troubleshooting\/"/);
-  assert.match(html, />unitedmobilerv\.com\/guide\/electrical-troubleshooting\/</);
+  assert.match(html, /href="https:\/\/unitedmobilerv\.com\/guide\/"/);
+  assert.match(html, />unitedmobilerv\.com\/guide\/</);
+  assert.doesNotMatch(html, /electrical-troubleshooting/);
   assert.doesNotMatch(html, /<script/);
 });
 
