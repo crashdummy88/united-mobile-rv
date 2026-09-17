@@ -1,5 +1,5 @@
 import { resolveCentralIdentity } from './_lib/central-identity.js';
-import { isStagingHost, rewriteStagingSeoHtml } from './_lib/hosts.js';
+import { isStagingHost, mothershipForumRedirectLocation, rewriteStagingSeoHtml } from './_lib/hosts.js';
 
 /**
  * Sets X-Robots-Tag exactly once per response, path-aware.
@@ -111,6 +111,15 @@ export async function onRequest(context) {
   strippedHeaders.delete('X-User-Id');
   strippedHeaders.delete('X-User-Role');
   let request = new Request(context.request, { headers: strippedHeaders });
+
+  // BUG-X1: pages.dev / staging / other mothership hosts must 301 /forum
+  // to the forum custom domain. forum.unitedmobilerv.com is skipped.
+  // Runs before shop lockdown so shop.unitedmobilerv.com/forum/ leaves
+  // the island for the real forum instead of bouncing to /shop/.
+  const forumDest = mothershipForumRedirectLocation(requestUrl.hostname, requestUrl.pathname);
+  if (forumDest) {
+    return Response.redirect(forumDest, 301);
+  }
 
   if (requestUrl.hostname === SHOP_HOST && !isShopAllowed(requestUrl.pathname)) {
     return Response.redirect(new URL('/shop/', requestUrl), 301);

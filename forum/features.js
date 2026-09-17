@@ -63,7 +63,7 @@
     if (!threadView) return;
     var existing = document.querySelector('.share-row');
     if (existing) existing.remove();
-    var url = 'https://united-mobile-rv.pages.dev/forum/t/' + threadId;
+    var url = 'https://forum.unitedmobilerv.com/forum/t/' + threadId;
     var row = document.createElement('div');
     row.className = 'share-row';
     row.innerHTML = '<span class="share-label">Share:</span>' +

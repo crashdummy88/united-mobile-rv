@@ -15,9 +15,39 @@ export const STAGING_HOSTS = [
   'staging.unitedmobilerv.com',
   'united-mobile-rv-staging.pages.dev',
 ];
+export const FORUM_HOST = 'forum.unitedmobilerv.com';
+export const FORUM_PUBLIC_ORIGIN = 'https://forum.unitedmobilerv.com';
 
 export function isStagingHost(hostname) {
   return STAGING_HOSTS.includes(String(hostname || '').toLowerCase());
+}
+
+export function isForumHost(hostname) {
+  return String(hostname || '').toLowerCase() === FORUM_HOST;
+}
+
+/**
+ * BUG-X1: mothership / staging / pages.dev must not 200 the forum.
+ * forum.unitedmobilerv.com keeps serving /forum/* (same Pages project).
+ * /forum and /forum/ land on the forum host root; deeper HTML paths are
+ * preserved so /forum/t/:id still hits the thread Function there.
+ */
+export function mothershipForumRedirectLocation(hostname, pathname) {
+  if (isForumHost(hostname)) return null;
+  const path = String(pathname || '');
+  if (path.startsWith('/api/')) return null;
+  if (path === '/go/forum' || path === '/go/forum/' || path.startsWith('/go/forum/')) return null;
+  if (path === '/forum-live' || path === '/forum-live/' || path.startsWith('/forum-live/')) {
+    return `${FORUM_PUBLIC_ORIGIN}/`;
+  }
+  if (path === '/forum' || path === '/forum/') {
+    return `${FORUM_PUBLIC_ORIGIN}/`;
+  }
+  if (path.startsWith('/forum/')) {
+    if (/\.[a-zA-Z0-9]{2,5}$/.test(path)) return null;
+    return `${FORUM_PUBLIC_ORIGIN}${path}`;
+  }
+  return null;
 }
 
 export function publicOrigin(hostname) {
