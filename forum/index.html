@@ -18,8 +18,9 @@
 <style>
   .auth-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:18px}
   .auth-provider-btn{display:inline-flex;align-items:center;gap:8px}
-  #new-thread-form,#thread-view{display:none}
-  #new-thread-form.is-open,#thread-view.is-open{display:block}
+  #new-thread-composer,#new-thread-gate,#thread-view{display:none}
+  #new-thread-composer.is-open,#new-thread-gate.is-open,#thread-view.is-open{display:block}
+  #new-thread-gate{background:linear-gradient(160deg, rgba(201,151,44,0.08) 0%, rgba(201,151,44,0.02) 100%);border:1px solid rgba(201,151,44,0.25);border-radius:14px;padding:20px 18px;margin-bottom:12px}
   #thread-list.is-hidden{display:none}
   textarea.forum-input,input.forum-input{width:100%;padding:14px 16px;border-radius:10px;border:1px solid #333;background:#111;color:#f2f2f2;font-family:inherit;font-size:1.05em;line-height:1.5;margin-bottom:10px}
   select.forum-input{width:100%;padding:14px 16px;border-radius:10px;border:1px solid #333;background:#111;color:#f2f2f2;font-family:inherit;font-size:1.05em;margin-bottom:10px}
@@ -136,7 +137,22 @@
 <section class="band">
   <div class="wrap wrap-narrow">
 
-    <form id="new-thread-form">
+    <div id="new-thread-form">
+    <div id="new-thread-gate" class="is-open">
+      <h2>Start a thread</h2>
+      <p>Sign in with Google to ask the community — no new password, no mailing list.</p>
+      <a class="google-signin-btn" href="/api/auth/google/login">
+        <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+          <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
+          <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/>
+          <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
+          <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
+        </svg>
+        <span>Sign in with Google</span>
+      </a>
+      <p class="tou-consent-note">By signing in, you agree to our <a href="/terms-of-use/" target="_blank" rel="noopener">Terms of Use</a> and <a href="/privacy-policy/" target="_blank" rel="noopener">Privacy Policy</a>.</p>
+    </div>
+    <form id="new-thread-composer">
       <h2>Start a thread</h2>
       <div class="diag-prompt" id="diag-prompt" style="display:none">
         <strong>Help us diagnose it faster.</strong> If you can, include:
@@ -167,6 +183,7 @@
       </div>
       <p class="held-note" id="tf-status"></p>
     </form>
+    </div>
 
     <h2 style="margin-top:32px">Recent Threads</h2>
     <input class="forum-input" id="forum-search" type="search" placeholder="Search threads — e.g. &quot;Victron inverter&quot;, &quot;Dometic E1&quot;, &quot;12V charging&quot;" style="margin-bottom:14px">
@@ -249,7 +266,9 @@
   }
 
   var authBar = document.getElementById('auth-bar');
-  var newThreadForm = document.getElementById('new-thread-form');
+  var newThreadPanel = document.getElementById('new-thread-form');
+  var newThreadComposer = document.getElementById('new-thread-composer');
+  var newThreadGate = document.getElementById('new-thread-gate');
   var threadList = document.getElementById('thread-list');
   var threadView = document.getElementById('thread-view');
   var currentUser = null;
@@ -264,7 +283,8 @@
         await fetch('/api/logout', { method: 'POST' });
         location.reload();
       });
-      newThreadForm.classList.add('is-open');
+      newThreadComposer.classList.add('is-open');
+      newThreadGate.classList.remove('is-open');
     } else {
       authBar.innerHTML =
         '<a class="google-signin-btn" href="/api/auth/google/login">' +
@@ -279,9 +299,34 @@
         '<div class="tou-consent-note">Not a mailing list — no marketing email, no ads, no tracking. Google sign-in is only for posting; it\'s never linked to payment info unless you separately complete a Square booking. By signing in, you agree to our '
           + '<a href="/terms-of-use/" target="_blank" rel="noopener">Terms of Use</a> and '
           + '<a href="/privacy-policy/" target="_blank" rel="noopener">Privacy Policy</a>.</div>';
-      newThreadForm.classList.remove('is-open');
+      newThreadComposer.classList.remove('is-open');
+      newThreadGate.classList.add('is-open');
     }
   }
+
+  // BUG-F1: #new-thread-form used to be display:none unless signed in, so the
+  // yellow CTA / hash only scrolled to a hidden node. The wrapper stays in
+  // flow; logged-out visitors get the Google gate, signed-in get the composer.
+  function openNewThreadIntent() {
+    if (!newThreadPanel) return;
+    if (currentUser) {
+      newThreadComposer.classList.add('is-open');
+      newThreadGate.classList.remove('is-open');
+      newThreadComposer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      var title = document.getElementById('tf-title');
+      if (title) title.focus();
+    } else {
+      newThreadComposer.classList.remove('is-open');
+      newThreadGate.classList.add('is-open');
+      newThreadGate.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      var signin = newThreadGate.querySelector('.google-signin-btn');
+      if (signin) signin.focus();
+    }
+  }
+  window.umrtOpenNewThread = openNewThreadIntent;
+  window.addEventListener('hashchange', function () {
+    if (location.hash === '#new-thread-form') openNewThreadIntent();
+  });
 
   async function loadMe() {
     try {
@@ -290,6 +335,7 @@
       currentUser = data.user;
     } catch { currentUser = null; }
     renderAuth();
+    if (location.hash === '#new-thread-form') openNewThreadIntent();
   }
 
   var allThreads = [];
@@ -467,7 +513,7 @@
 
   document.getElementById('back-to-list').addEventListener('click', function(e){ e.preventDefault(); loadThreadList(); });
 
-  newThreadForm.addEventListener('submit', async function(e){
+  newThreadComposer.addEventListener('submit', async function(e){
     e.preventDefault();
     var title = document.getElementById('tf-title').value.trim();
     var body = document.getElementById('tf-body').value.trim();
@@ -553,6 +599,6 @@
   });
 })();
 </script>
-<script src="/forum/features.js?v=20260912b" defer></script>
+<script src="/forum/features.js?v=20260917f" defer></script>
 </body>
 </html>

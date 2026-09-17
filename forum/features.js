@@ -10,9 +10,24 @@
     cta.className = 'ask-tech-cta';
     cta.innerHTML = '<h3>\uD83D\uDD27 Got an RV problem right now?</h3>' +
       '<p>Post it in Repair &amp; Diagnostics and get a real answer from a certified tech — or text direct.</p>' +
-      '<a class="btn" href="#new-thread-form">Ask the community</a> &nbsp; ' +
+      '<a class="btn" id="ask-community-cta" href="#new-thread-form">Ask the community</a> &nbsp; ' +
       '<a class="btn" href="sms:+16166065277">Text Now</a>';
     hero.appendChild(cta);
+    var ask = document.getElementById('ask-community-cta');
+    if (ask) {
+      ask.addEventListener('click', function (e) {
+        e.preventDefault();
+        if (location.hash !== '#new-thread-form') {
+          if (history.replaceState) history.replaceState(null, '', '#new-thread-form');
+          else location.hash = 'new-thread-form';
+        }
+        if (typeof window.umrtOpenNewThread === 'function') window.umrtOpenNewThread();
+        else {
+          var panel = document.getElementById('new-thread-form');
+          if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    }
   }
 
   function injectTrending() {
@@ -63,7 +78,7 @@
     if (!threadView) return;
     var existing = document.querySelector('.share-row');
     if (existing) existing.remove();
-    var url = 'https://united-mobile-rv.pages.dev/forum/t/' + threadId;
+    var url = 'https://forum.unitedmobilerv.com/forum/t/' + threadId;
     var row = document.createElement('div');
     row.className = 'share-row';
     row.innerHTML = '<span class="share-label">Share:</span>' +
