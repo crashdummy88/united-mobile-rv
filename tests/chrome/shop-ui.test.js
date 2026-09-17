@@ -42,6 +42,7 @@ test('listing uses full wrap + shop-service-card (not cramped wrap-narrow / .ser
   assert.match(listing, /shop-filter-band/);
   assert.match(listing, /shop-service-card/);
   assert.match(listing, /serviceBookHref\(s, env\)/);
+  assert.match(listing, /Book this service/);
   assert.doesNotMatch(listing, /class="shop-card service-card"/);
   assert.doesNotMatch(listing, /shop-category-band"><div class="wrap wrap-narrow">/);
 });

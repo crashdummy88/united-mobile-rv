@@ -53,4 +53,38 @@ test('shop island chrome: Call / Text Now / Book', () => {
   assert.doesNotMatch(shop, /Prefer Text/);
 });
 
+test('site.js rewires in-page /book-service/ Book CTAs to Square (keeps labels)', () => {
+  const js = src('js/site.js');
+  assert.match(js, /umrtSquareBookHref/);
+  assert.match(js, /umrtHrefIsSuiteBook/);
+  assert.match(js, /data-book-service/);
+  assert.match(js, /united-mobile-rv-llc\.square\.site/);
+  assert.doesNotMatch(js, /addBubble\('bot'[\s\S]*href="\/book-service\/"/);
+});
+
+test('related guides tag body with shop service ids for Square intent', () => {
+  const tagged = {
+    'guide/generator-troubleshooting/index.html': 'generator-maintenance',
+    'guide/generator-manufacturer-guide/index.html': 'generator-maintenance',
+    'troubleshoot/generator-wont-start/index.html': 'generator-maintenance',
+    'generator/index.html': 'generator-maintenance',
+    'guide/winterization-guide/index.html': 'winterization-travel-trailer',
+    'troubleshoot/winterize-fail-freeze-damage/index.html': 'winterization-travel-trailer',
+    'guide/ppi-guide/index.html': 'ppi-travel-trailer',
+    'ppi/index.html': 'ppi-travel-trailer',
+    'guide/starlink-rv-guide/index.html': 'starlink-installation',
+    'guide/weboost-install-guide/index.html': 'cellular-booster-installation',
+    'guide/solar-sizing-installation-guide/index.html': 'solar-system-installation',
+    'victron/index.html': 'victron-system-build',
+  };
+  for (const [file, id] of Object.entries(tagged)) {
+    const html = src(file);
+    assert.match(html, new RegExp(`data-book-service="${id}"`), file);
+    assert.match(html, /<body[^>]*data-book-service=/, file);
+  }
+  const wpSnippet = src('content-snippets/quick-booking-cta-box.html');
+  assert.match(wpSnippet, /united-mobile-rv-llc\.square\.site/);
+  assert.doesNotMatch(wpSnippet, /unitedmobilerv\.com\/book-service/);
+});
+
 await run();

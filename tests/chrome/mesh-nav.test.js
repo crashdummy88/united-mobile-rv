@@ -144,6 +144,7 @@ test('site.js stamps Call + gold Text Now + Square Book on every nav/mobile bar'
   assert.doesNotMatch(js, /BOOK_PUBLIC = 'https:\/\/book\.unitedmobilerv\.com\//);
   assert.doesNotMatch(js, /PREFER_TEXT_HREF = 'tel:/);
   assert.doesNotMatch(js, /pages\.dev/);
+  assert.match(js, /umrtSquareBookHref/);
 });
 
 test('mothership home + platform-bar convert stack: Text Now sms + tel + Square', () => {
