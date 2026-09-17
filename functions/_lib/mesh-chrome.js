@@ -20,6 +20,8 @@ export const TEXT_NOW_COMPACT = 'Text Now';
 export const CALL_HREF = 'tel:+16166065277';
 export const CALL_LABEL = 'Call (616) 606-5277';
 export const MAIN_HOME_HREF = 'https://unitedmobilerv.com/';
+export const MAIN_HUB_LABEL = 'Main Hub';
+export const GUIDES_HREF = 'https://unitedmobilerv.com/guide/';
 
 export function convertNavCta() {
   return `<div class="nav-cta">
@@ -38,7 +40,8 @@ export function convertMobileBar() {
 }
 
 export const MESH_LINKS = [
-  { key: 'home', href: MAIN_HOME_HREF, label: 'Main' },
+  { key: 'home', href: MAIN_HOME_HREF, label: MAIN_HUB_LABEL },
+  { key: 'guides', href: GUIDES_HREF, label: 'Guides' },
   { key: 'forum', href: 'https://forum.unitedmobilerv.com/', label: 'Forum' },
   { key: 'software', href: 'https://software.unitedmobilerv.com/', label: 'Software' },
   { key: 'status', href: 'https://status.unitedmobilerv.com/', label: 'Status' },

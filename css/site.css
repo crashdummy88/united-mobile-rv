@@ -841,4 +841,5 @@ p a:not(.btn):not(.text-link),
   display: inline-flex;
   align-items: center;
   min-height: 44px;
+  white-space: nowrap;
 }

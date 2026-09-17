@@ -124,6 +124,14 @@ test('host home: book. / renders booking suite, not marketing homepage', async (
   assert.match(html, /https:\/\/forum\.unitedmobilerv\.com\//);
   assert.match(html, /https:\/\/shop\.unitedmobilerv\.com\//);
   assert.match(html, /https:\/\/software\.unitedmobilerv\.com\//);
+  assert.match(html, /https:\/\/unitedmobilerv\.com\/guide\//);
+  assert.match(html, />Main Hub</);
+  assert.match(html, />MAIN HUB</);
+  assert.match(html, /Booking continues on Square\. You can return to the Main Hub afterward\./);
+  assert.match(html, /class="book-return-hub"[^>]*>\s*<a class="btn btn-ghost" href="https:\/\/unitedmobilerv\.com\/">MAIN HUB<\/a>/);
+  assert.match(html, /href="https:\/\/united-mobile-rv-llc\.square\.site\/"/);
+  assert.doesNotMatch(html, /square\.site\/[^"']*return_url/);
+  assert.doesNotMatch(html, />Main</);
   assert.match(html, /sms:\+16166065277/);
   assert.match(html, /tel:\+16166065277/);
   assert.match(html, /nav-phone[^>]+tel:\+16166065277/);
@@ -157,6 +165,10 @@ test('/book-service/ on mothership keeps reasonable nav + request-host canonical
   assert.match(html, /href="\/pricing\/"/);
   assert.match(html, /BOOK ONLINE/);
   assert.match(html, new RegExp(SQUARE_BOOK_URL.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.match(html, /Booking continues on Square\. You can return to the Main Hub afterward\./);
+  assert.match(html, />MAIN HUB</);
+  assert.match(html, />Main Hub</);
+  assert.match(html, /https:\/\/unitedmobilerv\.com\/guide\//);
   assert.doesNotMatch(html, /Mobile RV Repair at Your Location/);
   assert.match(html, /https:\/\/forum\.unitedmobilerv\.com\//);
   assert.match(html, /Text Now \(616\) 606-5277/);

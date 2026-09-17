@@ -19,6 +19,8 @@ import {
   CALL_HREF,
   CALL_LABEL,
   SQUARE_BOOK_URL,
+  MAIN_HOME_HREF,
+  MAIN_HUB_LABEL,
 } from './mesh-chrome.js';
 
 export const BOOK_HOST = 'book.unitedmobilerv.com';
@@ -38,8 +40,10 @@ function esc(s) {
 
 const SUITE_CSS = `
   .book-suite .page-hero { padding: 64px 0 40px; }
+  .book-handoff { margin: 0 auto 16px; max-width: 46ch; color: rgba(255,255,255,0.85); }
   .book-cta-row { display:flex; flex-wrap:wrap; gap:14px; justify-content:center; margin-top:8px; }
   .book-cta-row .btn { min-width: 220px; }
+  .book-return-hub { margin-top: 18px; }
   .book-expect { display:grid; grid-template-columns:repeat(3,1fr); gap:28px; margin-top:28px; }
   @media (max-width:800px) { .book-expect { grid-template-columns:1fr; } }
   .book-expect .step-num { color:#C9972C; font-size:12px; letter-spacing:.18em; text-transform:uppercase; font-weight:600; display:block; margin-bottom:10px; }
@@ -47,7 +51,7 @@ const SUITE_CSS = `
 
 function suiteFooter({ bookHost }) {
   const apexNote = bookHost
-    ? `<p class="mt-6 mb-0 muted">Full site: <a href="https://unitedmobilerv.com/">unitedmobilerv.com</a></p>`
+    ? `<p class="mt-6 mb-0 muted"><a href="${MAIN_HOME_HREF}">${MAIN_HUB_LABEL}</a></p>`
     : '';
   return `<div class="wrap footer-grid">
     <div>
@@ -87,10 +91,12 @@ function suiteMain({ bookHost }) {
 </section>
 <section class="band" style="padding-top:48px;padding-bottom:32px">
   <div class="wrap-narrow" style="text-align:center">
+    <p class="book-handoff">Booking continues on Square. You can return to the Main Hub afterward.</p>
     <div class="book-cta-row">
       <a class="btn btn-gold" href="${esc(SQUARE_BOOK_URL)}" target="_blank" rel="noopener" style="font-size:1.05em;padding:0 40px;">BOOK ONLINE</a>
       <a class="btn btn-ghost" href="${TEXT_NOW_HREF}">${TEXT_NOW_LABEL}</a>
     </div>
+    <p class="book-return-hub"><a class="btn btn-ghost" href="${MAIN_HOME_HREF}">MAIN HUB</a></p>
     <p class="muted" style="margin-top:20px">Or <a href="tel:${BOOK_PHONE_E164}">call ${BOOK_PHONE_DISPLAY}</a> — same number, technician directly.</p>
   </div>
 </section>
@@ -179,7 +185,7 @@ ${robots}<meta name="theme-color" content="#1A1A1A">
 <meta property="og:description" content="${esc(description)}">
 <meta property="og:type" content="website">
 <meta property="og:url" content="${esc(canonical)}">
-<link rel="stylesheet" href="/css/site.css?v=20260916viz">
+<link rel="stylesheet" href="/css/site.css?v=20260917hub">
 <style>${SUITE_CSS}</style>
 </head>
 <body class="book-suite">
@@ -194,7 +200,7 @@ ${mainHtml}
   </div>
 </footer>
 ${islandMobileBar()}
-<script src="/js/site.js?v=20260916cta" defer></script>
+<script src="/js/site.js?v=20260917hub" defer></script>
 </body>
 </html>`;
 }

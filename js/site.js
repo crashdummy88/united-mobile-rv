@@ -85,6 +85,14 @@ function umrtGetTurnstileToken(containerId) {
         chromeA.textContent = 'Book';
         continue;
       }
+      var chromeHref = chromeA.getAttribute('href') || '';
+      if (chromeA.getAttribute('data-platform-link') === 'hub'
+        || (/^(Home|Main|Main Hub|MAIN HUB)$/i.test(chromeLabel)
+          && /^https:\/\/unitedmobilerv\.com\/?$/.test(chromeHref))) {
+        chromeA.setAttribute('href', 'https://unitedmobilerv.com/');
+        chromeA.textContent = 'Main Hub';
+        continue;
+      }
       if (/^(Call(\s*\(616\)\s*606[-.\s]?5277)?|\(?616\)?\s*606[-.\s]?5277)$/i.test(chromeLabel)
         || chromeA.getAttribute('data-platform-link') === 'call') {
         chromeA.setAttribute('href', CALL_HREF);
@@ -100,7 +108,7 @@ function umrtGetTurnstileToken(containerId) {
   }
 
   /* Shop/forum/book islands: relative Home stays on the island. Point
-     Main at the apex, and append any missing ecosystem links as
+     Main Hub at the apex, and append any missing ecosystem links as
      absolute URLs so shop lockdown cannot swallow them. */
   var islandHost = location.hostname === 'shop.unitedmobilerv.com'
     || location.hostname === 'forum.unitedmobilerv.com'
@@ -109,7 +117,8 @@ function umrtGetTurnstileToken(containerId) {
     var meshNav = document.querySelector('.nav-links');
     if (meshNav) {
       var meshItems = [
-        ['Main', 'https://unitedmobilerv.com/'],
+        ['Main Hub', 'https://unitedmobilerv.com/'],
+        ['Guides', 'https://unitedmobilerv.com/guide/'],
         ['Forum', 'https://forum.unitedmobilerv.com/'],
         ['Software', 'https://software.unitedmobilerv.com/'],
         ['Status', 'https://status.unitedmobilerv.com/'],
@@ -124,11 +133,12 @@ function umrtGetTurnstileToken(containerId) {
       meshItems.forEach(function (pair) {
         var name = pair[0];
         var href = pair[1];
-        var found = have[name.toLowerCase()] || (name === 'Main' ? have.home : null);
+        var found = have[name.toLowerCase()]
+          || (name === 'Main Hub' ? (have.main || have.home || have['main hub']) : null);
         if (found) {
-          if (name === 'Main') {
+          if (name === 'Main Hub') {
             found.setAttribute('href', href);
-            found.textContent = 'Main';
+            found.textContent = 'Main Hub';
           }
           return;
         }
