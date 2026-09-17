@@ -626,19 +626,32 @@ h1, h2 { font-weight: 400; letter-spacing: -0.03em; }
 }
 
 
-/* ========== P1 craft — cred scrub + offer links (2026-09-10) ========== */
+/* ========== Credentials — four partner logo pills (Matt restore 2026-09-16) ========== */
 .cred-logos-scrubbed {
-  display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 16px 20px;
 }
 .cred-pill {
-  display: inline-flex; align-items: center;
-  background: #FFFFFF; border: 1px solid rgba(26,26,26,0.10);
-  border-radius: 999px; padding: 8px 14px; line-height: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: #FFFFFF; border: 1px solid rgba(26,26,26,0.12);
+  border-radius: 999px; padding: 8px 16px; line-height: 0;
+  max-width: 100%;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.22);
+  transition: border-color .2s var(--ease), box-shadow .2s var(--ease);
 }
-.cred-pill img { height: 36px; width: auto; background: transparent; padding: 0; border: 0; }
-.cred-logos-scrubbed .cred-text {
-  font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase;
-  color: rgba(255,255,255,0.72); border-bottom: 1px solid rgba(255,255,255,0.22); padding-bottom: 2px;
+.cred-pill:hover {
+  border-color: var(--gold);
+  box-shadow: 0 4px 14px rgba(201,151,44,0.22);
+}
+.cred-pill img {
+  height: 36px;
+  width: auto;
+  max-width: min(280px, calc(100vw - 72px));
+  object-fit: contain;
+  background: transparent;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
 }
 .offer-num { color: var(--gold); letter-spacing: 0.14em; }
 .text-link {

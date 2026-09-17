@@ -14,4 +14,4 @@ Web set: compressed ~1600px JPEG in `assets/photos/jobs/job-01.jpg` … `job-10.
 | job-06–10 | Additional field shots | Homepage grid subset (06, 08); reserve 07/09/10 for later service-line pages |
 | job-07 | Newmar fuse-panel schematic | Held for electrical/docs depth — not homepage hero |
 
-Do **not** invent partner brand walls. Official UMRT mark + Victron Certified Installer badge remain the only partner/official marks in chrome.
+Do **not** invent partner brand walls (no Starlink Certified badge). Homepage Credentials (`/`) shows four Matt-greenlit marks as logo images: Victron Professional Certified Installer, Peplink Certified Associate, weBoost Authorized Installer, Dometic Professional. Official UMRT mark stays in chrome.
