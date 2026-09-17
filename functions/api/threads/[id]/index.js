@@ -2,6 +2,7 @@ import { readSession, randomId } from '../../../_lib/session.js';
 import { moderateText } from '../../../_lib/moderate.js';
 import { notifyForumActivity } from '../../../_lib/notify.js';
 import { verifyTurnstile } from '../../../_lib/turnstile.js';
+import { canonicalPinTroubleshootBody } from '../../../_lib/forum-body.js';
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -24,6 +25,7 @@ export async function onRequestGet(context) {
     .first();
 
   if (!thread) return json({ success: false, error: 'not_found' }, 404);
+  thread.body = canonicalPinTroubleshootBody(thread.id, thread.body);
 
   const { results: posts } = await env.DB.prepare(
     `SELECT p.id, p.body, p.created_at, p.image_keys, u.display_name AS author, u.avatar_url AS author_avatar
