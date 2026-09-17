@@ -386,8 +386,8 @@ input[type="checkbox"] {
   color: var(--white);
 }
 .shop-checkout-panel h2 { color: var(--white); }
-.shop-checkout-panel .muted { color: rgba(255, 255, 255, 0.72); }
-.shop-checkout-panel label { color: rgba(255, 255, 255, 0.72); }
+.shop-checkout-panel .muted { color: rgba(255, 255, 255, 0.82); }
+.shop-checkout-panel label { color: rgba(255, 255, 255, 0.82); }
 
 .service-tier {
   display: flex;
@@ -396,8 +396,8 @@ input[type="checkbox"] {
   min-width: 0;
   max-width: 100%;
   box-sizing: border-box;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background: #0f0f0f;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: #0c0c0c;
   border-radius: 12px;
   padding: 16px 18px;
   margin-bottom: 10px;
@@ -419,15 +419,16 @@ input[type="checkbox"] {
 }
 .service-tier small {
   display: block;
-  color: rgba(255, 255, 255, 0.72);
+  color: rgba(255, 255, 255, 0.82);
   font-size: 0.88em;
   line-height: 1.45;
 }
 .service-tier:has(input:checked) {
   border-color: var(--gold);
-  background: rgba(201, 151, 44, 0.12);
-  box-shadow: inset 3px 0 0 var(--gold);
+  background: rgba(201, 151, 44, 0.18);
+  box-shadow: inset 4px 0 0 var(--gold);
 }
+.service-tier:has(input:checked) strong { color: var(--gold); }
 
 /* Kill the sitewide full-width underline input look on radios.
    Live cart: width:100% radios ate the row and parked the copy
@@ -481,7 +482,7 @@ textarea.forum-input:focus {
 .qf-field .forum-input { margin-bottom: 0; }
 .qf-label {
   display: block;
-  color: rgba(255, 255, 255, 0.72);
+  color: rgba(255, 255, 255, 0.82);
   font-size: 0.78em;
   font-weight: 500;
   text-transform: uppercase;

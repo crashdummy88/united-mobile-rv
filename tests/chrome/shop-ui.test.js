@@ -61,6 +61,9 @@ test('shop.css uses site tokens and pins radio inputs so they cannot go full-wid
   assert.match(css, /\.shop-checkout-panel/);
   assert.match(css, /grid-template-columns:\s*56px minmax\(0, 1fr\)/);
   assert.match(css, /\.shop-card-imgwrap \{[\s\S]*background:\s*var\(--white\)/);
+  assert.match(css, /\.service-tier:has\(input:checked\)/);
+  assert.match(css, /inset 4px 0 0 var\(--gold\)/);
+  assert.match(css, /\.qf-label \{[\s\S]*color:\s*rgba\(255, 255, 255, 0\.82\)/);
 });
 
 test('shop lockdown still allows /css/ so shop.css is reachable on shop host', () => {
