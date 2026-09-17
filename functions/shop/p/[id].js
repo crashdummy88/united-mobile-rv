@@ -61,40 +61,8 @@ export async function onRequestGet(context) {
 <meta name="robots" content="index,follow">
 <link rel="icon" href="/favicon.png" type="image/png">
 <link rel="stylesheet" href="/css/site.css">
+<link rel="stylesheet" href="/css/shop.css">
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-<style>
-  .shop-card-brand{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#C9972C;margin-bottom:6px}
-  .price-tag{font-size:1.8em;font-weight:800;color:#E8B84B;margin:10px 0}
-  .price-note{font-size:12px;color:#9a9a9a;margin-top:-6px;margin-bottom:12px}
-  .shop-stock-chip{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;padding:4px 10px;border-radius:999px}
-  .shop-stock-chip::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}
-  .shop-stock-chip.is-ok{color:#4ea36b;background:rgba(78,163,107,0.14)}
-  .shop-stock-chip.is-warn{color:#E8B84B;background:rgba(232,184,75,0.14)}
-  .shop-stock-chip.is-muted{color:#9a9a9a;background:rgba(255,255,255,0.06)}
-  .shop-stock-chip.is-off{color:#d9776f;background:rgba(217,119,111,0.14)}
-  .service-tier{display:flex;align-items:flex-start;gap:12px;border:1px solid #333;border-radius:10px;padding:16px 18px;margin-bottom:10px;cursor:pointer;transition:border-color .15s,background-color .15s}
-  .service-tier:hover{border-color:rgba(201,151,44,0.5)}
-  .service-tier input{margin:3px 0 0;accent-color:#C9972C;flex:none}
-  .service-tier-text{display:flex;flex-direction:column;gap:3px}
-  .service-tier strong{color:#fff;font-size:1.02em}
-  .service-tier small{display:block;color:#9a9a9a;font-size:0.88em;line-height:1.45}
-  .service-tier:has(input:checked){border-color:#C9972C;background:rgba(201,151,44,0.08)}
-  textarea.forum-input,input.forum-input{width:100%;padding:14px 16px;border-radius:10px;border:1px solid #333;background:#111;color:#f2f2f2;font-family:inherit;font-size:1.05em;line-height:1.5;margin-bottom:10px;transition:border-color .15s}
-  input.forum-input:focus,textarea.forum-input:focus{outline:none;border-color:#C9972C}
-  .qf-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
-  .qf-field{margin-bottom:14px}
-  .qf-field .forum-input{margin-bottom:0}
-  .qf-label{display:block;color:#9a9a9a;font-size:0.78em;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
-  @media (max-width:640px){.qf-grid{grid-template-columns:1fr}}
-  .held-note{color:#C9972C;font-size:0.85em}
-  .cart-badge-count{display:inline-block;background:#E8B84B;color:#111;border-radius:999px;font-size:0.75em;font-weight:800;padding:1px 7px;margin-left:6px}
-  .add-cart-btn{margin:10px 0 4px}
-  .product-hero-grid{display:grid;grid-template-columns:minmax(0,280px) 1fr;gap:32px;align-items:start}
-  .product-hero-img{aspect-ratio:1/1;background:#0f0f0f;border:1px solid rgba(201,151,44,0.25);border-radius:14px;display:flex;align-items:center;justify-content:center;overflow:hidden}
-  .product-hero-img img{width:100%;height:100%;object-fit:contain;padding:18px}
-  .product-hero-img.is-fallback{background:linear-gradient(160deg,rgba(201,151,44,0.14),rgba(255,255,255,0.02));font-size:4rem;opacity:.55}
-  @media (max-width:640px){.product-hero-grid{grid-template-columns:1fr;gap:16px}.product-hero-img{max-width:220px;margin:0 auto}}
-</style>
 </head>
 <body>
 ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem() })}
@@ -129,10 +97,11 @@ ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem() })}
     ${product.installation_required ? '<p class="held-note">Professional installation strongly recommended for this item.</p>' : ''}
   </div>
 </section>
-<section class="band" id="quote">
+<section class="band shop-checkout-band" id="quote">
   <div class="wrap wrap-narrow">
+    <div class="shop-checkout-panel">
     <h2>Request a quote</h2>
-    <p class="muted">This isn't a live checkout yet -- submit your info and our team follows up with real pricing, availability, and next steps. No charge happens here.</p>
+    <p class="muted">This isn't a live checkout yet -- submit your info and our team follows up with real pricing, availability, and next steps. No charge happens here. Call or text (616) 606-5277 anytime.</p>
     <form id="quote-form">
       <input type="hidden" id="qf-product-id" value="${esc(product.id)}">
       <label class="service-tier"><input type="radio" name="service_option" value="hardware_only" checked><span class="service-tier-text"><strong>Hardware only</strong><small>We ship it to you and you handle the install.</small></span></label>
@@ -152,6 +121,7 @@ ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem() })}
       <p class="held-note" id="qf-status"></p>
       <div id="qf-turnstile"></div>
     </form>
+    </div>
   </div>
 </section>
 </main>

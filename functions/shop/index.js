@@ -106,7 +106,7 @@ export async function onRequestGet(context) {
         <button type="button" class="btn btn-ghost shop-add-btn" data-product-id="${esc(p.id)}">Add to Cart</button>
       </div>`;
     }).join('');
-    return `<section class="shop-category-band"><div class="wrap wrap-narrow">
+    return `<section class="shop-category-band"><div class="wrap">
       <h2>${esc(label)}</h2>
       <div class="shop-grid">${cards}</div>
     </div></section>`;
@@ -120,7 +120,7 @@ export async function onRequestGet(context) {
   const servicesSectionsHtml = Object.keys(servicesByCategory).map((cat) => {
     const label = SERVICE_CATEGORY_LABELS[cat] || cat;
     const cards = servicesByCategory[cat].map((s) => `
-      <div class="shop-card service-card">
+      <div class="shop-card shop-service-card">
         <div class="shop-card-body">
           <div class="shop-card-title">${esc(s.title)}</div>
           <div class="shop-card-price">${esc(formatServicePrice(s))}${s.price_note ? ` <span class="shop-card-price-note">${esc(s.price_note)}</span>` : ''}</div>
@@ -128,7 +128,7 @@ export async function onRequestGet(context) {
         </div>
         <a class="btn btn-ghost" href="${BOOK_PUBLIC_HREF}" target="_blank" rel="noopener">Book this service</a>
       </div>`).join('');
-    return `<section class="shop-category-band"><div class="wrap wrap-narrow">
+    return `<section class="shop-category-band"><div class="wrap">
       <h2>${esc(label)}</h2>
       <div class="shop-grid">${cards}</div>
     </div></section>`;
@@ -158,48 +158,7 @@ export async function onRequestGet(context) {
 <meta name="robots" content="index,follow">
 <link rel="icon" href="/favicon.png" type="image/png">
 <link rel="stylesheet" href="/css/site.css">
-<style>
-  .shop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-top:16px}
-  .shop-card{display:flex;flex-direction:column;background:rgba(255,255,255,0.03);border:1px solid rgba(201,151,44,0.25);border-radius:12px;overflow:hidden;text-decoration:none;color:inherit;transition:border-color .15s}
-  .shop-card:hover{border-color:rgba(201,151,44,0.6)}
-  .shop-card-imgwrap{aspect-ratio:1/1;background:#0f0f0f;display:flex;align-items:center;justify-content:center;overflow:hidden}
-  .shop-card-img{width:100%;height:100%;object-fit:contain;padding:10px}
-  .shop-card-imgwrap.is-fallback{background:linear-gradient(160deg,rgba(201,151,44,0.14),rgba(255,255,255,0.02))}
-  .shop-card-img-fallback{font-size:2.6rem;opacity:.55}
-  .shop-card-body{padding:14px 16px}
-  .shop-card-brand{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#C9972C;margin-bottom:4px}
-  .shop-card-title{font-weight:700;margin-bottom:6px}
-  .shop-card-price{color:#E8B84B;font-weight:800;font-size:1.1em;margin-bottom:6px}
-  .shop-card-meta{font-size:12px;color:#9a9a9a;margin-bottom:10px}
-  .shop-stock-chip{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;padding:4px 10px;border-radius:999px}
-  .shop-stock-chip::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}
-  .shop-stock-chip.is-ok{color:#4ea36b;background:rgba(78,163,107,0.14)}
-  .shop-stock-chip.is-warn{color:#E8B84B;background:rgba(232,184,75,0.14)}
-  .shop-stock-chip.is-muted{color:#9a9a9a;background:rgba(255,255,255,0.06)}
-  .shop-stock-chip.is-off{color:#d9776f;background:rgba(217,119,111,0.14)}
-  .shop-add-btn{margin:0 16px 16px;width:auto}
-  .shop-chip-row{display:flex;flex-wrap:wrap;gap:10px}
-  .shop-chip{display:inline-flex;align-items:center;background:rgba(255,255,255,0.03);border:1px solid rgba(201,151,44,0.3);color:#E8B84B;font-size:0.9em;font-weight:600;padding:8px 16px;border-radius:999px;text-decoration:none}
-  .shop-chip:hover{background:rgba(201,151,44,0.16)}
-  /* Purpose-built spacing for stacked category sections -- .band/.band-tight
-     are shared sitewide classes sized for one hero-style section per page;
-     reusing either here (even band-tight) still compounds into 120px+ of
-     dead space between every category when several stack in a row. */
-  .shop-category-band{padding:28px 0}
-  .shop-category-band:first-of-type{padding-top:8px}
-  .shop-chip.is-active{background:#C9972C;border-color:#C9972C;color:#1A1A1A}
-  .shop-card-link{display:block;text-decoration:none;color:inherit}
-  .cart-badge-count{display:inline-block;background:#E8B84B;color:#111;border-radius:999px;font-size:0.75em;font-weight:800;padding:1px 7px;margin-left:6px}
-  .shop-tab-row{display:flex;gap:8px;margin-top:18px}
-  .shop-tab{padding:10px 22px;border-radius:999px;border:1px solid rgba(201,151,44,0.3);color:#c9c9c9;font-weight:700;text-decoration:none;font-size:0.95em}
-  .shop-tab:hover{border-color:rgba(201,151,44,0.6);color:#f2f2f2}
-  .shop-tab.is-active{background:#C9972C;border-color:#C9972C;color:#1A1A1A}
-  .service-card{padding-bottom:16px}
-  .service-card .shop-card-body{padding-bottom:8px}
-  .shop-card-price-note{color:#9a9a9a;font-weight:600;font-size:0.7em;text-transform:uppercase;letter-spacing:.04em}
-  .shop-card-desc{color:#c9c9c9;font-size:0.9em;line-height:1.5;margin:0}
-  .service-card .btn{margin:12px 16px 0}
-</style>
+<link rel="stylesheet" href="/css/shop.css">
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -218,8 +177,8 @@ ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem() })}
     ${tabsHtml}
   </div>
 </section>
-${chipsHtml ? `<section class="band"><div class="wrap wrap-narrow">${chipsHtml}</div></section>` : ''}
-${sectionsHtml || `<section class="band"><div class="wrap wrap-narrow"><p class="muted">${activeTab === 'services' ? 'Services are being added -- check back shortly, or' : 'Products are being added -- check back shortly, or'} <a class="text-link" href="${BOOK_PUBLIC_HREF}" target="_blank" rel="noopener">book a consultation</a> in the meantime.</p></div></section>`}
+${chipsHtml ? `<section class="shop-filter-band"><div class="wrap">${chipsHtml}</div></section>` : ''}
+${sectionsHtml || `<section class="band"><div class="wrap"><p class="muted">${activeTab === 'services' ? 'Services are being added -- check back shortly, or' : 'Products are being added -- check back shortly, or'} <a class="text-link" href="${BOOK_PUBLIC_HREF}" target="_blank" rel="noopener">book a consultation</a> in the meantime.</p></div></section>`}
 </main>
 ${islandFooter({ current: 'shop' })}
 ${islandMobileBar()}

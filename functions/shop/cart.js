@@ -23,28 +23,8 @@ export async function onRequestGet(context) {
 <meta name="robots" content="noindex,follow">
 <link rel="icon" href="/favicon.png" type="image/png">
 <link rel="stylesheet" href="/css/site.css">
+<link rel="stylesheet" href="/css/shop.css">
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-<style>
-  .cart-line{display:flex;align-items:center;gap:14px;border:1px solid #333;border-radius:10px;padding:12px 16px;margin-bottom:10px}
-  .cart-line-thumb{flex:none;width:48px;height:48px;border-radius:8px;background:#0f0f0f;display:flex;align-items:center;justify-content:center;overflow:hidden}
-  .cart-line-thumb img{width:100%;height:100%;object-fit:contain;padding:4px}
-  .cart-line-thumb.is-fallback{background:linear-gradient(160deg,rgba(201,151,44,0.14),rgba(255,255,255,0.02));font-size:1.3rem;opacity:.55}
-  .cart-line-title{flex:1;min-width:0}
-  .cart-line-title a{color:inherit;text-decoration:none}
-  .cart-line-price{font-weight:700;color:#E8B84B;white-space:nowrap}
-  .cart-line-qty{width:60px;padding:6px 8px;border-radius:8px;border:1px solid #333;background:#111;color:#f2f2f2;text-align:center}
-  .cart-line-remove{background:none;border:none;color:#9a9a9a;cursor:pointer;font-size:1.1em;padding:4px 8px}
-  .cart-line-remove:hover{color:#e05555}
-  .cart-empty{color:#9a9a9a;padding:24px 0}
-  .cart-total{font-size:1.3em;font-weight:800;color:#E8B84B;margin:16px 0}
-  .service-tier{display:block;border:1px solid #333;border-radius:10px;padding:14px 16px;margin-bottom:10px;cursor:pointer;font-size:0.95em;text-transform:none;letter-spacing:normal;color:#f2f2f2}
-  .service-tier:hover{border-color:rgba(201,151,44,0.5)}
-  .service-tier input{margin-right:10px}
-  .service-tier strong{color:#fff}
-  textarea.forum-input,input.forum-input{width:100%;padding:14px 16px;border-radius:10px;border:1px solid #333;background:#111;color:#f2f2f2;font-family:inherit;font-size:1.05em;line-height:1.5;margin-bottom:10px}
-  .held-note{color:#C9972C;font-size:0.85em}
-  .cart-badge-count{display:inline-block;background:#E8B84B;color:#111;border-radius:999px;font-size:0.75em;font-weight:800;padding:1px 7px;margin-left:6px}
-</style>
 </head>
 <body>
 ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem() })}
@@ -64,26 +44,30 @@ ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem() })}
     </div>
   </div>
 </section>
-<section class="band band-gray" id="quote" hidden>
+<section class="band shop-checkout-band" id="quote" hidden>
   <div class="wrap wrap-narrow" id="quote-wrap">
+    <div class="shop-checkout-panel">
     <h2>Request a quote for this cart</h2>
-    <p class="muted">One combined quote request covering every item above.</p>
+    <p class="muted">One combined quote request covering every item above. Prefer to talk it through? Call or text (616) 606-5277.</p>
     <form id="quote-form">
-      <label class="service-tier"><input type="radio" name="service_option" value="hardware_only" checked> <strong>Hardware only</strong> -- ships to you, you install</label>
-      <label class="service-tier"><input type="radio" name="service_option" value="hardware_plus_config"> <strong>Hardware + remote configuration</strong> -- we configure it with you remotely</label>
-      <label class="service-tier"><input type="radio" name="service_option" value="hardware_plus_install"> <strong>Hardware + UMRT installation</strong> -- we install it on-site</label>
-      <label class="service-tier"><input type="radio" name="service_option" value="full_design_install"> <strong>Full system design + installation</strong> -- we design the whole system around this and install it</label>
+      <label class="service-tier"><input type="radio" name="service_option" value="hardware_only" checked><span class="service-tier-text"><strong>Hardware only</strong><small>Ships to you, you install.</small></span></label>
+      <label class="service-tier"><input type="radio" name="service_option" value="hardware_plus_config"><span class="service-tier-text"><strong>Hardware + remote configuration</strong><small>We configure it with you remotely.</small></span></label>
+      <label class="service-tier"><input type="radio" name="service_option" value="hardware_plus_install"><span class="service-tier-text"><strong>Hardware + UMRT installation</strong><small>We install it on-site.</small></span></label>
+      <label class="service-tier"><input type="radio" name="service_option" value="full_design_install"><span class="service-tier-text"><strong>Full system design + installation</strong><small>We design the whole system around this and install it.</small></span></label>
 
-      <input class="forum-input" id="qf-name" placeholder="Your name" maxlength="120">
-      <input class="forum-input" id="qf-phone" placeholder="Phone" maxlength="40">
-      <input class="forum-input" id="qf-email" placeholder="Email" maxlength="160">
-      <input class="forum-input" id="qf-location" placeholder="City / State" maxlength="160">
-      <input class="forum-input" id="qf-rig" placeholder="RV year / make / model" maxlength="160">
-      <textarea class="forum-input" id="qf-notes" rows="3" placeholder="Anything else we should know?" maxlength="1500"></textarea>
+      <div class="qf-grid">
+        <div class="qf-field"><label class="qf-label" for="qf-name">Your name</label><input class="forum-input" id="qf-name" placeholder="Jane Smith" maxlength="120"></div>
+        <div class="qf-field"><label class="qf-label" for="qf-phone">Phone</label><input class="forum-input" id="qf-phone" placeholder="(555) 555-5555" maxlength="40"></div>
+        <div class="qf-field"><label class="qf-label" for="qf-email">Email</label><input class="forum-input" id="qf-email" placeholder="you@email.com" maxlength="160"></div>
+        <div class="qf-field"><label class="qf-label" for="qf-location">City / State</label><input class="forum-input" id="qf-location" placeholder="Missoula, MT" maxlength="160"></div>
+      </div>
+      <div class="qf-field"><label class="qf-label" for="qf-rig">RV year / make / model</label><input class="forum-input" id="qf-rig" placeholder="2021 Forest River Cherokee" maxlength="160"></div>
+      <div class="qf-field"><label class="qf-label" for="qf-notes">Anything else we should know?</label><textarea class="forum-input" id="qf-notes" rows="3" maxlength="1500"></textarea></div>
       <div class="btn-row"><button type="submit" class="btn btn-gold" id="qf-submit">Request Quote</button></div>
       <p class="held-note" id="qf-status"></p>
       <div id="qf-turnstile"></div>
     </form>
+    </div>
   </div>
 </section>
 </main>
