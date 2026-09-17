@@ -14,10 +14,13 @@
 --
 -- What the shop does when book_url is NULL:
 --   functions/_lib/shop.js serviceBookHref() sends the card to
---   https://united-mobile-rv-llc.square.site/s/appointments (verified
---   GET 200 on 2026-09-17 -- Square Online appointments intake, not the
---   homepage) and appends service=<id>&service_name=<title>&utm_* so the
---   landing URL itself carries which SKU was clicked.
+--   https://united-mobile-rv-llc.square.site/ (working Square Online
+--   "Request an appointment" form -- verified 2026-09-17) and appends
+--   service=<id>&service_name=<title>&utm_* so the landing URL itself
+--   carries which SKU was clicked. /s/appointments exists (GET 200) but
+--   the live widget currently errors; do not default cards there. Paste
+--   a working Appointments share link into book_url when Matt publishes
+--   one.
 --
 -- Optional Pages env override (no code change needed):
 --   SQUARE_BOOKING_URL = a Square-land https URL (appointments start,
@@ -28,7 +31,7 @@
 --   1. Square Dashboard → Appointments (or Square Online → the service).
 --   2. Open that service and copy its customer booking / share link.
 --      Acceptable hosts (https only):
---        - united-mobile-rv-llc.square.site/...  (Online item or /s/appointments)
+--        - united-mobile-rv-llc.square.site/...  (Online page, item, or /s/appointments once published)
 --        - app.squareup.com/appointments/book/...
 --        - square.link/u/...  (Payment Link / booking link)
 --        - squareupscheduling.com/...
@@ -45,13 +48,13 @@
 --      homepage -- only the service-card CTA reads book_url.
 --
 -- Generator Maintenance: no verified per-item Square catalog ID exists in
--- this repo (a 2024 WP backup appointments/book/.../start URL is now 404).
--- Seed the best available Square booking path + intent query so that SKU
--- is not a bare homepage dump.
+-- this repo (a 2024 WP backup appointments/book/.../start URL is now 404;
+-- live /s/appointments widget errors). Seed the working Square homepage
+-- intake + intent query so that SKU is not a bare untagged homepage dump.
 
 ALTER TABLE services ADD COLUMN book_url TEXT;
 
 UPDATE services
-SET book_url = 'https://united-mobile-rv-llc.square.site/s/appointments?service=generator-maintenance&service_name=Generator%20Maintenance&utm_source=umrt_shop&utm_medium=service_card&utm_campaign=book_this_service&utm_content=generator-maintenance',
+SET book_url = 'https://united-mobile-rv-llc.square.site/?service=generator-maintenance&service_name=Generator%20Maintenance&utm_source=umrt_shop&utm_medium=service_card&utm_campaign=book_this_service&utm_content=generator-maintenance',
     updated_at = datetime('now')
 WHERE id = 'generator-maintenance';

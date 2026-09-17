@@ -55,7 +55,7 @@ export async function onRequestGet(context) {
   if (env.DB) {
     if (activeTab === 'services') {
       // book_url is migration 020 -- if D1 hasn't been migrated yet, fall
-      // back so the tab still renders (helper then uses /s/appointments).
+      // back so the tab still renders (helper then uses Square homepage + intent).
       try {
         const { results } = await env.DB.prepare(
           `SELECT id, title, description, category, price, price_type, price_note, book_url

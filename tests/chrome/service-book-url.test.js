@@ -43,16 +43,18 @@ test('isSquareLandUrl accepts Square hosts and rejects off-ecosystem pastes', ()
   assert.equal(isSquareLandUrl('http://united-mobile-rv-llc.square.site/'), false);
 });
 
-test('NULL book_url defaults to /s/appointments with service + UTM intent', () => {
+test('NULL book_url defaults to Square homepage with service + UTM intent', () => {
   const href = serviceBookHref(GEN);
   const u = new URL(href);
-  assert.equal(u.origin + u.pathname, SQUARE_APPOINTMENTS_HREF);
+  assert.equal(`${u.origin}/`, BOOK_PUBLIC_HREF);
+  assert.notEqual(href, BOOK_PUBLIC_HREF);
   assert.equal(u.searchParams.get('service'), 'generator-maintenance');
   assert.equal(u.searchParams.get('service_name'), 'Generator Maintenance');
   assert.equal(u.searchParams.get('utm_source'), 'umrt_shop');
   assert.equal(u.searchParams.get('utm_medium'), 'service_card');
   assert.equal(u.searchParams.get('utm_campaign'), 'book_this_service');
   assert.equal(u.searchParams.get('utm_content'), 'generator-maintenance');
+  assert.doesNotMatch(href, /\/s\/appointments/);
   assert.doesNotMatch(href, /book\.unitedmobilerv\.com/);
   assert.doesNotMatch(href, /book-service/);
 });
@@ -64,9 +66,10 @@ test('explicit Square book_url is used as-is (no invented catalog id)', () => {
 
 test('non-Square book_url is ignored; Pages env SQUARE_BOOKING_URL wins as base', () => {
   const fallback = serviceBookHref({ ...GEN, book_url: 'https://evil.example/phish' });
-  assert.match(fallback, /united-mobile-rv-llc\.square\.site\/s\/appointments/);
+  assert.match(fallback, /^https:\/\/united-mobile-rv-llc\.square\.site\/\?/);
+  assert.match(fallback, /service=generator-maintenance/);
 
-  const envBase = 'https://united-mobile-rv-llc.square.site/s/appointments';
+  const envBase = SQUARE_APPOINTMENTS_HREF;
   const href = serviceBookHref(GEN, { SQUARE_BOOKING_URL: envBase });
   assert.match(href, /\/s\/appointments\?/);
   assert.match(href, /service=generator-maintenance/);
@@ -81,12 +84,11 @@ test('shop listing uses serviceBookHref for cards; chrome Book still BOOK_PUBLIC
   assert.doesNotMatch(listing, /href="\$\{BOOK_PUBLIC_HREF\}"[^>]*>Book this service/);
 });
 
-test('migration 020 adds book_url and seeds Generator Maintenance on appointments', () => {
+test('migration 020 adds book_url and seeds Generator Maintenance with intent query', () => {
   const sql = src('db/migrations/020_services_book_url.sql');
   assert.match(sql, /ALTER TABLE services ADD COLUMN book_url TEXT/);
   assert.match(sql, /WHERE id = 'generator-maintenance'/);
-  assert.match(sql, /united-mobile-rv-llc\.square\.site\/s\/appointments/);
-  assert.match(sql, /service=generator-maintenance/);
+  assert.match(sql, /united-mobile-rv-llc\.square\.site\/\?service=generator-maintenance/);
   assert.doesNotMatch(sql, /xnqilu00qqy558/);
   assert.match(sql, /How Matt adds a per-SKU Square link/);
 });
@@ -98,7 +100,7 @@ test('HEAD /shop/?tab=services returns 200 with empty body', async () => {
   assert.match(res.headers.get('Content-Type'), /text\/html/);
 });
 
-test('GET /shop/?tab=services renders Generator CTA on appointments, not homepage root', async () => {
+test('GET /shop/?tab=services renders Generator CTA with intent query, not bare homepage', async () => {
   const rows = [
     {
       id: 'generator-maintenance',
@@ -108,7 +110,7 @@ test('GET /shop/?tab=services renders Generator CTA on appointments, not homepag
       price: 150,
       price_type: 'starting_at',
       price_note: null,
-      book_url: 'https://united-mobile-rv-llc.square.site/s/appointments?service=generator-maintenance&utm_source=umrt_shop&utm_medium=service_card&utm_campaign=book_this_service&utm_content=generator-maintenance',
+      book_url: 'https://united-mobile-rv-llc.square.site/?service=generator-maintenance&utm_source=umrt_shop&utm_medium=service_card&utm_campaign=book_this_service&utm_content=generator-maintenance',
     },
     {
       id: 'diagnostic-fee',
@@ -138,17 +140,17 @@ test('GET /shop/?tab=services renders Generator CTA on appointments, not homepag
   const html = await res.text();
   assert.match(html, /Generator Maintenance/);
   assert.match(html, /Starting at \$150/);
-  assert.match(html, /href="https:\/\/united-mobile-rv-llc\.square\.site\/s\/appointments\?service=generator-maintenance/);
-  assert.match(html, /href="https:\/\/united-mobile-rv-llc\.square\.site\/s\/appointments\?service=diagnostic-fee/);
+  assert.match(html, /href="https:\/\/united-mobile-rv-llc\.square\.site\/\?service=generator-maintenance/);
+  assert.match(html, /href="https:\/\/united-mobile-rv-llc\.square\.site\/\?service=diagnostic-fee/);
   assert.match(html, /Book this service/);
   const cardHrefs = [...html.matchAll(/shop-service-card[\s\S]*?href="([^"]+)"[^>]*>Book this service/g)].map((m) => m[1]);
   assert.equal(cardHrefs.length, 2);
   for (const href of cardHrefs) {
-    assert.match(href, /united-mobile-rv-llc\.square\.site\/s\/appointments/);
+    assert.match(href, /united-mobile-rv-llc\.square\.site\/\?service=/);
     assert.doesNotMatch(href, /book\.unitedmobilerv\.com/);
     assert.notEqual(href, 'https://united-mobile-rv-llc.square.site/');
   }
-  // Header chrome Book stays on the Square homepage root
+  // Header chrome Book stays on the Square homepage root (no query)
   assert.match(html, /btn btn-ghost" href="https:\/\/united-mobile-rv-llc\.square\.site\/" target="_blank" rel="noopener">Book</);
 });
 

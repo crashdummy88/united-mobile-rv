@@ -9,7 +9,7 @@
  * displayed or totaled.
  */
 
-import { BOOK_PUBLIC_HREF, SQUARE_APPOINTMENTS_HREF } from './mesh-chrome.js';
+import { BOOK_PUBLIC_HREF } from './mesh-chrome.js';
 
 export function hasPrice(product) {
   return product && product.retail_price !== null && product.retail_price !== undefined;
@@ -152,9 +152,11 @@ function appendServiceIntent(href, service) {
  * Per-card Book href. Preference order (no invented Square item IDs):
  *   1. services.book_url when it is a Square-land https URL (Matt paste)
  *   2. env.SQUARE_BOOKING_URL when set to a Square-land URL (Pages env)
- *   3. Square Online /s/appointments (verified GET 200) + service/UTM
- *      so Matt can see which shop SKU was clicked
- * Header Book stays BOOK_PUBLIC_HREF (square.site root) -- not this helper.
+ *   3. Square Online homepage + service/UTM query so the landing URL
+ *      carries which SKU was clicked. Default is the homepage (working
+ *      "Request an appointment" form), not /s/appointments -- that path
+ *      is HTTP 200 but the live widget errors as of 2026-09-17.
+ * Header Book stays BOOK_PUBLIC_HREF with no query -- not this helper.
  */
 export function serviceBookHref(service, env) {
   const explicit = service && service.book_url;
@@ -163,6 +165,6 @@ export function serviceBookHref(service, env) {
   const fromEnv = env && env.SQUARE_BOOKING_URL;
   const base = isSquareLandUrl(fromEnv)
     ? String(fromEnv).trim()
-    : (SQUARE_APPOINTMENTS_HREF || BOOK_PUBLIC_HREF);
+    : BOOK_PUBLIC_HREF;
   return appendServiceIntent(base, service);
 }
