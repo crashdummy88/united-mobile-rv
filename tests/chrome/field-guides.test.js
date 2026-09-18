@@ -95,6 +95,7 @@ test('markup is a quiet Guide text link, not a button, and drops unknown slugs',
 
 test('shared mesh chrome does not include Field guides; Book stays Square', () => {
   assert.deepEqual(MESH_LINKS.map((l) => l.label), ['MAIN HUB', 'Shop', 'Book', 'Forum', 'Software', 'Docs']);
+  assert.ok(MESH_LINKS.findIndex((l) => l.label === 'Shop') < MESH_LINKS.findIndex((l) => l.label === 'Book'));
   assert.equal(MESH_LINKS.find((l) => l.key === 'guides'), undefined);
   assert.ok(!MESH_LINKS.some((l) => /guide|portal|status/i.test(l.label) || /guide|portal|status/i.test(l.key)));
   const book = src('functions/_lib/mesh-chrome.js');

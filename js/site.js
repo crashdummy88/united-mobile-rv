@@ -170,8 +170,8 @@ function umrtGetTurnstileToken(containerId) {
     ba.setAttribute('rel', 'noopener');
   }
 
-  /* Shop/forum/book islands: lock product nav to MAIN HUB + Shop · Book ·
-     Forum · Software · Docs. Strip retired destinations and guide-library labels. */
+  /* Shop/forum/book islands: Shop-first product nav — MAIN HUB + Shop · Book ·
+     Forum · Software · Docs. Not Book-first. Strip retired destinations and guide-library labels. */
   var MAIN_HOME_HREF = 'https://unitedmobilerv.com/';
   var MAIN_HOME_LABEL = 'MAIN HUB';
   var islandHost = location.hostname === 'shop.unitedmobilerv.com'

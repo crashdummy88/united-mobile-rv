@@ -21,7 +21,8 @@ import {
   islandMobileBar,
 } from '../../functions/_lib/mesh-chrome.js';
 
-const PRODUCT_NAV = ['MAIN HUB', 'Shop', 'Book', 'Forum', 'Software', 'Docs'];
+const NUMBERED_NAV = ['Shop', 'Book', 'Forum', 'Software', 'Docs'];
+const PRODUCT_NAV = ['MAIN HUB', ...NUMBERED_NAV];
 const FORBIDDEN = /Portal|Status|Field guides|WP Field Guides/;
 const SQUARE = 'https://united-mobile-rv-llc.square.site/';
 
@@ -62,6 +63,10 @@ test('Text Now is sms:+16166065277; number is tel:+16166065277', () => {
 test('MESH_LINKS is MAIN HUB + Shop · Book · Forum · Software · Docs (no Portal/Status/Guides)', () => {
   const labels = MESH_LINKS.map((l) => l.label);
   assert.deepEqual(labels, PRODUCT_NAV);
+  assert.deepEqual(labels.filter((l) => l !== 'MAIN HUB'), NUMBERED_NAV);
+  assert.ok(labels.indexOf('Shop') < labels.indexOf('Book'), 'Shop-first, not Book-first');
+  assert.equal(labels[0], 'MAIN HUB');
+  assert.equal(labels[1], 'Shop');
   assert.equal(MESH_LINKS.find((l) => l.key === 'book').href, SQUARE);
   assert.equal(MESH_LINKS.find((l) => l.key === 'home').href, 'https://unitedmobilerv.com/');
   assert.ok(!MESH_LINKS.some((l) => /guide|portal|status/i.test(l.label) || /guide|portal|status/i.test(l.key)));

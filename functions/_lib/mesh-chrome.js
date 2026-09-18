@@ -8,10 +8,10 @@
  * Do not add a guide-library item to MESH_LINKS. That library stays
  * on the WP apex, not in shop/forum/book product chrome.
  *
- * Matt LOCK 2026-09-18 product nav (shop / forum / book), exact order:
+ * Matt LOCK 2026-09-18 product nav (shop / forum / book), Shop-first:
  *   MAIN HUB return → https://unitedmobilerv.com/
  *   1 Shop · 2 Book (Square) · 3 Forum · 4 Software · 5 Docs
- *   Do not add portal, status, or guide-library items.
+ *   Not Book-first. Do not add portal, status, or guide-library items.
  *
  * Matt LOCK 2026-09-16 convert stack (header + mobile bar, every surface):
  *   Call (616) 606-5277 → tel:+16166065277 (older clients; number is the call control)
