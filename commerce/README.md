@@ -2,7 +2,7 @@
 
 Shop model (read this first): **[SHOP-QUOTE-MODEL.md](../SHOP-QUOTE-MODEL.md)**.
 
-The storefront is quote-first: request info → Matt arranges payment → Matt orders the shipment → upsell install / VRM. This directory is **not** an auto-pricer and **not** click-pay-ship.
+The storefront is quote-first: request info → Square invoice / payment link → Matt orders the shipment → upsell install (Square appointment) / VRM. This directory is **not** an auto-pricer and **not** click-pay-ship.
 
 **Artek has no CSV.** Pricing is a locked supply/demand grid. Check it by hand (`npm run price-check -- artek`). Do not scrape `/account`. Do not invent `supplier_feeds/artek.csv`. The CSV adapter below is only if Matt later transcribes his own numbers into a gitignored local file.
 

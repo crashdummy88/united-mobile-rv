@@ -92,7 +92,7 @@ test('shop copy is quote-first, not click-pay-ship', () => {
   const product = src('functions/shop/p/[id].js');
   const cart = src('functions/shop/cart.js');
   for (const html of [listing, product, cart]) {
-    assert.match(html, /Add to quote|Request info|arrange payment/i);
+    assert.match(html, /Add to quote|Request info|Request a quote|Square payment|arrange payment/i);
     assert.doesNotMatch(html, /Buy now/i);
     assert.doesNotMatch(html, /Add to Cart/);
     assert.doesNotMatch(html, /live checkout/);

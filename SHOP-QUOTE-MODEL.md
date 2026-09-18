@@ -4,14 +4,28 @@ The shop is a **systems quote desk**, not an Amazon-style checkout.
 
 ```
 1. Customer configures / gathers SKUs and REQUESTS INFO (quote lead)
-2. Matt arranges payment with them
-3. Matt orders the shipment from the supplier
-4. Upsell install + VRM (Victron remote monitoring) where it fits
+2. Matt follows up and arranges payment via Square invoice or payment link
+   (not shop auto-checkout — Square is the money loop, and it is underused today)
+3. After Square payment, Matt orders the shipment from the supplier
+4. Upsell install (Square appointment) + VRM (Victron remote monitoring)
 ```
 
-`/shop/cart` is a **quote list**. `/api/shop/quote` writes a lead. Nothing here charges a card, reserves stock, or ships.
+`/shop/cart` is a **quote list**. `/api/shop/quote` writes a lead. Nothing on `shop.unitedmobilerv.com` charges a card, reserves stock, or ships.
 
-Listed `retail_price` values are **cited public reference prices** only. They are not live supplier grid numbers and not a charge.
+**Square is the payment and booking rail.** After a request, Matt sends a Square invoice or payment link. Install upsell books at the live Square appointment intake: https://united-mobile-rv-llc.square.site/ — do not invent Square catalog IDs, item prices, or a shop-side charge.
+
+Listed `retail_price` values are **cited public reference prices** only. They are not live supplier grid numbers and not a Square charge.
+
+## Square money loop (do not underuse this)
+
+The shop never auto-charges. After a quote/request:
+
+1. Matt sends a **Square invoice** or **Square payment link** for the agreed hardware (and any deposit).
+2. After that payment clears, Matt orders the shipment from the supplier.
+3. Install upsell is a **Square appointment** at https://united-mobile-rv-llc.square.site/ (same Book CTA already in chrome).
+4. VRM / remote config is an add-on on that same conversation — not a shop checkout SKU.
+
+Do not build a shop-side Stripe/Square charge, and do not invent Square catalog IDs or prices to "complete" the loop. Copy on the storefront should read: **Request a quote → we’ll follow up with Square payment.**
 
 ## Pricing standard (every source)
 

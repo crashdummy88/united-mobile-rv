@@ -93,7 +93,7 @@ function printChecklist() {
   console.log('  UMRV list price:        (leave blank until you looked it up)');
   console.log('  Notes:');
   console.log('');
-  console.log('Shop model: request info → Matt arranges payment → Matt orders shipment → upsell install/VRM.');
+  console.log('Shop model: request quote → Square invoice/payment link → Matt orders shipment → upsell install (Square appointment) + VRM.');
   console.log('Never invent a price. Never scrape a locked grid. Unknown stays blank.');
   console.log('');
 }

@@ -60,9 +60,10 @@ test('sku_kind labels distinguish Amazon vs manufacturer vs internal', () => {
 });
 
 test('shared copy states quote → payment → ship, not auto-checkout', () => {
-  assert.match(QUOTE_MODEL_ONE_LINER, /Request info/i);
-  assert.match(QUOTE_MODEL_ONE_LINER, /arranges payment/i);
+  assert.match(QUOTE_MODEL_ONE_LINER, /Request a quote/i);
+  assert.match(QUOTE_MODEL_ONE_LINER, /Square payment/i);
   assert.match(QUOTE_FORM_INTRO, /not a checkout/i);
+  assert.match(QUOTE_FORM_INTRO, /Square invoice or payment link/i);
   assert.match(QUOTE_FORM_INTRO, /orders the shipment/i);
   assert.doesNotMatch(QUOTE_FORM_INTRO, /Buy now/i);
 });
@@ -126,7 +127,7 @@ test('listing filters by brand and quiets Availability Unverified when supplier-
   assert.match(allHtml, /Availability Unverified/);
   assert.match(allHtml, /Add to quote/);
   assert.match(allHtml, /brand=victron/);
-  assert.match(allHtml, /Request info/);
+  assert.match(allHtml, /Request a quote|Square payment/);
   assert.doesNotMatch(allHtml, /Buy now/i);
 
   const victron = await shopListing({

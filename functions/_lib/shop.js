@@ -147,9 +147,9 @@ export function supplierLabel(supplierId) {
  * Quote-first shop -- not click-pay-ship. Shared customer-facing copy so
  * listing, product, and cart stay on the same model.
  */
-export const QUOTE_MODEL_ONE_LINER = 'Request info. We quote, Matt arranges payment with you, then orders the shipment. Install and VRM are optional add-ons -- nothing is charged here.';
+export const QUOTE_MODEL_ONE_LINER = 'Request a quote. We follow up with Square payment (invoice or payment link), then Matt orders the shipment. Install and VRM are optional add-ons -- nothing is charged in this shop.';
 
-export const QUOTE_FORM_INTRO = 'This is a request for information, not a checkout. We follow up with a real quote. Matt arranges payment with you, then orders the shipment from the supplier. Installation and Victron VRM setup are available as add-ons. No charge happens here. Call or text (616) 606-5277 anytime.';
+export const QUOTE_FORM_INTRO = 'This is a request for information, not a checkout. We follow up with a real quote, then Square invoice or payment link. After that payment, Matt orders the shipment from the supplier. Installation (booked on Square) and Victron VRM setup are available as add-ons. No charge happens here. Call or text (616) 606-5277 anytime.';
 
 export function stockStatusMeta(product) {
   if (product && product.stock_status === 'unverified' && hasSupplierLink(product)) {

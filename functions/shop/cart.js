@@ -37,7 +37,7 @@ ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem() })}
 <section class="page-hero">
   <div class="wrap wrap-narrow">
     <h1>Quote list</h1>
-    <p class="muted">Gather what you need, then request info for the whole list. We quote, Matt arranges payment with you, then orders the shipment. Nothing here charges a card or ships automatically.</p>
+    <p class="muted">Gather what you need, then request a quote for the whole list. We follow up with Square payment (invoice or payment link), then Matt orders the shipment. Nothing here charges a card or ships automatically.</p>
   </div>
 </section>
 <section class="shop-cart-band">

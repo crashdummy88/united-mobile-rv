@@ -2,7 +2,8 @@
  * POST /api/shop/quote
  * Request-info lead: no live payment, no auto-ship. Captures a quote
  * request into D1 and emails Matt (same Web3Forms pattern as /api/book
- * and /api/chat-lead). Matt arranges payment, then orders the shipment.
+ * and /api/chat-lead). Matt follows up with a Square invoice or payment
+ * link, then orders the shipment.
  *
  * Accepts either:
  *  - a single product:      { product_id, ... }
@@ -38,7 +39,7 @@ export async function onRequestPost(context) {
   // Honeypot: real visitors never fill this hidden field. Silent success so
   // bots don't learn they were caught.
   if (clean(body.website, 100)) {
-    return json({ success: true, id: null, item_count: 0, message: 'Got it -- we will follow up with a quote, then arrange payment and shipping. Nothing was charged.' });
+    return json({ success: true, id: null, item_count: 0, message: 'Got it -- we will follow up with a quote and Square payment (invoice or payment link). Nothing was charged here.' });
   }
 
   const rl = await checkRateLimit(env, request, { max: 5, windowMinutes: 10, key: 'quote' });
@@ -152,12 +153,12 @@ export async function onRequestPost(context) {
       form.append('rig', [rvYear, rvMake, rvModel].filter(Boolean).join(' '));
       form.append('service_option', serviceOption);
       form.append('message',
-        `New shop request-info / quote lead.\n\nItems:\n${itemsSummary}\n\nService option: ${serviceOption}\nNotes: ${notes || '(none)'}\n${turnstileVerified ? '' : '\n(Turnstile did not verify for this submission -- likely an ad blocker on the customer\'s end, not necessarily spam.)\n'}\nQUOTE-FIRST: no payment collected, no shipment ordered. Reply, then arrange payment, then order from the supplier.`
+        `New shop request-info / quote lead.\n\nItems:\n${itemsSummary}\n\nService option: ${serviceOption}\nNotes: ${notes || '(none)'}\n${turnstileVerified ? '' : '\n(Turnstile did not verify for this submission -- likely an ad blocker on the customer\'s end, not necessarily spam.)\n'}\nQUOTE-FIRST: no payment collected on the shop. Reply, send Square invoice or payment link, then order from the supplier. Install upsell = Square appointment.`
       );
       form.append('source', 'UMRT Shop');
       context.waitUntil(fetch('https://api.web3forms.com/submit', { method: 'POST', body: form }));
     } catch { /* email is best-effort; the D1 row is the real record */ }
   }
 
-  return json({ success: true, id, item_count: items.length, message: 'Got it -- we will follow up with a quote, then arrange payment and shipping. Nothing was charged.' });
+  return json({ success: true, id, item_count: items.length, message: 'Got it -- we will follow up with a quote and Square payment (invoice or payment link). Nothing was charged here.' });
 }
