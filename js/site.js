@@ -72,12 +72,40 @@ function umrtGetTurnstileToken(containerId) {
   var mobileBars = document.querySelectorAll('.mobile-bar');
   for (var mi = 0; mi < mobileBars.length; mi++) mobileBars[mi].innerHTML = mobileBarHtml;
 
-  var chromeRoots = document.querySelectorAll('.site-footer, .umrt-platform-bar');
+  function umrtLinkLabel(a) {
+    return (a.textContent || '').replace(/\s+/g, ' ').trim();
+  }
+  function umrtIsRetiredChromeLink(a) {
+    var label = umrtLinkLabel(a);
+    var key = a.getAttribute('data-platform-link') || '';
+    if (/^(portal|status)$/i.test(key)) return true;
+    if (/^(Portal|Status)$/i.test(label)) return true;
+    var href = a.getAttribute('href') || '';
+    try {
+      var host = new URL(href, window.location.origin).hostname;
+      if (host === 'portal.unitedmobilerv.com' || host === 'status.unitedmobilerv.com') return true;
+    } catch (e) {}
+    return false;
+  }
+  function umrtIsForbiddenIslandNav(a) {
+    if (umrtIsRetiredChromeLink(a)) return true;
+    return /^(Field guides|Guides|WP Field Guides)$/i.test(umrtLinkLabel(a)); // retired guide-library labels only
+  }
+  function umrtRemoveChromeLink(a) {
+    var li = a.parentNode && a.parentNode.tagName === 'LI' ? a.parentNode : a;
+    if (li && li.parentNode) li.parentNode.removeChild(li);
+  }
+
+  var chromeRoots = document.querySelectorAll('.nav-links, .site-footer, .umrt-platform-bar');
   for (var ci = 0; ci < chromeRoots.length; ci++) {
     var chromeLinks = chromeRoots[ci].querySelectorAll('a[href]');
     for (var cj = 0; cj < chromeLinks.length; cj++) {
       var chromeA = chromeLinks[cj];
-      var chromeLabel = (chromeA.textContent || '').replace(/\s+/g, ' ').trim();
+      if (umrtIsRetiredChromeLink(chromeA)) {
+        umrtRemoveChromeLink(chromeA);
+        continue;
+      }
+      var chromeLabel = umrtLinkLabel(chromeA);
       if (/^(Book|Book Now|Book a Service|BOOK ONLINE|Book Online|Book service)$/i.test(chromeLabel)) {
         chromeA.setAttribute('href', BOOK_PUBLIC);
         chromeA.setAttribute('target', '_blank');
@@ -142,49 +170,64 @@ function umrtGetTurnstileToken(containerId) {
     ba.setAttribute('rel', 'noopener');
   }
 
-  /* Shop/forum/book islands: relative Home stays on the island. Point
-     MAIN HUB at the HTTPS apex, and append any missing ecosystem links as
-     absolute URLs so shop lockdown cannot swallow them. */
+  /* Shop/forum/book islands: lock product nav to MAIN HUB + Shop · Book ·
+     Forum · Software · Docs. Strip retired destinations and guide-library labels. */
   var MAIN_HOME_HREF = 'https://unitedmobilerv.com/';
   var MAIN_HOME_LABEL = 'MAIN HUB';
   var islandHost = location.hostname === 'shop.unitedmobilerv.com'
     || location.hostname === 'forum.unitedmobilerv.com'
     || location.hostname === 'book.unitedmobilerv.com';
+  var meshItems = [
+    [MAIN_HOME_LABEL, MAIN_HOME_HREF],
+    ['Shop', 'https://shop.unitedmobilerv.com/'],
+    ['Book', BOOK_PUBLIC],
+    ['Forum', 'https://forum.unitedmobilerv.com/'],
+    ['Software', 'https://software.unitedmobilerv.com/'],
+    ['Docs', 'https://docs.unitedmobilerv.com/']
+  ];
   if (islandHost) {
     var meshNav = document.querySelector('.nav-links');
     if (meshNav) {
-      var meshItems = [
-        [MAIN_HOME_LABEL, MAIN_HOME_HREF],
-        ['Forum', 'https://forum.unitedmobilerv.com/'],
-        ['Software', 'https://software.unitedmobilerv.com/'],
-        ['Status', 'https://status.unitedmobilerv.com/'],
-        ['Portal', 'https://portal.unitedmobilerv.com/'],
-        ['Shop', 'https://shop.unitedmobilerv.com/'],
-        ['Docs', 'https://docs.unitedmobilerv.com/']
-      ];
+      var leftover = Array.prototype.slice.call(meshNav.children);
+      leftover.forEach(function (li) { meshNav.removeChild(li); });
       var have = {};
-      meshNav.querySelectorAll('a').forEach(function (a) {
-        have[(a.textContent || '').replace(/\s+/g, ' ').trim().toLowerCase()] = a;
+      var extras = [];
+      leftover.forEach(function (li) {
+        var a = li.querySelector('a');
+        if (!a) { extras.push(li); return; }
+        if (umrtIsForbiddenIslandNav(a)) return;
+        var name = umrtLinkLabel(a);
+        if (/^Cart\b/i.test(name)) { extras.push(li); return; }
+        have[name.toLowerCase()] = li;
+        if (/^(main|home|main hub)$/i.test(name)) have['main hub'] = li;
       });
       meshItems.forEach(function (pair) {
         var name = pair[0];
         var href = pair[1];
         var found = have[name.toLowerCase()]
           || (name === MAIN_HOME_LABEL ? (have['main hub'] || have.main || have.home) : null);
+        var li;
+        var link;
         if (found) {
-          if (name === MAIN_HOME_LABEL) {
-            found.setAttribute('href', href);
-            found.textContent = MAIN_HOME_LABEL;
-          }
-          return;
+          li = found;
+          link = li.querySelector('a');
+          link.setAttribute('href', href);
+          if (name === MAIN_HOME_LABEL) link.textContent = MAIN_HOME_LABEL;
+          else if (name === 'Book') link.textContent = 'Book';
+        } else {
+          li = document.createElement('li');
+          link = document.createElement('a');
+          link.setAttribute('href', href);
+          link.textContent = name;
+          li.appendChild(link);
         }
-        var li = document.createElement('li');
-        var link = document.createElement('a');
-        link.setAttribute('href', href);
-        link.textContent = name;
-        li.appendChild(link);
+        if (name === 'Book') {
+          link.setAttribute('target', '_blank');
+          link.setAttribute('rel', 'noopener');
+        }
         meshNav.appendChild(li);
       });
+      extras.forEach(function (li) { meshNav.appendChild(li); });
     }
   }
 
