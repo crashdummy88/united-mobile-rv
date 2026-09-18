@@ -2,9 +2,13 @@
  * GET /shop/ -- real, server-rendered shop homepage.
  * Lists published (active=1) products grouped by problem-based category,
  * per the ecommerce spec's "category pages around customer problems" rule.
- * Phase 1: no live checkout -- every product routes to a quote request.
+ * Quote-first: every product routes to a request-info / quote lead.
+ * Not click-pay-ship -- Matt arranges payment, then orders the shipment.
  */
-import { formatPrice, displayName, CATEGORY_ICONS, formatServicePrice, stockStatusMeta, serviceBookHref } from '../_lib/shop.js';
+import {
+  formatPrice, displayName, CATEGORY_ICONS, formatServicePrice, stockStatusMeta, serviceBookHref,
+  productBrandSlug, LINE_BRANDS, LINE_BRAND_ORDER, QUOTE_MODEL_ONE_LINER,
+} from '../_lib/shop.js';
 import { islandHeader, islandFooter, islandMobileBar, shopCartNavItem, BOOK_PUBLIC_HREF } from '../_lib/mesh-chrome.js';
 import { relatedGuidesForService, relatedGuidesMarkup } from '../_lib/field-guides.js';
 
@@ -49,7 +53,20 @@ export async function onRequestGet(context) {
   const url = new URL(request.url);
   const base = url.origin;
   const activeCategory = (url.searchParams.get('category') || '').trim();
+  const activeBrand = (url.searchParams.get('brand') || '').trim();
+  const activeSupplier = (url.searchParams.get('supplier') || '').trim();
   const activeTab = url.searchParams.get('tab') === 'services' ? 'services' : 'parts';
+
+  function shopHref(extra = {}) {
+    const u = new URL('/shop/', base);
+    const category = extra.category !== undefined ? extra.category : activeCategory;
+    const brand = extra.brand !== undefined ? extra.brand : activeBrand;
+    const supplier = extra.supplier !== undefined ? extra.supplier : activeSupplier;
+    if (category) u.searchParams.set('category', category);
+    if (brand) u.searchParams.set('brand', brand);
+    if (supplier) u.searchParams.set('supplier', supplier);
+    return u.pathname + u.search;
+  }
 
   let products = [];
   let services = [];
@@ -73,11 +90,22 @@ export async function onRequestGet(context) {
         services = results || [];
       }
     } else {
-      const { results } = await env.DB.prepare(
-        `SELECT id, manufacturer, title, category, retail_price, product_type, stock_status, image_url
-         FROM products WHERE active = 1 ORDER BY category, manufacturer, title`
-      ).all();
-      products = results || [];
+      try {
+        const { results } = await env.DB.prepare(
+          `SELECT id, manufacturer, title, category, retail_price, product_type, stock_status, image_url,
+                  supplier_id, brand_slug, sku_kind
+           FROM products WHERE active = 1 ORDER BY category, manufacturer, title`
+        ).all();
+        products = results || [];
+      } catch (err) {
+        const msg = String((err && err.message) || err);
+        if (!/no such column:\s*(brand_slug|sku_kind)/i.test(msg)) throw err;
+        const { results } = await env.DB.prepare(
+          `SELECT id, manufacturer, title, category, retail_price, product_type, stock_status, image_url, supplier_id
+           FROM products WHERE active = 1 ORDER BY category, manufacturer, title`
+        ).all();
+        products = results || [];
+      }
     }
   }
 
@@ -86,16 +114,46 @@ export async function onRequestGet(context) {
     <a class="shop-tab${activeTab === 'services' ? ' is-active' : ''}" href="${base}/shop/?tab=services">Services</a>
   </div>`;
 
+  const brandPresent = new Set(products.map((p) => productBrandSlug(p)).filter(Boolean));
+
+  if (activeBrand) {
+    products = products.filter((p) => productBrandSlug(p) === activeBrand);
+  }
+  if (activeSupplier) {
+    products = products.filter((p) => String(p.supplier_id || '') === activeSupplier);
+  }
+
   const byCategory = {};
   for (const p of products) {
     (byCategory[p.category] = byCategory[p.category] || []).push(p);
   }
 
-  const chipsHtml = Object.keys(byCategory).length
-    ? `<div class="shop-chip-row">
-        <a class="shop-chip${activeCategory ? '' : ' is-active'}" href="${base}/shop/">All</a>
-        ${Object.keys(byCategory).map((cat) => `<a class="shop-chip${activeCategory === cat ? ' is-active' : ''}" href="${base}/shop/?category=${encodeURIComponent(cat)}">${esc(CATEGORY_LABELS[cat] || cat)}</a>`).join('')}
+  const brandChipSlugs = [];
+  for (const slug of LINE_BRAND_ORDER) {
+    if (brandPresent.has(slug) || slug === activeBrand) brandChipSlugs.push(slug);
+  }
+  for (const slug of [...brandPresent].sort()) {
+    if (!brandChipSlugs.includes(slug)) brandChipSlugs.push(slug);
+  }
+
+  const categoryChipsHtml = Object.keys(byCategory).length || activeCategory
+    ? `<div class="shop-chip-row" aria-label="Filter by category">
+        <span class="shop-chip-label">Need</span>
+        <a class="shop-chip${activeCategory ? '' : ' is-active'}" href="${esc(shopHref({ category: '' }))}">All</a>
+        ${Object.keys(byCategory).map((cat) => `<a class="shop-chip${activeCategory === cat ? ' is-active' : ''}" href="${esc(shopHref({ category: cat }))}">${esc(CATEGORY_LABELS[cat] || cat)}</a>`).join('')}
       </div>`
+    : '';
+
+  const brandChipsHtml = brandChipSlugs.length
+    ? `<div class="shop-chip-row" aria-label="Filter by brand">
+        <span class="shop-chip-label">Brand</span>
+        <a class="shop-chip${activeBrand ? '' : ' is-active'}" href="${esc(shopHref({ brand: '' }))}">All</a>
+        ${brandChipSlugs.map((slug) => `<a class="shop-chip${activeBrand === slug ? ' is-active' : ''}" href="${esc(shopHref({ brand: slug }))}">${esc(LINE_BRANDS[slug] || slug)}</a>`).join('')}
+      </div>`
+    : '';
+
+  const chipsHtml = (categoryChipsHtml || brandChipsHtml)
+    ? `${categoryChipsHtml}${brandChipsHtml}`
     : '';
 
   const categoriesToShow = activeCategory && byCategory[activeCategory] ? [activeCategory] : Object.keys(byCategory);
@@ -116,7 +174,7 @@ export async function onRequestGet(context) {
             <span class="shop-stock-chip is-${stock.cls}">${esc(stock.label)}</span>
           </div>
         </a>
-        <button type="button" class="btn btn-ghost shop-add-btn" data-product-id="${esc(p.id)}">Add to Cart</button>
+        <button type="button" class="btn btn-ghost shop-add-btn" data-product-id="${esc(p.id)}">Add to quote</button>
       </div>`;
     }).join('');
     return `<section class="shop-category-band"><div class="wrap">
@@ -186,7 +244,7 @@ ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem() })}
     <p class="lead">Diagnostics, installs, winterization, and repair -- these are UMRT's actual current service rates, the same ones we invoice against. Pick one and book it; we'll confirm scope and schedule with you directly.</p>
     <p class="muted" style="margin-top:14px">Shopping for hardware instead? <a class="text-link" href="/shop/">See Parts</a>.</p>` : `
     <h1>Not a parts store. A systems integrator.</h1>
-    <p class="lead">Tell us what your RV is trying to do and we'll tell you what equipment actually works together -- then handle sourcing, configuration, and installation if you want it. Every listing here is a real, cited reference price -- not a guess, and not a live checkout yet. Submit a quote request and our team follows up directly.</p>
+    <p class="lead">Tell us what your RV is trying to do and we'll tell you what equipment actually works together. ${esc(QUOTE_MODEL_ONE_LINER)} Listed figures are cited public reference prices -- not a live charge, and not auto-updated from any supplier grid.</p>
     <p class="muted" style="margin-top:14px">Not sure what you need? <a class="text-link" href="${BOOK_PUBLIC_HREF}" target="_blank" rel="noopener">Tell us the problem</a> and skip guessing at part numbers -- we'll spec it for you.</p>`}
     ${tabsHtml}
   </div>

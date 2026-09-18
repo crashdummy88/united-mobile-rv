@@ -1,14 +1,19 @@
 import { islandHeader, islandFooter, islandMobileBar, shopCartNavItem } from '../_lib/mesh-chrome.js';
+import { QUOTE_FORM_INTRO } from '../_lib/shop.js';
 
 /**
- * GET /shop/cart -- skeleton cart page.
+ * GET /shop/cart -- quote-list page (localStorage "cart" is a request list).
  *
- * Static shell (cart lives in localStorage via /js/cart.js); the actual
+ * Static shell (list lives in localStorage via /js/cart.js); the actual
  * line items are fetched client-side from /api/shop/products/:id and
- * rendered into #cart-items. Submitting the form posts the whole cart to
- * /api/shop/quote as one quote request. Phase 1: still a quote request,
- * not a live checkout -- no payment happens here.
+ * rendered into #cart-items. Submitting the form posts the whole list to
+ * /api/shop/quote as one request-info lead. Not click-pay-ship -- Matt
+ * arranges payment, then orders the shipment.
  */
+function escHtml(s) {
+  return String(s || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
 export async function onRequestGet(context) {
   const base = new URL(context.request.url).origin;
 
@@ -17,8 +22,8 @@ export async function onRequestGet(context) {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Your Cart | United Mobile RV Shop</title>
-<meta name="description" content="Review the items you've gathered and request one combined quote.">
+<title>Quote list | United Mobile RV Shop</title>
+<meta name="description" content="Review the items you've gathered and request info. We quote, then arrange payment and shipping.">
 <link rel="canonical" href="${base}/shop/cart">
 <meta name="robots" content="noindex,follow">
 <link rel="icon" href="/favicon.png" type="image/png">
@@ -31,29 +36,29 @@ ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem() })}
 <main id="main">
 <section class="page-hero">
   <div class="wrap wrap-narrow">
-    <h1>Your Cart</h1>
-    <p class="muted">Gather what you need, then request one combined quote. Nothing here is a live checkout -- our team follows up with real pricing and availability.</p>
+    <h1>Quote list</h1>
+    <p class="muted">Gather what you need, then request info for the whole list. We quote, Matt arranges payment with you, then orders the shipment. Nothing here charges a card or ships automatically.</p>
   </div>
 </section>
 <section class="shop-cart-band">
   <div class="wrap wrap-narrow">
-    <div id="cart-items"><p class="cart-empty">Loading your cart&hellip;</p></div>
+    <div id="cart-items"><p class="cart-empty">Loading your quote list&hellip;</p></div>
     <div id="cart-total-wrap" hidden>
       <div class="cart-total">Reference subtotal: $<span id="cart-total">0</span></div>
-      <p id="cart-total-note" class="muted" hidden>Plus one or more items priced on request -- your real quote will include those once we follow up.</p>
+      <p id="cart-total-note" class="muted" hidden>Plus one or more items priced on request -- the quote we send you will include those. Not a charge.</p>
     </div>
   </div>
 </section>
 <section class="shop-checkout-band" id="quote" hidden>
   <div class="wrap wrap-narrow" id="quote-wrap">
     <div class="shop-checkout-panel">
-    <h2>Request a quote for this cart</h2>
-    <p class="muted">One combined quote request covering every item above. Prefer to talk it through? Call or text (616) 606-5277.</p>
+    <h2>Request info for this list</h2>
+    <p class="muted">${escHtml(QUOTE_FORM_INTRO)}</p>
     <form id="quote-form">
-      <label class="service-tier"><input type="radio" name="service_option" value="hardware_only" checked><span class="service-tier-text"><strong>Hardware only</strong><small>Ships to you, you install.</small></span></label>
-      <label class="service-tier"><input type="radio" name="service_option" value="hardware_plus_config"><span class="service-tier-text"><strong>Hardware + remote configuration</strong><small>We configure it with you remotely.</small></span></label>
-      <label class="service-tier"><input type="radio" name="service_option" value="hardware_plus_install"><span class="service-tier-text"><strong>Hardware + UMRT installation</strong><small>We install it on-site.</small></span></label>
-      <label class="service-tier"><input type="radio" name="service_option" value="full_design_install"><span class="service-tier-text"><strong>Full system design + installation</strong><small>We design the whole system around this and install it.</small></span></label>
+      <label class="service-tier"><input type="radio" name="service_option" value="hardware_only" checked><span class="service-tier-text"><strong>Hardware only</strong><small>You install. After we arrange payment, Matt orders the shipment to you.</small></span></label>
+      <label class="service-tier"><input type="radio" name="service_option" value="hardware_plus_config"><span class="service-tier-text"><strong>Hardware + remote configuration</strong><small>After payment, Matt orders the shipment and we configure it remotely (VRM where it applies).</small></span></label>
+      <label class="service-tier"><input type="radio" name="service_option" value="hardware_plus_install"><span class="service-tier-text"><strong>Hardware + UMRT installation</strong><small>After payment, Matt orders the shipment and we install it on-site.</small></span></label>
+      <label class="service-tier"><input type="radio" name="service_option" value="full_design_install"><span class="service-tier-text"><strong>Full system design + installation</strong><small>We design the system, arrange payment, order the shipment, and install. VRM is an optional add-on.</small></span></label>
 
       <div class="qf-grid">
         <div class="qf-field"><label class="qf-label" for="qf-name">Your name</label><input class="forum-input" id="qf-name" placeholder="Jane Smith" maxlength="120"></div>
@@ -63,7 +68,7 @@ ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem() })}
       </div>
       <div class="qf-field"><label class="qf-label" for="qf-rig">RV year / make / model</label><input class="forum-input" id="qf-rig" placeholder="2021 Forest River Cherokee" maxlength="160"></div>
       <div class="qf-field"><label class="qf-label" for="qf-notes">Anything else we should know?</label><textarea class="forum-input" id="qf-notes" rows="3" maxlength="1500"></textarea></div>
-      <div class="btn-row"><button type="submit" class="btn btn-gold" id="qf-submit">Request Quote</button></div>
+      <div class="btn-row"><button type="submit" class="btn btn-gold" id="qf-submit">Request info</button></div>
       <p class="held-note" id="qf-status"></p>
       <div id="qf-turnstile"></div>
     </form>
@@ -184,7 +189,7 @@ ${islandMobileBar()}
     loadedProducts = {};
 
     if (!ids.length) {
-      itemsEl.innerHTML = '<p class="cart-empty">Your cart is empty. <a href="/shop/">Browse the shop</a>.</p>';
+      itemsEl.innerHTML = '<p class="cart-empty">Your quote list is empty. <a href="/shop/">Browse the shop</a>.</p>';
       totalWrap.hidden = true;
       quoteSection.hidden = true;
       return;
@@ -217,7 +222,7 @@ ${islandMobileBar()}
     }
 
     if (!anyLoaded) {
-      itemsEl.innerHTML = '<p class="cart-empty">Your cart is empty. <a href="/shop/">Browse the shop</a>.</p>';
+      itemsEl.innerHTML = '<p class="cart-empty">Your quote list is empty. <a href="/shop/">Browse the shop</a>.</p>';
       totalWrap.hidden = true;
       quoteSection.hidden = true;
       return;
@@ -242,7 +247,7 @@ ${islandMobileBar()}
     var items = Object.keys(cart)
       .filter(function (id) { return loadedProducts[id]; })
       .map(function (id) { return { product_id: id, quantity: cart[id] }; });
-    if (!items.length) { status.textContent = 'Your cart is empty.'; return; }
+    if (!items.length) { status.textContent = 'Your quote list is empty.'; return; }
 
     var rig = document.getElementById('qf-rig').value.trim().split(' ');
     submitBtn.disabled = true;

@@ -2,8 +2,8 @@
 commerce/suppliers/__init__.py
 
 Registry of available supplier adapters. Add a new supplier by writing
-its adapter module (see artek.py for the pattern -- and its docstring
-for why it's a CSV adapter, not an assumed API) and registering it here.
+its adapter module (see artek.py -- Artek's official path is a manual
+grid check, not this optional local CSV reader) and registering it here.
 """
 
 from .artek import ArtekAdapter

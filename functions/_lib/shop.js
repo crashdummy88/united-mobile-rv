@@ -73,13 +73,94 @@ export function formatServicePrice(service) {
 const STOCK_STATUS = {
   in_stock: { label: 'In Stock', cls: 'ok', note: 'Currently available.' },
   special_order: { label: 'Special Order', cls: 'warn', note: 'Special order -- lead time confirmed as part of your quote.' },
-  unverified: { label: 'Availability Unverified', cls: 'muted', note: 'Availability not yet confirmed with the supplier for this order -- confirmed as part of your quote.' },
+  unverified: { label: 'Availability Unverified', cls: 'muted', note: 'No confirmed supplier link and no live stock check -- we will not guess. Confirmed as part of your quote.' },
   discontinued: { label: 'Discontinued', cls: 'off', note: 'This item is discontinued; shown for reference only.' },
 };
 
+/** Matt's six product-line sources. Brand slug is filterable; supplier_id is who we actually buy from. */
+export const LINE_BRANDS = {
+  amazon: 'Amazon',
+  artek: 'Artek',
+  dometic: 'Dometic',
+  victron: 'Victron',
+  peplink: 'Peplink',
+  weboost: 'weBoost',
+};
+
+export const LINE_BRAND_ORDER = ['amazon', 'artek', 'dometic', 'victron', 'peplink', 'weboost'];
+
+export const SUPPLIER_LABELS = {
+  artek: 'Artek Energy',
+  amazon: 'Amazon',
+  dometic: 'Dometic',
+  victron: 'Victron Energy',
+  peplink: 'Peplink',
+  weboost: 'weBoost',
+};
+
+export const SKU_KIND_LABELS = {
+  manufacturer: 'Manufacturer SKU',
+  amazon: 'Amazon SKU',
+  internal: 'UMRV catalog SKU',
+};
+
+const BRAND_SLUG_ALIASES = {
+  'victron energy': 'victron',
+  victron: 'victron',
+  weboost: 'weboost',
+  'rich solar': 'rich-solar',
+  artek: 'artek',
+  amazon: 'amazon',
+  dometic: 'dometic',
+  peplink: 'peplink',
+};
+
+export function brandSlug(manufacturer) {
+  const raw = String(manufacturer || '').trim().toLowerCase();
+  if (!raw) return '';
+  if (BRAND_SLUG_ALIASES[raw]) return BRAND_SLUG_ALIASES[raw];
+  const first = raw.split(/\s+/)[0];
+  if (BRAND_SLUG_ALIASES[first]) return BRAND_SLUG_ALIASES[first];
+  return raw.replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+export function productBrandSlug(product) {
+  const tagged = product && String(product.brand_slug || '').trim();
+  return tagged || brandSlug(product && product.manufacturer);
+}
+
+export function hasSupplierLink(product) {
+  return !!(product && String(product.supplier_id || '').trim());
+}
+
+export function skuKindLabel(product) {
+  const kind = product && product.sku_kind;
+  return SKU_KIND_LABELS[kind] || '';
+}
+
+export function supplierLabel(supplierId) {
+  const id = String(supplierId || '').trim();
+  return SUPPLIER_LABELS[id] || id;
+}
+
+/**
+ * Quote-first shop -- not click-pay-ship. Shared customer-facing copy so
+ * listing, product, and cart stay on the same model.
+ */
+export const QUOTE_MODEL_ONE_LINER = 'Request info. We quote, Matt arranges payment with you, then orders the shipment. Install and VRM are optional add-ons -- nothing is charged here.';
+
+export const QUOTE_FORM_INTRO = 'This is a request for information, not a checkout. We follow up with a real quote. Matt arranges payment with you, then orders the shipment from the supplier. Installation and Victron VRM setup are available as add-ons. No charge happens here. Call or text (616) 606-5277 anytime.';
+
 export function stockStatusMeta(product) {
+  if (product && product.stock_status === 'unverified' && hasSupplierLink(product)) {
+    return {
+      label: 'Confirm at quote',
+      cls: 'warn',
+      note: 'Linked to a known supplier. Live stock is not polled -- confirmed when we quote, then Matt orders the shipment after payment.',
+    };
+  }
   return (product && STOCK_STATUS[product.stock_status]) || {
-    label: 'Contact for Availability', cls: 'muted', note: 'Availability confirmed as part of your quote.',
+    label: 'Contact for Availability', cls: 'muted', note: 'Availability is unknown until we check with a supplier as part of your quote.',
   };
 }
 
