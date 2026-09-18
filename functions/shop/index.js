@@ -197,7 +197,7 @@ ${sectionsHtml || `<section class="band"><div class="wrap"><p class="muted">${ac
 ${islandFooter({ current: 'shop' })}
 ${islandMobileBar()}
 <script src="/js/cart.js"></script>
-<script src="/js/site.js?v=20260916cta" defer></script>
+<script src="/js/site.js?v=20260917nav" defer></script>
 <script>
 (function () {
   document.querySelectorAll('.shop-add-btn').forEach(function (btn) {
