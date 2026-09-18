@@ -5,7 +5,8 @@
  * Phase 1: no live checkout -- every product routes to a quote request.
  */
 import { formatPrice, displayName, CATEGORY_ICONS, formatServicePrice, stockStatusMeta, serviceBookHref } from '../_lib/shop.js';
-import { islandHeader, islandFooter, islandMobileBar, shopCartNavItem, BOOK_PUBLIC_HREF } from '../_lib/mesh-chrome.js';
+import { islandHeader, islandFooter, islandMobileBar, shopCartNavItem, BOOK_PUBLIC_HREF, FIELD_GUIDES_HREF } from '../_lib/mesh-chrome.js';
+import { relatedGuidesForService, relatedGuidesMarkup } from '../_lib/field-guides.js';
 
 function esc(s) {
   return String(s || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -137,6 +138,7 @@ export async function onRequestGet(context) {
           <div class="shop-card-title">${esc(s.title)}</div>
           <div class="shop-card-price">${esc(formatServicePrice(s))}${s.price_note ? ` <span class="shop-card-price-note">${esc(s.price_note)}</span>` : ''}</div>
           <p class="shop-card-desc">${esc(s.description || '')}</p>
+          ${relatedGuidesMarkup(relatedGuidesForService(s))}
         </div>
         <a class="btn btn-ghost" href="${esc(serviceBookHref(s, env))}" target="_blank" rel="noopener">Book this service</a>
       </div>`).join('');
@@ -147,7 +149,7 @@ export async function onRequestGet(context) {
   }).join('\n');
 
   const servicesNoteHtml = `<section class="band"><div class="wrap wrap-narrow">
-    <p class="muted">Shop labor is billed at <strong>$150/hr</strong> after the initial diagnostic. A trip fee applies beyond 30 miles ($1.50/mi each way) -- confirmed with you before any work starts.</p>
+    <p class="muted">Shop labor is billed at <strong>$150/hr</strong> after the initial diagnostic. A trip fee applies beyond 30 miles ($1.50/mi each way) -- confirmed with you before any work starts. Troubleshooting write-ups live in the <a href="${FIELD_GUIDES_HREF}" target="_blank" rel="noopener">Field guides</a>.</p>
   </div></section>`;
 
   const sectionsHtml = activeTab === 'services'
