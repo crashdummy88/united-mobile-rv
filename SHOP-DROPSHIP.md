@@ -2,4 +2,4 @@
 
 Canonical write-up: **[SHOP-QUOTE-MODEL.md](./SHOP-QUOTE-MODEL.md)**.
 
-The shop is quote-first (request info → Square invoice / payment link → Matt orders shipment → upsell install via Square appointment + VRM), not click-pay-ship. All supplier prices are manual. Artek has no CSV.
+The shop is quote-first, not click-pay-ship. **Square is underutilized:** request quote → we’ll follow up with Square payment (invoice or payment link) → Matt orders the shipment → upsell install at https://united-mobile-rv-llc.square.site/ + VRM. All supplier prices are manual. Artek has no CSV. Do not invent prices.

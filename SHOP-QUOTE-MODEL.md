@@ -16,9 +16,9 @@ The shop is a **systems quote desk**, not an Amazon-style checkout.
 
 Listed `retail_price` values are **cited public reference prices** only. They are not live supplier grid numbers and not a Square charge.
 
-## Square money loop (do not underuse this)
+## Square money loop
 
-The shop never auto-charges. After a quote/request:
+**Square is underutilized.** The shop never auto-charges. After a quote/request:
 
 1. Matt sends a **Square invoice** or **Square payment link** for the agreed hardware (and any deposit).
 2. After that payment clears, Matt orders the shipment from the supplier.
