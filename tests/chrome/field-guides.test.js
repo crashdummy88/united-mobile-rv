@@ -99,7 +99,9 @@ test('shared mesh chrome does not include Field guides; Book stays Square', () =
   const book = src('functions/_lib/mesh-chrome.js');
   assert.match(book, /BOOK_PUBLIC_HREF = SQUARE_BOOK_URL/);
   assert.doesNotMatch(book, /href="\/guide\//);
-  assert.doesNotMatch(book, /Field guides/i);
+  assert.doesNotMatch(book, /GUIDES_HREF/);
+  assert.doesNotMatch(book, /label: 'Guides'/);
+  assert.doesNotMatch(book, /label: 'Field guides'/);
   assert.doesNotMatch(book, /FIELD_GUIDES_HREF/);
 });
 

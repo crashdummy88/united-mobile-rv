@@ -5,6 +5,8 @@
  * (SHOP_ALLOWED_PREFIXES in _middleware.js) 301s any relative
  * /forum/, /guide/, etc. back to /shop/. Do not add those paths
  * to the shop allowlist -- link off-host instead.
+ * Do not add a guide-library item to MESH_LINKS. That library stays
+ * on the WP apex, not in shop/forum/book product chrome.
  *
  * Matt LOCK 2026-09-16 convert stack (header + mobile bar, every surface):
  *   Call (616) 606-5277 → tel:+16166065277 (older clients; number is the call control)
