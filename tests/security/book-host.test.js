@@ -124,7 +124,8 @@ test('host home: book. / renders booking suite, not marketing homepage', async (
   assert.match(html, /https:\/\/forum\.unitedmobilerv\.com\//);
   assert.match(html, /https:\/\/shop\.unitedmobilerv\.com\//);
   assert.match(html, /https:\/\/software\.unitedmobilerv\.com\//);
-  assert.match(html, /https:\/\/unitedmobilerv\.com\/guide\//);
+  assert.doesNotMatch(html, /unitedmobilerv\.com\/guide\//);
+  assert.doesNotMatch(html, />Guides</);
   assert.match(html, />Main Hub</);
   assert.match(html, />MAIN HUB</);
   assert.match(html, /Booking continues on Square\. You can return to the Main Hub afterward\./);
@@ -168,7 +169,8 @@ test('/book-service/ on mothership keeps reasonable nav + request-host canonical
   assert.match(html, /Booking continues on Square\. You can return to the Main Hub afterward\./);
   assert.match(html, />MAIN HUB</);
   assert.match(html, />Main Hub</);
-  assert.match(html, /https:\/\/unitedmobilerv\.com\/guide\//);
+  assert.doesNotMatch(html, /unitedmobilerv\.com\/guide\//);
+  assert.doesNotMatch(html, />Guides</);
   assert.doesNotMatch(html, /Mobile RV Repair at Your Location/);
   assert.match(html, /https:\/\/forum\.unitedmobilerv\.com\//);
   assert.match(html, /Text Now \(616\) 606-5277/);

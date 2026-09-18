@@ -5,6 +5,8 @@
  * (SHOP_ALLOWED_PREFIXES in _middleware.js) 301s any relative
  * /forum/, /guide/, etc. back to /shop/. Do not add those paths
  * to the shop allowlist -- link off-host instead.
+ * Do not add a guide-library item to MESH_LINKS. That library stays
+ * on the WP apex, not in shop/forum/book product chrome.
  *
  * Matt LOCK 2026-09-16 convert stack (header + mobile bar, every surface):
  *   Call (616) 606-5277 → tel:+16166065277 (older clients; number is the call control)
@@ -21,7 +23,8 @@ export const CALL_HREF = 'tel:+16166065277';
 export const CALL_LABEL = 'Call (616) 606-5277';
 export const MAIN_HOME_HREF = 'https://unitedmobilerv.com/';
 export const MAIN_HUB_LABEL = 'Main Hub';
-export const GUIDES_HREF = 'https://unitedmobilerv.com/guide/';
+// Guides / Field Guides stay on the WP apex /guide/ only.
+// Do not add a guide-library item to MESH_LINKS (Matt STOP / #168).
 
 export function convertNavCta() {
   return `<div class="nav-cta">
@@ -41,7 +44,6 @@ export function convertMobileBar() {
 
 export const MESH_LINKS = [
   { key: 'home', href: MAIN_HOME_HREF, label: MAIN_HUB_LABEL },
-  { key: 'guides', href: GUIDES_HREF, label: 'Guides' },
   { key: 'forum', href: 'https://forum.unitedmobilerv.com/', label: 'Forum' },
   { key: 'software', href: 'https://software.unitedmobilerv.com/', label: 'Software' },
   { key: 'status', href: 'https://status.unitedmobilerv.com/', label: 'Status' },

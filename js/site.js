@@ -118,7 +118,6 @@ function umrtGetTurnstileToken(containerId) {
     if (meshNav) {
       var meshItems = [
         ['Main Hub', 'https://unitedmobilerv.com/'],
-        ['Guides', 'https://unitedmobilerv.com/guide/'],
         ['Forum', 'https://forum.unitedmobilerv.com/'],
         ['Software', 'https://software.unitedmobilerv.com/'],
         ['Status', 'https://status.unitedmobilerv.com/'],
