@@ -5,6 +5,9 @@
  */
 import { readFileSync } from 'node:fs';
 import { test, run, assert } from '../lib/tiny-test.js';
+import { stockStatusMeta } from '../../functions/_lib/shop.js';
+import { onRequestGet as shopListing } from '../../functions/shop/index.js';
+import { onRequestGet as shopProduct } from '../../functions/shop/p/[id].js';
 
 function src(rel) {
   return readFileSync(new URL('../../' + rel, import.meta.url), 'utf8');
@@ -81,6 +84,80 @@ test('product quote form shares the same checkout panel + convert fallback', () 
   assert.match(product, /\(616\) 606-5277/);
   assert.match(product, /BOOK_PUBLIC_HREF|islandHeader|islandMobileBar/);
   assert.match(product, /relatedGuidesMarkup\(relatedGuidesForProduct/);
+});
+
+test('unverified stock chip is Confirm on quote, not Availability Unverified', () => {
+  const unverified = stockStatusMeta({ stock_status: 'unverified' });
+  assert.equal(unverified.label, 'Confirm on quote');
+  assert.equal(unverified.cls, 'muted');
+  assert.equal(
+    unverified.note,
+    'Availability not yet confirmed with the supplier for this order -- confirmed as part of your quote.',
+  );
+  assert.doesNotMatch(unverified.label, /Availability Unverified/);
+  assert.doesNotMatch(unverified.label, /In Stock/);
+
+  const special = stockStatusMeta({ stock_status: 'special_order' });
+  assert.equal(special.label, 'Special Order');
+  assert.match(special.note, /confirmed as part of your quote/);
+
+  const inStock = stockStatusMeta({ stock_status: 'in_stock' });
+  assert.equal(inStock.label, 'In Stock');
+
+  const shop = src('functions/_lib/shop.js');
+  assert.match(shop, /label: 'Confirm on quote'/);
+  assert.doesNotMatch(shop, /Availability Unverified/);
+});
+
+test('shop grid + product page render Confirm on quote for unverified stock', async () => {
+  const product = {
+    id: 'victron-smartsolar-mppt',
+    sku: null,
+    manufacturer: 'Victron Energy',
+    model: 'SmartSolar MPPT',
+    title: 'Victron SmartSolar MPPT Charge Controller',
+    description: 'Solar charge controller.',
+    category: 'rv-power-protection',
+    product_type: 'individual',
+    retail_price: 65.45,
+    price_source: 'artek.energy',
+    stock_status: 'unverified',
+    installation_required: 1,
+    compatibility: null,
+    image_url: null,
+  };
+  const env = {
+    DB: {
+      prepare() {
+        return {
+          bind() { return this; },
+          async first() { return product; },
+          async all() { return { results: [product] }; },
+        };
+      },
+    },
+  };
+
+  const grid = await shopListing({
+    env,
+    request: new Request('https://shop.unitedmobilerv.com/shop/'),
+  });
+  assert.equal(grid.status, 200);
+  const gridHtml = await grid.text();
+  assert.match(gridHtml, /shop-stock-chip is-muted">Confirm on quote</);
+  assert.doesNotMatch(gridHtml, /Availability Unverified/);
+  assert.doesNotMatch(gridHtml, /shop-stock-chip is-ok">In Stock</);
+
+  const page = await shopProduct({
+    env,
+    params: { id: product.id },
+    request: new Request('https://shop.unitedmobilerv.com/shop/p/victron-smartsolar-mppt'),
+  });
+  assert.equal(page.status, 200);
+  const pageHtml = await page.text();
+  assert.match(pageHtml, /shop-stock-chip is-muted">Confirm on quote</);
+  assert.match(pageHtml, /Availability not yet confirmed with the supplier for this order -- confirmed as part of your quote\./);
+  assert.doesNotMatch(pageHtml, /Availability Unverified/);
 });
 
 await run();

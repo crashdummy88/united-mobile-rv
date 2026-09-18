@@ -73,7 +73,7 @@ export function formatServicePrice(service) {
 const STOCK_STATUS = {
   in_stock: { label: 'In Stock', cls: 'ok', note: 'Currently available.' },
   special_order: { label: 'Special Order', cls: 'warn', note: 'Special order -- lead time confirmed as part of your quote.' },
-  unverified: { label: 'Availability Unverified', cls: 'muted', note: 'Availability not yet confirmed with the supplier for this order -- confirmed as part of your quote.' },
+  unverified: { label: 'Confirm on quote', cls: 'muted', note: 'Availability not yet confirmed with the supplier for this order -- confirmed as part of your quote.' },
   discontinued: { label: 'Discontinued', cls: 'off', note: 'This item is discontinued; shown for reference only.' },
 };
 
