@@ -21,7 +21,7 @@ import {
   islandMobileBar,
 } from '../../functions/_lib/mesh-chrome.js';
 
-const REQUIRED = ['MAIN HUB', 'Forum', 'Software', 'Status', 'Portal', 'Shop', 'Docs', 'Field guides'];
+const REQUIRED = ['MAIN HUB', 'Forum', 'Software', 'Status', 'Portal', 'Shop', 'Docs'];
 const SQUARE = 'https://united-mobile-rv-llc.square.site/';
 
 function src(rel) {
@@ -48,9 +48,10 @@ test('Text Now is sms:+16166065277; number is tel:+16166065277', () => {
   assert.equal(MAIN_HOME_LABEL, 'MAIN HUB');
 });
 
-test('mesh helper lists MAIN HUB/Forum/Software/Status/Portal/Shop/Docs/Field guides as absolute hosts', () => {
+test('mesh helper lists MAIN HUB/Forum/Software/Status/Portal/Shop/Docs as absolute hosts', () => {
   const labels = MESH_LINKS.map((l) => l.label);
   for (const name of REQUIRED) assert.ok(labels.includes(name), `missing ${name}`);
+  assert.ok(!labels.some((l) => /field\s*guide/i.test(l)), 'Field guides is not mesh chrome');
   const header = islandHeader({ current: 'shop' });
   const footer = islandFooter({ current: 'shop' });
   const mobile = islandMobileBar();
@@ -62,8 +63,9 @@ test('mesh helper lists MAIN HUB/Forum/Software/Status/Portal/Shop/Docs/Field gu
     assert.match(html, /https:\/\/portal\.unitedmobilerv\.com\//);
     assert.match(html, /https:\/\/shop\.unitedmobilerv\.com\//);
     assert.match(html, /https:\/\/docs\.unitedmobilerv\.com\//);
-    assert.match(html, /https:\/\/unitedmobilerv\.com\/guide\//);
-    assert.match(html, />Field guides</);
+    assert.doesNotMatch(html, /unitedmobilerv\.com\/guide\//);
+    assert.doesNotMatch(html, /Field guides/i);
+    assert.doesNotMatch(html, /WP Field Guides/i);
   }
   for (const html of [header, footer, mobile]) {
     assert.match(html, /united-mobile-rv-llc\.square\.site/);
@@ -124,8 +126,9 @@ test('shop + forum templates include mesh-chrome (or static mesh + Square)', () 
   assert.match(forum, /https:\/\/docs\.unitedmobilerv\.com\//);
   assert.match(forum, />MAIN HUB</);
   assert.match(forum, /href="https:\/\/unitedmobilerv\.com\/"[^>]*>MAIN HUB</);
-  assert.match(forum, /https:\/\/unitedmobilerv\.com\/guide\//);
-  assert.match(forum, />Field guides</);
+  assert.doesNotMatch(forum, /unitedmobilerv\.com\/guide\//);
+  assert.doesNotMatch(forum, /Field guides/i);
+  assert.doesNotMatch(forum, /WP Field Guides/i);
   assert.match(forum, /united-mobile-rv-llc\.square\.site/);
   assert.match(forum, /sms:\+16166065277/);
   assert.match(forum, /tel:\+16166065277/);
@@ -154,8 +157,8 @@ test('site.js stamps Call + gold Text Now + Square Book on every nav/mobile bar'
   assert.match(js, /navCtaHtml/);
   assert.match(js, /mobileBarHtml/);
   assert.match(js, /umrt-platform-bar/);
-  assert.match(js, /Field guides/);
-  assert.match(js, /https:\/\/unitedmobilerv\.com\/guide\//);
+  assert.doesNotMatch(js, /Field guides/i);
+  assert.doesNotMatch(js, /https:\/\/unitedmobilerv\.com\/guide\//);
   assert.doesNotMatch(js, /BOOK_PUBLIC = 'https:\/\/book\.unitedmobilerv\.com\//);
   assert.doesNotMatch(js, /PREFER_TEXT_HREF = 'tel:/);
   assert.doesNotMatch(js, /pages\.dev/);

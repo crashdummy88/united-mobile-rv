@@ -44,7 +44,8 @@ test('listing uses full wrap + shop-service-card (not cramped wrap-narrow / .ser
   assert.match(listing, /serviceBookHref\(s, env\)/);
   assert.match(listing, /Book this service/);
   assert.match(listing, /relatedGuidesMarkup\(relatedGuidesForService/);
-  assert.match(listing, /FIELD_GUIDES_HREF/);
+  assert.doesNotMatch(listing, /FIELD_GUIDES_HREF/);
+  assert.doesNotMatch(listing, /Field guides/i);
   assert.doesNotMatch(listing, /class="shop-card service-card"/);
   assert.doesNotMatch(listing, /shop-category-band"><div class="wrap wrap-narrow">/);
 });
@@ -80,7 +81,9 @@ test('product quote form shares the same checkout panel + convert fallback', () 
   assert.match(product, /shop-checkout-panel/);
   assert.match(product, /\(616\) 606-5277/);
   assert.match(product, /BOOK_PUBLIC_HREF|islandHeader|islandMobileBar/);
-  assert.match(product, /relatedGuidesMarkup\(relatedGuidesForProduct/);
+  assert.doesNotMatch(product, /relatedGuidesMarkup/);
+  assert.doesNotMatch(product, /relatedGuidesForProduct/);
+  assert.doesNotMatch(product, /field-guides\.js/);
 });
 
 await run();

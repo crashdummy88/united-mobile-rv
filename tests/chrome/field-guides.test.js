@@ -77,29 +77,33 @@ test('product category + manufacturer overlays stay on WP /guide/', () => {
   assert.equal(unknown.length, 0);
 });
 
-test('markup is a muted line, not a second Book button, and drops unknown slugs', () => {
+test('markup is a quiet Guide text link, not a button, and drops unknown slugs', () => {
   const html = relatedGuidesMarkup(relatedGuidesForService({ id: 'generator-maintenance' }));
   assert.match(html, /class="shop-related-guides"/);
-  assert.match(html, /Related guides:/);
+  assert.match(html, />Guide</);
+  assert.doesNotMatch(html, /Related guides/i);
+  assert.doesNotMatch(html, /WP Field Guides/i);
+  assert.doesNotMatch(html, /Field guides/i);
   assert.match(html, /unitedmobilerv\.com\/guide\/generator-troubleshooting\//);
   assert.doesNotMatch(html, /Book this service/);
   assert.doesNotMatch(html, /text-link/);
+  assert.doesNotMatch(html, /btn /);
   assert.doesNotMatch(html, /href="\/guide\//);
   assert.equal(relatedGuidesMarkup([]), '');
   assert.equal(relatedGuidesMarkup([{ href: 'https://evil.example/x', label: 'Nope' }]), '');
 });
 
-test('shared mesh chrome includes Field guides; Book stays Square', () => {
-  const guides = MESH_LINKS.find((l) => l.key === 'guides');
-  assert.ok(guides);
-  assert.equal(guides.href, FIELD_GUIDES_HREF);
-  assert.equal(guides.label, 'Field guides');
+test('shared mesh chrome does not include Field guides; Book stays Square', () => {
+  assert.equal(MESH_LINKS.find((l) => l.key === 'guides'), undefined);
+  assert.ok(!MESH_LINKS.some((l) => /guide/i.test(l.label) || /guide/i.test(l.key)));
   const book = src('functions/_lib/mesh-chrome.js');
   assert.match(book, /BOOK_PUBLIC_HREF = SQUARE_BOOK_URL/);
   assert.doesNotMatch(book, /href="\/guide\//);
+  assert.doesNotMatch(book, /Field guides/i);
+  assert.doesNotMatch(book, /FIELD_GUIDES_HREF/);
 });
 
-test('product page renders related WP guides next to the description', async () => {
+test('product page has no related-guide chrome; Book stays Square', async () => {
   const product = {
     id: 'victron-smartsolar-mppt',
     sku: null,
@@ -134,9 +138,11 @@ test('product page renders related WP guides next to the description', async () 
   });
   assert.equal(res.status, 200);
   const html = await res.text();
-  assert.match(html, /Related guides:/);
-  assert.match(html, /href="https:\/\/unitedmobilerv\.com\/guide\/victron-fault-code-guide\/"/);
-  assert.match(html, />Field guides</);
+  assert.doesNotMatch(html, /Related guides/i);
+  assert.doesNotMatch(html, /shop-related-guides/);
+  assert.doesNotMatch(html, /unitedmobilerv\.com\/guide\//);
+  assert.doesNotMatch(html, /Field guides/i);
+  assert.doesNotMatch(html, /WP Field Guides/i);
   assert.doesNotMatch(html, /href="\/guide\//);
   assert.match(html, /united-mobile-rv-llc\.square\.site\/" target="_blank" rel="noopener">Book</);
 });

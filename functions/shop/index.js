@@ -5,7 +5,7 @@
  * Phase 1: no live checkout -- every product routes to a quote request.
  */
 import { formatPrice, displayName, CATEGORY_ICONS, formatServicePrice, stockStatusMeta, serviceBookHref } from '../_lib/shop.js';
-import { islandHeader, islandFooter, islandMobileBar, shopCartNavItem, BOOK_PUBLIC_HREF, FIELD_GUIDES_HREF } from '../_lib/mesh-chrome.js';
+import { islandHeader, islandFooter, islandMobileBar, shopCartNavItem, BOOK_PUBLIC_HREF } from '../_lib/mesh-chrome.js';
 import { relatedGuidesForService, relatedGuidesMarkup } from '../_lib/field-guides.js';
 
 function esc(s) {
@@ -149,7 +149,7 @@ export async function onRequestGet(context) {
   }).join('\n');
 
   const servicesNoteHtml = `<section class="band"><div class="wrap wrap-narrow">
-    <p class="muted">Shop labor is billed at <strong>$150/hr</strong> after the initial diagnostic. A trip fee applies beyond 30 miles ($1.50/mi each way) -- confirmed with you before any work starts. Troubleshooting write-ups live in the <a href="${FIELD_GUIDES_HREF}" target="_blank" rel="noopener">Field guides</a>.</p>
+    <p class="muted">Shop labor is billed at <strong>$150/hr</strong> after the initial diagnostic. A trip fee applies beyond 30 miles ($1.50/mi each way) -- confirmed with you before any work starts.</p>
   </div></section>`;
 
   const sectionsHtml = activeTab === 'services'
@@ -197,7 +197,7 @@ ${sectionsHtml || `<section class="band"><div class="wrap"><p class="muted">${ac
 ${islandFooter({ current: 'shop' })}
 ${islandMobileBar()}
 <script src="/js/cart.js"></script>
-<script src="/js/site.js?v=20260917nav" defer></script>
+<script src="/js/site.js?v=20260918nav" defer></script>
 <script>
 (function () {
   document.querySelectorAll('.shop-add-btn').forEach(function (btn) {

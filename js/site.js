@@ -160,8 +160,7 @@ function umrtGetTurnstileToken(containerId) {
         ['Status', 'https://status.unitedmobilerv.com/'],
         ['Portal', 'https://portal.unitedmobilerv.com/'],
         ['Shop', 'https://shop.unitedmobilerv.com/'],
-        ['Docs', 'https://docs.unitedmobilerv.com/'],
-        ['Field guides', 'https://unitedmobilerv.com/guide/']
+        ['Docs', 'https://docs.unitedmobilerv.com/']
       ];
       var have = {};
       meshNav.querySelectorAll('a').forEach(function (a) {
