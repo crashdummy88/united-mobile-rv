@@ -1,9 +1,12 @@
 /**
  * GET /shop/p/:id -- real, server-rendered product page.
- * Phase 1: reference pricing + a quote-request form (four service tiers per
- * the "Product + Service" model) instead of a live checkout charge.
+ * Quote-first product page: reference pricing + a request-info form.
+ * Not click-pay-ship -- Matt arranges payment, then orders the shipment.
  */
-import { formatPrice, priceNote, displayName, CATEGORY_ICONS, stockStatusMeta } from '../../_lib/shop.js';
+import {
+  formatPrice, priceNote, displayName, CATEGORY_ICONS, stockStatusMeta,
+  QUOTE_FORM_INTRO, hasSupplierLink, supplierLabel, skuKindLabel,
+} from '../../_lib/shop.js';
 import { islandHeader, islandFooter, islandMobileBar, shopCartNavItem } from '../../_lib/mesh-chrome.js';
 
 function esc(s) {
@@ -22,11 +25,23 @@ export async function onRequestGet(context) {
   const base = new URL(request.url).origin;
   if (!env.DB) return notFoundPage();
 
-  const product = await env.DB.prepare(
-    `SELECT id, sku, manufacturer, model, title, description, category, product_type,
-       retail_price, price_source, stock_status, installation_required, compatibility, image_url
-     FROM products WHERE id = ? AND active = 1`
-  ).bind(params.id).first();
+  let product;
+  try {
+    product = await env.DB.prepare(
+      `SELECT id, sku, sku_kind, manufacturer, model, title, description, category, product_type,
+         retail_price, price_source, stock_status, installation_required, compatibility, image_url,
+         supplier_id, brand_slug
+       FROM products WHERE id = ? AND active = 1`
+    ).bind(params.id).first();
+  } catch (err) {
+    const msg = String((err && err.message) || err);
+    if (!/no such column:\s*(brand_slug|sku_kind)/i.test(msg)) throw err;
+    product = await env.DB.prepare(
+      `SELECT id, sku, manufacturer, model, title, description, category, product_type,
+         retail_price, price_source, stock_status, installation_required, compatibility, image_url, supplier_id
+       FROM products WHERE id = ? AND active = 1`
+    ).bind(params.id).first();
+  }
   if (!product) return notFoundPage();
 
   let componentsHtml = '';
@@ -83,7 +98,9 @@ ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem() })}
         <p class="price-note">${esc(priceNote(product))}</p>
         <span class="shop-stock-chip is-${stock.cls}">${esc(stock.label)}</span>
         <p class="muted" style="margin-top:8px">${esc(stock.note)}</p>
-        <button type="button" class="btn btn-gold add-cart-btn" id="add-cart-btn" data-product-id="${esc(product.id)}">Add to Cart</button>
+        ${product.sku ? `<p class="muted">${esc(skuKindLabel(product) || 'SKU')}: ${esc(product.sku)}</p>` : ''}
+        ${hasSupplierLink(product) ? `<p class="muted">Sourced via ${esc(supplierLabel(product.supplier_id))} -- we order the shipment after payment is arranged.</p>` : ''}
+        <button type="button" class="btn btn-gold add-cart-btn" id="add-cart-btn" data-product-id="${esc(product.id)}">Add to quote</button>
       </div>
     </div>
   </div>
@@ -100,14 +117,14 @@ ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem() })}
 <section class="shop-checkout-band" id="quote">
   <div class="wrap wrap-narrow">
     <div class="shop-checkout-panel">
-    <h2>Request a quote</h2>
-    <p class="muted">This isn't a live checkout yet -- submit your info and our team follows up with real pricing, availability, and next steps. No charge happens here. Call or text (616) 606-5277 anytime.</p>
+    <h2>Request info</h2>
+    <p class="muted">${esc(QUOTE_FORM_INTRO)}</p>
     <form id="quote-form">
       <input type="hidden" id="qf-product-id" value="${esc(product.id)}">
-      <label class="service-tier"><input type="radio" name="service_option" value="hardware_only" checked><span class="service-tier-text"><strong>Hardware only</strong><small>We ship it to you and you handle the install.</small></span></label>
-      <label class="service-tier"><input type="radio" name="service_option" value="hardware_plus_config"><span class="service-tier-text"><strong>Hardware + remote configuration</strong><small>We ship it and walk you through setup remotely.</small></span></label>
-      <label class="service-tier"><input type="radio" name="service_option" value="hardware_plus_install"><span class="service-tier-text"><strong>Hardware + UMRT installation</strong><small>We ship it and send a technician to install it on-site.</small></span></label>
-      <label class="service-tier"><input type="radio" name="service_option" value="full_design_install"><span class="service-tier-text"><strong>Full system design + installation</strong><small>We design the complete system around your rig and install everything.</small></span></label>
+      <label class="service-tier"><input type="radio" name="service_option" value="hardware_only" checked><span class="service-tier-text"><strong>Hardware only</strong><small>You install. After we arrange payment, Matt orders the shipment to you.</small></span></label>
+      <label class="service-tier"><input type="radio" name="service_option" value="hardware_plus_config"><span class="service-tier-text"><strong>Hardware + remote configuration</strong><small>After payment, Matt orders the shipment and we configure it with you remotely (VRM where it applies).</small></span></label>
+      <label class="service-tier"><input type="radio" name="service_option" value="hardware_plus_install"><span class="service-tier-text"><strong>Hardware + UMRT installation</strong><small>After payment, Matt orders the shipment and a technician installs it on-site.</small></span></label>
+      <label class="service-tier"><input type="radio" name="service_option" value="full_design_install"><span class="service-tier-text"><strong>Full system design + installation</strong><small>We design the system, arrange payment, order the shipment, and install. VRM monitoring is an optional add-on.</small></span></label>
 
       <div class="qf-grid">
         <div class="qf-field"><label class="qf-label" for="qf-name">Your name</label><input class="forum-input" id="qf-name" placeholder="Jane Smith" maxlength="120"></div>
@@ -117,7 +134,7 @@ ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem() })}
       </div>
       <div class="qf-field"><label class="qf-label" for="qf-rig">RV year / make / model</label><input class="forum-input" id="qf-rig" placeholder="2021 Forest River Cherokee" maxlength="160"></div>
       <div class="qf-field"><label class="qf-label" for="qf-notes">Anything else we should know?</label><textarea class="forum-input" id="qf-notes" rows="3" maxlength="1500"></textarea></div>
-      <div class="btn-row"><button type="submit" class="btn btn-gold" id="qf-submit">Request Quote</button></div>
+      <div class="btn-row"><button type="submit" class="btn btn-gold" id="qf-submit">Request info</button></div>
       <p class="held-note" id="qf-status"></p>
       <div id="qf-turnstile"></div>
     </form>

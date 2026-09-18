@@ -3,23 +3,18 @@ commerce/suppliers/artek.py
 
 Artek Energy adapter.
 
-WHY THIS IS A CSV ADAPTER, NOT AN API CLIENT:
-Public research (2026-09-12) confirms artek.energy runs on Shopify and
-exposes a public MCP/UCP catalog+cart endpoint for retail browsing --
-that surface returns the same public prices anyone sees logged out, not
-dealer cost, and /account /cart /checkout are explicitly blocked from
-crawling in robots.txt (consistent with wholesale pricing sitting behind
-an authenticated customer session). Nothing on Artek's public pages
-(wholesale application, services, contact) documents a dealer API, EDI,
-or bulk export. No API endpoint, auth scheme, or base URL is invented
-here -- if Matt confirms one exists (via his account or Artek's System
-Engineering contact, ext. 8), replace this file's fetch() with a real
-client and nothing downstream (normalize/pricing/sync) has to change.
+ARTEK WORKFLOW (2026-09, from Matt / Artek):
+Artek has NO CSV. Pricing is a locked supply/demand grid. The official
+path is: log in, read the grid, run `npm run price-check -- artek` (or
+the SKU), then type the number onto Matt's side. Do not scrape
+/account. Do not invent a feed. Do not auto-fill retail_price.
 
-Until then: Matt exports or manually transcribes his real dealer numbers
-into supplier_feeds/artek.csv (gitignored -- see repo .gitignore -- so
-real wholesale cost never reaches a public commit). This file just reads
-that CSV.
+This module is only an optional reader for a *local, gitignored*
+transcribe file if Matt later types his own notes into
+supplier_feeds/artek.csv. It is not an Artek client. Public Shopify /
+MCP catalog surfaces are retail, not dealer cost, and are not used
+here. If Artek later documents a real dealer API, replace fetch() --
+do not guess an endpoint.
 
 CSV columns (see supplier_feeds/artek.example.csv for a template):
   product_id       REQUIRED. Must match an existing D1 products.id.

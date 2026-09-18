@@ -3,8 +3,8 @@ commerce/suppliers/base.py
 
 Shared shape every supplier adapter normalizes into, plus the minimal
 adapter interface. No adapter here talks to a real network API unless
-that API has actually been confirmed to exist (see artek.py's docstring
-for why Artek is a CSV adapter, not an API client).
+that API has actually been confirmed to exist. Artek is a manual grid
+check (no CSV from them); see artek.py and SHOP-QUOTE-MODEL.md.
 """
 
 from __future__ import annotations

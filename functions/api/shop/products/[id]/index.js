@@ -8,11 +8,23 @@ export async function onRequestGet(context) {
   const { env, params } = context;
   if (!env.DB) return json({ success: false, error: 'not_configured' }, 503);
 
-  const product = await env.DB.prepare(
-    `SELECT id, sku, manufacturer, model, title, description, category, product_type,
-       retail_price, price_source, stock_status, installation_required, compatibility, image_key, image_url
-     FROM products WHERE id = ? AND active = 1`
-  ).bind(params.id).first();
+  let product;
+  try {
+    product = await env.DB.prepare(
+      `SELECT id, sku, sku_kind, manufacturer, model, title, description, category, product_type,
+         retail_price, price_source, stock_status, installation_required, compatibility, image_key, image_url,
+         supplier_id, brand_slug
+       FROM products WHERE id = ? AND active = 1`
+    ).bind(params.id).first();
+  } catch (err) {
+    const msg = String((err && err.message) || err);
+    if (!/no such column:\s*(brand_slug|sku_kind)/i.test(msg)) throw err;
+    product = await env.DB.prepare(
+      `SELECT id, sku, manufacturer, model, title, description, category, product_type,
+         retail_price, price_source, stock_status, installation_required, compatibility, image_key, image_url, supplier_id
+       FROM products WHERE id = ? AND active = 1`
+    ).bind(params.id).first();
+  }
   if (!product) return json({ success: false, error: 'not_found' }, 404);
 
   let components = [];

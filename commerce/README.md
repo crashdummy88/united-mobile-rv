@@ -1,6 +1,12 @@
 # UMRT Commerce Catalog
 
-This directory contains the first production foundation for the United Mobile RV drop-ship catalog.
+Shop model (read this first): **[SHOP-QUOTE-MODEL.md](../SHOP-QUOTE-MODEL.md)**.
+
+The storefront is quote-first: request info → Square invoice / payment link → Matt orders the shipment → upsell install (Square appointment) / VRM. This directory is **not** an auto-pricer and **not** click-pay-ship.
+
+**Artek has no CSV.** Pricing is a locked supply/demand grid. Check it by hand (`npm run price-check -- artek`). Do not scrape `/account`. Do not invent `supplier_feeds/artek.csv`. The CSV adapter below is only if Matt later transcribes his own numbers into a gitignored local file.
+
+All six line sources (Amazon, Artek, Dometic, Victron, Peplink, weBoost) use the same manual price-check standard. No adapter invents a price.
 
 ## Data flow
 
@@ -50,10 +56,10 @@ to D1 unless you explicitly ask for it.
 Rules baked into every adapter and into `sync.py` itself:
 
 - Never invents a supplier API — an adapter only talks to a source that
-  has actually been confirmed to exist. `commerce/suppliers/artek.py` is
-  CSV-based today because no Artek dealer API/EDI/bulk feed has been
-  confirmed; the module docstring explains why and what would need to
-  change to swap in a real client later.
+  has actually been confirmed to exist. Artek told Matt they have no
+  CSV and no dealer API; `commerce/suppliers/artek.py` stays a local
+  transcribe-to-CSV reader (optional, gitignored feed) and is **not**
+  the pricing workflow. Official path: manual grid check + `npm run price-check`.
 - Never fabricates cost, inventory, or margin — an unknown value stays
   `NULL`/`None` all the way through; it never becomes a guess.
 - Never writes `retail_price`, `price_source`, or `active` — those stay
@@ -72,9 +78,11 @@ Rules baked into every adapter and into `sync.py` itself:
 wrangler d1 execute umrt_forum --local --file=./db/migrations/006_shop_supplier_sync.sql
 wrangler d1 execute umrt_forum --remote --file=./db/migrations/006_shop_supplier_sync.sql
 
-# 2. Put real dealer numbers in supplier_feeds/artek.csv (gitignored)
-cp supplier_feeds/artek.example.csv supplier_feeds/artek.csv
-#   ...edit it with real product_id / cost / map_price rows...
+# 2. OPTIONAL only — if you transcribed your own grid notes into a
+#    gitignored local CSV. Artek does not provide this file. Prefer:
+#      npm run price-check -- artek
+#    and write retail_price / cost by hand after the grid check.
+# cp supplier_feeds/artek.example.csv supplier_feeds/artek.csv
 
 # 3. Dry run -- writes a reviewable SQL file, changes nothing
 python3 commerce/sync.py --supplier artek

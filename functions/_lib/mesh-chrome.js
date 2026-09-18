@@ -110,5 +110,5 @@ export function islandMobileBar() {
 }
 
 export function shopCartNavItem() {
-  return `<li><a href="/shop/cart">Cart <span class="cart-badge-count" hidden></span></a></li>`;
+  return `<li><a href="/shop/cart">Quote list <span class="cart-badge-count" hidden></span></a></li>`;
 }

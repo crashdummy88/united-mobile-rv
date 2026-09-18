@@ -1,0 +1,9 @@
+{
+  "name": "united-mobile-rv",
+  "private": true,
+  "type": "module",
+  "description": "Scripts only — no build step, no dependencies. Cloudflare Pages stays static + Functions.",
+  "scripts": {
+    "price-check": "node scripts/price-check.js"
+  }
+}

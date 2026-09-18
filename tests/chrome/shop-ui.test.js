@@ -32,7 +32,8 @@ test('cart quote form stays on the dark theme (no band-gray light wash)', () => 
   assert.match(cart, /shop-checkout-panel/);
   assert.match(cart, /shop-checkout-band/);
   assert.match(cart, /shop-cart-band/);
-  assert.match(cart, /Call or text \(616\) 606-5277/);
+  assert.match(cart, /QUOTE_FORM_INTRO/);
+  assert.match(src('functions/_lib/shop.js'), /Call or text \(616\) 606-5277/);
   assert.match(cart, /service-tier-text/);
 });
 
@@ -84,6 +85,25 @@ test('product quote form shares the same checkout panel + convert fallback', () 
   assert.doesNotMatch(product, /relatedGuidesMarkup/);
   assert.doesNotMatch(product, /relatedGuidesForProduct/);
   assert.doesNotMatch(product, /field-guides\.js/);
+});
+
+test('shop copy is quote-first, not click-pay-ship', () => {
+  const listing = src('functions/shop/index.js');
+  const product = src('functions/shop/p/[id].js');
+  const cart = src('functions/shop/cart.js');
+  for (const html of [listing, product, cart]) {
+    assert.match(html, /Add to quote|Request info|Request a quote|Square payment|arrange payment/i);
+    assert.doesNotMatch(html, /Buy now/i);
+    assert.doesNotMatch(html, /Add to Cart/);
+    assert.doesNotMatch(html, /live checkout/);
+    assert.doesNotMatch(html, /Field guides/i);
+  }
+  assert.match(listing, /shopHref/);
+  assert.match(listing, /activeBrand/);
+  assert.match(listing, /brand_slug/);
+  assert.match(listing, /Filter by brand/);
+  assert.match(cart, /Quote list/);
+  assert.match(product, /Request info/);
 });
 
 await run();
