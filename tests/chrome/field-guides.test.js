@@ -137,6 +137,9 @@ test('product page renders related WP guides next to the description', async () 
   assert.match(html, /Related guides:/);
   assert.match(html, /href="https:\/\/unitedmobilerv\.com\/guide\/victron-fault-code-guide\/"/);
   assert.match(html, />Field guides</);
+  assert.match(html, /shop-stock-chip is-muted">Confirm on quote</);
+  assert.match(html, /Availability not yet confirmed with the supplier/);
+  assert.doesNotMatch(html, /Availability Unverified/);
   assert.doesNotMatch(html, /href="\/guide\//);
   assert.match(html, /united-mobile-rv-llc\.square\.site\/" target="_blank" rel="noopener">Book</);
 });
