@@ -5,15 +5,14 @@
  * (SHOP_ALLOWED_PREFIXES in _middleware.js) 301s any relative
  * /forum/, /guide/, etc. back to /shop/. Do not add those paths
  * to the shop allowlist -- link off-host instead.
+ * Do not add a guide-library item to MESH_LINKS. That library stays
+ * on the WP apex, not in shop/forum/book product chrome.
  *
  * Matt LOCK 2026-09-16 convert stack (header + mobile bar, every surface):
  *   Call (616) 606-5277 → tel:+16166065277 (older clients; number is the call control)
  *   Text Now            → sms:+16166065277 (gold primary; compact label exact)
  *   Book                → Square appointment intake (ghost/secondary; label exact Book)
  */
-
-import { FIELD_GUIDES_HREF } from './field-guides.js';
-export { FIELD_GUIDES_HREF };
 
 export const SQUARE_BOOK_URL = 'https://united-mobile-rv-llc.square.site/';
 export const BOOK_PUBLIC_HREF = SQUARE_BOOK_URL;
@@ -55,7 +54,6 @@ export const MESH_LINKS = [
   { key: 'portal', href: 'https://portal.unitedmobilerv.com/', label: 'Portal' },
   { key: 'shop', href: 'https://shop.unitedmobilerv.com/', label: 'Shop' },
   { key: 'docs', href: 'https://docs.unitedmobilerv.com/', label: 'Docs' },
-  { key: 'guides', href: FIELD_GUIDES_HREF, label: 'Field guides' },
 ];
 
 function currentAttr(item, current) {

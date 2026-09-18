@@ -5,7 +5,6 @@
  */
 import { formatPrice, priceNote, displayName, CATEGORY_ICONS, stockStatusMeta } from '../../_lib/shop.js';
 import { islandHeader, islandFooter, islandMobileBar, shopCartNavItem } from '../../_lib/mesh-chrome.js';
-import { relatedGuidesForProduct, relatedGuidesMarkup } from '../../_lib/field-guides.js';
 
 function esc(s) {
   return String(s || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -93,7 +92,6 @@ ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem() })}
   <div class="wrap wrap-narrow">
     <h2>Description</h2>
     <p>${esc(product.description || 'Technical details available on request.')}</p>
-    ${relatedGuidesMarkup(relatedGuidesForProduct(product))}
     ${product.compatibility ? `<h2>Compatibility</h2><p>${esc(product.compatibility)}</p>` : ''}
     ${componentsHtml}
     ${product.installation_required ? '<p class="held-note">Professional installation strongly recommended for this item.</p>' : ''}
@@ -130,7 +128,7 @@ ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem() })}
 ${islandFooter({ current: 'shop' })}
 ${islandMobileBar()}
 <script src="/js/cart.js"></script>
-<script src="/js/site.js?v=20260917nav" defer></script>
+<script src="/js/site.js?v=20260918nav" defer></script>
 <script>
 (function () {
   var qfTurnstileWidgetId = null;

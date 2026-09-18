@@ -1,9 +1,13 @@
 /**
- * Related WP Field Guide links for shop services / product context.
+ * Related WP guide URLs for shop *service* cards only.
  *
  * Authority is the live WordPress library at unitedmobilerv.com/guide/
  * (page 1724 + published children). Shop lockdown 301s relative /guide/
  * paths back to /shop/, so every href here is absolute on that host.
+ *
+ * Do not add these to MESH_LINKS / forum / book chrome. Product pages
+ * must not render related-guide markup -- products and that chrome
+ * are not for guides.
  *
  * Verified 2026-09-18 via wpcom pages.list (parent=1724, status=publish)
  * plus the hub slug `guide`. Do not add mothership-only slugs
@@ -160,9 +164,10 @@ export function relatedGuidesForProduct(product) {
 }
 
 /**
- * Small muted line of related-guide anchors. Empty string when nothing
- * maps -- cards stay as they were. Not a .text-link (those are uppercase
- * CTA arrows); plain gold <a> matches existing body copy links.
+ * Quiet single "Guide" text link for service cards. Empty string when
+ * nothing maps. Not a button, not nav chrome, not "WP Field Guides".
+ * Product pages must not call this -- Matt: products/chrome are not
+ * for guides.
  */
 function isWpGuideHref(href) {
   try {
@@ -179,9 +184,6 @@ function isWpGuideHref(href) {
 export function relatedGuidesMarkup(guides) {
   const items = (guides || []).filter((g) => g && g.label && isWpGuideHref(g.href));
   if (!items.length) return '';
-  const heading = items.length === 1 ? 'Related guide' : 'Related guides';
-  const links = items
-    .map((g) => `<a href="${esc(g.href)}" target="_blank" rel="noopener">${esc(g.label)}</a>`)
-    .join(' <span aria-hidden="true">&middot;</span> ');
-  return `<p class="shop-related-guides">${heading}: ${links}</p>`;
+  const first = items[0];
+  return `<p class="shop-related-guides"><a href="${esc(first.href)}" target="_blank" rel="noopener">Guide</a></p>`;
 }

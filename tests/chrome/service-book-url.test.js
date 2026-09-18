@@ -144,9 +144,10 @@ test('GET /shop/?tab=services renders Generator CTA with intent query, not bare 
   assert.match(html, /href="https:\/\/united-mobile-rv-llc\.square\.site\/\?service=diagnostic-fee/);
   assert.match(html, /Book this service/);
   assert.match(html, /href="https:\/\/unitedmobilerv\.com\/guide\/generator-troubleshooting\/"/);
-  assert.match(html, /Related guides:/);
-  assert.match(html, /href="https:\/\/unitedmobilerv\.com\/guide\/"/);
-  assert.match(html, />Field guides</);
+  assert.match(html, />Guide</);
+  assert.doesNotMatch(html, /Related guides/i);
+  assert.doesNotMatch(html, /Field guides/i);
+  assert.doesNotMatch(html, /WP Field Guides/i);
   assert.doesNotMatch(html, /href="\/guide\//);
   const cardHrefs = [...html.matchAll(/shop-service-card[\s\S]*?href="([^"]+)"[^>]*>Book this service/g)].map((m) => m[1]);
   assert.equal(cardHrefs.length, 2);
