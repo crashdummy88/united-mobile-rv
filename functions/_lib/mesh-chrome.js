@@ -8,6 +8,11 @@
  * Do not add a guide-library item to MESH_LINKS. That library stays
  * on the WP apex, not in shop/forum/book product chrome.
  *
+ * Matt LOCK 2026-09-18 product nav (shop / forum / book), Shop-first:
+ *   MAIN HUB return → https://unitedmobilerv.com/
+ *   1 Shop · 2 Book (Square) · 3 Forum · 4 Software · 5 Docs
+ *   Not Book-first. Do not add portal, status, or guide-library items.
+ *
  * Matt LOCK 2026-09-16 convert stack (header + mobile bar, every surface):
  *   Call (616) 606-5277 → tel:+16166065277 (older clients; number is the call control)
  *   Text Now            → sms:+16166065277 (gold primary; compact label exact)
@@ -48,11 +53,10 @@ export function convertMobileBar() {
 
 export const MESH_LINKS = [
   { key: 'home', href: MAIN_HOME_HREF, label: MAIN_HOME_LABEL },
+  { key: 'shop', href: 'https://shop.unitedmobilerv.com/', label: 'Shop' },
+  { key: 'book', href: BOOK_PUBLIC_HREF, label: 'Book', external: true },
   { key: 'forum', href: 'https://forum.unitedmobilerv.com/', label: 'Forum' },
   { key: 'software', href: 'https://software.unitedmobilerv.com/', label: 'Software' },
-  { key: 'status', href: 'https://status.unitedmobilerv.com/', label: 'Status' },
-  { key: 'portal', href: 'https://portal.unitedmobilerv.com/', label: 'Portal' },
-  { key: 'shop', href: 'https://shop.unitedmobilerv.com/', label: 'Shop' },
   { key: 'docs', href: 'https://docs.unitedmobilerv.com/', label: 'Docs' },
 ];
 
@@ -60,9 +64,14 @@ function currentAttr(item, current) {
   return current === item.key ? ' aria-current="page"' : '';
 }
 
+function meshAnchorOpen(item, current) {
+  const extra = item.external ? ' target="_blank" rel="noopener"' : '';
+  return `<a href="${item.href}"${currentAttr(item, current)}${extra}>`;
+}
+
 export function meshNavLis({ current, extraAfter = '' } = {}) {
   const items = MESH_LINKS.map(
-    (item) => `<li><a href="${item.href}"${currentAttr(item, current)}>${item.label}</a></li>`
+    (item) => `<li>${meshAnchorOpen(item, current)}${item.label}</a></li>`
   );
   if (extraAfter) items.push(extraAfter);
   return items.join('\n      ');
@@ -70,9 +79,9 @@ export function meshNavLis({ current, extraAfter = '' } = {}) {
 
 export function meshFooterAnchors({ current } = {}) {
   const mesh = MESH_LINKS.map(
-    (item) => `<a href="${item.href}"${currentAttr(item, current)}>${item.label}</a>`
+    (item) => `${meshAnchorOpen(item, current)}${item.label}</a>`
   ).join('\n      ');
-  return `${mesh}\n      <a href="${TEXT_NOW_HREF}">${TEXT_NOW_COMPACT}</a>\n      <a href="${BOOK_PUBLIC_HREF}" target="_blank" rel="noopener">Book</a>`;
+  return `${mesh}\n      <a href="${TEXT_NOW_HREF}">${TEXT_NOW_COMPACT}</a>`;
 }
 
 export function islandHeader({ current, extraNavHtml = '' } = {}) {
