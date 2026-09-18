@@ -168,6 +168,17 @@ input[type="checkbox"] {
 .shop-service-card .shop-card-body { padding-bottom: 8px; }
 .shop-service-card .btn { margin: 12px 16px 0; align-self: flex-start; }
 
+/* Related WP Field Guides -- a muted line under the service/product
+   description, not a second CTA. Keep Book this service the only button. */
+.shop-related-guides {
+  margin: 10px 0 0;
+  font-size: 0.85em;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.55);
+  max-width: none;
+}
+.shop-related-guides a { color: var(--gold); }
+
 /* ----- Filters / tabs ----- */
 .shop-chip-row,
 .shop-tab-row {

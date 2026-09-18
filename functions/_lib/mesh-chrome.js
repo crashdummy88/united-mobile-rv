@@ -12,6 +12,9 @@
  *   Book                → Square appointment intake (ghost/secondary; label exact Book)
  */
 
+import { FIELD_GUIDES_HREF } from './field-guides.js';
+export { FIELD_GUIDES_HREF };
+
 export const SQUARE_BOOK_URL = 'https://united-mobile-rv-llc.square.site/';
 export const BOOK_PUBLIC_HREF = SQUARE_BOOK_URL;
 // Square Online also exposes /s/appointments (GET 200) but the live
@@ -51,6 +54,7 @@ export const MESH_LINKS = [
   { key: 'portal', href: 'https://portal.unitedmobilerv.com/', label: 'Portal' },
   { key: 'shop', href: 'https://shop.unitedmobilerv.com/', label: 'Shop' },
   { key: 'docs', href: 'https://docs.unitedmobilerv.com/', label: 'Docs' },
+  { key: 'guides', href: FIELD_GUIDES_HREF, label: 'Field guides' },
 ];
 
 function currentAttr(item, current) {
