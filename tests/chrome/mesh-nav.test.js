@@ -191,6 +191,11 @@ test('shop/forum/book Text Now anchors use sms:, not tel:', () => {
     'book-service/index.html',
     'book-service/thank-you/index.html',
   ];
+  for (const file of files) {
+    const html = src(file);
+    assert.doesNotMatch(html, /Field guides/i, file);
+    assert.doesNotMatch(html, />Guides</, file);
+  }
   const textNowTel = /<a\b[^>]*href="tel:[^"]*"[^>]*>\s*TEXT\s*NOW/i;
   const textNowThenTel = /TEXT\s*NOW[\s\S]{0,80}href="tel:/i;
   for (const file of files) {

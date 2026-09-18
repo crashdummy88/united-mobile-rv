@@ -115,6 +115,9 @@ test('host home: book. / renders booking suite, not marketing homepage', async (
   assert.match(html, /<meta name="robots" content="noindex, follow">/);
   assert.doesNotMatch(html, /href="\/pricing\/"/);
   assert.doesNotMatch(html, /href="\/guide\/"/);
+  assert.doesNotMatch(html, /unitedmobilerv\.com\/guide\//);
+  assert.doesNotMatch(html, /Field guides/i);
+  assert.doesNotMatch(html, />Guides</);
   assert.doesNotMatch(html, /href="\/wireless\/"/);
   assert.match(html, /Victron Professional Certified Installer/);
   assert.match(html, /weBoost Authorized Installer/);
@@ -168,6 +171,9 @@ test('/book-service/ on mothership keeps reasonable nav + request-host canonical
   assert.match(html, /sms:\+16166065277/);
   assert.match(html, />MAIN HUB</);
   assert.match(html, /href="https:\/\/unitedmobilerv\.com\/"/);
+  assert.doesNotMatch(html, /unitedmobilerv\.com\/guide\//);
+  assert.doesNotMatch(html, /Field guides/i);
+  assert.doesNotMatch(html, />Guides</);
   assert.doesNotMatch(html, /Prefer Text/);
 });
 
@@ -185,6 +191,9 @@ test('thank-you on book host uses book. canonical and mesh nav (no mothership me
   assert.match(html, /href="https:\/\/unitedmobilerv\.com\/"/);
   assert.match(html, />MAIN HUB</);
   assert.doesNotMatch(html, /http:\/\/unitedmobilerv\.com/);
+  assert.doesNotMatch(html, /unitedmobilerv\.com\/guide\//);
+  assert.doesNotMatch(html, /Field guides/i);
+  assert.doesNotMatch(html, />Guides</);
   assert.match(html, /https:\/\/forum\.unitedmobilerv\.com\//);
   assert.match(html, /united-mobile-rv-llc\.square\.site/);
   assert.match(html, /Text Now \(616\) 606-5277/);
