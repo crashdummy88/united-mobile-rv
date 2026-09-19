@@ -183,7 +183,7 @@ test('middleware: X-Robots-Tag indexing behavior (pre-existing) still works, una
   const { DB, PORTAL_DB } = makeMockDbAndPortalDb({ forumUsers: [], centralUsers: [] });
   const env = { SESSION_SECRET: SECRET, DB, PORTAL_DB };
   const { next } = makeNextCapture();
-  const request = makeRequest('https://united-mobile-rv.pages.dev/forum/');
+  const request = makeRequest('https://forum.unitedmobilerv.com/forum/');
   const res = await middleware({ request, env, next });
   assert.equal(res.headers.get('X-Robots-Tag'), 'index, follow');
 

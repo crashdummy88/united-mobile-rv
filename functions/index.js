@@ -60,6 +60,9 @@ export async function onRequestGet(context) {
   // /forum/ is a static asset directory (forum/index.html) -- fetch it
   // through the Pages static-asset binding with a rewritten URL so the
   // content comes back at the '/' the visitor actually requested.
-  const rewrittenRequest = new Request(new URL(target, context.request.url), context.request);
+  // Use the internal 200 rewrite (not /forum/) so BUG-X1 _redirects
+  // /forum/ → forum.unitedmobilerv.com/ cannot loop this host's home.
+  const assetPath = host === 'forum.unitedmobilerv.com' ? '/_internal/forum-index' : target;
+  const rewrittenRequest = new Request(new URL(assetPath, context.request.url), context.request);
   return context.env.ASSETS.fetch(rewrittenRequest);
 }

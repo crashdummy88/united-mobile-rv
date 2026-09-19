@@ -6,8 +6,11 @@
  *   - /book-service/ on every other host (functions/book-service/index.js)
  *
  * Shared ecosystem chrome (mesh-chrome) so book. matches forum/shop.
- * Canonical/og:url use the request host. book. stays noindex until Matt
- * says otherwise. Text Now is sms:+16166065277; number is tel:; Book → Square.
+ * Canonical/og:url use the public origin (staging custom domain on
+ * staging hosts). book. stays noindex until Matt says otherwise.
+ * Text Now is sms:+16166065277; number is tel:; Book → Square.
+ * book. is a Square bridge (BOOK ONLINE + chrome Book), not a
+ * competing booking end state.
  */
 
 import {
@@ -22,6 +25,7 @@ import {
   MAIN_HOME_HREF,
   MAIN_HOME_LABEL,
 } from './mesh-chrome.js';
+import { publicCanonicalUrl } from './hosts.js';
 
 export const BOOK_HOST = 'book.unitedmobilerv.com';
 export { SQUARE_BOOK_URL };
@@ -204,7 +208,9 @@ ${islandMobileBar()}
 export function renderBookSuite(request) {
   const url = new URL(request.url);
   const bookHost = isBookHost(url.hostname);
-  const canonical = bookHost ? `${url.origin}/` : `${url.origin}/book-service/`;
+  const canonical = bookHost
+    ? publicCanonicalUrl(request, '/')
+    : publicCanonicalUrl(request, '/book-service/');
   const title = 'Book a Mobile RV Repair Visit | United Mobile RV';
   const description = 'Book mobile RV repair at your campsite, driveway, or storage yard. BOOK ONLINE on Square, or Text Now (616) 606-5277.';
   const html = pageShell({
@@ -233,7 +239,7 @@ export function renderBookSuite(request) {
 export function renderBookThankYou(request) {
   const url = new URL(request.url);
   const bookHost = isBookHost(url.hostname);
-  const canonical = `${url.origin}/book-service/thank-you/`;
+  const canonical = publicCanonicalUrl(request, '/book-service/thank-you/');
   const backHref = bookHost ? '/' : '/book-service/';
   const apexReturn = `<a class="btn btn-ghost" href="${MAIN_HOME_HREF}">${MAIN_HOME_LABEL}</a>`;
   const title = 'Thank you | United Mobile RV';

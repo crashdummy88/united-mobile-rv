@@ -154,6 +154,18 @@ test('host home: pages.dev / still falls through (no book rewrite)', async () =>
   assert.equal(await res.text(), 'homepage');
 });
 
+test('/book-service/ on staging pages.dev uses staging custom-domain canonical', async () => {
+  const res = await bookService({
+    request: makeRequest('https://united-mobile-rv-staging.pages.dev/book-service/'),
+    env,
+  });
+  const html = await res.text();
+  assert.match(html, /<link rel="canonical" href="https:\/\/staging\.unitedmobilerv\.com\/book-service\/">/);
+  assert.match(html, /<meta property="og:url" content="https:\/\/staging\.unitedmobilerv\.com\/book-service\/">/);
+  assert.doesNotMatch(html, /united-mobile-rv\.pages\.dev/);
+  assert.match(html, /united-mobile-rv-llc\.square\.site/);
+});
+
 test('/book-service/ on mothership keeps reasonable nav + request-host canonical', async () => {
   const res = await bookService({
     request: makeRequest('https://united-mobile-rv.pages.dev/book-service/'),

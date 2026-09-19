@@ -2,6 +2,19 @@
 # Funnel — united-mobile-rv.pages.dev · Domain HOLD
 # Keep: book / software / text (+ Text Now bounce at /go/text/)
 
+# BUG-X1 — mothership pages.dev must not 200 the forum (QA 2026-09-17).
+# /go/forum already 302s — leave it. Exact rules only here: a /forum/*
+# splat is not host-aware and would loop forum.unitedmobilerv.com
+# (same Pages project; /forum/* assets + thread Functions live there).
+# Path-preserving /forum/t/* 301s are in functions/_middleware.js.
+/forum                 https://forum.unitedmobilerv.com/  301
+/forum/                https://forum.unitedmobilerv.com/  301
+/forum-live            https://forum.unitedmobilerv.com/  301
+/forum-live/           https://forum.unitedmobilerv.com/  301
+# Internal 200 so forum. host '/' can ASSETS.fetch the index without
+# hitting the /forum/ 301 above.
+/_internal/forum-index /forum/index.html  200
+
 # Live Book + Text Now
 # Book→book.unitedmobilerv.com suite; Square stays BOOK ONLINE button inside suite
 /go/book       https://book.unitedmobilerv.com/  302
@@ -79,6 +92,9 @@
 /feed/         /  301
 /feed/*        /  301
 /xmlrpc.php    /  301
+# Leftover forum-* landing (FB embed /forum-live). Splat kept at the
+# bottom so earlier exact rules stay static (CF dynamic-rule budget).
+/forum-live/*  https://forum.unitedmobilerv.com/  301
 # NOTE: old WP query-string permalinks (/?p=123) are NOT handled here —
 # Cloudflare Pages _redirects doesn't reliably match on query parameters.
 # If those links get real traffic, they'll need Cloudflare Bulk Redirects

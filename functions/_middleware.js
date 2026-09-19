@@ -1,4 +1,5 @@
 import { resolveCentralIdentity } from './_lib/central-identity.js';
+import { isStagingHost, mothershipForumRedirectLocation, rewriteStagingSeoHtml } from './_lib/hosts.js';
 
 /**
  * Sets X-Robots-Tag exactly once per response, path-aware.
@@ -111,6 +112,15 @@ export async function onRequest(context) {
   strippedHeaders.delete('X-User-Role');
   let request = new Request(context.request, { headers: strippedHeaders });
 
+  // BUG-X1: pages.dev / staging / other mothership hosts must 301 /forum
+  // to the forum custom domain. forum.unitedmobilerv.com is skipped.
+  // Runs before shop lockdown so shop.unitedmobilerv.com/forum/ leaves
+  // the island for the real forum instead of bouncing to /shop/.
+  const forumDest = mothershipForumRedirectLocation(requestUrl.hostname, requestUrl.pathname);
+  if (forumDest) {
+    return Response.redirect(forumDest, 301);
+  }
+
   if (requestUrl.hostname === SHOP_HOST && !isShopAllowed(requestUrl.pathname)) {
     return Response.redirect(new URL('/shop/', requestUrl), 301);
   }
@@ -148,6 +158,22 @@ export async function onRequest(context) {
   const headers = new Headers(response.headers);
   headers.delete('X-Robots-Tag');
   headers.set('X-Robots-Tag', indexable ? 'index, follow' : 'noindex, follow');
+
+  // Staging hosts: rebase canonical + og:url onto the staging custom
+  // domain (path-aware). Static HTML still ships prod pages.dev tags;
+  // never emit united-mobile-rv.pages.dev as SEO URL on staging.
+  const stagingHtml = isStagingHost(requestUrl.hostname)
+    && response.status === 200
+    && /text\/html/i.test(headers.get('Content-Type') || '');
+  if (stagingHtml) {
+    const html = await response.text();
+    headers.delete('Content-Length');
+    return new Response(rewriteStagingSeoHtml(html, path), {
+      status: response.status,
+      statusText: response.statusText,
+      headers,
+    });
+  }
 
   return new Response(response.body, {
     status: response.status,
