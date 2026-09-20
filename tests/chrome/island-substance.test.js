@@ -122,6 +122,8 @@ test('book suite HTML is booking-only depth in Pages chrome', async () => {
   assert.doesNotMatch(text, /MAIN HUB/);
   const nav = islandHeader({ current: 'book' });
   assert.doesNotMatch(nav, /brand-text/);
+  assert.match(nav, /umrt-icon\.webp/);
+  assert.doesNotMatch(nav, /umrt-logo\.webp/);
 });
 
 test('static book-service fallback matches booking-only body', () => {

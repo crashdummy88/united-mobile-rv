@@ -277,6 +277,21 @@ function umrtGetTurnstileToken(containerId) {
       hubA.setAttribute('href', MAIN_HOME_HREF);
       hubA.textContent = MAIN_HOME_LABEL;
     }
+    var brandLinks = document.querySelectorAll('.site-header .brand');
+    for (var bl = 0; bl < brandLinks.length; bl++) {
+      brandLinks[bl].classList.add('brand-mark');
+      if (!brandLinks[bl].getAttribute('aria-label')) {
+        brandLinks[bl].setAttribute('aria-label', 'Home');
+      }
+    }
+    var brandImgs = document.querySelectorAll('.site-header .brand-logo');
+    for (var bm = 0; bm < brandImgs.length; bm++) {
+      var logoSrc = brandImgs[bm].getAttribute('src') || '';
+      if (/umrt-logo\.(webp|png)(\?|$)/.test(logoSrc)) {
+        brandImgs[bm].setAttribute('src', logoSrc.replace(/umrt-logo\.(webp|png)/, 'umrt-icon.webp'));
+      }
+      brandImgs[bm].setAttribute('alt', '');
+    }
   }
 
   /* Text Now / TEXT NOW controls must open sms:, never tel:. Call stays tel:. */
