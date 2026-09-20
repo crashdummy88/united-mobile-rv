@@ -8,11 +8,13 @@
  * Do not add a guide-library item to MESH_LINKS. That library stays
  * on the WP apex, not in shop/forum/book product chrome.
  *
- * Matt LOCK 2026-09-20 product nav (shop / forum / book), Shop-first:
+ * Matt LOCK 2026-09-20 product nav (shop / forum / book):
  *   Home return → https://unitedmobilerv.com/  (label Home, never MAIN HUB / Main Hub)
- *   Every CF island (shop. / forum. / book.) stamps that same Home door.
- *   1 Shop · 2 Book (Square) · 3 Forum · 4 Software · 5 Docs
- *   Not Book-first. Do not add portal, status, or guide-library items.
+ *   Services → https://unitedmobilerv.com/service/  (after Home, before Shop)
+ *   Every CF island (shop. / forum. / book.) stamps that same Home + Services door.
+ *   Home · Services · Shop · Book (Square) · Forum · Software · Docs
+ *   Cart after Shop on shop only. Not Book-first.
+ *   Do not add portal, status, or guide-library items.
  *   Island header is logo-only — no "United Mobile RV" corner title.
  *   Use umrt-icon.webp (car + gear, no lettering). umrt-logo.webp still
  *   has UNITED MOBILE RV in the artwork and must not sit in this bar.
@@ -47,6 +49,8 @@ export const CALL_HREF = 'tel:+16166065277';
 export const CALL_LABEL = 'Call (616) 606-5277';
 export const MAIN_HOME_HREF = 'https://unitedmobilerv.com/';
 export const MAIN_HOME_LABEL = 'Home';
+export const MAIN_SERVICES_HREF = 'https://unitedmobilerv.com/service/';
+export const MAIN_SERVICES_LABEL = 'Services';
 
 export function convertNavCta() {
   return `<div class="nav-cta">
@@ -66,6 +70,7 @@ export function convertMobileBar() {
 
 export const MESH_LINKS = [
   { key: 'home', href: MAIN_HOME_HREF, label: MAIN_HOME_LABEL },
+  { key: 'services', href: MAIN_SERVICES_HREF, label: MAIN_SERVICES_LABEL },
   { key: 'shop', href: 'https://shop.unitedmobilerv.com/', label: 'Shop' },
   { key: 'book', href: BOOK_PUBLIC_HREF, label: 'Book', external: true },
   { key: 'forum', href: 'https://forum.unitedmobilerv.com/', label: 'Forum' },
