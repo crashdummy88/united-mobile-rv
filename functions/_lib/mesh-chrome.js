@@ -8,24 +8,29 @@
  * Do not add a guide-library item to MESH_LINKS. That library stays
  * on the WP apex, not in shop/forum/book product chrome.
  *
- * Matt LOCK 2026-09-18 product nav (shop / forum / book), Shop-first:
- *   MAIN HUB return → https://unitedmobilerv.com/
- *   1 Shop · 2 Book (Square) · 3 Forum · 4 Software · 5 Docs
+ * Matt LOCK 2026-09-20 product nav (shop / forum / book), Shop-first:
+ *   Home return → https://unitedmobilerv.com/  (label Home, not MAIN HUB)
+ *   1 Shop · 2 Book (book. wrap) · 3 Forum · 4 Software · 5 Docs
  *   Not Book-first. Do not add portal, status, or guide-library items.
+ *
+ * Matt LOCK 2026-09-20 Book chrome:
+ *   Book → https://book.unitedmobilerv.com/ (embedded Square wrap)
+ *   square.site is fallback / shop-card deep link only — not mesh Book.
  *
  * Matt LOCK 2026-09-16 convert stack (header + mobile bar, every surface):
  *   Call (616) 606-5277 → tel:+16166065277 (older clients; number is the call control)
  *   Text Now            → sms:+16166065277 (gold primary; compact label exact)
- *   Book                → Square appointment intake (ghost/secondary; label exact Book)
+ *   Book                → book.unitedmobilerv.com (ghost/secondary; label exact Book)
  */
 
 export const SQUARE_BOOK_URL = 'https://united-mobile-rv-llc.square.site/';
-export const BOOK_PUBLIC_HREF = SQUARE_BOOK_URL;
+export const BOOK_HOST_HREF = 'https://book.unitedmobilerv.com/';
+export const BOOK_PUBLIC_HREF = BOOK_HOST_HREF;
 // Square Online also exposes /s/appointments (GET 200) but the live
 // appointments widget currently errors ("Something went wrong") while the
 // homepage "Request an appointment" form works. Keep this constant for
 // Matt to paste into services.book_url / SQUARE_BOOKING_URL once
-// Appointments is published; do not use it as the default card target.
+// Appointments is published; do not use it as the default chrome target.
 export const SQUARE_APPOINTMENTS_HREF = 'https://united-mobile-rv-llc.square.site/s/appointments';
 export const TEXT_NOW_HREF = 'sms:+16166065277';
 export const TEXT_NOW_LABEL = 'Text Now (616) 606-5277';
@@ -33,13 +38,13 @@ export const TEXT_NOW_COMPACT = 'Text Now';
 export const CALL_HREF = 'tel:+16166065277';
 export const CALL_LABEL = 'Call (616) 606-5277';
 export const MAIN_HOME_HREF = 'https://unitedmobilerv.com/';
-export const MAIN_HOME_LABEL = 'MAIN HUB';
+export const MAIN_HOME_LABEL = 'Home';
 
 export function convertNavCta() {
   return `<div class="nav-cta">
       <a class="nav-phone" href="${CALL_HREF}">${CALL_LABEL}</a>
       <a class="btn btn-gold nav-text-now" href="${TEXT_NOW_HREF}">${TEXT_NOW_COMPACT}</a>
-      <a class="btn btn-ghost" href="${BOOK_PUBLIC_HREF}" target="_blank" rel="noopener">Book</a>
+      <a class="btn btn-ghost" href="${BOOK_PUBLIC_HREF}">Book</a>
     </div>`;
 }
 
@@ -47,14 +52,14 @@ export function convertMobileBar() {
   return `<div class="mobile-bar" aria-label="Quick actions">
   <a class="btn btn-ghost" href="${CALL_HREF}">${CALL_LABEL}</a>
   <a class="btn btn-gold" href="${TEXT_NOW_HREF}">${TEXT_NOW_COMPACT}</a>
-  <a class="btn btn-ghost" href="${BOOK_PUBLIC_HREF}" target="_blank" rel="noopener">Book</a>
+  <a class="btn btn-ghost" href="${BOOK_PUBLIC_HREF}">Book</a>
 </div>`;
 }
 
 export const MESH_LINKS = [
   { key: 'home', href: MAIN_HOME_HREF, label: MAIN_HOME_LABEL },
   { key: 'shop', href: 'https://shop.unitedmobilerv.com/', label: 'Shop' },
-  { key: 'book', href: BOOK_PUBLIC_HREF, label: 'Book', external: true },
+  { key: 'book', href: BOOK_PUBLIC_HREF, label: 'Book' },
   { key: 'forum', href: 'https://forum.unitedmobilerv.com/', label: 'Forum' },
   { key: 'software', href: 'https://software.unitedmobilerv.com/', label: 'Software' },
   { key: 'docs', href: 'https://docs.unitedmobilerv.com/', label: 'Docs' },
@@ -65,8 +70,7 @@ function currentAttr(item, current) {
 }
 
 function meshAnchorOpen(item, current) {
-  const extra = item.external ? ' target="_blank" rel="noopener"' : '';
-  return `<a href="${item.href}"${currentAttr(item, current)}${extra}>`;
+  return `<a href="${item.href}"${currentAttr(item, current)}>`;
 }
 
 export function meshNavLis({ current, extraAfter = '' } = {}) {

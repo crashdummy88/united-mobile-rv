@@ -56,17 +56,17 @@ function umrtGetTurnstileToken(containerId) {
 (function () {
   /* Matt LOCK: every header + mobile bar is Call / Text Now / Book.
      Do not rewrite a Call control onto sms: — older clients use tel:. */
-  var BOOK_PUBLIC = 'https://united-mobile-rv-llc.square.site/';
+  var BOOK_PUBLIC = 'https://book.unitedmobilerv.com/';
   var TEXT_NOW_HREF = 'sms:+16166065277';
   var TEXT_NOW_COMPACT = 'Text Now';
   var CALL_HREF = 'tel:+16166065277';
   var CALL_LABEL = 'Call (616) 606-5277';
   var navCtaHtml = '<a class="nav-phone" href="' + CALL_HREF + '">' + CALL_LABEL + '</a>'
     + '<a class="btn btn-gold nav-text-now" href="' + TEXT_NOW_HREF + '">' + TEXT_NOW_COMPACT + '</a>'
-    + '<a class="btn btn-ghost" href="' + BOOK_PUBLIC + '" target="_blank" rel="noopener">Book</a>';
+    + '<a class="btn btn-ghost" href="' + BOOK_PUBLIC + '">Book</a>';
   var mobileBarHtml = '<a class="btn btn-ghost" href="' + CALL_HREF + '">' + CALL_LABEL + '</a>'
     + '<a class="btn btn-gold" href="' + TEXT_NOW_HREF + '">' + TEXT_NOW_COMPACT + '</a>'
-    + '<a class="btn btn-ghost" href="' + BOOK_PUBLIC + '" target="_blank" rel="noopener">Book</a>';
+    + '<a class="btn btn-ghost" href="' + BOOK_PUBLIC + '">Book</a>';
   var navCtas = document.querySelectorAll('.nav-cta');
   for (var ni = 0; ni < navCtas.length; ni++) navCtas[ni].innerHTML = navCtaHtml;
   var mobileBars = document.querySelectorAll('.mobile-bar');
@@ -108,8 +108,8 @@ function umrtGetTurnstileToken(containerId) {
       var chromeLabel = umrtLinkLabel(chromeA);
       if (/^(Book|Book Now|Book a Service|BOOK ONLINE|Book Online|Book service)$/i.test(chromeLabel)) {
         chromeA.setAttribute('href', BOOK_PUBLIC);
-        chromeA.setAttribute('target', '_blank');
-        chromeA.setAttribute('rel', 'noopener');
+        chromeA.removeAttribute('target');
+        chromeA.removeAttribute('rel');
         chromeA.textContent = 'Book';
         continue;
       }
@@ -128,10 +128,10 @@ function umrtGetTurnstileToken(containerId) {
   }
 
   /* In-page Book a Service / Book Now still pointed at /book-service/
-     (the suite). Owner lock: Book lands on Square. Keep the existing
-     button labels (no redesign). Optional body[data-book-service] adds
-     SKU intent so related guides (generator, winterize, PPI, …) match
-     shop service cards. Header Book stays the bare Square homepage. */
+     (the suite). Owner lock: Book lands on book.unitedmobilerv.com
+     (Square embed wrap). Keep the existing button labels (no redesign).
+     Optional body[data-book-service] adds SKU intent so related guides
+     match shop service cards. Header Book stays the bare book. homepage. */
   function umrtSquareBookHref(serviceId, serviceName, source) {
     if (!serviceId) return BOOK_PUBLIC;
     var u;
@@ -166,14 +166,14 @@ function umrtGetTurnstileToken(containerId) {
     if (!/^(Book|Book Now|Book a Service|BOOK ONLINE|Book Online|Book service)$/i.test(blabel)) continue;
     if (!umrtHrefIsSuiteBook(ba.getAttribute('href'))) continue;
     ba.setAttribute('href', umrtSquareBookHref(pageService, pageServiceName, pageSource));
-    ba.setAttribute('target', '_blank');
-    ba.setAttribute('rel', 'noopener');
+    ba.removeAttribute('target');
+    ba.removeAttribute('rel');
   }
 
-  /* Shop/forum/book islands: Shop-first product nav — MAIN HUB + Shop · Book ·
+  /* Shop/forum/book islands: Shop-first product nav — Home + Shop · Book ·
      Forum · Software · Docs. Not Book-first. Strip retired destinations and guide-library labels. */
   var MAIN_HOME_HREF = 'https://unitedmobilerv.com/';
-  var MAIN_HOME_LABEL = 'MAIN HUB';
+  var MAIN_HOME_LABEL = 'Home';
   var islandHost = location.hostname === 'shop.unitedmobilerv.com'
     || location.hostname === 'forum.unitedmobilerv.com'
     || location.hostname === 'book.unitedmobilerv.com';
@@ -222,8 +222,8 @@ function umrtGetTurnstileToken(containerId) {
           li.appendChild(link);
         }
         if (name === 'Book') {
-          link.setAttribute('target', '_blank');
-          link.setAttribute('rel', 'noopener');
+          link.removeAttribute('target');
+          link.removeAttribute('rel');
         }
         meshNav.appendChild(li);
       });
@@ -433,7 +433,7 @@ function umrtGetTurnstileToken(containerId) {
         addBubble('bot', data.reply);
         history.push({ role: 'assistant', content: data.reply });
       } catch (e) {
-        addBubble('bot', 'Chat is briefly unavailable. Call or text <a href="tel:+16166065277">(616) 606-5277</a>  -  our team answers. Or <a href="https://united-mobile-rv-llc.square.site/" target="_blank" rel="noopener">Book</a>.');
+        addBubble('bot', 'Chat is briefly unavailable. Call or text <a href="tel:+16166065277">(616) 606-5277</a>  -  our team answers. Or <a href="https://book.unitedmobilerv.com/">Book</a>.');
       } finally {
         sendBtn.disabled = false;
       }
