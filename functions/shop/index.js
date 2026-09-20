@@ -5,7 +5,7 @@
  * Phase 1: no live checkout -- every product routes to a quote request.
  */
 import { formatPrice, displayName, CATEGORY_ICONS, formatServicePrice, stockStatusMeta, serviceBookHref } from '../_lib/shop.js';
-import { islandHeader, islandFooter, islandMobileBar, shopCartNavItem, clarityHeadSnippet } from '../_lib/mesh-chrome.js';
+import { islandHeader, islandFooter, islandMobileBar, shopCartNavItem, clarityHeadSnippet, landJsonLdSnippet, landCrumbsNav } from '../_lib/mesh-chrome.js';
 import { relatedGuidesForService, relatedGuidesMarkup } from '../_lib/field-guides.js';
 import {
   quoteFirstSection,
@@ -186,13 +186,15 @@ ${shopQuoteNeedsSection()}`;
      comments on why a stale meta/header mismatch is a real bug here. -->
 <meta name="robots" content="index,follow">
 <link rel="icon" href="/favicon.png" type="image/png">
-<link rel="stylesheet" href="/css/site.css?v=20260920home">
+<link rel="stylesheet" href="/css/site.css?v=20260920crumbs">
 <link rel="stylesheet" href="/css/shop.css">
 ${clarityHeadSnippet()}
+${landJsonLdSnippet(request, { pageName: activeTab === 'services' ? 'Services' : 'Systems Shop' })}
 </head>
 <body class="island-chrome">
 <a class="skip-link" href="#main">Skip to content</a>
 ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem(), extraAfterKey: 'shop' })}
+${landCrumbsNav(request, { pageName: activeTab === 'services' ? 'Services' : 'Systems Shop' })}
 <main id="main">
 <section class="page-hero">
   <div class="wrap">

@@ -19,6 +19,8 @@ import {
   islandMobileBar,
   meshFooterAnchors,
   clarityHeadSnippet,
+  landJsonLdSnippet,
+  landCrumbsNav,
   TEXT_NOW_HREF,
   TEXT_NOW_LABEL,
   CALL_HREF,
@@ -99,7 +101,7 @@ ${publishedRatesSection({ includeRateSheetLink: !bookHost })}
 </main>`;
 }
 
-function pageShell({ title, description, canonical, bookHost, robotsMeta, mainHtml, extraFooter = '' }) {
+function pageShell({ title, description, canonical, bookHost, robotsMeta, mainHtml, extraFooter = '', request, pageName }) {
   const robots = robotsMeta ? `<meta name="robots" content="${esc(robotsMeta)}">\n` : '';
   return `<!DOCTYPE html>
 <html lang="en" data-book-suite="${bookHost ? 'book-host' : 'mothership'}">
@@ -116,13 +118,15 @@ ${robots}<meta name="theme-color" content="#1A1A1A">
 <meta property="og:description" content="${esc(description)}">
 <meta property="og:type" content="website">
 <meta property="og:url" content="${esc(canonical)}">
-<link rel="stylesheet" href="/css/site.css?v=20260920booksq">
+<link rel="stylesheet" href="/css/site.css?v=20260920crumbs">
 <style>${SUITE_CSS}</style>
 ${clarityHeadSnippet()}
+${request ? landJsonLdSnippet(request, { pageName }) : ''}
 </head>
 <body class="book-suite">
 <a class="skip-link" href="#main">Skip to content</a>
 ${islandHeader({ current: 'book' })}
+${request ? landCrumbsNav(request, { pageName }) : ''}
 ${mainHtml}
 <footer class="site-footer">
   ${suiteFooter({ bookHost })}
@@ -149,6 +153,7 @@ export function renderBookSuite(request) {
     canonical,
     bookHost,
     robotsMeta: bookHost ? 'index, follow' : '',
+    request,
     mainHtml: suiteMain({ bookHost }),
     extraFooter: `<div class="wrap footer-proof" aria-label="Real job photos">
     <div class="footer-brand-row">
@@ -194,6 +199,8 @@ export function renderBookThankYou(request) {
     canonical,
     bookHost,
     robotsMeta: bookHost ? 'index, follow' : '',
+    request,
+    pageName: 'Thank you',
     mainHtml,
   });
   return htmlResponse(html);

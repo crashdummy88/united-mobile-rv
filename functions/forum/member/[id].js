@@ -1,4 +1,4 @@
-import { islandHeader, islandFooter, islandMobileBar, clarityHeadSnippet } from '../../_lib/mesh-chrome.js';
+import { islandHeader, islandFooter, islandMobileBar, clarityHeadSnippet, landJsonLdSnippet, landCrumbsNav } from '../../_lib/mesh-chrome.js';
 import { publicThreadSql } from '../../_lib/forum-growth.js';
 
 /**
@@ -62,11 +62,13 @@ export async function onRequestGet(context) {
 <link rel="canonical" href="${base}/forum/member/${esc(user.id)}">
 <meta name="robots" content="index,follow">
 <link rel="icon" href="/favicon.png" type="image/png">
-<link rel="stylesheet" href="/css/site.css?v=20260920home">
+<link rel="stylesheet" href="/css/site.css?v=20260920crumbs">
 ${clarityHeadSnippet()}
+${landJsonLdSnippet(request, { pageName: user.display_name })}
 </head>
 <body class="island-chrome">
 ${islandHeader({ current: 'forum' })}
+${landCrumbsNav(request, { pageName: user.display_name })}
 <main id="main">
 <section class="page-hero">
   <div class="wrap">

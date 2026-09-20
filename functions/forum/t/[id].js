@@ -1,4 +1,4 @@
-import { islandHeader, islandFooter, islandMobileBar, clarityHeadSnippet } from '../../_lib/mesh-chrome.js';
+import { islandHeader, islandFooter, islandMobileBar, clarityHeadSnippet, landJsonLdSnippet, landCrumbsNav } from '../../_lib/mesh-chrome.js';
 import { isPubliclyListedThread, isSeedOrPinSpamId } from '../../_lib/forum-growth.js';
 import { escForumText, renderForumBodyHtml } from '../../_lib/forum-body.js';
 
@@ -145,9 +145,10 @@ export async function onRequestGet(context) {
 <meta name="robots" content="index,follow">
 <meta name="theme-color" content="#1A1A1A">
 <link rel="icon" href="/favicon.png" type="image/png">
-<link rel="stylesheet" href="/css/site.css?v=20260920home">
+<link rel="stylesheet" href="/css/site.css?v=20260920crumbs">
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <script type="application/ld+json">${JSON.stringify(jsonLd).replace(/</g, '\\u003c')}</script>
+${landJsonLdSnippet(request, { pageName: thread.title })}
 <style>
   .thread-badges{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
   .badge{display:inline-flex;align-items:center;gap:6px;font-size:0.8em;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;padding:5px 12px;border-radius:999px}
@@ -172,6 +173,7 @@ ${clarityHeadSnippet()}
 <body class="island-chrome">
 <a class="skip-link" href="#main">Skip to content</a>
 ${islandHeader({ current: 'forum' })}
+${landCrumbsNav(request, { pageName: thread.title })}
 <main id="main">
 <section class="page-hero">
   <div class="wrap">

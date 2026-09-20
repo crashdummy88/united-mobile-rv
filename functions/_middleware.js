@@ -6,6 +6,7 @@ import {
   resolveLandCanonical,
   rewriteHtmlCanonicals,
 } from './_lib/canonical.js';
+import { injectLandSchema } from './_lib/jsonld.js';
 
 /**
  * Sets X-Robots-Tag exactly once per response, path-aware.
@@ -200,11 +201,14 @@ export async function onRequest(context) {
   // On shop/forum/book, also rewrite canonical + og:url (host-aware):
   // land-unique stays on this host; shared WP mirrors point at apex;
   // never leave united-mobile-rv.pages.dev as the canonical.
+  // Then stamp BreadcrumbList (+ WebSite/Organization on land homes)
+  // once, before Clarity, so the loader stays last in <head>.
   headers.delete('Content-Length');
   let html = await response.text();
   if (isLandHost(requestUrl.hostname)) {
     const canonical = resolveLandCanonical(requestUrl);
     html = rewriteHtmlCanonicals(html, canonical);
+    html = injectLandSchema(html, requestUrl);
   }
   return new Response(injectClarityOnce(html), {
     status: response.status,

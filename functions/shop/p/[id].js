@@ -4,7 +4,7 @@
  * the "Product + Service" model) instead of a live checkout charge.
  */
 import { formatPrice, priceNote, displayName, CATEGORY_ICONS, stockStatusMeta } from '../../_lib/shop.js';
-import { islandHeader, islandFooter, islandMobileBar, shopCartNavItem, clarityHeadSnippet } from '../../_lib/mesh-chrome.js';
+import { islandHeader, islandFooter, islandMobileBar, shopCartNavItem, clarityHeadSnippet, landJsonLdSnippet, landCrumbsNav } from '../../_lib/mesh-chrome.js';
 import { quoteFirstSection, shopQuoteNeedsSection } from '../../_lib/island-substance.js';
 
 function esc(s) {
@@ -49,25 +49,28 @@ export async function onRequestGet(context) {
   // it's shown instead of two hand-maintained copies drifting apart.
   const stock = stockStatusMeta(product);
 
+  const pageName = displayName(product.manufacturer, product.title);
   const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${esc(displayName(product.manufacturer, product.title))} | United Mobile RV Shop</title>
+<title>${esc(pageName)} | United Mobile RV Shop</title>
 <meta name="description" content="${esc((product.description || '').slice(0, 150))}">
 <link rel="canonical" href="${base}/shop/p/${esc(product.id)}">
 <!-- 2026-09-16: matches functions/shop/index.js -- /shop/ is now index,follow
      via the X-Robots-Tag header, so individual product pages follow suit. -->
 <meta name="robots" content="index,follow">
 <link rel="icon" href="/favicon.png" type="image/png">
-<link rel="stylesheet" href="/css/site.css?v=20260920home">
+<link rel="stylesheet" href="/css/site.css?v=20260920crumbs">
 <link rel="stylesheet" href="/css/shop.css">
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 ${clarityHeadSnippet()}
+${landJsonLdSnippet(request, { pageName })}
 </head>
 <body class="island-chrome">
 ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem(), extraAfterKey: 'shop' })}
+${landCrumbsNav(request, { pageName })}
 <main id="main">
 <section class="page-hero">
   <div class="wrap wrap-narrow">

@@ -107,6 +107,32 @@ p { margin: 0 0 calc(var(--space) * 2); color: rgba(255,255,255,0.78); max-width
   .site-header.is-open .nav-cta .btn { display: inline-flex; }
 }
 
+/* Land breadcrumbs — shop / forum / book (schema is in JSON-LD; this is the visible twin) */
+.land-crumbs {
+  padding: 10px 0 0;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: rgba(255,255,255,0.45);
+}
+.land-crumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+}
+.land-crumbs li { display: inline-flex; align-items: center; }
+.land-crumbs li:not(:last-child)::after {
+  content: "/";
+  margin: 0 10px;
+  color: rgba(255,255,255,0.28);
+}
+.land-crumbs a { color: rgba(255,255,255,0.55); }
+.land-crumbs a:hover { color: var(--gold); }
+.land-crumbs [aria-current="page"] { color: rgba(255,255,255,0.72); }
+
 /* Buttons */
 .btn {
   display: inline-flex; align-items: center; justify-content: center;
