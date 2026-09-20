@@ -152,6 +152,12 @@ test('shop + forum templates include mesh-chrome (or static mesh + Square)', () 
     assert.doesNotMatch(html, /Prefer Text/, file);
   }
   const forum = src('forum/index.html');
+  const forumChrome = [
+    forum.match(/<header[\s\S]*?<\/header>/)[0],
+    forum.match(/<footer[\s\S]*?<\/footer>/)[0],
+    forum.match(/<ul class="nav-links">[\s\S]*?<\/ul>/)[0],
+    forum.match(/<div class="mobile-bar"[\s\S]*?<\/div>/)[0],
+  ].join('\n');
   assert.deepEqual(productLabels(forum.match(/<ul class="nav-links">[\s\S]*?<\/ul>/)[0]), PRODUCT_NAV);
   assert.match(forum, /https:\/\/forum\.unitedmobilerv\.com\//);
   assert.match(forum, /https:\/\/software\.unitedmobilerv\.com\//);
@@ -167,7 +173,10 @@ test('shop + forum templates include mesh-chrome (or static mesh + Square)', () 
   assert.doesNotMatch(forum, /status\.unitedmobilerv\.com/);
   assert.doesNotMatch(forum, /portal\.unitedmobilerv\.com/);
   assert.doesNotMatch(forum, FORBIDDEN);
-  assert.doesNotMatch(forum, /unitedmobilerv\.com\/guide\//);
+  // Mesh chrome stays guide-free. BUG-F2 is a body card, not a nav item.
+  assert.doesNotMatch(forumChrome, /unitedmobilerv\.com\/guide\//);
+  assert.match(forum, /href="https:\/\/unitedmobilerv\.com\/guide\/electrical-troubleshooting\/"/);
+  assert.doesNotMatch(forum, /href="https:\/\/unitedmobilerv\.com\/guide\/"/);
   assert.doesNotMatch(forum, /Field guides/i);
   assert.doesNotMatch(forum, />Guides</);
   assert.doesNotMatch(forum, /WP Field Guides/i);
