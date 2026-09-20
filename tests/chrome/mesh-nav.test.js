@@ -164,8 +164,11 @@ test('WP hub chrome doors to each CF land homepage (Home first, no Portal/Status
   assert.doesNotMatch(wpNav, /status\.unitedmobilerv\.com/);
   assert.doesNotMatch(wpNav, /portal\.unitedmobilerv\.com/);
   assert.doesNotMatch(wpNav, FORBIDDEN);
-  assert.doesNotMatch(wpNav, /umrt-brand/);
-  assert.doesNotMatch(wpNav, /<a[^>]*>\s*United Mobile/);
+  assert.match(wp, /umrt-brand/);
+  assert.match(wp, /United Mobile <span>RV<\/span>/);
+  assert.doesNotMatch(wp, /theme title is hidden/);
+  assert.doesNotMatch(wp, /site-header.*display:\s*none/);
+  assert.doesNotMatch(wp, /#masthead.*display:\s*none/);
 });
 
 test('shop + forum templates include mesh-chrome (or static mesh + Square)', () => {

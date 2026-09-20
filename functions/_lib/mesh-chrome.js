@@ -14,7 +14,8 @@
  *   Not Book-first. Do not add portal, status, or guide-library items.
  *   Bidirectional: every CF land homepage stamps Home → WP apex.
  *   WP hub chrome (design/wp-hub-chrome.html) doors to each CF homepage.
- *   Corner brand is the logo only — no "United Mobile RV" wordmark next to it.
+ *   CF islands only: corner brand is the logo only.
+ *   Matt HARD LOCK: NEVER hide the WP site title, header, or umrt-brand.
  *
  * Matt LOCK 2026-09-16 convert stack (header + mobile bar, every surface):
  *   Call (616) 606-5277 → tel:+16166065277 (older clients; number is the call control)
