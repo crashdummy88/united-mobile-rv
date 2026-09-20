@@ -169,3 +169,5 @@ test('chrome source files never emit book.* as a Book href', () => {
     }
   }
 });
+
+await run();
