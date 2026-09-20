@@ -155,6 +155,7 @@ test('forum index is Q&A depth, not shop spec or book intake', () => {
   assert.match(forum, /Evidence in the post/);
   assert.match(forum, /How this forum is run/);
   assert.match(forum, /Not an appointment desk/);
+  assert.match(forum, /Five open questions for real owners/);
   assert.match(forum, />Home</);
   assert.doesNotMatch(forum, /Liebherr Aerospace/);
   assert.doesNotMatch(forum, /Specify the system/);

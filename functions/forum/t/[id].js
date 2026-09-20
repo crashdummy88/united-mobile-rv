@@ -1,5 +1,6 @@
 import { islandHeader, islandFooter, islandMobileBar } from '../../_lib/mesh-chrome.js';
 import { isPubliclyListedThread, isSeedOrPinSpamId } from '../../_lib/forum-growth.js';
+import { escForumText, renderForumBodyHtml } from '../../_lib/forum-body.js';
 
 /**
  * GET /forum/t/:id — real, server-rendered, permanently linkable thread page.
@@ -12,7 +13,7 @@ import { isPubliclyListedThread, isSeedOrPinSpamId } from '../../_lib/forum-grow
  * /api/forum/* endpoints. Hidden/not-found threads 404 and are not indexed.
  */
 function esc(s) {
-  return String(s || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  return escForumText(s);
 }
 
 function credBadge(cred) {
@@ -100,7 +101,7 @@ export async function onRequestGet(context) {
       ${isVerified ? '<p class="verified-tag" style="color:#C9972C;font-weight:700;font-size:12px;letter-spacing:0.04em;text-transform:uppercase;margin:0 0 8px">&#10003; Verified RV Tech Response</p>' : ''}
       ${isAccepted ? '<p class="held-note" style="color:#2e9e4f;font-weight:700;margin:0 0 6px">&#10003; Accepted answer</p>' : ''}
       <p class="muted mb-0" style="font-size:13px"><a class="text-link" href="${base}/forum/member/${esc(p.author_id)}">${esc(p.author)}</a>${credBadge(p.author_credentials)} &middot; <time datetime="${esc(p.created_at)}">${esc(p.created_at)}</time></p>
-      <p>${esc(p.body).replace(/\n/g, '<br>')}</p>
+      <p>${renderForumBodyHtml(p.body)}</p>
       ${renderImages(p.image_keys)}
       <button type="button" class="btn btn-ghost btn-sm mark-solution-btn" data-reply-id="${esc(p.id)}" style="display:none;margin-top:8px">Mark as solution</button>
     </article>`;
@@ -186,7 +187,7 @@ ${islandHeader({ current: 'forum' })}
 <section class="band">
   <div class="wrap wrap-narrow">
     <article class="faq-item" id="op">
-      <p>${esc(thread.body).replace(/\n/g, '<br>')}</p>
+      <p>${renderForumBodyHtml(thread.body)}</p>
       ${renderImages(thread.image_keys)}
     </article>
 

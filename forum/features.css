@@ -53,3 +53,42 @@
 }
 .share-btn:hover { border-color: rgba(201,151,44,0.4); color: #E8B84B; }
 .share-label { font-size: 0.78em; color: #6a6a6a; margin-right: 4px; }
+
+.tech-pin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin-top: 16px;
+}
+.tech-pin-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(201,151,44,0.28);
+  border-radius: 14px;
+  padding: 16px 16px 14px;
+}
+.tech-pin-card h3 { margin: 0 0 8px; font-size: 1.08em; }
+.tech-pin-card p { margin: 0 0 12px; color: #b8b8b8; font-size: 0.92em; line-height: 1.45; }
+.tech-pin-kicker {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #a08650;
+  margin-bottom: 8px;
+}
+.tech-pin-index { margin-top: 14px; }
+.tech-pin-index .tech-pin-card { border-color: rgba(201,151,44,0.45); }
+.thread-pin-badge {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #C9972C;
+  background: rgba(201,151,44,0.12);
+  border: 1px solid rgba(201,151,44,0.3);
+  border-radius: 999px;
+  padding: 2px 8px;
+  vertical-align: middle;
+}

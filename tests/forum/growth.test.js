@@ -8,6 +8,8 @@ import {
   BOT_UMRT_TEAM_ID,
   STAFF_UMRV_TECH_ID,
   TECH_PIN_IDS,
+  TROUBLESHOOTING_INDEX_HREF,
+  FORUM_HOME_PIN_CARDS,
   isTechPinId,
   isSeedOrPinSpamId,
   isLeftoverBotSeedThread,
@@ -240,6 +242,48 @@ test('content-bot worker banner states pin first-reply only', () => {
   assert.match(js, /TECH_PIN_IDS/);
   assert.doesNotMatch(js, /Generates one deep-dive diagnostic guide thread/);
   assert.match(src('workers/content-bot/wrangler.toml'), /Pin first-reply only/);
+});
+
+test('forum home surfaces the five Tech pins plus Troubleshooting Index', () => {
+  const html = src('forum/index.html');
+  assert.match(html, /id="tech-pins"/);
+  assert.match(html, /Five open questions for real owners/);
+  assert.equal(FORUM_HOME_PIN_CARDS.filter((c) => c.kind === 'tech').length, 5);
+  for (const id of TECH_PIN_IDS) {
+    assert.match(html, new RegExp(`data-pin-id="${id}"`));
+    assert.match(html, new RegExp(`href="/forum/t/${id}"`));
+  }
+  assert.match(html, /data-pin-id="troubleshooting-index"/);
+  assert.match(html, new RegExp(TROUBLESHOOTING_INDEX_HREF.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.doesNotMatch(html, /data-pin-id="pin-troubleshoot-index"/);
+  assert.doesNotMatch(html, /data-pin-id="seed-/);
+  assert.doesNotMatch(html, /unitedmobilerv\.com\/troubleshoot\/(?!ing)/);
+  assert.doesNotMatch(html, /href="https:\/\/book\.unitedmobilerv\.com/);
+});
+
+test('BUG-F1: Ask the Community opens a visible gate or composer', () => {
+  const html = src('forum/index.html');
+  const js = src('forum/features.js');
+  assert.match(html, /id="new-thread-form"/);
+  assert.match(html, /id="new-thread-composer"/);
+  assert.match(html, /id="new-thread-gate"/);
+  assert.match(html, /#new-thread-composer,#new-thread-gate,#thread-view\{display:none\}/);
+  assert.doesNotMatch(html, /#new-thread-form,#thread-view\{display:none\}/);
+  assert.match(html, /window\.umrtOpenNewThread/);
+  assert.match(js, /id="ask-community-cta"/);
+  assert.match(js, /Ask the Community/);
+  assert.match(js, /umrtOpenNewThread/);
+  assert.match(js, /https:\/\/forum\.unitedmobilerv\.com\/forum\/t\//);
+  assert.doesNotMatch(js, /united-mobile-rv\.pages\.dev/);
+});
+
+test('search API tokenizes AND boosts pins without inventing seed rows', () => {
+  const search = src('functions/api/forum/search.js');
+  assert.match(search, /forumSearchTokens/);
+  assert.match(search, /buildForumSearchWhere/);
+  assert.match(search, /publicThreadSql/);
+  assert.match(search, /ORDER BY t\.pinned DESC, t\.updated_at DESC/);
+  assert.doesNotMatch(search, /seed-0001/);
 });
 
 await run();

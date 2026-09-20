@@ -21,6 +21,94 @@ export const TECH_PIN_IDS = Object.freeze([
   'tech-generator',
 ]);
 
+/** BUG-F2: Troubleshooting Index is a field-guide door, not a D1 pin-* thread. */
+export const TROUBLESHOOTING_INDEX_HREF =
+  'https://unitedmobilerv.com/guide/electrical-troubleshooting/';
+
+/**
+ * Honest home-page cards for the five Tech pins + the Troubleshooting Index.
+ * CTAs invite real owners. No fake multi-user replies, no seed-* / pin-* ids.
+ */
+export const FORUM_HOME_PIN_CARDS = Object.freeze([
+  {
+    id: 'tech-winterize',
+    href: '/forum/t/tech-winterize',
+    title: 'Winterize',
+    cta: 'Share how you actually put the water system to bed — blow-out, antifreeze, or both.',
+    category: 'repair',
+    kind: 'tech',
+  },
+  {
+    id: 'tech-12v-battery',
+    href: '/forum/t/tech-12v-battery',
+    title: '12V / house battery',
+    cta: 'Post chemistry, age, and a rest voltage if you have one. Real banks only.',
+    category: 'power',
+    kind: 'tech',
+  },
+  {
+    id: 'tech-solar',
+    href: '/forum/t/tech-solar',
+    title: 'Solar',
+    cta: 'What is the array doing this season — keeping up, or stuck in bulk all day?',
+    category: 'power',
+    kind: 'tech',
+  },
+  {
+    id: 'tech-slides',
+    href: '/forum/t/tech-slides',
+    title: 'Slides',
+    cta: 'Hydraulic or Schwintek? Describe the stall, reverse, or grind before anyone hits the switch again.',
+    category: 'repair',
+    kind: 'tech',
+  },
+  {
+    id: 'tech-generator',
+    href: '/forum/t/tech-generator',
+    title: 'Generator',
+    cta: 'Hours, fuel, and the actual symptom — hard start, no AC load, or service due.',
+    category: 'power',
+    kind: 'tech',
+  },
+  {
+    id: 'troubleshooting-index',
+    href: TROUBLESHOOTING_INDEX_HREF,
+    title: 'Troubleshooting Index',
+    cta: 'Start with the electrical troubleshooting field guide before you open a new thread.',
+    category: 'repair',
+    kind: 'guide',
+    external: true,
+  },
+]);
+
+export function forumHomePinCardsHtml() {
+  const tech = FORUM_HOME_PIN_CARDS.filter((c) => c.kind === 'tech');
+  const guide = FORUM_HOME_PIN_CARDS.find((c) => c.kind === 'guide');
+  const card = (c) => {
+    const extra = c.external ? ' target="_blank" rel="noopener"' : '';
+    return (
+      `<article class="tech-pin-card" data-pin-id="${c.id}">` +
+      `<div class="tech-pin-kicker">${c.kind === 'guide' ? 'Field guide' : 'UMRV Tech pin'}</div>` +
+      `<h3><a class="text-link" href="${c.href}"${extra}>${c.title}</a></h3>` +
+      `<p>${c.cta}</p>` +
+      `<a class="btn btn-ghost" href="${c.href}"${extra}>${c.kind === 'guide' ? 'Open the guide' : 'Join this thread'}</a>` +
+      `</article>`
+    );
+  };
+  return (
+    `<section class="band" id="tech-pins">` +
+    `<div class="wrap wrap-narrow">` +
+    `<span class="micro">Pinned by UMRV Tech</span>` +
+    `<h2>Five open questions for real owners.</h2>` +
+    `<p>These threads are from the technician — honest questions, not canned checklists and not fake multi-user replies. If you have lived the problem, post what you actually did.</p>` +
+    `<div class="tech-pin-grid">${tech.map(card).join('')}</div>` +
+    (guide
+      ? `<div class="tech-pin-index">${card(guide)}</div>`
+      : '') +
+    `</div></section>`
+  );
+}
+
 export function isTechPinId(id) {
   return TECH_PIN_IDS.includes(String(id || ''));
 }
