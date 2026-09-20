@@ -11,9 +11,22 @@
  *
  * Payload: { sub, email, name, avatar, provider, exp }
  * `sub` is the OAuth provider's stable subject id (e.g. Google `sub`).
+ *
+ * After Google login, stay on the host that started OAuth so book. and
+ * shop. share the same callback without a hop to /forum/.
  */
 
 const SSO_COOKIE = 'umrt_sso';
+export const SSO_BOOK_HOST = 'book.unitedmobilerv.com';
+export const SSO_SHOP_HOST = 'shop.unitedmobilerv.com';
+
+/** Host-aware post-login path. Same Google client; land on the starter host. */
+export function postLoginPath(hostname) {
+  const host = String(hostname || '').toLowerCase();
+  if (host === SSO_BOOK_HOST) return '/';
+  if (host === SSO_SHOP_HOST) return '/shop/';
+  return '/forum/';
+}
 const SSO_MAX_AGE_SECONDS = 60 * 60 * 24 * 30; // 30 days, matches session.js
 
 function b64url(bytes) {

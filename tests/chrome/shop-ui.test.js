@@ -73,7 +73,8 @@ test('shop.css uses site tokens and pins radio inputs so they cannot go full-wid
 
 test('shop lockdown still allows /css/ so shop.css is reachable on shop host', () => {
   const mw = src('functions/_middleware.js');
-  assert.match(mw, /const SHOP_ALLOWED_PREFIXES = \['\/shop\/', '\/api\/shop\/', '\/book-service\/', '\/api\/book', '\/css\/', '\/js\/', '\/assets\/', '\/fonts\/'\]/);
+  assert.match(mw, /const SHOP_ALLOWED_PREFIXES = \['\/shop\/', '\/api\/shop\/', '\/book-service\/', '\/api\/book', '\/api\/auth\/', '\/css\/', '\/js\/', '\/assets\/', '\/fonts\/'\]/);
+  assert.match(mw, /'\/css\/'/);
 });
 
 test('product quote form shares the same checkout panel + convert fallback', () => {

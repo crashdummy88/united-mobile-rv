@@ -164,9 +164,13 @@ test('shop + forum templates include mesh-chrome (or static mesh + Square)', () 
   assert.doesNotMatch(forum, /href="https:\/\/united-mobile-rv\.pages\.dev/);
 });
 
-test('shop lockdown allowlist is unchanged (no /forum/ or /design/ added)', () => {
+test('shop lockdown allowlist keeps shop paths + shared Google SSO (no /forum/ or /design/)', () => {
   const mw = src('functions/_middleware.js');
-  assert.match(mw, /const SHOP_ALLOWED_PREFIXES = \['\/shop\/', '\/api\/shop\/', '\/book-service\/', '\/api\/book', '\/css\/', '\/js\/', '\/assets\/', '\/fonts\/'\]/);
+  assert.match(mw, /const SHOP_ALLOWED_PREFIXES = \['\/shop\/', '\/api\/shop\/', '\/book-service\/', '\/api\/book', '\/api\/auth\/', '\/css\/', '\/js\/', '\/assets\/', '\/fonts\/'\]/);
+  assert.match(mw, /\/api\/me/);
+  assert.match(mw, /\/api\/logout/);
+  assert.doesNotMatch(mw, /SHOP_ALLOWED_PREFIXES = \[[^\]]*\/forum\//);
+  assert.doesNotMatch(mw, /SHOP_ALLOWED_PREFIXES = \[[^\]]*\/design\//);
 });
 
 test('site.js stamps Call + gold Text Now + Square Book on every nav/mobile bar', () => {
