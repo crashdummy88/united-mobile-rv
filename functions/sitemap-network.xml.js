@@ -21,11 +21,16 @@
  * a real contradiction between the two signals. Left as-is pending a
  * decision on which one reflects the actual intent.
  *
+ * Mothership customer lands use shop./forum. custom hosts (never
+ * united-mobile-rv.pages.dev). book. has no sitemap.xml (middleware
+ * 301s it to /), so it is not listed.
+ *
  * This file is static/hand-maintained, same reasoning as _lib/static-
  * pages.js -- add a line here when a new property gets a real sitemap.
  */
 const NETWORK_SITEMAPS = [
-  'https://united-mobile-rv.pages.dev/sitemap.xml', // mothership: homepage, city pages, guides, forum
+  'https://shop.unitedmobilerv.com/sitemap.xml',
+  'https://forum.unitedmobilerv.com/sitemap.xml',
   'https://docs.unitedmobilerv.com/sitemap.xml',
   'https://software.unitedmobilerv.com/sitemap.xml',
   'https://status.unitedmobilerv.com/sitemap.xml',
