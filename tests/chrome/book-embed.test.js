@@ -10,7 +10,13 @@ import {
   SQUARE_EMBED_ENV,
   renderBookSuite,
 } from '../../functions/_lib/book-suite.js';
-import { BOOK_PUBLIC_HREF, SQUARE_BOOK_URL, MESH_LINKS } from '../../functions/_lib/mesh-chrome.js';
+import {
+  BOOK_PUBLIC_HREF,
+  SQUARE_BOOK_URL,
+  SQUARE_APPOINTMENT_ID,
+  SQUARE_MERCHANT_ID,
+  MESH_LINKS,
+} from '../../functions/_lib/mesh-chrome.js';
 
 function src(rel) {
   return readFileSync(new URL('../../' + rel, import.meta.url), 'utf8');
@@ -27,6 +33,8 @@ test('mesh Book href is book. wrap; square.site is not chrome Book', () => {
 test('Square engine is Matt published square.site homepage (no invented IDs)', () => {
   assert.equal(SQUARE_BOOK_URL, 'https://united-mobile-rv-llc.square.site/');
   assert.equal(squareAppointmentsEmbedSrc(), 'https://united-mobile-rv-llc.square.site/');
+  assert.equal(SQUARE_APPOINTMENT_ID, '11ee0a41ff32bdd39387ac1f6bbbd01e');
+  assert.equal(SQUARE_MERCHANT_ID, 'MLVM87VQ3KP9E');
 });
 
 test('default embed src is Matt square.site URL; env override must be Square-land', () => {
@@ -69,8 +77,12 @@ test('book homepage iframes Square and ships full UMRV sections', async () => {
   const bare = await renderBookSuite(new Request('https://book.unitedmobilerv.com/'), {});
   const html = await bare.text();
   assert.match(html, /data-square-embed="square-site"/);
+  assert.match(html, /data-square-appointment-id="11ee0a41ff32bdd39387ac1f6bbbd01e"/);
+  assert.match(html, /data-square-merchant-id="MLVM87VQ3KP9E"/);
   assert.match(html, /<iframe class="square-appointments-frame"/);
   assert.match(html, /united-mobile-rv-llc\.square\.site/);
+  assert.match(html, /data-square-fallback/);
+  assert.match(html, /Book on this page/);
   assert.match(html, /Request a service call/);
   assert.match(html, /What we fix/);
   assert.match(html, /Quoted upfront/);
@@ -83,7 +95,7 @@ test('book homepage iframes Square and ships full UMRV sections', async () => {
   assert.doesNotMatch(html, /SQUARE_APPOINTMENTS_EMBED_SRC/);
   assert.doesNotMatch(html, /Same convert pattern/);
   assert.doesNotMatch(html, /Do not invent widget/);
-  assert.doesNotMatch(html, /squareup\.com\/appointments\/buyer\/widget\/[A-Za-z0-9_-]{6,}/);
+  assert.doesNotMatch(html, /squareup\.com\/appointments\/buyer\/widget\/11ee0a41ff32bdd39387ac1f6bbbd01e/);
 
   const live = await renderBookSuite(new Request('https://book.unitedmobilerv.com/?service=generator-maintenance'), {
     SQUARE_APPOINTMENTS_EMBED_SRC: PASTED,
@@ -94,12 +106,18 @@ test('book homepage iframes Square and ships full UMRV sections', async () => {
   assert.match(overlay, /service=generator-maintenance/);
 });
 
-test('book-suite source does not hardcode a Square widget or location ID', () => {
+test('live bootstrap appointment id is documented; unpublished widget path is not framed', () => {
   const body = src('functions/_lib/book-suite.js');
+  const chrome = src('functions/_lib/mesh-chrome.js');
+  const js = src('js/site.js');
   assert.match(body, /SQUARE_BOOK_URL/);
   assert.match(body, /isSquareLandUrl/);
-  assert.doesNotMatch(body, /squareup\.com\/appointments\/buyer\/widget\/[A-Za-z0-9]{8,}/);
-  assert.doesNotMatch(body, /11ee0a41ff32bdd39387ac1f6bbbd01e/);
+  assert.match(chrome, /11ee0a41ff32bdd39387ac1f6bbbd01e/);
+  assert.match(chrome, /MLVM87VQ3KP9E/);
+  assert.match(js, /umrtSquareFrameGuard/);
+  assert.match(js, /frame-blocked/);
+  assert.doesNotMatch(body, /squareup\.com\/appointments\/buyer\/widget\/11ee0a41ff32bdd39387ac1f6bbbd01e/);
+  assert.doesNotMatch(js, /squareup\.com\/appointments\/buyer\/widget/);
   assert.doesNotMatch(body, /SQUARE_LOCATION_ID\s*=\s*['"][^'"]+['"]/);
 });
 

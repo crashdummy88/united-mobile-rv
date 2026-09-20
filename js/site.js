@@ -170,6 +170,46 @@ function umrtGetTurnstileToken(containerId) {
     ba.removeAttribute('rel');
   }
 
+  /* book.* Square iframe: square.site homepage has no X-Frame-Options.
+     Official buyer/widget/{appointmentId} is unpublished (404 + DENY) —
+     do not construct that URL. If this browser blocks the homepage frame,
+     reveal the in-page fallback (Text Now + Square Online hop). */
+  (function umrtSquareFrameGuard() {
+    var wrap = document.querySelector('[data-square-embed]');
+    if (!wrap) return;
+    var iframe = wrap.querySelector('iframe.square-appointments-frame');
+    var fallback = wrap.querySelector('[data-square-fallback]');
+    if (!iframe) return;
+    var settled = false;
+    function frameBlocked() {
+      try {
+        var doc = iframe.contentDocument;
+        if (!doc) return true;
+        var href = doc.location.href;
+        return href === 'about:blank' || href === window.location.href;
+      } catch (e) {
+        return false;
+      }
+    }
+    function showFallback() {
+      if (settled) return;
+      settled = true;
+      wrap.setAttribute('data-square-embed', 'frame-blocked');
+      iframe.setAttribute('hidden', '');
+      if (fallback) fallback.removeAttribute('hidden');
+    }
+    iframe.addEventListener('error', showFallback);
+    iframe.addEventListener('load', function () {
+      setTimeout(function () {
+        if (frameBlocked()) showFallback();
+        else settled = true;
+      }, 400);
+    });
+    setTimeout(function () {
+      if (!settled && frameBlocked()) showFallback();
+    }, 4500);
+  })();
+
   /* Shop/forum/book islands: Shop-first product nav — Home + Shop · Book ·
      Forum · Software · Docs. Not Book-first. Strip retired destinations and guide-library labels. */
   var MAIN_HOME_HREF = 'https://unitedmobilerv.com/';

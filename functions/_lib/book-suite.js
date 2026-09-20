@@ -11,16 +11,17 @@
  * Square still processes the booking; this page wraps it so customers
  * stay on book.unitedmobilerv.com.
  *
- * Live square.site check (2026-09-20):
- *   - Homepage https://united-mobile-rv-llc.square.site/ is the working
- *     appointments engine (appointment-request form). No official
- *     Square Appointments embed snippet / buyer-widget script is published.
- *   - Homepage response has no X-Frame-Options and no CSP frame-ancestors.
- *   - /s/appointments exists but is not the default engine (homepage form
- *     is what Matt published as the booking URL).
- *   - Do not invent widget, location, or appointment-unit IDs. Optional
- *     Pages env SQUARE_APPOINTMENTS_EMBED_SRC is accepted only when it
- *     is Square-land https (Matt paste of a real embed later).
+ * Live square.site check (2026-09-20) — do not invent beyond bootstrap:
+ *   - Engine: https://united-mobile-rv-llc.square.site/ (appointment-request).
+ *     Response has no X-Frame-Options / CSP frame-ancestors — iframe it.
+ *   - Book Appointment action id 11ee0a41ff32bdd39387ac1f6bbbd01e and
+ *     merchant MLVM87VQ3KP9E are documented on the wrap. Official
+ *     buyer/widget/{id}[.js] is unpublished (404 + X-Frame DENY) — do not
+ *     script-load or iframe that path.
+ *   - Square's page name is "Square Portal" (comment only; not customer H1).
+ *   - If the homepage iframe is blocked at runtime, show in-page fallback
+ *     (Text Now + Square Online hop). Optional Pages env
+ *     SQUARE_APPOINTMENTS_EMBED_SRC is accepted only when Square-land https.
  */
 
 import {
@@ -33,13 +34,15 @@ import {
   CALL_LABEL,
   SQUARE_BOOK_URL,
   BOOK_PUBLIC_HREF,
+  SQUARE_APPOINTMENT_ID,
+  SQUARE_MERCHANT_ID,
   MAIN_HOME_HREF,
   MAIN_HOME_LABEL,
 } from './mesh-chrome.js';
 import { isSquareLandUrl } from './shop.js';
 
 export const BOOK_HOST = 'book.unitedmobilerv.com';
-export { SQUARE_BOOK_URL, BOOK_PUBLIC_HREF };
+export { SQUARE_BOOK_URL, BOOK_PUBLIC_HREF, SQUARE_APPOINTMENT_ID, SQUARE_MERCHANT_ID };
 export const BOOK_PHONE_DISPLAY = '(616) 606-5277';
 export const BOOK_PHONE_E164 = '+16166065277';
 export const SQUARE_EMBED_ENV = 'SQUARE_APPOINTMENTS_EMBED_SRC';
@@ -94,6 +97,8 @@ const SUITE_CSS = `
   @media (max-width:960px) { .book-hybrid { grid-template-columns:1fr; } }
   .square-appointments-frame { width:100%; min-height:780px; border:1px solid rgba(201,151,44,0.35); border-radius:12px; background:#111; }
   .square-embed-wrap { position:sticky; top:84px; }
+  .square-embed-wrap[data-square-embed="frame-blocked"] .square-appointments-frame { display:none; }
+  .square-embed-fallback { margin-top:8px; padding:22px; border:1px solid rgba(201,151,44,0.35); border-radius:12px; background:#161616; }
   .square-embed-note { margin-top:12px; }
   .book-ready-list { margin:18px 0 0; padding-left:20px; color:rgba(255,255,255,0.78); }
   .book-ready-list li { margin:0 0 8px; }
@@ -137,8 +142,15 @@ function squareFallbackLink(label = 'Open Square booking') {
 function embedPanel({ env, request }) {
   const src = squareAppointmentsEmbedSrcWithIntent(env, request);
   const overridden = isSquareLandUrl(env && env[SQUARE_EMBED_ENV]);
-  return `<div class="square-embed-wrap" data-square-embed="${overridden ? 'live' : 'square-site'}">
-      <iframe class="square-appointments-frame" src="${esc(src)}" title="Request an appointment with United Mobile RV" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+  return `<div class="square-embed-wrap" data-square-embed="${overridden ? 'live' : 'square-site'}" data-square-appointment-id="${esc(SQUARE_APPOINTMENT_ID)}" data-square-merchant-id="${esc(SQUARE_MERCHANT_ID)}">
+      <iframe class="square-appointments-frame" src="${esc(src)}" title="Request an appointment with United Mobile RV" loading="eager" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      <div class="square-embed-fallback" data-square-fallback hidden>
+        <p>Square blocked the in-page panel in this browser. Continue the same appointment request on Square Online, or Text Now.</p>
+        <div class="book-cta-row">
+          <a class="btn btn-gold" href="${esc(SQUARE_BOOK_URL)}" target="_blank" rel="noopener">Continue on Square</a>
+          <a class="btn btn-ghost" href="${TEXT_NOW_HREF}">${TEXT_NOW_LABEL}</a>
+        </div>
+      </div>
       <p class="muted square-embed-note">Secure checkout is processed by Square. Prefer a person first? Text Now or call — same number.</p>
       <p class="muted">${squareFallbackLink('Open Square in a new tab')}</p>
     </div>`;
@@ -443,7 +455,7 @@ ${mainHtml}
   </div>
 </footer>
 ${islandMobileBar()}
-<script src="/js/site.js?v=20260920book" defer></script>
+<script src="/js/site.js?v=20260920appt" defer></script>
 </body>
 </html>`;
 }

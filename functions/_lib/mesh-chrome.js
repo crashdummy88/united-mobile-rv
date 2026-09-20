@@ -17,6 +17,16 @@
  *   Book → https://book.unitedmobilerv.com/ (embedded Square wrap)
  *   square.site is fallback / shop-card deep link only — not mesh Book.
  *
+ * Live square.site bootstrap 2026-09-20 (do not invent beyond this):
+ *   Site URL            https://united-mobile-rv-llc.square.site/
+ *   Appointment id      11ee0a41ff32bdd39387ac1f6bbbd01e
+ *                       (Book Appointment action squareAppointment)
+ *   Merchant id         MLVM87VQ3KP9E
+ *   Square page name    "Square Portal" (CF portal retired → Square)
+ *   Official buyer/widget/{id}[.js] is unpublished: HTTP 404 + X-Frame-Options
+ *   DENY. Do not iframe or script-load that path. Homepage appointment-request
+ *   form is the working engine; square.site sends no X-Frame-Options.
+ *
  * Matt LOCK 2026-09-16 convert stack (header + mobile bar, every surface):
  *   Call (616) 606-5277 → tel:+16166065277 (older clients; number is the call control)
  *   Text Now            → sms:+16166065277 (gold primary; compact label exact)
@@ -26,6 +36,10 @@
 export const SQUARE_BOOK_URL = 'https://united-mobile-rv-llc.square.site/'; // Matt published booking engine (iframe on book.*)
 export const BOOK_HOST_HREF = 'https://book.unitedmobilerv.com/';
 export const BOOK_PUBLIC_HREF = BOOK_HOST_HREF;
+/** Live Book Appointment action id from square.site bootstrap. Not invented. */
+export const SQUARE_APPOINTMENT_ID = '11ee0a41ff32bdd39387ac1f6bbbd01e';
+/** Live squareMerchantId from square.site bootstrap. Not invented. */
+export const SQUARE_MERCHANT_ID = 'MLVM87VQ3KP9E';
 // Square Online also exposes /s/appointments (GET 200) but the live
 // appointments widget currently errors ("Something went wrong") while the
 // homepage "Request an appointment" form works. Keep this constant for
