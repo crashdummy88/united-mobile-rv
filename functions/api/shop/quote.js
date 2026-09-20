@@ -20,6 +20,7 @@ import { verifyTurnstile } from '../../_lib/turnstile.js';
 import { checkRateLimit } from '../../_lib/rate-limit.js';
 import { formatPrice } from '../../_lib/shop.js';
 import { createDraftEstimateForQuote } from '../../_lib/square.js';
+import { QUOTE_SUCCESS_MESSAGE } from '../../_lib/quote-form.js';
 
 function clean(v, max = 300) {
   return String(v || '').trim().slice(0, max);
@@ -38,7 +39,7 @@ export async function onRequestPost(context) {
   // Honeypot: real visitors never fill this hidden field. Silent success so
   // bots don't learn they were caught.
   if (clean(body.website, 100)) {
-    return json({ success: true, id: null, item_count: 0, message: 'Got it -- our team will follow up with a real quote, not an automatic charge.' });
+    return json({ success: true, id: null, item_count: 0, message: QUOTE_SUCCESS_MESSAGE });
   }
 
   const rl = await checkRateLimit(env, request, { max: 5, windowMinutes: 10, key: 'quote' });
@@ -66,7 +67,15 @@ export async function onRequestPost(context) {
   const rvModel = clean(body.rv_model, 60);
   const serviceOption = ['hardware_only', 'hardware_plus_config', 'hardware_plus_install', 'full_design_install'].includes(body.service_option)
     ? body.service_option : 'hardware_only';
-  const notes = clean(body.notes, 1500);
+  const intent = body.intent === 'info' ? 'info' : 'quote';
+  const systemGoal = clean(body.system_goal, 300);
+  const useCase = clean(body.use_case, 80);
+  const extraLines = [
+    `Follow-up: ${intent === 'info' ? 'request info' : 'request quote'}`,
+    systemGoal ? `System goal: ${systemGoal}` : '',
+    useCase ? `Coach use: ${useCase}` : '',
+  ].filter(Boolean);
+  const notes = [extraLines.join('\n'), clean(body.notes, 1500)].filter(Boolean).join('\n\n');
 
   if (!name || (!email && !phone)) {
     return json({ success: false, error: 'missing_fields', message: 'Name and at least a phone or email are required.' }, 400);
@@ -152,12 +161,12 @@ export async function onRequestPost(context) {
       form.append('rig', [rvYear, rvMake, rvModel].filter(Boolean).join(' '));
       form.append('service_option', serviceOption);
       form.append('message',
-        `New shop quote request.\n\nItems:\n${itemsSummary}\n\nService option: ${serviceOption}\nNotes: ${notes || '(none)'}\n${turnstileVerified ? '' : '\n(Turnstile did not verify for this submission -- likely an ad blocker on the customer\'s end, not necessarily spam.)\n'}\nThis is a QUOTE REQUEST, not a paid order -- no payment has been collected.`
+        `New shop ${intent === 'info' ? 'info' : 'quote'} request.\n\nItems:\n${itemsSummary}\n\nService option: ${serviceOption}\nNotes: ${notes || '(none)'}\n${turnstileVerified ? '' : '\n(Turnstile did not verify for this submission -- likely an ad blocker on the customer\'s end, not necessarily spam.)\n'}\nThis is a QUOTE/INFO REQUEST, not a paid order -- payment is a later Square invoice. No shop checkout.`
       );
       form.append('source', 'UMRT Shop');
       context.waitUntil(fetch('https://api.web3forms.com/submit', { method: 'POST', body: form }));
     } catch { /* email is best-effort; the D1 row is the real record */ }
   }
 
-  return json({ success: true, id, item_count: items.length, message: 'Got it -- our team will follow up with a real quote, not an automatic charge.' });
+  return json({ success: true, id, item_count: items.length, message: QUOTE_SUCCESS_MESSAGE });
 }

@@ -166,7 +166,7 @@ test('shop + forum templates include mesh-chrome (or static mesh + Square)', () 
 
 test('shop lockdown allowlist is unchanged (no /forum/ or /design/ added)', () => {
   const mw = src('functions/_middleware.js');
-  assert.match(mw, /const SHOP_ALLOWED_PREFIXES = \['\/shop\/', '\/api\/shop\/', '\/book-service\/', '\/api\/book', '\/css\/', '\/js\/', '\/assets\/', '\/fonts\/'\]/);
+  assert.match(mw, /const SHOP_ALLOWED_PREFIXES = \['\/shop\/', '\/api\/shop\/', '\/api\/auth\/', '\/api\/me', '\/api\/logout', '\/book-service\/', '\/api\/book', '\/css\/', '\/js\/', '\/assets\/', '\/fonts\/'\]/);
 });
 
 test('site.js stamps Call + gold Text Now + Square Book on every nav/mobile bar', () => {

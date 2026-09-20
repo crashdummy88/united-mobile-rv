@@ -3,6 +3,7 @@
  * Single published product, plus any real components if it's a kit.
  */
 import { json } from '../../../../_lib/authz.js';
+import { formatPrice, priceNote, isArtekQuoteOnly, hasPrice } from '../../../../_lib/shop.js';
 
 export async function onRequestGet(context) {
   const { env, params } = context;
@@ -25,5 +26,14 @@ export async function onRequestGet(context) {
     components = results || [];
   }
 
-  return json({ success: true, product, components });
+  return json({
+    success: true,
+    product: {
+      ...product,
+      display_price: formatPrice(product),
+      price_note: priceNote(product),
+      price_tbd: isArtekQuoteOnly(product) || !hasPrice(product),
+    },
+    components,
+  });
 }

@@ -6,7 +6,7 @@ export async function onRequestGet(context) {
   if (env.SESSION_SECRET) {
     const session = await readSession(request, env); // Stage 3: readSession() now takes env, not just the secret
     if (session) {
-      return json({ user: { name: session.name, avatar: session.avatar, provider: session.provider } });
+      return json({ user: { name: session.name, avatar: session.avatar, provider: session.provider || 'google', email: session.email || null } });
     }
   }
 
@@ -17,7 +17,7 @@ export async function onRequestGet(context) {
   if (env.SSO_SHARED_SECRET) {
     const identity = await readSsoCookie(request, env.SSO_SHARED_SECRET);
     if (identity) {
-      return json({ user: { name: identity.name, avatar: identity.avatar, provider: identity.provider, ssoOnly: true } });
+      return json({ user: { name: identity.name, avatar: identity.avatar, provider: identity.provider, email: identity.email || null, ssoOnly: true } });
     }
   }
 

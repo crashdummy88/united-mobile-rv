@@ -158,11 +158,76 @@ input[type="checkbox"] {
   letter-spacing: 0.04em;
 }
 
-.shop-add-btn {
-  margin: auto 16px 16px;
+.shop-add-btn,
+.shop-quote-btn {
+  margin: 0 16px 10px;
   width: auto;
   align-self: stretch;
 }
+.shop-quote-btn { margin-top: auto; }
+.shop-add-btn { margin-bottom: 16px; }
+.product-quote-ctas { margin-top: 14px; gap: 10px; }
+
+.shop-how-band { padding: calc(var(--space) * 4) 0 calc(var(--space) * 2); }
+.quote-steps {
+  margin: 16px 0 0;
+  padding-left: 1.2em;
+  color: rgba(255, 255, 255, 0.82);
+  max-width: none;
+}
+.quote-steps li { margin-bottom: 12px; }
+.quote-steps strong { color: var(--white); }
+
+.quote-request-panel .quote-pay-note { margin: 8px 0 16px; max-width: none; }
+.quote-success { margin-bottom: 8px; }
+.quote-success h2 { margin-top: 0; }
+.quote-success p { max-width: none; color: rgba(255, 255, 255, 0.82); }
+
+.qf-honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+.qf-fieldset {
+  border: 0;
+  margin: 0 0 18px;
+  padding: 0;
+}
+.qf-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0 0 8px;
+  color: rgba(255, 255, 255, 0.82);
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 0.95em;
+  cursor: pointer;
+}
+
+.umrt-sso-bar {
+  margin: 14px 0 20px;
+  padding: 14px 16px;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+}
+.umrt-sso-bar .sso-note { margin: 10px 0 0; font-size: 0.88em; }
+.google-signin-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  color: #3c4043;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.google-signin-btn:hover { color: #3c4043; background: #f8f9fa; }
+.google-signin-btn svg { flex-shrink: 0; }
 
 .shop-service-card { padding-bottom: 16px; }
 .shop-service-card .shop-card-body { padding-bottom: 8px; }

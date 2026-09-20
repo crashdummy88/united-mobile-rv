@@ -28,12 +28,13 @@ test('shop pages load shared /css/shop.css after site.css (no per-page style dum
 
 test('cart quote form stays on the dark theme (no band-gray light wash)', () => {
   const cart = src('functions/shop/cart.js');
+  const form = src('functions/_lib/quote-form.js');
   assert.doesNotMatch(cart, /band-gray/);
-  assert.match(cart, /shop-checkout-panel/);
+  assert.match(form, /shop-checkout-panel/);
   assert.match(cart, /shop-checkout-band/);
   assert.match(cart, /shop-cart-band/);
-  assert.match(cart, /Call or text \(616\) 606-5277/);
-  assert.match(cart, /service-tier-text/);
+  assert.match(form, /\(616\) 606-5277/);
+  assert.match(form, /service-tier-text/);
 });
 
 test('listing uses full wrap + shop-service-card (not cramped wrap-narrow / .service-card clash)', () => {
@@ -73,13 +74,15 @@ test('shop.css uses site tokens and pins radio inputs so they cannot go full-wid
 
 test('shop lockdown still allows /css/ so shop.css is reachable on shop host', () => {
   const mw = src('functions/_middleware.js');
-  assert.match(mw, /const SHOP_ALLOWED_PREFIXES = \['\/shop\/', '\/api\/shop\/', '\/book-service\/', '\/api\/book', '\/css\/', '\/js\/', '\/assets\/', '\/fonts\/'\]/);
+  assert.match(mw, /const SHOP_ALLOWED_PREFIXES = \['\/shop\/', '\/api\/shop\/', '\/api\/auth\/', '\/api\/me', '\/api\/logout', '\/book-service\/', '\/api\/book', '\/css\/', '\/js\/', '\/assets\/', '\/fonts\/'\]/);
 });
 
 test('product quote form shares the same checkout panel + convert fallback', () => {
   const product = src('functions/shop/p/[id].js');
-  assert.match(product, /shop-checkout-panel/);
-  assert.match(product, /\(616\) 606-5277/);
+  const form = src('functions/_lib/quote-form.js');
+  assert.match(form, /shop-checkout-panel/);
+  assert.match(form, /\(616\) 606-5277/);
+  assert.match(product, /quoteFormHtml/);
   assert.match(product, /BOOK_PUBLIC_HREF|islandHeader|islandMobileBar/);
   assert.doesNotMatch(product, /relatedGuidesMarkup/);
   assert.doesNotMatch(product, /relatedGuidesForProduct/);

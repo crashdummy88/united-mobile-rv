@@ -206,13 +206,13 @@ export async function readSession(request, env) {
   if (central) {
     if (!env.DB) return null;
     const forumUser = await env.DB.prepare(
-      'SELECT id, display_name, avatar_url FROM users WHERE central_user_id = ?'
+      'SELECT id, display_name, avatar_url, email FROM users WHERE central_user_id = ?'
     ).bind(central.centralUserId).first();
     // A central session with no linked local forum user shouldn't happen
     // for a session created by this forum's own login flow (Stage 3
     // links them atomically) -- fail closed rather than guess.
     if (!forumUser) return null;
-    return { uid: forumUser.id, name: forumUser.display_name, avatar: forumUser.avatar_url };
+    return { uid: forumUser.id, name: forumUser.display_name, avatar: forumUser.avatar_url, email: forumUser.email || null };
   }
   return readLegacySession(request, env.SESSION_SECRET);
 }
