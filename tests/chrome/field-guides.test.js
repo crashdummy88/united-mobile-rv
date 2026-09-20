@@ -100,6 +100,8 @@ test('shared mesh chrome does not include Field guides; Book stays Square', () =
   assert.ok(!MESH_LINKS.some((l) => /guide|portal|status/i.test(l.label) || /guide|portal|status/i.test(l.key)));
   const book = src('functions/_lib/mesh-chrome.js');
   assert.match(book, /BOOK_PUBLIC_HREF = SQUARE_BOOK_URL/);
+  assert.equal(MESH_LINKS.find((l) => l.key === 'book').href, 'https://united-mobile-rv-llc.square.site/');
+  assert.doesNotMatch(MESH_LINKS.find((l) => l.key === 'book').href, /book\.unitedmobilerv\.com/);
   assert.doesNotMatch(book, /href="\/guide\//);
   assert.doesNotMatch(book, /GUIDES_HREF/);
   assert.doesNotMatch(book, /label: 'Guides'/);

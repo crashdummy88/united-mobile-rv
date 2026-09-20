@@ -127,6 +127,13 @@ test('host home: book. / renders booking suite, not marketing homepage', async (
   assert.match(html, /https:\/\/forum\.unitedmobilerv\.com\//);
   assert.match(html, /https:\/\/shop\.unitedmobilerv\.com\//);
   assert.match(html, /https:\/\/software\.unitedmobilerv\.com\//);
+  const chromeBooks = [...html.match(/<header[\s\S]*?<\/header>/)[0].matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/g)]
+    .filter((m) => /^Book$/i.test(m[2].replace(/<[^>]+>/g, '').trim()));
+  assert.ok(chromeBooks.length >= 2);
+  for (const m of chromeBooks) {
+    assert.match(m[1], /href="https:\/\/united-mobile-rv-llc\.square\.site\/"/);
+    assert.doesNotMatch(m[1], /href="https:\/\/book\.unitedmobilerv\.com/);
+  }
   assert.match(html, /sms:\+16166065277/);
   assert.match(html, /tel:\+16166065277/);
   assert.match(html, /nav-phone[^>]+tel:\+16166065277/);

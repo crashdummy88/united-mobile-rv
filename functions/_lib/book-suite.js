@@ -7,7 +7,10 @@
  *
  * Shared ecosystem chrome (mesh-chrome) so book. matches forum/shop.
  * Canonical/og:url use the request host. book. stays noindex until Matt
- * says otherwise. Text Now is sms:+16166065277; number is tel:; Book → Square.
+ * says otherwise. Text Now is sms:+16166065277; number is tel:.
+ * Matt HARD LOCK 2026-09-20: chrome Book is STRAIGHT to Square
+ * (BOOK_PUBLIC_HREF). NEVER book.unitedmobilerv.com in islandHeader /
+ * footer / mobile-bar. book. is the suite host, not the Book href.
  */
 
 import {
@@ -111,7 +114,7 @@ ${robots}<meta name="theme-color" content="#1A1A1A">
 <meta property="og:description" content="${esc(description)}">
 <meta property="og:type" content="website">
 <meta property="og:url" content="${esc(canonical)}">
-<link rel="stylesheet" href="/css/site.css?v=20260920icon">
+<link rel="stylesheet" href="/css/site.css?v=20260920booksq">
 <style>${SUITE_CSS}</style>
 </head>
 <body class="book-suite">
@@ -126,7 +129,7 @@ ${mainHtml}
   </div>
 </footer>
 ${islandMobileBar()}
-<script src="/js/site.js?v=20260920icon" defer></script>
+<script src="/js/site.js?v=20260920booksq" defer></script>
 </body>
 </html>`;
 }

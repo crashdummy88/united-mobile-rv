@@ -124,6 +124,14 @@ test('book suite HTML is booking-only depth in Pages chrome', async () => {
   assert.doesNotMatch(nav, /brand-text/);
   assert.match(nav, /umrt-icon\.webp/);
   assert.doesNotMatch(nav, /umrt-logo\.webp/);
+  const navBooks = [...nav.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/g)]
+    .filter((m) => /^Book$/i.test(m[2].replace(/<[^>]+>/g, '').trim()));
+  assert.ok(navBooks.length >= 2);
+  for (const m of navBooks) {
+    assert.match(m[1], /href="https:\/\/united-mobile-rv-llc\.square\.site\/"/);
+    assert.doesNotMatch(m[1], /book\.unitedmobilerv\.com/);
+  }
+  assert.doesNotMatch(nav, /href="https:\/\/book\.unitedmobilerv\.com/);
 });
 
 test('static book-service fallback matches booking-only body', () => {

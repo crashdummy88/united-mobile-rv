@@ -18,6 +18,14 @@
  *   has UNITED MOBILE RV in the artwork and must not sit in this bar.
  *   Do not rewrite WordPress brand / theme chrome.
  *
+ * Matt HARD LOCK 2026-09-20 chrome Book = STRAIGHT to Square:
+ *   BOOK_PUBLIC_HREF / SQUARE_BOOK_URL / MESH_LINKS.book.href
+ *     = https://united-mobile-rv-llc.square.site/
+ *   NEVER https://book.unitedmobilerv.com/ in MESH_LINKS, islandHeader,
+ *   islandFooter, islandMobileBar, platform-bar, or static HTML nav/footer.
+ *   book.unitedmobilerv.com stays a host for the booking-suite product,
+ *   not a chrome Book destination. Geo landing CTAs are out of scope.
+ *
  * Matt LOCK 2026-09-16 convert stack (header + mobile bar, every surface):
  *   Call (616) 606-5277 → tel:+16166065277 (older clients; number is the call control)
  *   Text Now            → sms:+16166065277 (gold primary; compact label exact)
