@@ -61,6 +61,7 @@ test('shop helpers are quote/parts/systems — not booking or forum', () => {
   assert.doesNotMatch(blob, /No power \/ dead coach/);
   assert.doesNotMatch(blob, /Three steps/);
   assert.doesNotMatch(intro, /href="https:\/\/unitedmobilerv\.com\/tech\/"/);
+  assert.match(quote, /Arrange payment through Square after we confirm/);
 });
 
 test('book helpers are appointments + Text — not shop quotes or forum Q&A', () => {
@@ -94,6 +95,8 @@ test('shop listing source imports shop sections only', () => {
   assert.match(shop, /shopQuoteNeedsSection/);
   assert.match(shop, /quoteFirstSection/);
   assert.match(shop, /extraAfterKey: 'shop'/);
+  assert.doesNotMatch(shop, /shopServicesIntroHtml/);
+  assert.doesNotMatch(shop, /shop-tab-row/);
   assert.doesNotMatch(shop, /bookWhoArrivesSection|bookVisitSection|bookRequestSection|publishedRatesSection/);
   assert.doesNotMatch(shop, /forumHowToAskSection|forumEvidenceSection|forumRulesSection/);
   assert.doesNotMatch(shop, /techVoiceSection|diagnosticProcessSection|serviceLinesSection|troubleshootingSection/);

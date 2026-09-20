@@ -24,7 +24,7 @@ _Generated 2026-09-15 from a live, read-only audit. Covers all D1 databases reac
 | `pricing` | key (PK), label, amount, note, sort_order | Seeded: `trip_fee` $75, `mileage` $1.50/mi, `labor` ~$150/hr, `diagnostic` $175, `winterize` $175, `trip_prep` $225 |
 | `media_usage` | singleton (id=1): total_bytes | Enforces a 9.5GB soft cap against R2's 10GB free tier |
 | `bot_sweep_state` | singleton | Throttles the content-bot nudge sweep |
-| `suppliers`, `products`, `product_components` | — | `products` gained `map_price`/`price_status`/`last_synced_at`, `image_url`/`image_source`, `square_catalog_object_id`/`square_stock_synced_at` across later migrations |
+| `suppliers`, `products`, `product_components` | — | `products` gained `map_price`/`price_status`/`last_synced_at`, `image_url`/`image_source`, `square_catalog_object_id`/`square_stock_synced_at`, `square_item_url` across later migrations |
 | `quote_requests`, `quote_request_items` | — | `quote_requests` gained `square_order_id`/`square_invoice_id`/`square_invoice_url`/`square_invoice_status` |
 | `rate_limit_log` | id, ip, endpoint, created_at | |
 | `services` | id, title, description, category, price, price_type, price_note, display_order, active | Added 2026-09-15 (migration 016). **By its own migration comment, deliberately never synced with `pricing`** — see Data Consistency below |

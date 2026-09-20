@@ -91,14 +91,14 @@ test('land homes: Home → Land + WebSite + Organization', () => {
   }
 });
 
-test('shop /shop/ adds Systems Shop (or Services) under Shop', () => {
+test('shop /shop/ adds Systems Shop under Shop (leftover services tab is still Systems Shop)', () => {
   assert.deepEqual(
     buildLandCrumbs('https://shop.unitedmobilerv.com/shop/').map((c) => c.name),
     ['Home', 'Shop', 'Systems Shop']
   );
   assert.deepEqual(
     buildLandCrumbs('https://shop.unitedmobilerv.com/shop/?tab=services').map((c) => c.name),
-    ['Home', 'Shop', 'Services']
+    ['Home', 'Shop', 'Systems Shop']
   );
   assert.deepEqual(
     buildLandCrumbs('https://shop.unitedmobilerv.com/shop/p/kit-1', { pageName: 'Victron kit' }).map((c) => [c.name, c.item]),

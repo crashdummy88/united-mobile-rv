@@ -24,7 +24,7 @@ export function shopPartsIntroHtml() {
   return `<span class="eyebrow"><span class="dot"></span>RV systems shop</span>
     <h1>Specify the system. Then request a quote.</h1>
     <p class="lead">Describe what the rig needs to do. We specify equipment that actually works together — Victron, lithium, solar, protection, climate, connectivity — then source, configure, and install it if you want that in the quote.</p>
-    <p>Listed prices are published reference figures, not a live checkout and not a fabricated number. Availability is confirmed as part of the quote. Submit the request and we follow up with pricing, lead time, and how to arrange payment.</p>
+    <p>Listed prices are published reference figures, not a live checkout and not a fabricated number. Availability is confirmed as part of the quote. Submit the request and we follow up with pricing, lead time, and how to arrange payment through Square.</p>
     <p class="muted" style="margin-top:14px">Not sure which SKU? Request a quote with daily watt-hours, pedestal amps, and the job the system has to do — we spec the stack from that, not from a part number.</p>`;
 }
 
@@ -36,10 +36,9 @@ export function shopServicesIntroHtml() {
     <p class="muted" style="margin-top:14px">Need equipment specified first? <a class="text-link" href="/shop/">See parts</a>.</p>`;
 }
 
-export function shopEmptyHtml(activeTab) {
-  const noun = activeTab === 'services' ? 'System-work lines' : 'Catalog items';
+export function shopEmptyHtml() {
   return `<section class="band"><div class="wrap">
-    <p>${noun} are being loaded. Request a quote with the system the rig needs, or text the technician with daily usage, pedestal amps, and the equipment you already have.</p>
+    <p>Catalog items are being loaded. Request a quote with the system the rig needs, or text the technician with daily usage, pedestal amps, and the equipment you already have.</p>
     <div class="btn-row">
       <a class="btn btn-gold" href="${TEXT_NOW_HREF}">${TEXT_NOW_LABEL}</a>
       <a class="btn btn-ghost" href="${CALL_HREF}">${CALL_LABEL}</a>
@@ -55,7 +54,7 @@ export function quoteFirstSection({ variant = 'shop' } = {}) {
   return `<section class="band">
   <div class="wrap">
     <span class="micro">Quote first</span>
-    <h2>Request a quote. Arrange payment after we confirm.</h2>
+    <h2>Request a quote. Arrange payment through Square after we confirm.</h2>
     <p>${lead}</p>
     <div class="grid-2">
       ${card('Hardware only', 'We quote the equipment and ship it to you. You handle the install.')}
@@ -100,7 +99,7 @@ export function shopQuoteNeedsSection() {
       ${card('What is already on the rig', 'Inverter, converter, controller, bank chemistry, and solar watts if any. Photos of the bay, the GX, and labels beat a guess at the model.')}
       ${card('Roof and install path', 'Available roof, existing penetrations, and whether you want hardware shipped or installed. Remote config is a separate tier from a site visit.')}
     </div>
-    <p>Reference prices on the cards are cited from supplier lists on file. The confirmed quote can move with stock, freight, and the tier you pick. Payment is arranged after we confirm — this shop does not charge a card at submit.</p>
+    <p>Reference prices on the cards are cited from supplier lists on file. The confirmed quote can move with stock, freight, and the tier you pick. Payment is arranged through Square after we confirm — this shop does not charge a card at submit.</p>
   </div>
 </section>`;
 }

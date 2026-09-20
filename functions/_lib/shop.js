@@ -168,3 +168,16 @@ export function serviceBookHref(service, env) {
     : BOOK_PUBLIC_HREF;
   return appendServiceIntent(base, service);
 }
+
+/**
+ * Optional customer-facing Square Online item URL for a shop part.
+ * Only returns a href when a real Square-land URL is already on the row
+ * (products.square_item_url). square_catalog_object_id is an internal
+ * inventory match key -- it is not a storefront URL and must not be
+ * turned into one here. No invented SKUs, no invented /product/ slugs.
+ */
+export function productSquareHref(product) {
+  const explicit = product && product.square_item_url;
+  if (isSquareLandUrl(explicit)) return String(explicit).trim();
+  return '';
+}

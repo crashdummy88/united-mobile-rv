@@ -124,7 +124,7 @@ test('resolveLandCanonical: land-unique stays on the request host', () => {
   );
   assert.equal(
     resolveLandCanonical('https://shop.unitedmobilerv.com/shop/?tab=services&utm=x'),
-    'https://shop.unitedmobilerv.com/shop/?tab=services'
+    'https://shop.unitedmobilerv.com/shop/'
   );
   assert.equal(
     resolveLandCanonical('https://shop.unitedmobilerv.com/shop/p/kit-1'),
@@ -200,7 +200,9 @@ test('middleware: forum /victron/ pages.dev HTML becomes WP canonical + og:url',
   assert.match(html, /<link rel="canonical" href="https:\/\/unitedmobilerv\.com\/victron\/">/);
   assert.match(html, /<meta property="og:url" content="https:\/\/unitedmobilerv\.com\/victron\/">/);
   assert.doesNotMatch(html, /united-mobile-rv\.pages\.dev/);
-  assert.equal(res.headers.get('X-Robots-Tag'), 'noindex, follow');
+  // Matt SEO lock 2026-09-20: forum. is index-by-default. /victron/ is
+  // shared marketing HTML (WP canonical) but still a land-host page.
+  assert.equal(res.headers.get('X-Robots-Tag'), 'index, follow');
 });
 
 test('middleware: forum land home stays self-canonical', async () => {
@@ -219,7 +221,7 @@ test('middleware: forum land home stays self-canonical', async () => {
   assert.doesNotMatch(html, /<link rel="canonical" href="https:\/\/unitedmobilerv\.com\/">/);
 });
 
-test('middleware: shop catalog self-canonical; X-Robots still index,follow', async () => {
+test('middleware: shop catalog self-canonical; leftover services tab drops to /shop/', async () => {
   const res = await middleware({
     request: makeRequest('https://shop.unitedmobilerv.com/shop/?tab=services'),
     env,
@@ -228,12 +230,13 @@ test('middleware: shop catalog self-canonical; X-Robots still index,follow', asy
 </head><body></body></html>`),
   });
   const html = await res.text();
-  assert.match(html, /<link rel="canonical" href="https:\/\/shop\.unitedmobilerv\.com\/shop\/\?tab=services">/);
+  assert.match(html, /<link rel="canonical" href="https:\/\/shop\.unitedmobilerv\.com\/shop\/">/);
   assert.doesNotMatch(html, /pages\.dev/);
+  assert.doesNotMatch(html, /tab=services/);
   assert.equal(res.headers.get('X-Robots-Tag'), 'index, follow');
 });
 
-test('middleware: book suite self-canonical; X-Robots still noindex,follow', async () => {
+test('middleware: book suite self-canonical; X-Robots is index,follow', async () => {
   const res = await middleware({
     request: makeRequest('https://book.unitedmobilerv.com/'),
     env,
@@ -246,7 +249,7 @@ test('middleware: book suite self-canonical; X-Robots still noindex,follow', asy
   assert.match(html, /<link rel="canonical" href="https:\/\/book\.unitedmobilerv\.com\/">/);
   assert.match(html, /<meta property="og:url" content="https:\/\/book\.unitedmobilerv\.com\/">/);
   assert.doesNotMatch(html, /pages\.dev/);
-  assert.equal(res.headers.get('X-Robots-Tag'), 'noindex, follow');
+  assert.equal(res.headers.get('X-Robots-Tag'), 'index, follow');
 });
 
 test('middleware: pages.dev host is not rewritten', async () => {
