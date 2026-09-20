@@ -196,7 +196,7 @@ ${mainHtml}
   </div>
 </footer>
 ${islandMobileBar()}
-<script src="/js/site.js?v=20260918nav" defer></script>
+<script src="/js/site.js?v=20260918mesh" defer></script>
 </body>
 </html>`;
 }
