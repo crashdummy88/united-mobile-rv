@@ -61,7 +61,7 @@ export async function onRequestGet(context) {
 <link rel="canonical" href="${base}/forum/member/${esc(user.id)}">
 <meta name="robots" content="index,follow">
 <link rel="icon" href="/favicon.png" type="image/png">
-<link rel="stylesheet" href="/css/site.css?v=20260920chrome">
+<link rel="stylesheet" href="/css/site.css?v=20260920home">
 </head>
 <body class="island-chrome">
 ${islandHeader({ current: 'forum' })}
@@ -86,7 +86,7 @@ ${islandHeader({ current: 'forum' })}
 </main>
 ${islandFooter({ current: 'forum' })}
 ${islandMobileBar()}
-<script src="/js/site.js?v=20260920chrome" defer></script>
+<script src="/js/site.js?v=20260920home" defer></script>
 </body>
 </html>`;
 

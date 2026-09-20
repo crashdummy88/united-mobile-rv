@@ -61,7 +61,7 @@ export async function onRequestGet(context) {
      via the X-Robots-Tag header, so individual product pages follow suit. -->
 <meta name="robots" content="index,follow">
 <link rel="icon" href="/favicon.png" type="image/png">
-<link rel="stylesheet" href="/css/site.css?v=20260920chrome">
+<link rel="stylesheet" href="/css/site.css?v=20260920home">
 <link rel="stylesheet" href="/css/shop.css">
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
@@ -131,7 +131,7 @@ ${shopQuoteNeedsSection()}
 ${islandFooter({ current: 'shop' })}
 ${islandMobileBar()}
 <script src="/js/cart.js"></script>
-<script src="/js/site.js?v=20260920chrome" defer></script>
+<script src="/js/site.js?v=20260920home" defer></script>
 <script>
 (function () {
   var qfTurnstileWidgetId = null;

@@ -142,7 +142,7 @@ export async function onRequestGet(context) {
 <meta name="robots" content="index,follow">
 <meta name="theme-color" content="#1A1A1A">
 <link rel="icon" href="/favicon.png" type="image/png">
-<link rel="stylesheet" href="/css/site.css?v=20260920chrome">
+<link rel="stylesheet" href="/css/site.css?v=20260920home">
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <script type="application/ld+json">${JSON.stringify(jsonLd).replace(/</g, '\\u003c')}</script>
 <style>
@@ -215,7 +215,7 @@ ${islandFooter({ current: 'forum' })}
   <img id="lightbox-img" src="" alt="">
 </div>
 ${islandMobileBar()}
-<script src="/js/site.js?v=20260920chrome" defer></script>
+<script src="/js/site.js?v=20260920home" defer></script>
 <script>
 (function () {
   var THREAD_ID = ${JSON.stringify(thread.id)};

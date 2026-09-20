@@ -168,6 +168,33 @@ test('shop + forum templates include mesh-chrome (or static mesh + Square)', () 
   assert.doesNotMatch(forum, /href="https:\/\/united-mobile-rv\.pages\.dev/);
 });
 
+test('island chrome stamps Home → unitedmobilerv.com, never MAIN HUB', () => {
+  assert.equal(MAIN_HOME_LABEL, 'Home');
+  assert.equal(MAIN_HOME_HREF, 'https://unitedmobilerv.com/');
+  const header = islandHeader({ current: 'shop' });
+  assert.match(header, /href="https:\/\/unitedmobilerv\.com\/"[^>]*>Home</);
+  assert.doesNotMatch(header, /MAIN HUB/);
+  assert.doesNotMatch(header, /Main Hub/);
+  assert.doesNotMatch(header, /main-hub/i);
+  for (const file of [
+    'forum/index.html',
+    'book-service/index.html',
+    'book-service/thank-you/index.html',
+    'js/site.js',
+    'functions/_lib/mesh-chrome.js',
+  ]) {
+    const html = src(file);
+    assert.doesNotMatch(html, />MAIN HUB</, file);
+    assert.doesNotMatch(html, />Main Hub</, file);
+    assert.doesNotMatch(html, />MAIN-HUB</, file);
+    assert.match(html, /https:\/\/unitedmobilerv\.com\//, file);
+  }
+  const js = src('js/site.js');
+  assert.match(js, /function umrtIsHubAlias/);
+  assert.match(js, /textContent = MAIN_HOME_LABEL/);
+  assert.match(js, /\['Home', MAIN_HOME_HREF\]|MAIN_HOME_LABEL, MAIN_HOME_HREF/);
+});
+
 test('shop/forum/book chrome has no sticky United Mobile RV brand-text', () => {
   const header = islandHeader({ current: 'forum' });
   assert.match(header, /brand-mark/);
@@ -207,6 +234,9 @@ test('site.js stamps Call + gold Text Now + Square Book on every nav/mobile bar'
   assert.match(js, /Call \(616\) 606-5277/);
   assert.match(js, /MAIN_HOME_LABEL = 'Home'/);
   assert.doesNotMatch(js, /MAIN_HOME_LABEL = 'MAIN HUB'/);
+  assert.match(js, /umrtIsHubAlias/);
+  assert.match(js, /main\(\[\\s_-\]\*hub\)\?/);
+  assert.match(js, /if \(islandSurface\)/);
   assert.match(js, /https:\/\/unitedmobilerv\.com\//);
   assert.doesNotMatch(js, /\['Main', 'https:\/\/unitedmobilerv\.com\/'\]/);
   assert.match(js, /navCtaHtml/);
