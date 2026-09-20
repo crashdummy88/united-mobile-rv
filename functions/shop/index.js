@@ -8,14 +8,12 @@ import { formatPrice, displayName, CATEGORY_ICONS, formatServicePrice, stockStat
 import { islandHeader, islandFooter, islandMobileBar, shopCartNavItem } from '../_lib/mesh-chrome.js';
 import { relatedGuidesForService, relatedGuidesMarkup } from '../_lib/field-guides.js';
 import {
-  diagnosticProcessSection,
   quoteFirstSection,
-  serviceLinesSection,
   shopEmptyHtml,
   shopPartsIntroHtml,
+  shopQuoteNeedsSection,
   shopServicesIntroHtml,
-  techVoiceSection,
-  troubleshootingSection,
+  shopSystemsSection,
 } from '../_lib/island-substance.js';
 
 function esc(s) {
@@ -159,16 +157,15 @@ export async function onRequestGet(context) {
   }).join('\n');
 
   const servicesNoteHtml = `<section class="band"><div class="wrap">
-    <p>Shop labor is billed at <strong>$150/hr</strong> after the initial diagnostic. Trip fee is $75 within 30 miles, then $1.50/mi each way — confirmed before we leave. Diagnostic $175 is applied toward the repair if you authorize the fix.</p>
+    <p>These cards are published reference rates for system work — install, commission, and seasonal lines. Confirming a line is still a quote, not a cart charge. Hardware you want specified lives on <a class="text-link" href="/shop/">Parts</a>.</p>
   </div></section>`;
 
   const partsContextHtml = `${quoteFirstSection({ variant: 'shop' })}
-${diagnosticProcessSection()}
-${serviceLinesSection()}`;
+${shopSystemsSection()}
+${shopQuoteNeedsSection()}`;
 
-  const servicesContextHtml = `${techVoiceSection()}
-${diagnosticProcessSection()}
-${troubleshootingSection()}`;
+  const servicesContextHtml = `${shopSystemsSection()}
+${shopQuoteNeedsSection()}`;
 
   const sectionsHtml = activeTab === 'services'
     ? (services.length ? `${servicesNoteHtml}\n${servicesSectionsHtml}\n${servicesContextHtml}` : '')
@@ -180,7 +177,7 @@ ${troubleshootingSection()}`;
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${activeTab === 'services' ? 'RV Repair and Install Services' : 'RV Systems Shop'} | United Mobile RV</title>
-<meta name="description" content="${activeTab === 'services' ? 'Diagnostics, Victron installs, winterization, and repair at published rates. Diagnostic-first mobile service — book from the list.' : 'Specify RV power, solar, lithium, and climate systems that work together. Published reference prices. Request a quote — not a live checkout.'}">
+<meta name="description" content="${activeTab === 'services' ? 'Published rates for Victron installs, commissioning, and seasonal system work. Request a quote — not a live checkout.' : 'Specify RV power, solar, lithium, and climate systems that work together. Published reference prices. Request a quote — not a live checkout.'}">
 <link rel="canonical" href="${base}/shop/${activeTab === 'services' ? '?tab=services' : ''}">
 <!-- 2026-09-16: was noindex,follow -- the X-Robots-Tag header in
      functions/_middleware.js now sends index,follow for /shop/ (real

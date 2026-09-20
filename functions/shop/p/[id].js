@@ -5,7 +5,7 @@
  */
 import { formatPrice, priceNote, displayName, CATEGORY_ICONS, stockStatusMeta } from '../../_lib/shop.js';
 import { islandHeader, islandFooter, islandMobileBar, shopCartNavItem } from '../../_lib/mesh-chrome.js';
-import { diagnosticProcessSection, quoteFirstSection } from '../../_lib/island-substance.js';
+import { quoteFirstSection, shopQuoteNeedsSection } from '../../_lib/island-substance.js';
 
 function esc(s) {
   return String(s || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -99,7 +99,7 @@ ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem(), extraAfterKey
   </div>
 </section>
 ${quoteFirstSection({ variant: 'product' })}
-${diagnosticProcessSection()}
+${shopQuoteNeedsSection()}
 <section class="shop-checkout-band" id="quote">
   <div class="wrap wrap-narrow">
     <div class="shop-checkout-panel">

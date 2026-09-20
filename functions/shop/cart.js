@@ -1,5 +1,5 @@
 import { islandHeader, islandFooter, islandMobileBar, shopCartNavItem } from '../_lib/mesh-chrome.js';
-import { diagnosticProcessSection, quoteFirstSection } from '../_lib/island-substance.js';
+import { quoteFirstSection, shopQuoteNeedsSection } from '../_lib/island-substance.js';
 
 /**
  * GET /shop/cart -- skeleton cart page.
@@ -46,7 +46,7 @@ ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem(), extraAfterKey
   </div>
 </section>
 ${quoteFirstSection({ variant: 'cart' })}
-${diagnosticProcessSection()}
+${shopQuoteNeedsSection()}
 <section class="shop-checkout-band" id="quote" hidden>
   <div class="wrap wrap-narrow" id="quote-wrap">
     <div class="shop-checkout-panel">

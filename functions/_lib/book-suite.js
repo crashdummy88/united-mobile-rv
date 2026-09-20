@@ -25,11 +25,10 @@ import {
 import {
   bookExpectSection,
   bookHeroHtml,
-  diagnosticProcessSection,
+  bookRequestSection,
+  bookVisitSection,
+  bookWhoArrivesSection,
   publishedRatesSection,
-  serviceLinesSection,
-  techVoiceSection,
-  troubleshootingSection,
 } from './island-substance.js';
 
 export const BOOK_HOST = 'book.unitedmobilerv.com';
@@ -88,10 +87,9 @@ function suiteMain({ bookHost }) {
   return `<main id="main">
 ${bookHeroHtml()}
 ${bookExpectSection()}
-${techVoiceSection()}
-${diagnosticProcessSection()}
-${serviceLinesSection()}
-${troubleshootingSection()}
+${bookWhoArrivesSection()}
+${bookVisitSection()}
+${bookRequestSection()}
 ${publishedRatesSection({ includeRateSheetLink: !bookHost })}
 </main>`;
 }
