@@ -5,7 +5,8 @@
  *      homepage title "Mobile RV Repair at Your Location"
  *   2) mothership paths 301 to '/' (suite root)
  *   3) canonical/og:url use the request host, not pages.dev
- *   4) X-Robots-Tag is index,follow on the book land (Matt SEO lock 2026-09-20)
+ *   4) X-Robots-Tag + HTML meta robots are index,follow on the book land
+ *      (Matt SEO lock 2026-09-20 — no noindex meta for Google to union)
  *
  * Run: node tests/security/book-host.test.js
  */
@@ -112,7 +113,8 @@ test('host home: book. / renders booking suite, not marketing homepage', async (
   assert.match(html, /data-book-suite="book-host"/);
   assert.match(html, /<link rel="canonical" href="https:\/\/book\.unitedmobilerv\.com\/">/);
   assert.match(html, /<meta property="og:url" content="https:\/\/book\.unitedmobilerv\.com\/">/);
-  assert.match(html, /<meta name="robots" content="noindex, follow">/);
+  assert.match(html, /<meta name="robots" content="index, follow">/);
+  assert.doesNotMatch(html, /<meta name="robots"[^>]*noindex/i);
   assert.doesNotMatch(html, /href="\/pricing\/"/);
   assert.doesNotMatch(html, /href="\/guide\/"/);
   assert.doesNotMatch(html, /unitedmobilerv\.com\/guide\//);
@@ -192,6 +194,8 @@ test('thank-you on book host uses book. canonical and mesh nav (no mothership me
   const html = await res.text();
   assert.match(html, /<link rel="canonical" href="https:\/\/book\.unitedmobilerv\.com\/book-service\/thank-you\/">/);
   assert.match(html, /<meta property="og:url" content="https:\/\/book\.unitedmobilerv\.com\/book-service\/thank-you\/">/);
+  assert.match(html, /<meta name="robots" content="index, follow">/);
+  assert.doesNotMatch(html, /<meta name="robots"[^>]*noindex/i);
   assert.doesNotMatch(html, /united-mobile-rv\.pages\.dev/);
   assert.doesNotMatch(html, /href="\/pricing\/"/);
   assert.match(html, /href="\/"/);
