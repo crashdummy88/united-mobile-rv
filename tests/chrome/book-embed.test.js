@@ -73,7 +73,7 @@ test('request intent query is appended to embed src without inventing SKUs', () 
   assert.match(fallback, /service=generator-maintenance/);
 });
 
-test('book homepage iframes Square and ships full UMRV sections', async () => {
+test('book homepage is visit booking — Square, Text Now, confidence — not a catalog', async () => {
   const bare = await renderBookSuite(new Request('https://book.unitedmobilerv.com/'), {});
   const html = await bare.text();
   assert.match(html, /data-square-embed="square-site"/);
@@ -85,13 +85,22 @@ test('book homepage iframes Square and ships full UMRV sections', async () => {
   assert.match(html, /Book on this page/);
   assert.match(html, /Request a service call/);
   assert.match(html, /You will reach Matt directly/);
-  assert.match(html, /What we fix/);
   assert.match(html, /Quoted upfront/);
   assert.match(html, /Montana · Wyoming · Idaho · Washington/);
   assert.match(html, /Victron Professional Certified Installer/);
   assert.match(html, /sms:\+16166065277/);
   assert.match(html, /tel:\+16166065277/);
   assert.match(html, /Text Now \(616\) 606-5277/);
+  assert.doesNotMatch(html, /What we fix/);
+  assert.doesNotMatch(html, /offer-card/);
+  assert.doesNotMatch(html, /city-hub/);
+  assert.doesNotMatch(html, /Find your city/);
+  assert.doesNotMatch(html, /Winterization/);
+  assert.doesNotMatch(html, /Electrical troubleshooting/);
+  assert.doesNotMatch(html, /unitedmobilerv\.com\/electrical\//);
+  assert.doesNotMatch(html, /unitedmobilerv\.com\/victron\//);
+  assert.doesNotMatch(html, /unitedmobilerv\.com\/wireless\//);
+  assert.doesNotMatch(html, /unitedmobilerv\.com\/guide\//);
   assert.doesNotMatch(html, /Text Now uses/);
   assert.doesNotMatch(html, /parts fly/i);
   assert.doesNotMatch(html, /Square booking, or Text Now/);

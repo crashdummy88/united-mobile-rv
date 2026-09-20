@@ -8,6 +8,8 @@
  * Shared ecosystem chrome (mesh-chrome) so book. matches forum/shop.
  * Canonical/og:url use the request host. book. stays noindex until Matt
  * says otherwise. Text Now is sms:+16166065277; number is tel:.
+ * Unique job: book a visit (Square embed + Text Now + booking confidence).
+ * Do not clone the shop catalog or docs/guide library onto this page.
  * Square still processes the booking; this page wraps it so customers
  * stay on book.unitedmobilerv.com.
  *
@@ -157,10 +159,9 @@ function embedPanel({ env, request }) {
 }
 
 function suiteMain({ bookHost, env, request }) {
-  const rateSheet = bookHost
+  const mothershipRates = bookHost
     ? ''
-    : `<p class="mt-8 muted">Full rate sheet: <a href="/pricing/">Pricing</a>.</p>`;
-  const apex = MAIN_HOME_HREF.replace(/\/$/, '');
+    : `<p class="muted mt-8">Published rates live on the main site: <a href="/pricing/">Pricing</a>.</p>`;
   return `<main id="main">
 <section class="page-hero">
   <div class="wrap">
@@ -174,20 +175,8 @@ function suiteMain({ bookHost, env, request }) {
   <div class="wrap trust-row">
     <a class="trust-chip" href="https://www.google.com/maps/place/United+Mobile+RV+LLC/data=!4m2!3m1!1s0x0:0xb040c24e93fec214" target="_blank" rel="noopener"><strong>13 Google ★5.0</strong> reviews</a>
     <span class="trust-chip"><strong>Victron Professional</strong> Certified Installer</span>
-    <span class="trust-chip"><strong>Thermal imaging</strong> diagnostics</span>
-    <span class="trust-chip"><strong>Starlink installs</strong> · Peplink · weBoost</span>
-  </div>
-</section>
-<section class="band band-tight" aria-label="Credentials">
-  <div class="wrap">
-    <span class="micro">Credentials</span>
-    <div class="cred-logos cred-logos-scrubbed">
-      <a class="cred-pill" href="${apex}/victron/"><img src="/assets/brand/victron-certified-installer.webp" alt="Victron Professional Certified Installer" height="40" width="160" loading="lazy" decoding="async"></a>
-      <a class="cred-pill" href="${apex}/wireless/"><img src="/assets/brand/peplink-certified-associate.webp" alt="Peplink Certified Associate" height="40" width="160" loading="lazy" decoding="async"></a>
-      <a class="cred-text" href="${apex}/wireless/">weBoost Authorized Installer</a>
-      <a class="cred-text" href="${apex}/service/">Dometic Professional Certified</a>
-    </div>
-    <p class="muted mt-6">Starlink installs (not a Starlink-certified installer). Former FAA-authorized aircraft repair · 11+ years mechanical.</p>
+    <span class="trust-chip"><strong>weBoost</strong> Authorized Installer</span>
+    <span class="trust-chip"><strong>Peplink</strong> Certified Associate</span>
   </div>
 </section>
 <section class="band book-hybrid-band" style="padding-top:24px;padding-bottom:40px">
@@ -213,62 +202,6 @@ function suiteMain({ bookHost, env, request }) {
     </div>
   </div>
 </section>
-<section class="band band-tight photo-band" aria-label="On-site service">
-  <div class="wrap">
-    <span class="micro">On site</span>
-    <h2>Work completed at the coach</h2>
-    <p class="lead">Electrical and power service at the campsite, driveway, or storage yard.</p>
-    <div class="photo-grid">
-      <figure class="photo-card photo-card-wide">
-        <img src="/assets/photos/jobs/img_3286-1200.webp" alt="Finished RV power install — inverter, battery distribution, and house battery strapped in place." loading="lazy" width="1600" height="1200">
-        <figcaption class="photo-cap">Completed power install at the coach</figcaption>
-      </figure>
-      <figure class="photo-card">
-        <img src="/assets/photos/jobs/img_3018-1200.webp" alt="Tiffin Allegro Open Road motorhome on a residential driveway with tools beside an open service bay." loading="lazy" width="1600" height="1200">
-        <figcaption class="photo-cap">Motorhome — on-site service</figcaption>
-      </figure>
-      <figure class="photo-card">
-        <img src="/assets/photos/jobs/img_2937-1200.webp" alt="Open RV electrical bay with fuse blocks and a meter during diagnostics." loading="lazy" width="1600" height="1200">
-        <figcaption class="photo-cap">House-power diagnostics before parts are ordered</figcaption>
-      </figure>
-    </div>
-  </div>
-</section>
-<section class="band">
-  <div class="wrap">
-    <span class="micro">Services</span>
-    <h2>What we fix — at your location</h2>
-    <p class="lead">Diagnostic-first mobile repair: electrical, power systems, connectivity, appliances, plumbing, roof, generator, propane, and seasonal work — at your location. No shop drop-off.</p>
-    <div class="grid-3 mt-8">
-      <article class="offer-card">
-        <span class="micro offer-num">01 / Diagnostics</span>
-        <h3>Electrical troubleshooting</h3>
-        <p>Shore power faults, battery drain, parasitic draw, converter failures, and wiring issues. Thermal imaging and DVOM testing — we find why before we replace parts.</p>
-        <a class="text-link" href="${apex}/electrical/">Electrical</a>
-      </article>
-      <article class="offer-card">
-        <span class="micro offer-num">02 / Power</span>
-        <h3>Victron power &amp; energy</h3>
-        <p>LiFePO4, MPPT solar, inverter/chargers, and full system balancing. Victron Professional Certified Installer — clean, labeled, documented installs.</p>
-        <a class="text-link" href="${apex}/victron/">Victron</a>
-      </article>
-      <article class="offer-card">
-        <span class="micro offer-num">03 / Connectivity</span>
-        <h3>Starlink · weBoost · Peplink</h3>
-        <p>Clean exterior mounts, proper coax routing, full power integration. Peplink Certified Associate and weBoost Authorized Installer. Starlink installs (not a Starlink-certified installer).</p>
-        <a class="text-link" href="${apex}/wireless/">Wireless</a>
-      </article>
-    </div>
-    <div class="grid-3 mt-8">
-      <article class="service-card"><h3>Appliances</h3><p>Refrigerators, furnaces, A/C, water heaters. Dometic, Norcold, Suburban, Atwood. We test before we replace.</p></article>
-      <article class="service-card"><h3>Plumbing &amp; water</h3><p>Water pumps, tanks, fittings, fresh/grey/black troubleshooting at your location.</p></article>
-      <article class="service-card"><h3>Roof &amp; water intrusion</h3><p>Leak tracing, EPDM/TPO, vents, and moisture hunting with a thermal camera when needed.</p></article>
-      <article class="service-card"><h3>Generator service</h3><p>Onan and common RV generators — diagnosis, oil service, and repair where the coach sits.</p></article>
-      <article class="service-card"><h3>LP gas systems</h3><p>Pressure checks, regulators, and propane appliance safety troubleshooting.</p></article>
-      <article class="service-card"><h3>PPI &amp; seasonal</h3><p>Pre-purchase inspections, winterization ($175), trip-prep &amp; safety check ($225). Labor included; materials extra.</p></article>
-    </div>
-  </div>
-</section>
 <section class="band" style="padding-top:16px">
   <div class="wrap">
     <span class="micro">What to expect</span>
@@ -287,9 +220,10 @@ function suiteMain({ bookHost, env, request }) {
       <div>
         <span class="step-num">03</span>
         <h3>Test, then price the fix</h3>
-        <p>You authorize the repair after the diagnosis. $175 diagnostic applies toward the work if you proceed. Parts billed separately.</p>
+        <p>You authorize the repair after the diagnosis. The $175 diagnostic applies toward the work if you proceed. Parts are billed separately.</p>
       </div>
     </div>
+    ${mothershipRates}
   </div>
 </section>
 <section class="band band-light">
@@ -297,114 +231,23 @@ function suiteMain({ bookHost, env, request }) {
     <div>
       <span class="micro">Corridor</span>
       <h2>Montana · Wyoming · Idaho · Washington</h2>
-      <p>Active scheduled corridor through MT · WY · ID · WA. We come to the campsite, driveway, or storage yard. Minnesota, Wisconsin, the Dakotas, Oregon, and Michigan are served case-by-case as the route allows.</p>
+      <p>Active scheduled corridor through MT · WY · ID · WA. We come to the campsite, driveway, or storage yard. Other states are served case-by-case as the route allows.</p>
     </div>
     <div>
-      <span class="micro">Reviews</span>
-      <h2><span class="stars">★★★★★</span><br>13 five-star Google reviews</h2>
-      <p>Reviews from owners we served at their location. Also listed on Yelp.</p>
+      <span class="micro">On site</span>
+      <h2>Owner-technician on every visit</h2>
+      <p>Victron Professional Certified Installer · weBoost Authorized Installer · Peplink Certified Associate. Starlink installs (not a Starlink-certified installer).</p>
     </div>
-  </div>
-  <div class="wrap" style="margin-top:36px">
-    <span class="micro">Local coverage</span>
-    <h2>Find your city</h2>
-    <div class="city-hub">
-      <div class="city-hub-state">
-        <h3>Montana</h3>
-        <ul>
-          <li><a href="${apex}/mobile-rv-repair-billings-mt/">Billings</a></li>
-          <li><a href="${apex}/mobile-rv-repair-bozeman-mt/">Bozeman</a></li>
-          <li><a href="${apex}/mobile-rv-repair-missoula-mt/">Missoula</a></li>
-          <li><a href="${apex}/mobile-rv-repair-west-yellowstone-mt/">West Yellowstone</a></li>
-        </ul>
-      </div>
-      <div class="city-hub-state">
-        <h3>Wyoming &amp; Idaho</h3>
-        <ul>
-          <li><a href="${apex}/mobile-rv-repair-jackson-hole-wy/">Jackson Hole, WY</a></li>
-          <li><a href="${apex}/mobile-rv-repair-coeur-dalene-id/">Coeur d'Alene, ID</a></li>
-        </ul>
-      </div>
-      <div class="city-hub-state">
-        <h3>Washington</h3>
-        <ul>
-          <li><a href="${apex}/mobile-rv-repair-seattle-wa/">Seattle</a></li>
-          <li><a href="${apex}/mobile-rv-repair-spokane-wa/">Spokane</a></li>
-          <li><a href="${apex}/mobile-rv-repair-olympic-peninsula-wa/">Olympic Peninsula</a></li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</section>
-<section class="band">
-  <div class="wrap grid-2">
-    <div>
-      <span class="micro">Proof</span>
-      <p class="north-star">We don't guess. We find the real problem.</p>
-    </div>
-    <div>
-      <p>UMRT was founded after years maintaining precision aerospace equipment at Liebherr and working dealership service bays on BMW and Mercedes platforms. A former FAA-authorized aircraft repair tech leads every job. That same careful testing goes into every RV repair.</p>
-      <ul class="proof-list">
-        <li><span class="lab">Experience</span> 11+ years mechanical</li>
-        <li><span class="lab">Aerospace</span> Former FAA-authorized aircraft repair · Liebherr</li>
-        <li><span class="lab">Auto</span> BMW / Mercedes dealership background</li>
-        <li><span class="lab">Certs</span> Victron Professional Certified Installer · weBoost Authorized · Peplink Certified Associate · Dometic Professional — Starlink installs only (not a certified title)</li>
-      </ul>
-    </div>
-  </div>
-</section>
-<section class="band band-light">
-  <div class="wrap">
-    <span class="micro">Published rates</span>
-    <h2>Published rates</h2>
-    <p>The same figures as the public rate sheet. Confirmed with you before we arrive.</p>
-    <div class="grid-3 mt-8">
-      <div class="price-card">
-        <span class="micro">Labor rate</span>
-        <div class="amount">$150</div>
-        <div class="unit">Per hour</div>
-        <p>1 hour minimum · billed in 30-minute increments after the first hour · parts and materials billed separately.</p>
-      </div>
-      <div class="price-card">
-        <span class="micro">Trip / service call</span>
-        <div class="amount">$75</div>
-        <div class="unit">Within 30 miles</div>
-        <p>Beyond 30 miles: $75 + $1.50/mi each way. Trip fee quoted upfront when you book or text.</p>
-      </div>
-      <div class="price-card">
-        <span class="micro">Diagnostic</span>
-        <div class="amount">$175</div>
-        <div class="unit">Applied if you proceed</div>
-        <p>Full system scan / DVOM / thermal imaging where applicable. Applied toward repair if you authorize the fix.</p>
-      </div>
-    </div>
-    <div class="grid-2 mt-8">
-      <div class="price-card">
-        <h3>Winterization</h3>
-        <div class="amount">$175</div>
-        <div class="unit">Fixed price</div>
-        <p>Labor included · materials extra. Separate line item — not by coach class.</p>
-      </div>
-      <div class="price-card">
-        <h3>Trip prep &amp; safety check</h3>
-        <div class="amount">$225</div>
-        <div class="unit">Fixed price</div>
-        <p>Labor included · materials extra. Brakes, lights, tires, hitch, LP check.</p>
-      </div>
-    </div>
-    ${rateSheet}
   </div>
 </section>
 <section class="band">
   <div class="wrap wrap-narrow">
-    <span class="micro">FAQ</span>
+    <span class="micro">Before you book</span>
     <h2>Straight answers</h2>
-    <div class="faq-item"><h3>What does a service call cost?</h3><p>$75 within 30 miles, then $1.50 per mile each way. Labor is $150 per hour. The diagnostic is $175 and applies toward the repair if you proceed.</p></div>
+    <div class="faq-item"><h3>How do I book?</h3><p>Use the Square panel on this page, or Text Now or call (616) 606-5277.</p></div>
+    <div class="faq-item"><h3>Is the time confirmed when I submit?</h3><p>No. This is a request until Matt confirms the appointment and the trip fee.</p></div>
     <div class="faq-item"><h3>Do you have a shop I drop off at?</h3><p>No. We come to your campsite, driveway, or storage yard.</p></div>
     <div class="faq-item"><h3>Who will be on site?</h3><p>The owner-technician is on site for every visit.</p></div>
-    <div class="faq-item"><h3>What credentials do you hold?</h3><p>Victron Professional Certified Installer · weBoost Authorized Installer · Peplink Certified Associate · Dometic Professional Certified. Starlink installs (not a Starlink-certified installer).</p></div>
-    <div class="faq-item"><h3>Where do you serve?</h3><p>Active corridors in Montana, Wyoming, Idaho, and Washington — other states case-by-case.</p></div>
-    <div class="faq-item"><h3>How do I book?</h3><p>Use the Square panel on this page, or Text Now or call (616) 606-5277.</p></div>
   </div>
 </section>
 <section class="band" style="border-top:1px solid var(--rule)">

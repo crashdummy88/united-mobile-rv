@@ -132,8 +132,11 @@ test('host home: book. / renders booking suite, not marketing homepage', async (
   assert.match(html, /Starlink installs \(not a Starlink-certified installer\)/);
   assert.doesNotMatch(html, /Starlink Certified/);
   assert.match(html, /MT · WY · ID · WA/);
-  assert.match(html, /Electrical troubleshooting/);
-  assert.match(html, /What we fix/);
+  assert.doesNotMatch(html, /Electrical troubleshooting/);
+  assert.doesNotMatch(html, /What we fix/);
+  assert.doesNotMatch(html, /city-hub/);
+  assert.doesNotMatch(html, /Winterization/);
+  assert.doesNotMatch(html, /unitedmobilerv\.com\/victron\//);
   assert.match(html, /https:\/\/forum\.unitedmobilerv\.com\//);
   assert.match(html, /https:\/\/shop\.unitedmobilerv\.com\//);
   assert.match(html, /https:\/\/software\.unitedmobilerv\.com\//);
