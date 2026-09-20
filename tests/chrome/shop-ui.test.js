@@ -121,6 +121,21 @@ test('shop lockdown still allows /css/ so shop.css is reachable on shop host', (
   assert.match(mw, /const SHOP_ALLOWED_PREFIXES = \['\/shop\/', '\/api\/shop\/', '\/book-service\/', '\/api\/book', '\/css\/', '\/js\/', '\/assets\/', '\/fonts\/'\]/);
 });
 
+test('public UMRT Assistant FAB stays implemented but is gated off', () => {
+  const js = src('js/site.js');
+  assert.match(js, /var UMRT_CHAT_UI_ENABLED = false;/);
+  assert.match(js, /function mountChatFab\(\)/);
+  assert.match(js, /umrt-chat-root/);
+  assert.match(js, /id="chat-fab"/);
+  assert.match(js, /UMRT Assistant/);
+  assert.match(js, /if \(!UMRT_CHAT_UI_ENABLED\) return;/);
+  assert.match(js, /requestIdleCallback\(mountChatFab/);
+  assert.match(js, /setTimeout\(mountChatFab, 1\)/);
+  assert.match(src('functions/shop/index.js'), /site\.js\?v=20260920chatoff/);
+  assert.match(src('functions/api/chat.js'), /onRequestPost|export async function onRequest/);
+  assert.match(src('functions/api/chat-lead.js'), /onRequestPost|export async function onRequest/);
+});
+
 test('product quote form shares the same checkout panel + convert fallback', () => {
   const product = src('functions/shop/p/[id].js');
   assert.match(product, /shop-checkout-panel/);
