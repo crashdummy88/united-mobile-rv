@@ -48,7 +48,7 @@ ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem(), extraAfterKey
   <div class="wrap wrap-narrow" id="quote-wrap">
     <div class="shop-checkout-panel">
     <h2>Request a quote for this cart</h2>
-    <p class="muted">One combined quote covering every line above. Prefer to talk it through? Call or text (616) 606-5277.</p>
+    <p class="muted">One combined quote covering every item above. Prefer to talk it through? Call or text (616) 606-5277.</p>
     <form id="quote-form">
       <label class="service-tier"><input type="radio" name="service_option" value="hardware_only" checked><span class="service-tier-text"><strong>Hardware only</strong><small>Ships to you, you install.</small></span></label>
       <label class="service-tier"><input type="radio" name="service_option" value="hardware_plus_config"><span class="service-tier-text"><strong>Hardware + remote configuration</strong><small>We configure it with you remotely.</small></span></label>
