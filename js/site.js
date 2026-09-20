@@ -95,8 +95,19 @@ function umrtGetTurnstileToken(containerId) {
     var li = a.parentNode && a.parentNode.tagName === 'LI' ? a.parentNode : a;
     if (li && li.parentNode) li.parentNode.removeChild(li);
   }
+  /* Matt lock: every island says Home → https://unitedmobilerv.com/
+     not MAIN HUB / Main Hub / main-hub. */
+  function umrtNormalizeLabel(label) {
+    return String(label || '').replace(/\s+/g, ' ').trim();
+  }
+  function umrtIsHubAlias(label) {
+    return /^(main([\s_-]*hub)?)$/i.test(umrtNormalizeLabel(label));
+  }
+  function umrtIsHubLabel(label) {
+    return umrtIsHubAlias(label) || /^home$/i.test(umrtNormalizeLabel(label));
+  }
 
-  var chromeRoots = document.querySelectorAll('.nav-links, .site-footer, .umrt-platform-bar');
+  var chromeRoots = document.querySelectorAll('.nav-links, .site-footer, .umrt-platform-bar, .site-header');
   for (var ci = 0; ci < chromeRoots.length; ci++) {
     var chromeLinks = chromeRoots[ci].querySelectorAll('a[href]');
     for (var cj = 0; cj < chromeLinks.length; cj++) {
@@ -106,7 +117,7 @@ function umrtGetTurnstileToken(containerId) {
         continue;
       }
       var chromeLabel = umrtLinkLabel(chromeA);
-      if (/^(MAIN HUB|Main Hub|Main)$/i.test(chromeLabel)
+      if (umrtIsHubAlias(chromeLabel)
         || chromeA.getAttribute('data-platform-link') === 'hub') {
         chromeA.setAttribute('href', 'https://unitedmobilerv.com/');
         chromeA.textContent = 'Home';
@@ -183,6 +194,20 @@ function umrtGetTurnstileToken(containerId) {
   var islandHost = location.hostname === 'shop.unitedmobilerv.com'
     || location.hostname === 'forum.unitedmobilerv.com'
     || location.hostname === 'book.unitedmobilerv.com';
+  var islandPath = /^\/(shop|forum|book-service)(\/|$)/.test(location.pathname);
+  var islandSurface = islandHost || islandPath;
+  function umrtStripIslandBrandText() {
+    var brands = document.querySelectorAll('.site-header .brand');
+    for (var bi = 0; bi < brands.length; bi++) {
+      var brand = brands[bi];
+      var kids = Array.prototype.slice.call(brand.children);
+      for (var kj = 0; kj < kids.length; kj++) {
+        var kid = kids[kj];
+        if (kid.classList.contains('brand-logo') || kid.tagName === 'IMG') continue;
+        brand.removeChild(kid);
+      }
+    }
+  }
   var meshItems = [
     [MAIN_HOME_LABEL, MAIN_HOME_HREF],
     ['Shop', 'https://shop.unitedmobilerv.com/'],
@@ -191,7 +216,7 @@ function umrtGetTurnstileToken(containerId) {
     ['Software', 'https://software.unitedmobilerv.com/'],
     ['Docs', 'https://docs.unitedmobilerv.com/']
   ];
-  if (islandHost) {
+  if (islandSurface) {
     var meshNav = document.querySelector('.nav-links');
     if (meshNav) {
       var leftover = Array.prototype.slice.call(meshNav.children);
@@ -206,7 +231,7 @@ function umrtGetTurnstileToken(containerId) {
         var name = umrtLinkLabel(a);
         if (/^Cart\b/i.test(name)) { cartItems.push(li); return; }
         have[name.toLowerCase()] = li;
-        if (/^(main|home|main hub)$/i.test(name)) {
+        if (umrtIsHubLabel(name)) {
           have.home = li;
           have['main hub'] = li;
         }
@@ -242,9 +267,15 @@ function umrtGetTurnstileToken(containerId) {
       });
       extras.forEach(function (li) { meshNav.appendChild(li); });
     }
-    var brandTexts = document.querySelectorAll('.site-header .brand-text');
-    for (var bt = 0; bt < brandTexts.length; bt++) {
-      brandTexts[bt].parentNode.removeChild(brandTexts[bt]);
+  }
+  if (islandSurface) {
+    umrtStripIslandBrandText();
+    var leftoverHub = document.querySelectorAll('a[href]');
+    for (var hi = 0; hi < leftoverHub.length; hi++) {
+      var hubA = leftoverHub[hi];
+      if (!umrtIsHubAlias(umrtLinkLabel(hubA)) && hubA.getAttribute('data-platform-link') !== 'hub') continue;
+      hubA.setAttribute('href', MAIN_HOME_HREF);
+      hubA.textContent = MAIN_HOME_LABEL;
     }
   }
 

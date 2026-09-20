@@ -142,7 +142,7 @@ export async function onRequestGet(context) {
 <meta name="robots" content="index,follow">
 <meta name="theme-color" content="#1A1A1A">
 <link rel="icon" href="/favicon.png" type="image/png">
-<link rel="stylesheet" href="/css/site.css">
+<link rel="stylesheet" href="/css/site.css?v=20260920home">
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <script type="application/ld+json">${JSON.stringify(jsonLd).replace(/</g, '\\u003c')}</script>
 <style>
@@ -165,7 +165,7 @@ export async function onRequestGet(context) {
   .btn-sm{padding:6px 12px;font-size:0.85em}
 </style>
 </head>
-<body>
+<body class="island-chrome">
 <a class="skip-link" href="#main">Skip to content</a>
 ${islandHeader({ current: 'forum' })}
 <main id="main">
@@ -215,7 +215,7 @@ ${islandFooter({ current: 'forum' })}
   <img id="lightbox-img" src="" alt="">
 </div>
 ${islandMobileBar()}
-<script src="/js/site.js?v=20260918mesh" defer></script>
+<script src="/js/site.js?v=20260920home" defer></script>
 <script>
 (function () {
   var THREAD_ID = ${JSON.stringify(thread.id)};

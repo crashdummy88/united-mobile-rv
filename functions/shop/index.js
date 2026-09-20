@@ -186,10 +186,10 @@ ${shopQuoteNeedsSection()}`;
      comments on why a stale meta/header mismatch is a real bug here. -->
 <meta name="robots" content="index,follow">
 <link rel="icon" href="/favicon.png" type="image/png">
-<link rel="stylesheet" href="/css/site.css">
+<link rel="stylesheet" href="/css/site.css?v=20260920home">
 <link rel="stylesheet" href="/css/shop.css">
 </head>
-<body>
+<body class="island-chrome">
 <a class="skip-link" href="#main">Skip to content</a>
 ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem(), extraAfterKey: 'shop' })}
 <main id="main">
@@ -205,7 +205,7 @@ ${sectionsHtml || shopEmptyHtml(activeTab)}
 ${islandFooter({ current: 'shop' })}
 ${islandMobileBar()}
 <script src="/js/cart.js"></script>
-<script src="/js/site.js?v=20260918mesh" defer></script>
+<script src="/js/site.js?v=20260920home" defer></script>
 <script>
 (function () {
   document.querySelectorAll('.shop-add-btn').forEach(function (btn) {
