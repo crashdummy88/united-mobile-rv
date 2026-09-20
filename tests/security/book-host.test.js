@@ -145,7 +145,7 @@ test('host home: book. / renders booking suite, not marketing homepage', async (
   assert.doesNotMatch(html, />MAIN HUB</);
   assert.match(html, /href="https:\/\/unitedmobilerv\.com\/"/);
   assert.doesNotMatch(html, /http:\/\/unitedmobilerv\.com/);
-  assert.match(html, /Secure checkout is processed by Square/);
+  assert.match(html, /Payment is processed securely by Square/);
   assert.doesNotMatch(html, /opens Square in a new tab/);
   assert.doesNotMatch(html, /leaves this site for Square/);
   assert.doesNotMatch(html, /Same convert pattern/);

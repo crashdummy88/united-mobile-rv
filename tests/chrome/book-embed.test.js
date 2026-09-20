@@ -84,6 +84,7 @@ test('book homepage iframes Square and ships full UMRV sections', async () => {
   assert.match(html, /data-square-fallback/);
   assert.match(html, /Book on this page/);
   assert.match(html, /Request a service call/);
+  assert.match(html, /You will reach Matt directly/);
   assert.match(html, /What we fix/);
   assert.match(html, /Quoted upfront/);
   assert.match(html, /Montana · Wyoming · Idaho · Washington/);
@@ -91,6 +92,14 @@ test('book homepage iframes Square and ships full UMRV sections', async () => {
   assert.match(html, /sms:\+16166065277/);
   assert.match(html, /tel:\+16166065277/);
   assert.match(html, /Text Now \(616\) 606-5277/);
+  assert.doesNotMatch(html, /Text Now uses/);
+  assert.doesNotMatch(html, /parts fly/i);
+  assert.doesNotMatch(html, /Square booking, or Text Now/);
+  assert.doesNotMatch(html, /Prefer a person first/);
+  assert.doesNotMatch(html, /in this browser/);
+  assert.doesNotMatch(html, /We do not invent testimonials/);
+  assert.doesNotMatch(html, /Get mobile RV repair/);
+  assert.doesNotMatch(html, /before he rolls/);
   assert.doesNotMatch(html, /data-square-embed="pending"/);
   assert.doesNotMatch(html, /SQUARE_APPOINTMENTS_EMBED_SRC/);
   assert.doesNotMatch(html, /Same convert pattern/);

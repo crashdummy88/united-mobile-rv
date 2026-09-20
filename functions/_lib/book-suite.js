@@ -145,13 +145,13 @@ function embedPanel({ env, request }) {
   return `<div class="square-embed-wrap" data-square-embed="${overridden ? 'live' : 'square-site'}" data-square-appointment-id="${esc(SQUARE_APPOINTMENT_ID)}" data-square-merchant-id="${esc(SQUARE_MERCHANT_ID)}">
       <iframe class="square-appointments-frame" src="${esc(src)}" title="Request an appointment with United Mobile RV" loading="eager" referrerpolicy="no-referrer-when-downgrade"></iframe>
       <div class="square-embed-fallback" data-square-fallback hidden>
-        <p>Square blocked the in-page panel in this browser. Continue the same appointment request on Square Online, or Text Now.</p>
+        <p>The Square panel could not be displayed here. Continue the same service request on Square Online, or Text Now to reach Matt directly.</p>
         <div class="book-cta-row">
           <a class="btn btn-gold" href="${esc(SQUARE_BOOK_URL)}" target="_blank" rel="noopener">Continue on Square</a>
           <a class="btn btn-ghost" href="${TEXT_NOW_HREF}">${TEXT_NOW_LABEL}</a>
         </div>
       </div>
-      <p class="muted square-embed-note">Secure checkout is processed by Square. Prefer a person first? Text Now or call — same number.</p>
+      <p class="muted square-embed-note">Payment is processed securely by Square. To reach the technician first, Text Now or call — same number.</p>
       <p class="muted">${squareFallbackLink('Open Square in a new tab')}</p>
     </div>`;
 }
@@ -167,7 +167,7 @@ function suiteMain({ bookHost, env, request }) {
     <span class="eyebrow">Now booking — MT · WY · ID · WA corridor</span>
     <span class="micro">Mobile RV, van &amp; trailer repair</span>
     <h1>Request a service call</h1>
-    <p class="lead">Tell us what is going on and where the rig sits. Matt reviews every request personally and confirms trip fee and price before he rolls. No shop drop-off. No tow bill.</p>
+    <p class="lead">Tell us what is going on and where you are located. Matt reviews every request personally and confirms the trip fee and diagnostic before he arrives. Service is at your campsite, driveway, or storage yard — no shop drop-off.</p>
   </div>
 </section>
 <section class="trust-strip" aria-label="Trust">
@@ -194,19 +194,18 @@ function suiteMain({ bookHost, env, request }) {
   <div class="wrap book-hybrid">
     <div class="book-hybrid-copy">
       <span class="micro">Book on this page</span>
-      <h2>Square booking, or Text Now</h2>
-      <p>Use the Square panel to request the visit. Prefer to reach the technician first? Text Now or call — you will reach Matt directly.</p>
+      <h2>Request the visit</h2>
+      <p>Submit a service request in the Square panel. Rather call or text? You will reach Matt directly.</p>
       <div class="book-cta-row">
         <a class="btn btn-ghost" href="${CALL_HREF}">${CALL_LABEL}</a>
         <a class="btn btn-gold" href="${TEXT_NOW_HREF}">${TEXT_NOW_LABEL}</a>
       </div>
-      <p class="muted" style="margin-top:20px">Text Now uses <a href="${TEXT_NOW_HREF}">sms:+16166065277</a>. Call uses <a href="${CALL_HREF}">tel:+16166065277</a>.</p>
-      <h3 style="margin-top:28px">Have this ready</h3>
+      <h3 style="margin-top:28px">What to include</h3>
       <ul class="book-ready-list">
-        <li>City / ZIP and where the rig sits (campsite, driveway, storage yard)</li>
+        <li>City or ZIP, and where the coach is located (campsite, driveway, or storage yard)</li>
         <li>Year, make, and model</li>
-        <li>The symptom — when it started, any codes, what already failed</li>
-        <li>Preferred window if you have one (this is a request until Matt confirms)</li>
+        <li>The symptom — when it started, any codes, and what has already been tried</li>
+        <li>A preferred window, if you have one. This is a request until Matt confirms the appointment.</li>
       </ul>
     </div>
     <div class="book-hybrid-embed" id="square-booking">
@@ -214,15 +213,15 @@ function suiteMain({ bookHost, env, request }) {
     </div>
   </div>
 </section>
-<section class="band band-tight photo-band" aria-label="Real driveway jobs">
+<section class="band band-tight photo-band" aria-label="On-site service">
   <div class="wrap">
     <span class="micro">On site</span>
-    <h2>Real jobs. Real rigs.</h2>
-    <p class="lead">Driveway work on real coaches — we come to you.</p>
+    <h2>Work completed at the coach</h2>
+    <p class="lead">Electrical and power service at the campsite, driveway, or storage yard.</p>
     <div class="photo-grid">
       <figure class="photo-card photo-card-wide">
         <img src="/assets/photos/jobs/img_3286-1200.webp" alt="Finished RV power install — inverter, battery distribution, and house battery strapped in place." loading="lazy" width="1600" height="1200">
-        <figcaption class="photo-cap">Power install finished at the coach</figcaption>
+        <figcaption class="photo-cap">Completed power install at the coach</figcaption>
       </figure>
       <figure class="photo-card">
         <img src="/assets/photos/jobs/img_3018-1200.webp" alt="Tiffin Allegro Open Road motorhome on a residential driveway with tools beside an open service bay." loading="lazy" width="1600" height="1200">
@@ -230,7 +229,7 @@ function suiteMain({ bookHost, env, request }) {
       </figure>
       <figure class="photo-card">
         <img src="/assets/photos/jobs/img_2937-1200.webp" alt="Open RV electrical bay with fuse blocks and a meter during diagnostics." loading="lazy" width="1600" height="1200">
-        <figcaption class="photo-cap">Testing house power before parts fly</figcaption>
+        <figcaption class="photo-cap">House-power diagnostics before parts are ordered</figcaption>
       </figure>
     </div>
   </div>
@@ -239,7 +238,7 @@ function suiteMain({ bookHost, env, request }) {
   <div class="wrap">
     <span class="micro">Services</span>
     <h2>What we fix — at your location</h2>
-    <p class="lead">No shop drop-off. Root-cause diagnosis before parts. Electrical, power, connectivity, appliances, plumbing, roof, generator, propane, and seasonal work on site.</p>
+    <p class="lead">Diagnostic-first mobile repair: electrical, power systems, connectivity, appliances, plumbing, roof, generator, propane, and seasonal work — at your location. No shop drop-off.</p>
     <div class="grid-3 mt-8">
       <article class="offer-card">
         <span class="micro offer-num">01 / Diagnostics</span>
@@ -278,12 +277,12 @@ function suiteMain({ bookHost, env, request }) {
       <div>
         <span class="step-num">01</span>
         <h3>Request the visit</h3>
-        <p>Book in the Square panel or Text Now with City/ZIP, the rig, and the symptom. This is a request until Matt confirms the window.</p>
+        <p>Use the Square panel or Text Now. Include city or ZIP, the coach, and the symptom. This is a request until Matt confirms the appointment.</p>
       </div>
       <div>
         <span class="step-num">02</span>
         <h3>We confirm scope</h3>
-        <p>Trip fee quoted before we roll. Diagnostic-first — we do not guess a total before we see the system.</p>
+        <p>The trip fee is quoted before travel. Diagnosis comes first — we do not quote a repair total before we inspect the system.</p>
       </div>
       <div>
         <span class="step-num">03</span>
@@ -303,7 +302,7 @@ function suiteMain({ bookHost, env, request }) {
     <div>
       <span class="micro">Reviews</span>
       <h2><span class="stars">★★★★★</span><br>13 five-star Google reviews</h2>
-      <p>Real owners. Real repairs at their location. Also listed on Yelp. We do not invent testimonials.</p>
+      <p>Reviews from owners we served at their location. Also listed on Yelp.</p>
     </div>
   </div>
   <div class="wrap" style="margin-top:36px">
@@ -357,8 +356,8 @@ function suiteMain({ bookHost, env, request }) {
 <section class="band band-light">
   <div class="wrap">
     <span class="micro">Published rates</span>
-    <h2>Transparent pricing. No surprises.</h2>
-    <p>Same figures as the public rate sheet. Confirmed with you before we arrive.</p>
+    <h2>Published rates</h2>
+    <p>The same figures as the public rate sheet. Confirmed with you before we arrive.</p>
     <div class="grid-3 mt-8">
       <div class="price-card">
         <span class="micro">Labor rate</span>
@@ -400,19 +399,19 @@ function suiteMain({ bookHost, env, request }) {
   <div class="wrap wrap-narrow">
     <span class="micro">FAQ</span>
     <h2>Straight answers</h2>
-    <div class="faq-item"><h3>What does a service call cost?</h3><p>$75 within 30 miles, then $1.50 per mile each way. Labor is about $150/hr. Diagnostic is $175 and applied toward repair if you proceed.</p></div>
+    <div class="faq-item"><h3>What does a service call cost?</h3><p>$75 within 30 miles, then $1.50 per mile each way. Labor is $150 per hour. The diagnostic is $175 and applies toward the repair if you proceed.</p></div>
     <div class="faq-item"><h3>Do you have a shop I drop off at?</h3><p>No. We come to your campsite, driveway, or storage yard.</p></div>
-    <div class="faq-item"><h3>Who will be on site?</h3><p>Owner-technician on site.</p></div>
+    <div class="faq-item"><h3>Who will be on site?</h3><p>The owner-technician is on site for every visit.</p></div>
     <div class="faq-item"><h3>What credentials do you hold?</h3><p>Victron Professional Certified Installer · weBoost Authorized Installer · Peplink Certified Associate · Dometic Professional Certified. Starlink installs (not a Starlink-certified installer).</p></div>
     <div class="faq-item"><h3>Where do you serve?</h3><p>Active corridors in Montana, Wyoming, Idaho, and Washington — other states case-by-case.</p></div>
-    <div class="faq-item"><h3>How do I book?</h3><p>Use the Square panel on this page, or Text Now / Call (616) 606-5277.</p></div>
+    <div class="faq-item"><h3>How do I book?</h3><p>Use the Square panel on this page, or Text Now or call (616) 606-5277.</p></div>
   </div>
 </section>
 <section class="band" style="border-top:1px solid var(--rule)">
   <div class="wrap">
     <span class="micro">Ready</span>
-    <h2>Get mobile RV repair</h2>
-    <p class="lead">Tell us what is wrong. We quote the trip and diagnostic before we roll.</p>
+    <h2>Schedule the visit</h2>
+    <p class="lead">Submit the Square request or Text Now. We confirm the trip fee and diagnostic before travel.</p>
     <div class="book-cta-row">
       <a class="btn btn-ghost" href="${CALL_HREF}">${CALL_LABEL}</a>
       <a class="btn btn-gold" href="${TEXT_NOW_HREF}">${TEXT_NOW_LABEL}</a>
@@ -465,7 +464,7 @@ export function renderBookSuite(request, env) {
   const bookHost = isBookHost(url.hostname);
   const canonical = bookHost ? `${url.origin}/` : `${url.origin}/book-service/`;
   const title = 'Book a Mobile RV Repair Visit | United Mobile RV';
-  const description = 'Request a mobile RV service call at your campsite, driveway, or storage yard. Text Now (616) 606-5277, or book on this page. Active MT · WY · ID · WA corridor.';
+  const description = 'Request a mobile RV service call at your campsite, driveway, or storage yard. Text Now (616) 606-5277, or use the Square panel on this page. Active MT · WY · ID · WA corridor.';
   const html = pageShell({
     title,
     description,
@@ -502,7 +501,7 @@ export function renderBookThankYou(request) {
   <div class="wrap">
     <span class="micro">Book</span>
     <h1>Request received</h1>
-    <p class="lead">Thanks — we will follow up shortly. Need something sooner? Text Now ${BOOK_PHONE_DISPLAY}.</p>
+    <p class="lead">We received your request and will follow up shortly. For something sooner, Text Now ${BOOK_PHONE_DISPLAY}.</p>
   </div>
 </section>
 <section class="band"><div class="wrap"><div class="btn-row">
