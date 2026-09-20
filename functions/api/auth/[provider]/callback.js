@@ -1,6 +1,6 @@
 import { getProviderConfig } from '../../../_lib/oauth.js';
 import { createCentralSessionCookie, randomId } from '../../../_lib/session.js';
-import { createSsoCookie } from '../../../_lib/sso.js';
+import { createSsoCookie, postLoginPath } from '../../../_lib/sso.js';
 
 async function upsertUser(db, provider, mapped) {
   const existing = await db
@@ -137,7 +137,7 @@ export async function onRequestGet(context) {
     const centralUserId = await upsertCentralUser(env.PORTAL_DB, env.DB, user.id, provider, mapped);
     const cookie = await createCentralSessionCookie(centralUserId, env, request);
 
-    const headers = new Headers({ Location: '/forum/' });
+    const headers = new Headers({ Location: postLoginPath(url.hostname) });
     headers.append('Set-Cookie', cookie);
     headers.append('Set-Cookie', 'umrt_oauth_state=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0');
 

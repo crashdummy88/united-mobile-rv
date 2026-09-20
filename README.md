@@ -11,6 +11,8 @@ Private staging site. Separate from unitedmobilerv.com WordPress.
 
 - **AI chat** (`functions/api/chat.js` → `POST /api/chat`): set Production env `OPENAI_API_KEY` (or `ANTHROPIC_API_KEY`). After saving secrets, **Redeploy** the project so Functions bind the new vars. Until then `/api/chat` returns `mode: "local"`.
 - **Book form** (`functions/api/book.js` → `POST /api/book`): set Production env `PUBLIC_WEB3FORMS_KEY`. Static HTML cannot read Pages env — the client posts to `/api/book`, which proxies to Web3Forms. Optional: inline a real public key in `window.PUBLIC_WEB3FORMS_KEY` as a client-side fallback.
+- **Book host Square embed** (`book.unitedmobilerv.com/` via `functions/_lib/book-suite.js`): optional Pages env `SQUARE_EMBED_URL` (https Square-land appointment / widget URL) for the on-page iframe. Falls back to `SQUARE_BOOKING_URL`, then `https://united-mobile-rv-llc.square.site/`. Non-Square pastes are rejected. `/s/appointments` exists but the live widget has errored — do not default there. Booking still processes via Square; the land host stays `book.*`.
+- **Shared Google SSO**: book. and shop. allow `/api/auth/`, `/api/me`, `/api/logout` (same mothership Google login as forum). Add `https://book.unitedmobilerv.com/api/auth/google/callback` (and the shop callback if used) to the Google OAuth client's authorized redirect URIs.
 - Never paste secrets into chat or commit them.
 
 ## Canon

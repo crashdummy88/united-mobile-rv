@@ -54,14 +54,16 @@ const ROBOTS_HEADER_EXEMPT = ['/sitemap.xml', '/robots.txt'];
 // /shop/ by the HOST_HOME_REDIRECTS logic below/in functions/index.js, so
 // it just falls through to that unchanged.
 const SHOP_HOST = 'shop.unitedmobilerv.com';
-const SHOP_ALLOWED_EXACT = ['/', '/favicon.png', '/robots.txt', '/sitemap.xml'];
+const SHOP_ALLOWED_EXACT = ['/', '/favicon.png', '/robots.txt', '/sitemap.xml', '/api/me', '/api/logout'];
 // /book-service/ added 2026-09-15: the shop's own hero copy already links
 // to it ("Tell us the problem" -> Matt specs it for you) as a deliberate
 // browse-to-conversion path, same as the header's Book button -- it was
 // being caught by this same lockdown and silently bouncing back to /shop/,
 // which is a bug, not the "don't let people wander off" behavior this
 // gate exists for.
-const SHOP_ALLOWED_PREFIXES = ['/shop/', '/api/shop/', '/book-service/', '/api/book', '/css/', '/js/', '/assets/', '/fonts/'];
+// /api/auth/ + /api/me + /api/logout: shared Google SSO with book.
+// Same mothership OAuth as forum; Domain=.unitedmobilerv.com cookies.
+const SHOP_ALLOWED_PREFIXES = ['/shop/', '/api/shop/', '/book-service/', '/api/book', '/api/auth/', '/css/', '/js/', '/assets/', '/fonts/'];
 
 function isShopAllowed(path) {
   if (SHOP_ALLOWED_EXACT.includes(path)) return true;
@@ -78,10 +80,11 @@ function isShopAllowed(path) {
 // stays -- it is a booking page, not a marketing page.
 const BOOK_HOST = 'book.unitedmobilerv.com';
 const BOOK_SUITE_HOME = '/';
-const BOOK_ALLOWED_EXACT = ['/', '/favicon.png', '/robots.txt'];
+const BOOK_ALLOWED_EXACT = ['/', '/favicon.png', '/robots.txt', '/api/me', '/api/logout'];
 const BOOK_ALLOWED_PREFIXES = [
   '/book-service/thank-you/',
   '/api/book',
+  '/api/auth/',
   '/css/',
   '/js/',
   '/assets/',
