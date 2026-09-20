@@ -1,25 +1,25 @@
 User-agent: *
 Allow: /
 
-# Brand SEO 2026-09-10: mothership pages.dev is noindex via X-Robots-Tag
-# (live convert lives on unitedmobilerv.com). Soft CTAs still crawlable with follow.
-# Exception: /forum/ and /forum-live/ are indexable (see _headers) — real Q&A
-# content is meant to rank and be cited by AI answer engines.
+# Matt lock 2026-09-20: search AND AI may crawl the full shop/forum/book
+# surface. Named AI user-agents must each say Allow: / — a more-specific
+# record overrides * (the old /forum/-only allowlist blocked the rest).
+# No Disallow. Indexing headers stay in functions/_middleware.js.
 
 User-agent: GPTBot
-Allow: /forum/
-Allow: /forum-live/
+Allow: /
 
 User-agent: ClaudeBot
-Allow: /forum/
-Allow: /forum-live/
-
-User-agent: PerplexityBot
-Allow: /forum/
-Allow: /forum-live/
+Allow: /
 
 User-agent: Google-Extended
-Allow: /forum/
-Allow: /forum-live/
+Allow: /
 
-Sitemap: https://united-mobile-rv.pages.dev/sitemap.xml
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+Sitemap: https://shop.unitedmobilerv.com/sitemap.xml
+Sitemap: https://forum.unitedmobilerv.com/sitemap.xml
