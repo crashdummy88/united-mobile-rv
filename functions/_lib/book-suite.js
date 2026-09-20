@@ -6,8 +6,9 @@
  *   - /book-service/ on every other host (functions/book-service/index.js)
  *
  * Shared ecosystem chrome (mesh-chrome) so book. matches forum/shop.
- * Canonical/og:url use the request host. book. stays noindex until Matt
- * says otherwise. Text Now is sms:+16166065277; number is tel:.
+ * Canonical/og:url use the request host. Matt SEO lock 2026-09-20:
+ * book. is INDEX (HTML meta robots + X-Robots-Tag). Text Now is
+ * sms:+16166065277; number is tel:.
  * Matt HARD LOCK 2026-09-20: chrome Book is STRAIGHT to Square
  * (BOOK_PUBLIC_HREF). NEVER book.unitedmobilerv.com in islandHeader /
  * footer / mobile-bar. book. is the suite host, not the Book href.
@@ -147,7 +148,7 @@ export function renderBookSuite(request) {
     description,
     canonical,
     bookHost,
-    robotsMeta: bookHost ? 'noindex, follow' : '',
+    robotsMeta: bookHost ? 'index, follow' : '',
     mainHtml: suiteMain({ bookHost }),
     extraFooter: `<div class="wrap footer-proof" aria-label="Real job photos">
     <div class="footer-brand-row">
@@ -192,7 +193,7 @@ export function renderBookThankYou(request) {
     description,
     canonical,
     bookHost,
-    robotsMeta: bookHost ? 'noindex, follow' : '',
+    robotsMeta: bookHost ? 'index, follow' : '',
     mainHtml,
   });
   return htmlResponse(html);

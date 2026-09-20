@@ -183,14 +183,14 @@ test('sitemap-network mothership entries are live custom hosts, not pages.dev', 
   assert.doesNotMatch(src, /united-mobile-rv\.pages\.dev\/sitemap\.xml/);
 });
 
-test('middleware X-Robots-Tag noindex on book / is unchanged', async () => {
+test('middleware X-Robots-Tag indexes book / (Matt SEO lock 2026-09-20)', async () => {
   const next = async () => new Response('ok', { status: 200 });
   const res = await middleware({
     request: new Request('https://book.unitedmobilerv.com/'),
     env: { SESSION_SECRET: 'test-session-secret', DB: {}, PORTAL_DB: {} },
     next,
   });
-  assert.equal(res.headers.get('X-Robots-Tag'), 'noindex, follow');
+  assert.equal(res.headers.get('X-Robots-Tag'), 'index, follow');
 });
 
 await run();
