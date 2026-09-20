@@ -155,6 +155,7 @@ test('shop + forum templates include mesh-chrome (or static mesh + Square)', () 
   assert.match(forum.match(/<header[\s\S]*?<\/header>/)[0], /umrt-icon\.webp/);
   assert.doesNotMatch(forum.match(/<header[\s\S]*?<\/header>/)[0], /umrt-logo\.webp/);
   assert.doesNotMatch(forum, />MAIN HUB</);
+  assert.doesNotMatch(forum, />Main Hub</);
   assert.doesNotMatch(forum, /status\.unitedmobilerv\.com/);
   assert.doesNotMatch(forum, /portal\.unitedmobilerv\.com/);
   assert.doesNotMatch(forum, FORBIDDEN);
@@ -290,6 +291,7 @@ test('mothership home + platform-bar convert stack: Text Now sms + tel + Square'
     assert.match(html, /Call \(616\) 606-5277/, file);
     assert.match(html, />Home</, file);
     assert.doesNotMatch(html, />MAIN HUB</, file);
+    assert.doesNotMatch(html, />Main Hub</, file);
     assert.doesNotMatch(html, /status\.unitedmobilerv\.com/, file);
     assert.doesNotMatch(html, /portal\.unitedmobilerv\.com/, file);
     assert.doesNotMatch(html, FORBIDDEN, file);
@@ -321,6 +323,47 @@ test('shop/forum/book Text Now anchors use sms:, not tel:', () => {
     assert.doesNotMatch(html, textNowTel, file);
     assert.doesNotMatch(html, textNowThenTel, file);
   }
+});
+
+test('every shop/forum/book chrome file says Home, never MAIN HUB / Main Hub, no Portal/Status', () => {
+  const files = [
+    'functions/_lib/mesh-chrome.js',
+    'functions/_lib/book-suite.js',
+    'js/site.js',
+    'forum/index.html',
+    'book-service/index.html',
+    'book-service/thank-you/index.html',
+    'index.html',
+    'design/platform-bar.html',
+    'functions/shop/index.js',
+    'functions/shop/p/[id].js',
+    'functions/shop/cart.js',
+    'functions/forum/t/[id].js',
+    'functions/forum/member/[id].js',
+  ];
+  const visibleHub = />\s*MAIN[\s_-]*HUB\s*</i;
+  const visibleMainHub = />\s*Main Hub\s*</;
+  for (const file of files) {
+    const html = src(file);
+    assert.doesNotMatch(html, visibleHub, file);
+    assert.doesNotMatch(html, visibleMainHub, file);
+    if (file !== 'js/site.js') {
+      assert.doesNotMatch(html, /status\.unitedmobilerv\.com/, file);
+      assert.doesNotMatch(html, /portal\.unitedmobilerv\.com/, file);
+    }
+    if (/\.html$/.test(file) || file.includes('mesh-chrome') || file === 'js/site.js') {
+      assert.match(html, /https:\/\/unitedmobilerv\.com\//, file);
+    }
+    if (file.includes('book-suite')) {
+      assert.match(html, /MAIN_HOME_HREF/, file);
+      assert.match(html, /MAIN_HOME_LABEL/, file);
+    }
+  }
+  assert.equal(MAIN_HOME_LABEL, 'Home');
+  assert.equal(MAIN_HOME_HREF, 'https://unitedmobilerv.com/');
+  assert.match(src('forum/index.html'), /site\.js\?v=20260920icon/);
+  assert.match(src('functions/shop/index.js'), /site\.js\?v=20260920icon/);
+  assert.match(src('functions/_lib/book-suite.js'), /site\.js\?v=20260920icon/);
 });
 
 await run();

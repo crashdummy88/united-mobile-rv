@@ -9,12 +9,14 @@
  * on the WP apex, not in shop/forum/book product chrome.
  *
  * Matt LOCK 2026-09-20 product nav (shop / forum / book), Shop-first:
- *   Home return → https://unitedmobilerv.com/  (label Home, not MAIN HUB)
+ *   Home return → https://unitedmobilerv.com/  (label Home, never MAIN HUB / Main Hub)
+ *   Every CF island (shop. / forum. / book.) stamps that same Home door.
  *   1 Shop · 2 Book (Square) · 3 Forum · 4 Software · 5 Docs
  *   Not Book-first. Do not add portal, status, or guide-library items.
  *   Island header is logo-only — no "United Mobile RV" corner title.
  *   Use umrt-icon.webp (car + gear, no lettering). umrt-logo.webp still
  *   has UNITED MOBILE RV in the artwork and must not sit in this bar.
+ *   Do not rewrite WordPress brand / theme chrome.
  *
  * Matt LOCK 2026-09-16 convert stack (header + mobile bar, every surface):
  *   Call (616) 606-5277 → tel:+16166065277 (older clients; number is the call control)
