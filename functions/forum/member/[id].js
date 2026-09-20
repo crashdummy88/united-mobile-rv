@@ -1,4 +1,4 @@
-import { islandHeader, islandFooter, islandMobileBar } from '../../_lib/mesh-chrome.js';
+import { islandHeader, islandFooter, islandMobileBar, clarityHeadSnippet } from '../../_lib/mesh-chrome.js';
 import { publicThreadSql } from '../../_lib/forum-growth.js';
 
 /**
@@ -63,6 +63,7 @@ export async function onRequestGet(context) {
 <meta name="robots" content="index,follow">
 <link rel="icon" href="/favicon.png" type="image/png">
 <link rel="stylesheet" href="/css/site.css?v=20260920home">
+${clarityHeadSnippet()}
 </head>
 <body class="island-chrome">
 ${islandHeader({ current: 'forum' })}

@@ -1,4 +1,5 @@
 import { resolveCentralIdentity } from './_lib/central-identity.js';
+import { injectClarityOnce } from './_lib/clarity.js';
 
 /**
  * Sets X-Robots-Tag exactly once per response, path-aware.
@@ -149,7 +150,20 @@ export async function onRequest(context) {
   headers.delete('X-Robots-Tag');
   headers.set('X-Robots-Tag', indexable ? 'index, follow' : 'noindex, follow');
 
-  return new Response(response.body, {
+  const contentType = headers.get('Content-Type') || '';
+  if (!contentType.includes('text/html')) {
+    return new Response(response.body, {
+      status: response.status,
+      statusText: response.statusText,
+      headers,
+    });
+  }
+
+  // Site-wide Clarity: inject before </head> once. Island templates
+  // already include the snippet; this covers static HTML that does not.
+  headers.delete('Content-Length');
+  const html = await response.text();
+  return new Response(injectClarityOnce(html), {
     status: response.status,
     statusText: response.statusText,
     headers,
