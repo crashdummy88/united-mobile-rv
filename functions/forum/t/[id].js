@@ -1,4 +1,4 @@
-import { islandHeader, islandFooter, islandMobileBar } from '../../_lib/mesh-chrome.js';
+import { islandHeader, islandFooter, islandMobileBar, clarityHeadSnippet } from '../../_lib/mesh-chrome.js';
 import { isPubliclyListedThread, isSeedOrPinSpamId } from '../../_lib/forum-growth.js';
 import { escForumText, renderForumBodyHtml } from '../../_lib/forum-body.js';
 
@@ -167,6 +167,7 @@ export async function onRequestGet(context) {
   .diag-prompt ul{margin:8px 0 0;padding-left:20px}
   .btn-sm{padding:6px 12px;font-size:0.85em}
 </style>
+${clarityHeadSnippet()}
 </head>
 <body class="island-chrome">
 <a class="skip-link" href="#main">Skip to content</a>

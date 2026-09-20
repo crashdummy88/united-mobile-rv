@@ -4,7 +4,7 @@
  * the "Product + Service" model) instead of a live checkout charge.
  */
 import { formatPrice, priceNote, displayName, CATEGORY_ICONS, stockStatusMeta } from '../../_lib/shop.js';
-import { islandHeader, islandFooter, islandMobileBar, shopCartNavItem } from '../../_lib/mesh-chrome.js';
+import { islandHeader, islandFooter, islandMobileBar, shopCartNavItem, clarityHeadSnippet } from '../../_lib/mesh-chrome.js';
 import { quoteFirstSection, shopQuoteNeedsSection } from '../../_lib/island-substance.js';
 
 function esc(s) {
@@ -64,6 +64,7 @@ export async function onRequestGet(context) {
 <link rel="stylesheet" href="/css/site.css?v=20260920home">
 <link rel="stylesheet" href="/css/shop.css">
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+${clarityHeadSnippet()}
 </head>
 <body class="island-chrome">
 ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem(), extraAfterKey: 'shop' })}

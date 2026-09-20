@@ -141,3 +141,9 @@ export function islandMobileBar() {
 export function shopCartNavItem() {
   return `<li><a href="/shop/cart">Cart <span class="cart-badge-count" hidden></span></a></li>`;
 }
+
+export {
+  CLARITY_PROJECT_ID,
+  clarityHeadSnippet,
+} from './clarity.js';
+

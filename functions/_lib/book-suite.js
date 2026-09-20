@@ -17,6 +17,7 @@ import {
   islandHeader,
   islandMobileBar,
   meshFooterAnchors,
+  clarityHeadSnippet,
   TEXT_NOW_HREF,
   TEXT_NOW_LABEL,
   CALL_HREF,
@@ -116,6 +117,7 @@ ${robots}<meta name="theme-color" content="#1A1A1A">
 <meta property="og:url" content="${esc(canonical)}">
 <link rel="stylesheet" href="/css/site.css?v=20260920booksq">
 <style>${SUITE_CSS}</style>
+${clarityHeadSnippet()}
 </head>
 <body class="book-suite">
 <a class="skip-link" href="#main">Skip to content</a>
