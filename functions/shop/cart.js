@@ -1,4 +1,5 @@
 import { islandHeader, islandFooter, islandMobileBar, shopCartNavItem } from '../_lib/mesh-chrome.js';
+import { quoteFirstSection, shopQuoteNeedsSection } from '../_lib/island-substance.js';
 
 /**
  * GET /shop/cart -- skeleton cart page.
@@ -22,17 +23,17 @@ export async function onRequestGet(context) {
 <link rel="canonical" href="${base}/shop/cart">
 <meta name="robots" content="noindex,follow">
 <link rel="icon" href="/favicon.png" type="image/png">
-<link rel="stylesheet" href="/css/site.css">
+<link rel="stylesheet" href="/css/site.css?v=20260920home">
 <link rel="stylesheet" href="/css/shop.css">
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
-<body>
-${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem() })}
+<body class="island-chrome">
+${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem(), extraAfterKey: 'shop' })}
 <main id="main">
 <section class="page-hero">
   <div class="wrap wrap-narrow">
-    <h1>Your Cart</h1>
-    <p class="muted">Gather what you need, then request one combined quote. Nothing here is a live checkout -- our team follows up with real pricing and availability.</p>
+    <h1>Your cart</h1>
+    <p class="lead">Review the items you selected, then request a single quote. This is not a live checkout. We follow up with confirmed pricing, availability, and how to arrange payment.</p>
   </div>
 </section>
 <section class="shop-cart-band">
@@ -40,15 +41,17 @@ ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem() })}
     <div id="cart-items"><p class="cart-empty">Loading your cart&hellip;</p></div>
     <div id="cart-total-wrap" hidden>
       <div class="cart-total">Reference subtotal: $<span id="cart-total">0</span></div>
-      <p id="cart-total-note" class="muted" hidden>Plus one or more items priced on request -- your real quote will include those once we follow up.</p>
+      <p id="cart-total-note" class="muted" hidden>Plus one or more items priced on request. The confirmed quote will include those once we follow up.</p>
     </div>
   </div>
 </section>
+${quoteFirstSection({ variant: 'cart' })}
+${shopQuoteNeedsSection()}
 <section class="shop-checkout-band" id="quote" hidden>
   <div class="wrap wrap-narrow" id="quote-wrap">
     <div class="shop-checkout-panel">
     <h2>Request a quote for this cart</h2>
-    <p class="muted">One combined quote request covering every item above. Prefer to talk it through? Call or text (616) 606-5277.</p>
+    <p class="muted">One combined quote covering every item above. Prefer to talk it through? Call or text (616) 606-5277.</p>
     <form id="quote-form">
       <label class="service-tier"><input type="radio" name="service_option" value="hardware_only" checked><span class="service-tier-text"><strong>Hardware only</strong><small>Ships to you, you install.</small></span></label>
       <label class="service-tier"><input type="radio" name="service_option" value="hardware_plus_config"><span class="service-tier-text"><strong>Hardware + remote configuration</strong><small>We configure it with you remotely.</small></span></label>
@@ -62,8 +65,8 @@ ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem() })}
         <div class="qf-field"><label class="qf-label" for="qf-location">City / State</label><input class="forum-input" id="qf-location" placeholder="Missoula, MT" maxlength="160"></div>
       </div>
       <div class="qf-field"><label class="qf-label" for="qf-rig">RV year / make / model</label><input class="forum-input" id="qf-rig" placeholder="2021 Forest River Cherokee" maxlength="160"></div>
-      <div class="qf-field"><label class="qf-label" for="qf-notes">Anything else we should know?</label><textarea class="forum-input" id="qf-notes" rows="3" maxlength="1500"></textarea></div>
-      <div class="btn-row"><button type="submit" class="btn btn-gold" id="qf-submit">Request Quote</button></div>
+      <div class="qf-field"><label class="qf-label" for="qf-notes">Notes for the quote</label><textarea class="forum-input" id="qf-notes" rows="3" maxlength="1500"></textarea></div>
+      <div class="btn-row"><button type="submit" class="btn btn-gold" id="qf-submit">Request a quote</button></div>
       <p class="held-note" id="qf-status"></p>
       <div id="qf-turnstile"></div>
     </form>
@@ -74,7 +77,7 @@ ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem() })}
 ${islandFooter({ current: 'shop' })}
 ${islandMobileBar()}
 <script src="/js/cart.js"></script>
-<script src="/js/site.js?v=20260918nav" defer></script>
+<script src="/js/site.js?v=20260920booksq" defer></script>
 <script>
 (function () {
   var qfTurnstileWidgetId = null;
@@ -184,7 +187,7 @@ ${islandMobileBar()}
     loadedProducts = {};
 
     if (!ids.length) {
-      itemsEl.innerHTML = '<p class="cart-empty">Your cart is empty. <a href="/shop/">Browse the shop</a>.</p>';
+      itemsEl.innerHTML = '<p class="cart-empty">Your cart is empty. <a href="/shop/">Browse the shop</a> and add the equipment you want quoted.</p>';
       totalWrap.hidden = true;
       quoteSection.hidden = true;
       return;
@@ -217,7 +220,7 @@ ${islandMobileBar()}
     }
 
     if (!anyLoaded) {
-      itemsEl.innerHTML = '<p class="cart-empty">Your cart is empty. <a href="/shop/">Browse the shop</a>.</p>';
+      itemsEl.innerHTML = '<p class="cart-empty">Your cart is empty. <a href="/shop/">Browse the shop</a> and add the equipment you want quoted.</p>';
       totalWrap.hidden = true;
       quoteSection.hidden = true;
       return;
@@ -262,7 +265,7 @@ ${islandMobileBar()}
     });
     var data = await res.json().catch(function () { return {}; });
     submitBtn.disabled = false;
-    if (!data.success) { status.textContent = data.message || 'Could not submit -- please text/call (616) 606-5277 instead.'; return; }
+    if (!data.success) { status.textContent = data.message || 'We could not submit the request. Please call or text (616) 606-5277.'; return; }
     status.textContent = data.message;
     window.UMRTCart.clearCart();
     document.getElementById('quote-form').reset();

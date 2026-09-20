@@ -94,10 +94,14 @@ test('markup is a quiet Guide text link, not a button, and drops unknown slugs',
 });
 
 test('shared mesh chrome does not include Field guides; Book stays Square', () => {
+  assert.deepEqual(MESH_LINKS.map((l) => l.label), ['Home', 'Shop', 'Book', 'Forum', 'Software', 'Docs']);
+  assert.ok(MESH_LINKS.findIndex((l) => l.label === 'Shop') < MESH_LINKS.findIndex((l) => l.label === 'Book'));
   assert.equal(MESH_LINKS.find((l) => l.key === 'guides'), undefined);
-  assert.ok(!MESH_LINKS.some((l) => /guide/i.test(l.label) || /guide/i.test(l.key)));
+  assert.ok(!MESH_LINKS.some((l) => /guide|portal|status/i.test(l.label) || /guide|portal|status/i.test(l.key)));
   const book = src('functions/_lib/mesh-chrome.js');
   assert.match(book, /BOOK_PUBLIC_HREF = SQUARE_BOOK_URL/);
+  assert.equal(MESH_LINKS.find((l) => l.key === 'book').href, 'https://united-mobile-rv-llc.square.site/');
+  assert.doesNotMatch(MESH_LINKS.find((l) => l.key === 'book').href, /book\.unitedmobilerv\.com/);
   assert.doesNotMatch(book, /href="\/guide\//);
   assert.doesNotMatch(book, /GUIDES_HREF/);
   assert.doesNotMatch(book, /label: 'Guides'/);

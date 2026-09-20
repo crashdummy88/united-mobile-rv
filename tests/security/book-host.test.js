@@ -60,7 +60,7 @@ test('middleware: book host /wireless/ and /guide/ 301 to /', async () => {
 
 test('middleware: book host allows suite home, thank-you, assets, /api/book', async () => {
   const { next, calls } = makeNextCapture();
-  const allowed = ['/', '/favicon.png', '/robots.txt', '/book-service/thank-you/', '/api/book', '/css/site.css', '/js/site.js', '/assets/brand/umrt-logo.webp', '/fonts/inter-400.woff2'];
+  const allowed = ['/', '/favicon.png', '/robots.txt', '/book-service/thank-you/', '/api/book', '/css/site.css', '/js/site.js', '/assets/brand/umrt-logo.webp', '/assets/brand/umrt-icon.webp', '/fonts/inter-400.woff2'];
   for (const path of allowed) {
     const res = await middleware({
       request: makeRequest(`https://book.unitedmobilerv.com${path}`),
@@ -106,7 +106,7 @@ test('host home: book. / renders booking suite, not marketing homepage', async (
   const html = await res.text();
   assert.match(html, /<title>Book a Mobile RV Repair Visit \| United Mobile RV<\/title>/);
   assert.doesNotMatch(html, /Mobile RV Repair at Your Location/);
-  assert.match(html, /BOOK ONLINE/);
+  assert.match(html, /Book on Square/);
   assert.match(html, new RegExp(SQUARE_BOOK_URL.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   assert.match(html, new RegExp(`Text Now ${BOOK_PHONE_DISPLAY.replace(/[()]/g, '\\$&')}`));
   assert.match(html, /data-book-suite="book-host"/);
@@ -127,14 +127,21 @@ test('host home: book. / renders booking suite, not marketing homepage', async (
   assert.match(html, /https:\/\/forum\.unitedmobilerv\.com\//);
   assert.match(html, /https:\/\/shop\.unitedmobilerv\.com\//);
   assert.match(html, /https:\/\/software\.unitedmobilerv\.com\//);
+  const chromeBooks = [...html.match(/<header[\s\S]*?<\/header>/)[0].matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/g)]
+    .filter((m) => /^Book$/i.test(m[2].replace(/<[^>]+>/g, '').trim()));
+  assert.ok(chromeBooks.length >= 2);
+  for (const m of chromeBooks) {
+    assert.match(m[1], /href="https:\/\/united-mobile-rv-llc\.square\.site\/"/);
+    assert.doesNotMatch(m[1], /href="https:\/\/book\.unitedmobilerv\.com/);
+  }
   assert.match(html, /sms:\+16166065277/);
   assert.match(html, /tel:\+16166065277/);
   assert.match(html, /nav-phone[^>]+tel:\+16166065277/);
-  assert.match(html, />MAIN HUB</);
+  assert.match(html, />Home</);
   assert.match(html, /href="https:\/\/unitedmobilerv\.com\/"/);
   assert.doesNotMatch(html, /http:\/\/unitedmobilerv\.com/);
-  assert.match(html, /opens Square in a new tab/);
-  assert.match(html, /leaves this site for Square/);
+  assert.match(html, /Booking continues on Square/);
+  assert.match(html, /official intake/);
   assert.doesNotMatch(html, /Prefer Text/);
   assert.doesNotMatch(html, /Text \/ Call/);
 });
@@ -163,13 +170,13 @@ test('/book-service/ on mothership keeps reasonable nav + request-host canonical
   assert.match(html, /data-book-suite="mothership"/);
   assert.match(html, /<link rel="canonical" href="https:\/\/united-mobile-rv\.pages\.dev\/book-service\/">/);
   assert.match(html, /href="\/pricing\/"/);
-  assert.match(html, /BOOK ONLINE/);
+  assert.match(html, /Book on Square/);
   assert.match(html, new RegExp(SQUARE_BOOK_URL.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   assert.doesNotMatch(html, /Mobile RV Repair at Your Location/);
   assert.match(html, /https:\/\/forum\.unitedmobilerv\.com\//);
   assert.match(html, /Text Now \(616\) 606-5277/);
   assert.match(html, /sms:\+16166065277/);
-  assert.match(html, />MAIN HUB</);
+  assert.match(html, />Home</);
   assert.match(html, /href="https:\/\/unitedmobilerv\.com\/"/);
   assert.doesNotMatch(html, /unitedmobilerv\.com\/guide\//);
   assert.doesNotMatch(html, /Field guides/i);
@@ -189,7 +196,7 @@ test('thank-you on book host uses book. canonical and mesh nav (no mothership me
   assert.doesNotMatch(html, /href="\/pricing\/"/);
   assert.match(html, /href="\/"/);
   assert.match(html, /href="https:\/\/unitedmobilerv\.com\/"/);
-  assert.match(html, />MAIN HUB</);
+  assert.match(html, />Home</);
   assert.doesNotMatch(html, /http:\/\/unitedmobilerv\.com/);
   assert.doesNotMatch(html, /unitedmobilerv\.com\/guide\//);
   assert.doesNotMatch(html, /Field guides/i);

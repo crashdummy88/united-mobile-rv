@@ -21,8 +21,8 @@ export function formatPrice(product) {
 
 export function priceNote(product) {
   return hasPrice(product)
-    ? `Public reference price (${product.price_source || 'source on file'}) -- your actual quote may differ once availability and shipping are confirmed.`
-    : 'Custom/premium item -- contact us for current pricing before ordering.';
+    ? `Published reference price (${product.price_source || 'source on file'}). Your quote may differ once availability and shipping are confirmed.`
+    : 'Priced on request. Contact us for current pricing before you order.';
 }
 
 /**
@@ -72,8 +72,8 @@ export function formatServicePrice(service) {
  */
 const STOCK_STATUS = {
   in_stock: { label: 'In Stock', cls: 'ok', note: 'Currently available.' },
-  special_order: { label: 'Special Order', cls: 'warn', note: 'Special order -- lead time confirmed as part of your quote.' },
-  unverified: { label: 'Availability Unverified', cls: 'muted', note: 'Availability not yet confirmed with the supplier for this order -- confirmed as part of your quote.' },
+  special_order: { label: 'Special order', cls: 'warn', note: 'Special order. Lead time is confirmed as part of your quote.' },
+  unverified: { label: 'Availability unverified', cls: 'muted', note: 'Availability is not yet confirmed with the supplier. It is confirmed as part of your quote.' },
   discontinued: { label: 'Discontinued', cls: 'off', note: 'This item is discontinued; shown for reference only.' },
 };
 

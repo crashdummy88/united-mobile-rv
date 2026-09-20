@@ -365,6 +365,15 @@ textarea { min-height: 120px; resize: vertical; }
   display: block;
 }
 .brand-text { line-height: 1.1; }
+/* Shop / forum / book sticky header: logo mark only. Hide leftover
+   "United Mobile RV" brand-text in the corner. WP keeps its wordmark. */
+.brand.brand-mark .brand-text,
+.brand-mark .brand-text,
+body.island-chrome .site-header .brand-text,
+body.book-suite .site-header .brand-text {
+  display: none !important;
+}
+.brand-mark { gap: 0; }
 .cred-logos {
   display: flex;
   flex-wrap: wrap;
@@ -706,6 +715,9 @@ h1, h2 { font-weight: 400; letter-spacing: -0.03em; }
 .brand-logo {
   height: 40px; width: auto; max-width: 48px;
   object-fit: contain; border-radius: 0; background: transparent;
+}
+.brand-mark .brand-logo {
+  height: 40px; width: auto; max-width: 56px;
 }
 .nav-toggle {
   border-radius: 4px; font-size: 18px; line-height: 1;

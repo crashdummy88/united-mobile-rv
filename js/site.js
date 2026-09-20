@@ -54,7 +54,10 @@ function umrtGetTurnstileToken(containerId) {
 }
 
 (function () {
-  /* Matt LOCK: every header + mobile bar is Call / Text Now / Book.
+  /* Matt HARD LOCK 2026-09-20: chrome Book = STRAIGHT to Square.
+     BOOK_PUBLIC / meshItems Book / nav-cta / mobile-bar / platform-bar
+     must be https://united-mobile-rv-llc.square.site/
+     NEVER https://book.unitedmobilerv.com/ in chrome.
      Do not rewrite a Call control onto sms: — older clients use tel:. */
   var BOOK_PUBLIC = 'https://united-mobile-rv-llc.square.site/';
   var TEXT_NOW_HREF = 'sms:+16166065277';
@@ -72,17 +75,69 @@ function umrtGetTurnstileToken(containerId) {
   var mobileBars = document.querySelectorAll('.mobile-bar');
   for (var mi = 0; mi < mobileBars.length; mi++) mobileBars[mi].innerHTML = mobileBarHtml;
 
-  var chromeRoots = document.querySelectorAll('.site-footer, .umrt-platform-bar');
+  function umrtLinkLabel(a) {
+    return (a.textContent || '').replace(/\s+/g, ' ').trim();
+  }
+  function umrtIsRetiredChromeLink(a) {
+    var label = umrtLinkLabel(a);
+    var key = a.getAttribute('data-platform-link') || '';
+    if (/^(portal|status)$/i.test(key)) return true;
+    if (/^(Portal|Status)$/i.test(label)) return true;
+    var href = a.getAttribute('href') || '';
+    try {
+      var host = new URL(href, window.location.origin).hostname;
+      if (host === 'portal.unitedmobilerv.com' || host === 'status.unitedmobilerv.com') return true;
+    } catch (e) {}
+    return false;
+  }
+  function umrtIsForbiddenIslandNav(a) {
+    if (umrtIsRetiredChromeLink(a)) return true;
+    return /^(Field guides|Guides|WP Field Guides)$/i.test(umrtLinkLabel(a)); // retired guide-library labels only
+  }
+  function umrtRemoveChromeLink(a) {
+    var li = a.parentNode && a.parentNode.tagName === 'LI' ? a.parentNode : a;
+    if (li && li.parentNode) li.parentNode.removeChild(li);
+  }
+  /* Matt lock: every island says Home → https://unitedmobilerv.com/
+     not MAIN HUB / Main Hub / main-hub. */
+  function umrtNormalizeLabel(label) {
+    return String(label || '').replace(/\s+/g, ' ').trim();
+  }
+  function umrtIsHubAlias(label) {
+    return /^(main([\s_-]*hub)?)$/i.test(umrtNormalizeLabel(label));
+  }
+  function umrtIsHubLabel(label) {
+    return umrtIsHubAlias(label) || /^home$/i.test(umrtNormalizeLabel(label));
+  }
+  function umrtIsChromeBookLabel(label) {
+    return /^(Book|Book Now|Book a Service|BOOK ONLINE|Book Online|Book service)$/i.test(umrtNormalizeLabel(label));
+  }
+  function umrtStampChromeBook(a) {
+    a.setAttribute('href', BOOK_PUBLIC);
+    a.setAttribute('target', '_blank');
+    a.setAttribute('rel', 'noopener');
+    a.textContent = 'Book';
+  }
+
+  var chromeRoots = document.querySelectorAll('.nav-links, .site-footer, .umrt-platform-bar, .site-header, .mobile-bar');
   for (var ci = 0; ci < chromeRoots.length; ci++) {
     var chromeLinks = chromeRoots[ci].querySelectorAll('a[href]');
     for (var cj = 0; cj < chromeLinks.length; cj++) {
       var chromeA = chromeLinks[cj];
-      var chromeLabel = (chromeA.textContent || '').replace(/\s+/g, ' ').trim();
-      if (/^(Book|Book Now|Book a Service|BOOK ONLINE|Book Online|Book service)$/i.test(chromeLabel)) {
-        chromeA.setAttribute('href', BOOK_PUBLIC);
-        chromeA.setAttribute('target', '_blank');
-        chromeA.setAttribute('rel', 'noopener');
-        chromeA.textContent = 'Book';
+      if (umrtIsRetiredChromeLink(chromeA)) {
+        umrtRemoveChromeLink(chromeA);
+        continue;
+      }
+      var chromeLabel = umrtLinkLabel(chromeA);
+      if (umrtIsHubAlias(chromeLabel)
+        || chromeA.getAttribute('data-platform-link') === 'hub') {
+        chromeA.setAttribute('href', 'https://unitedmobilerv.com/');
+        chromeA.textContent = 'Home';
+        continue;
+      }
+      if (umrtIsChromeBookLabel(chromeLabel)
+        || chromeA.getAttribute('data-platform-link') === 'book') {
+        umrtStampChromeBook(chromeA);
         continue;
       }
       if (/^(Call(\s*\(616\)\s*606[-.\s]?5277)?|\(?616\)?\s*606[-.\s]?5277)$/i.test(chromeLabel)
@@ -142,49 +197,117 @@ function umrtGetTurnstileToken(containerId) {
     ba.setAttribute('rel', 'noopener');
   }
 
-  /* Shop/forum/book islands: relative Home stays on the island. Point
-     MAIN HUB at the HTTPS apex, and append any missing ecosystem links as
-     absolute URLs so shop lockdown cannot swallow them. */
+  /* Shop/forum/book islands: Shop-first product nav — Home + Shop · Book ·
+     Forum · Software · Docs. Not Book-first. Strip retired destinations and guide-library labels. */
   var MAIN_HOME_HREF = 'https://unitedmobilerv.com/';
-  var MAIN_HOME_LABEL = 'MAIN HUB';
+  var MAIN_HOME_LABEL = 'Home';
   var islandHost = location.hostname === 'shop.unitedmobilerv.com'
     || location.hostname === 'forum.unitedmobilerv.com'
     || location.hostname === 'book.unitedmobilerv.com';
-  if (islandHost) {
+  var islandPath = /^\/(shop|forum|book-service)(\/|$)/.test(location.pathname);
+  var islandSurface = islandHost || islandPath;
+  function umrtStripIslandBrandText() {
+    var brands = document.querySelectorAll('.site-header .brand');
+    for (var bi = 0; bi < brands.length; bi++) {
+      var brand = brands[bi];
+      var kids = Array.prototype.slice.call(brand.children);
+      for (var kj = 0; kj < kids.length; kj++) {
+        var kid = kids[kj];
+        if (kid.classList.contains('brand-logo') || kid.tagName === 'IMG') continue;
+        brand.removeChild(kid);
+      }
+    }
+  }
+  var meshItems = [
+    [MAIN_HOME_LABEL, MAIN_HOME_HREF],
+    ['Shop', 'https://shop.unitedmobilerv.com/'],
+    ['Book', BOOK_PUBLIC],
+    ['Forum', 'https://forum.unitedmobilerv.com/'],
+    ['Software', 'https://software.unitedmobilerv.com/'],
+    ['Docs', 'https://docs.unitedmobilerv.com/']
+  ];
+  if (islandSurface) {
     var meshNav = document.querySelector('.nav-links');
     if (meshNav) {
-      var meshItems = [
-        [MAIN_HOME_LABEL, MAIN_HOME_HREF],
-        ['Forum', 'https://forum.unitedmobilerv.com/'],
-        ['Software', 'https://software.unitedmobilerv.com/'],
-        ['Status', 'https://status.unitedmobilerv.com/'],
-        ['Portal', 'https://portal.unitedmobilerv.com/'],
-        ['Shop', 'https://shop.unitedmobilerv.com/'],
-        ['Docs', 'https://docs.unitedmobilerv.com/']
-      ];
+      var leftover = Array.prototype.slice.call(meshNav.children);
+      leftover.forEach(function (li) { meshNav.removeChild(li); });
       var have = {};
-      meshNav.querySelectorAll('a').forEach(function (a) {
-        have[(a.textContent || '').replace(/\s+/g, ' ').trim().toLowerCase()] = a;
+      var extras = [];
+      var cartItems = [];
+      leftover.forEach(function (li) {
+        var a = li.querySelector('a');
+        if (!a) { extras.push(li); return; }
+        if (umrtIsForbiddenIslandNav(a)) return;
+        var name = umrtLinkLabel(a);
+        if (/^Cart\b/i.test(name)) { cartItems.push(li); return; }
+        have[name.toLowerCase()] = li;
+        if (umrtIsHubLabel(name)) {
+          have.home = li;
+          have['main hub'] = li;
+        }
       });
       meshItems.forEach(function (pair) {
         var name = pair[0];
         var href = pair[1];
         var found = have[name.toLowerCase()]
-          || (name === MAIN_HOME_LABEL ? (have['main hub'] || have.main || have.home) : null);
+          || (name === MAIN_HOME_LABEL ? (have.home || have['main hub'] || have.main) : null);
+        var li;
+        var link;
         if (found) {
-          if (name === MAIN_HOME_LABEL) {
-            found.setAttribute('href', href);
-            found.textContent = MAIN_HOME_LABEL;
-          }
-          return;
+          li = found;
+          link = li.querySelector('a');
+          link.setAttribute('href', href);
+          if (name === MAIN_HOME_LABEL) link.textContent = MAIN_HOME_LABEL;
+          else if (name === 'Book') link.textContent = 'Book';
+        } else {
+          li = document.createElement('li');
+          link = document.createElement('a');
+          link.setAttribute('href', href);
+          link.textContent = name;
+          li.appendChild(link);
         }
-        var li = document.createElement('li');
-        var link = document.createElement('a');
-        link.setAttribute('href', href);
-        link.textContent = name;
-        li.appendChild(link);
+        if (name === 'Book') {
+          link.setAttribute('target', '_blank');
+          link.setAttribute('rel', 'noopener');
+        }
         meshNav.appendChild(li);
+        if (name === 'Shop') {
+          cartItems.forEach(function (c) { meshNav.appendChild(c); });
+        }
       });
+      extras.forEach(function (li) { meshNav.appendChild(li); });
+    }
+  }
+  if (islandSurface) {
+    umrtStripIslandBrandText();
+    var leftoverHub = document.querySelectorAll('a[href]');
+    for (var hi = 0; hi < leftoverHub.length; hi++) {
+      var hubA = leftoverHub[hi];
+      if (!umrtIsHubAlias(umrtLinkLabel(hubA)) && hubA.getAttribute('data-platform-link') !== 'hub') continue;
+      hubA.setAttribute('href', MAIN_HOME_HREF);
+      hubA.textContent = MAIN_HOME_LABEL;
+    }
+    var leftoverBook = document.querySelectorAll('.nav-links a[href], .site-footer a[href], .umrt-platform-bar a[href], .site-header a[href], .mobile-bar a[href]');
+    for (var bk = 0; bk < leftoverBook.length; bk++) {
+      var leftoverBookA = leftoverBook[bk];
+      if (!umrtIsChromeBookLabel(umrtLinkLabel(leftoverBookA))
+        && leftoverBookA.getAttribute('data-platform-link') !== 'book') continue;
+      umrtStampChromeBook(leftoverBookA);
+    }
+    var brandLinks = document.querySelectorAll('.site-header .brand');
+    for (var bl = 0; bl < brandLinks.length; bl++) {
+      brandLinks[bl].classList.add('brand-mark');
+      if (!brandLinks[bl].getAttribute('aria-label')) {
+        brandLinks[bl].setAttribute('aria-label', 'Home');
+      }
+    }
+    var brandImgs = document.querySelectorAll('.site-header .brand-logo');
+    for (var bm = 0; bm < brandImgs.length; bm++) {
+      var logoSrc = brandImgs[bm].getAttribute('src') || '';
+      if (/umrt-logo\.(webp|png)(\?|$)/.test(logoSrc)) {
+        brandImgs[bm].setAttribute('src', logoSrc.replace(/umrt-logo\.(webp|png)/, 'umrt-icon.webp'));
+      }
+      brandImgs[bm].setAttribute('alt', '');
     }
   }
 

@@ -8,9 +8,9 @@
     if (!hero) return;
     var cta = document.createElement('div');
     cta.className = 'ask-tech-cta';
-    cta.innerHTML = '<h3>\uD83D\uDD27 Got an RV problem right now?</h3>' +
-      '<p>Post it in Repair &amp; Diagnostics and get a real answer from a certified tech — or text direct.</p>' +
-      '<a class="btn" href="#new-thread-form">Ask the community</a> &nbsp; ' +
+    cta.innerHTML = '<h3>Have a problem with the rig?</h3>' +
+      '<p>Post it in Repair &amp; Diagnostics with year / make / model, symptoms, and any fault codes — or text the technician directly.</p>' +
+      '<a class="btn" href="#new-thread-form">Start a thread</a> &nbsp; ' +
       '<a class="btn" href="sms:+16166065277">Text Now</a>';
     hero.appendChild(cta);
   }
@@ -20,12 +20,12 @@
     if (!band) return;
     var wrap = document.createElement('div');
     wrap.className = 'trending-wrap';
-    wrap.innerHTML = '<div class="cat-nav-label">\uD83D\uDD25 Trending this week</div>' +
+    wrap.innerHTML = '<div class="cat-nav-label">Active this week</div>' +
       '<div class="trending-list" id="trending-list"><span class="muted" style="font-size:13px">Loading\u2026</span></div>';
     band.insertBefore(wrap, band.firstChild);
     fetch('/api/forum/trending?limit=5').then(r => r.json()).then(data => {
       var el = document.getElementById('trending-list');
-      if (!data.success || !data.threads.length) { el.innerHTML = '<span class="muted" style="font-size:13px">No trending threads yet \u2014 be the first!</span>'; return; }
+      if (!data.success || !data.threads.length) { el.innerHTML = '<span class="muted" style="font-size:13px">No active threads this week yet.</span>'; return; }
       el.innerHTML = data.threads.map(function (t, i) {
         var flame = t.reply_count > 5 ? ' <span class="trending-flame">\uD83D\uDD25</span>' : '';
         return '<a class="trending-item" href="/forum/t/' + esc(t.id) + '">' +

@@ -38,7 +38,7 @@ export async function onRequestPost(context) {
   // Honeypot: real visitors never fill this hidden field. Silent success so
   // bots don't learn they were caught.
   if (clean(body.website, 100)) {
-    return json({ success: true, id: null, item_count: 0, message: 'Got it -- our team will follow up with a real quote, not an automatic charge.' });
+    return json({ success: true, id: null, item_count: 0, message: 'Quote request received. We will follow up with pricing and availability. No payment is taken automatically.' });
   }
 
   const rl = await checkRateLimit(env, request, { max: 5, windowMinutes: 10, key: 'quote' });
@@ -159,5 +159,5 @@ export async function onRequestPost(context) {
     } catch { /* email is best-effort; the D1 row is the real record */ }
   }
 
-  return json({ success: true, id, item_count: items.length, message: 'Got it -- our team will follow up with a real quote, not an automatic charge.' });
+  return json({ success: true, id, item_count: items.length, message: 'Quote request received. We will follow up with pricing and availability. No payment is taken automatically.' });
 }
