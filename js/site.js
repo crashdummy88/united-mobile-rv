@@ -236,6 +236,11 @@ function umrtGetTurnstileToken(containerId) {
       });
       extras.forEach(function (li) { meshNav.appendChild(li); });
     }
+    var brandTexts = document.querySelectorAll('.site-header .brand-text');
+    for (var bt = 0; bt < brandTexts.length; bt++) {
+      var brandEl = brandTexts[bt];
+      if (brandEl.parentNode) brandEl.parentNode.removeChild(brandEl);
+    }
   }
 
   /* Text Now / TEXT NOW controls must open sms:, never tel:. Call stays tel:. */

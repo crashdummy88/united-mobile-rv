@@ -12,6 +12,9 @@
  *   Home return → https://unitedmobilerv.com/ (WordPress apex; not "MAIN HUB")
  *   1 Shop · 2 Book (Square) · 3 Forum · 4 Software · 5 Docs
  *   Not Book-first. Do not add portal, status, or guide-library items.
+ *   Bidirectional: every CF land homepage stamps Home → WP apex.
+ *   WP hub chrome (design/wp-hub-chrome.html) doors to each CF homepage.
+ *   Corner brand is the logo only — no "United Mobile RV" wordmark next to it.
  *
  * Matt LOCK 2026-09-16 convert stack (header + mobile bar, every surface):
  *   Call (616) 606-5277 → tel:+16166065277 (older clients; number is the call control)
@@ -51,14 +54,34 @@ export function convertMobileBar() {
 </div>`;
 }
 
+export const SHOP_LAND_HREF = 'https://shop.unitedmobilerv.com/';
+export const BOOK_LAND_HREF = 'https://book.unitedmobilerv.com/';
+export const FORUM_LAND_HREF = 'https://forum.unitedmobilerv.com/';
+export const SOFTWARE_LAND_HREF = 'https://software.unitedmobilerv.com/';
+export const DOCS_LAND_HREF = 'https://docs.unitedmobilerv.com/';
+
+/** WP hub doors to CF land homepages. Book here is the book. land, not Square. */
+export const WP_HUB_DOORS = [
+  { key: 'home', href: MAIN_HOME_HREF, label: MAIN_HOME_LABEL },
+  { key: 'shop', href: SHOP_LAND_HREF, label: 'Shop' },
+  { key: 'book', href: BOOK_LAND_HREF, label: 'Book' },
+  { key: 'forum', href: FORUM_LAND_HREF, label: 'Forum' },
+  { key: 'software', href: SOFTWARE_LAND_HREF, label: 'Software' },
+  { key: 'docs', href: DOCS_LAND_HREF, label: 'Docs' },
+];
+
 export const MESH_LINKS = [
   { key: 'home', href: MAIN_HOME_HREF, label: MAIN_HOME_LABEL },
-  { key: 'shop', href: 'https://shop.unitedmobilerv.com/', label: 'Shop' },
+  { key: 'shop', href: SHOP_LAND_HREF, label: 'Shop' },
   { key: 'book', href: BOOK_PUBLIC_HREF, label: 'Book', external: true },
-  { key: 'forum', href: 'https://forum.unitedmobilerv.com/', label: 'Forum' },
-  { key: 'software', href: 'https://software.unitedmobilerv.com/', label: 'Software' },
-  { key: 'docs', href: 'https://docs.unitedmobilerv.com/', label: 'Docs' },
+  { key: 'forum', href: FORUM_LAND_HREF, label: 'Forum' },
+  { key: 'software', href: SOFTWARE_LAND_HREF, label: 'Software' },
+  { key: 'docs', href: DOCS_LAND_HREF, label: 'Docs' },
 ];
+
+export function islandBrand() {
+  return `<a class="brand" href="${MAIN_HOME_HREF}"><img class="brand-logo" src="/assets/brand/umrt-logo.webp" alt="United Mobile RV" width="40" height="40"></a>`;
+}
 
 function currentAttr(item, current) {
   return current === item.key ? ' aria-current="page"' : '';
@@ -87,7 +110,7 @@ export function meshFooterAnchors({ current } = {}) {
 export function islandHeader({ current, extraNavHtml = '' } = {}) {
   return `<header class="site-header">
   <div class="wrap nav-bar">
-    <a class="brand" href="${MAIN_HOME_HREF}"><img class="brand-logo" src="/assets/brand/umrt-logo.webp" alt="United Mobile RV" width="40" height="40"><span class="brand-text">United Mobile <span>RV</span></span></a>
+    ${islandBrand()}
     <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">☰</button>
     <ul class="nav-links">
       ${meshNavLis({ current, extraAfter: extraNavHtml })}

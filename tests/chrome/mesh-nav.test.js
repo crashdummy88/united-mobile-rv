@@ -9,6 +9,10 @@ import {
   BOOK_PUBLIC_HREF,
   SQUARE_BOOK_URL,
   MESH_LINKS,
+  WP_HUB_DOORS,
+  BOOK_LAND_HREF,
+  SHOP_LAND_HREF,
+  FORUM_LAND_HREF,
   TEXT_NOW_HREF,
   TEXT_NOW_LABEL,
   TEXT_NOW_COMPACT,
@@ -19,6 +23,8 @@ import {
   islandHeader,
   islandFooter,
   islandMobileBar,
+  islandBrand,
+  shopCartNavItem,
 } from '../../functions/_lib/mesh-chrome.js';
 
 const NUMBERED_NAV = ['Shop', 'Book', 'Forum', 'Software', 'Docs'];
@@ -114,6 +120,54 @@ test('MESH_LINKS is Home + Shop · Book · Forum · Software · Docs (no Portal/
   assert.doesNotMatch(mobile, /Prefer Text/);
 });
 
+test('CF land homepages share Home → WP + identical product nav; shop may add Cart', () => {
+  const shop = islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem() });
+  const forum = src('forum/index.html');
+  const book = islandHeader({ current: 'book' });
+  const bookStatic = src('book-service/index.html');
+  for (const [name, html] of [['shop', shop], ['forum', forum], ['book', book], ['book-static', bookStatic]]) {
+    assert.deepEqual(productLabels(html), PRODUCT_NAV, name);
+    assert.match(html, /href="https:\/\/unitedmobilerv\.com\/"[^>]*>Home</, name);
+    assert.match(html, /href="https:\/\/shop\.unitedmobilerv\.com\/"/, name);
+    assert.match(html, /href="https:\/\/forum\.unitedmobilerv\.com\/"/, name);
+    assert.match(html, /href="https:\/\/software\.unitedmobilerv\.com\/"/, name);
+    assert.match(html, /href="https:\/\/docs\.unitedmobilerv\.com\/"/, name);
+    assert.doesNotMatch(html, /brand-text/, name);
+    assert.doesNotMatch(html, />MAIN HUB</, name);
+    assert.doesNotMatch(html, FORBIDDEN, name);
+  }
+  assert.match(shop, /\/shop\/cart/);
+  assert.match(shop, />Cart /);
+  assert.doesNotMatch(forum, /\/shop\/cart/);
+  assert.doesNotMatch(book, /\/shop\/cart/);
+  assert.match(islandBrand(), /alt="United Mobile RV"/);
+  assert.doesNotMatch(islandBrand(), /brand-text/);
+  assert.doesNotMatch(islandBrand(), /United Mobile <span>RV/);
+});
+
+test('WP hub chrome doors to each CF land homepage (Home first, no Portal/Status)', () => {
+  assert.deepEqual(WP_HUB_DOORS.map((l) => l.label), PRODUCT_NAV);
+  assert.equal(WP_HUB_DOORS.find((l) => l.key === 'home').href, MAIN_HOME_HREF);
+  assert.equal(WP_HUB_DOORS.find((l) => l.key === 'shop').href, SHOP_LAND_HREF);
+  assert.equal(WP_HUB_DOORS.find((l) => l.key === 'book').href, BOOK_LAND_HREF);
+  assert.equal(WP_HUB_DOORS.find((l) => l.key === 'forum').href, FORUM_LAND_HREF);
+  const wp = src('design/wp-hub-chrome.html');
+  const wpNav = wp.match(/<nav class="umrt-nav"[\s\S]*?<\/nav>/)[0];
+  assert.deepEqual(productLabels(wpNav), PRODUCT_NAV);
+  assert.match(wpNav, /href="https:\/\/unitedmobilerv\.com\/"[^>]*>Home</);
+  assert.match(wpNav, /href="https:\/\/shop\.unitedmobilerv\.com\/"/);
+  assert.match(wpNav, /href="https:\/\/book\.unitedmobilerv\.com\/"/);
+  assert.match(wpNav, /href="https:\/\/forum\.unitedmobilerv\.com\/"/);
+  assert.match(wpNav, /href="https:\/\/software\.unitedmobilerv\.com\/"/);
+  assert.match(wpNav, /href="https:\/\/docs\.unitedmobilerv\.com\/"/);
+  assert.doesNotMatch(wpNav, /square\.site/);
+  assert.doesNotMatch(wpNav, /status\.unitedmobilerv\.com/);
+  assert.doesNotMatch(wpNav, /portal\.unitedmobilerv\.com/);
+  assert.doesNotMatch(wpNav, FORBIDDEN);
+  assert.doesNotMatch(wpNav, /umrt-brand/);
+  assert.doesNotMatch(wpNav, /<a[^>]*>\s*United Mobile/);
+});
+
 test('shop + forum templates include mesh-chrome (or static mesh + Square)', () => {
   const shopFiles = [
     'functions/shop/index.js',
@@ -181,6 +235,7 @@ test('site.js stamps Call + gold Text Now + Square Book on every nav/mobile bar'
   assert.match(js, /Call \(616\) 606-5277/);
   assert.match(js, /MAIN_HOME_LABEL = 'Home'/);
   assert.match(js, /https:\/\/unitedmobilerv\.com\//);
+  assert.match(js, /site-header \.brand-text/);
   assert.doesNotMatch(js, /MAIN_HOME_LABEL = 'MAIN HUB'/);
   assert.doesNotMatch(js, /\['Main', 'https:\/\/unitedmobilerv\.com\/'\]/);
   assert.match(js, /navCtaHtml/);

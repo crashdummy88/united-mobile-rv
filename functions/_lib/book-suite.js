@@ -186,7 +186,7 @@ ${robots}<meta name="theme-color" content="#1A1A1A">
 </head>
 <body class="book-suite">
 <a class="skip-link" href="#main">Skip to content</a>
-${islandHeader()}
+${islandHeader({ current: 'book' })}
 ${mainHtml}
 <footer class="site-footer">
   ${suiteFooter({ bookHost })}
