@@ -170,6 +170,7 @@ export const STATIC_PAGES = [
   { loc: '/pricing/price-guide/', priority: '0.6', changefreq: 'monthly' },
   { loc: '/pricing/price-list/', priority: '0.6', changefreq: 'monthly' },
   { loc: '/privacy-policy/', priority: '0.3', changefreq: 'yearly' },
+  { loc: '/terms-of-use/', priority: '0.3', changefreq: 'yearly' },
   { loc: '/recommended-gear/', priority: '0.6', changefreq: 'monthly' },
   { loc: '/roof/', priority: '0.6', changefreq: 'monthly' },
   { loc: '/rv-repair-idaho/', priority: '0.7', changefreq: 'monthly' },
