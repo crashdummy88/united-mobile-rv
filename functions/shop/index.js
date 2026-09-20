@@ -5,8 +5,9 @@
  * Phase 1: no live checkout -- every product routes to a quote request.
  */
 import { formatPrice, displayName, CATEGORY_ICONS, formatServicePrice, stockStatusMeta, serviceBookHref } from '../_lib/shop.js';
-import { islandHeader, islandFooter, islandMobileBar, shopCartNavItem, BOOK_PUBLIC_HREF } from '../_lib/mesh-chrome.js';
+import { islandHeader, islandFooter, islandMobileBar } from '../_lib/mesh-chrome.js';
 import { relatedGuidesForService, relatedGuidesMarkup } from '../_lib/field-guides.js';
+import { shopQuoteNavItem, quoteHowItWorksHtml, quoteFormHtml, BOOK_INSTALL_HREF } from '../_lib/quote-form.js';
 
 function esc(s) {
   return String(s || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -112,11 +113,12 @@ export async function onRequestGet(context) {
             ${p.manufacturer ? `<div class="shop-card-brand">${esc(p.manufacturer)}</div>` : ''}
             <div class="shop-card-title">${esc(displayName(p.manufacturer, p.title))}</div>
             <div class="shop-card-price">${formatPrice(p)}</div>
-            <div class="shop-card-meta">${p.product_type === 'kit' ? 'Complete kit' : 'Component'} &middot; price shown is a public reference price, not a live quote</div>
+            <div class="shop-card-meta">${p.product_type === 'kit' ? 'Complete kit' : 'Component'} &middot; not a live checkout -- request a quote</div>
             <span class="shop-stock-chip is-${stock.cls}">${esc(stock.label)}</span>
           </div>
         </a>
-        <button type="button" class="btn btn-ghost shop-add-btn" data-product-id="${esc(p.id)}">Add to Cart</button>
+        <a class="btn btn-gold shop-quote-btn" href="${base}/shop/p/${esc(p.id)}#quote">Request quote</a>
+        <button type="button" class="btn btn-ghost shop-add-btn" data-product-id="${esc(p.id)}">Add to quote</button>
       </div>`;
     }).join('');
     return `<section class="shop-category-band"><div class="wrap">
@@ -162,7 +164,7 @@ export async function onRequestGet(context) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${activeTab === 'services' ? 'RV Repair & Install Services' : 'RV Systems Shop'} | United Mobile RV</title>
-<meta name="description" content="${activeTab === 'services' ? 'Diagnostics, installs, winterization, and repair -- real UMRT service rates, book straight from the list.' : "Curated RV power, solar, and climate systems -- tell us what your rig needs to do and we'll tell you what equipment actually works together."}">
+<meta name="description" content="${activeTab === 'services' ? 'Diagnostics, installs, winterization, and repair -- real UMRT service rates, book straight from the list.' : 'Configure an RV power, solar, or connectivity system and request a quote. Matt prices by hand; you pay on a Square invoice -- not a shop checkout.'}">
 <link rel="canonical" href="${base}/shop/${activeTab === 'services' ? '?tab=services' : ''}">
 <!-- 2026-09-16: was noindex,follow -- the X-Robots-Tag header in
      functions/_middleware.js now sends index,follow for /shop/ (real
@@ -173,10 +175,11 @@ export async function onRequestGet(context) {
 <link rel="icon" href="/favicon.png" type="image/png">
 <link rel="stylesheet" href="/css/site.css">
 <link rel="stylesheet" href="/css/shop.css">
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
-${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem() })}
+${islandHeader({ current: 'shop', extraNavHtml: shopQuoteNavItem() })}
 <main id="main">
 <section class="page-hero">
   <div class="wrap">
@@ -185,31 +188,29 @@ ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem() })}
     <h1>Real rates. Book straight from the list.</h1>
     <p class="lead">Diagnostics, installs, winterization, and repair -- these are UMRT's actual current service rates, the same ones we invoice against. Pick one and book it; we'll confirm scope and schedule with you directly.</p>
     <p class="muted" style="margin-top:14px">Shopping for hardware instead? <a class="text-link" href="/shop/">See Parts</a>.</p>` : `
-    <h1>Not a parts store. A systems integrator.</h1>
-    <p class="lead">Tell us what your RV is trying to do and we'll tell you what equipment actually works together -- then handle sourcing, configuration, and installation if you want it. Every listing here is a real, cited reference price -- not a guess, and not a live checkout yet. Submit a quote request and our team follows up directly.</p>
-    <p class="muted" style="margin-top:14px">Not sure what you need? <a class="text-link" href="${BOOK_PUBLIC_HREF}" target="_blank" rel="noopener">Tell us the problem</a> and skip guessing at part numbers -- we'll spec it for you.</p>`}
+    <h1>Configure the system. Request a quote.</h1>
+    <p class="lead">This is not click-pay-ship. You tell us what the coach needs to do. Matt checks current cost by hand -- we never invent a price, and Artek stays TBD until that check -- then you pay on a Square invoice. Hardware ships after that invoice. On-site install and VRM commissioning are a separate step.</p>
+    <p class="muted" style="margin-top:14px">Brands we work with: Amazon · Artek · Dometic · Victron · Peplink · weBoost. Not sure which part? <a class="text-link" href="#configure">Configure a system</a> below, or <a class="text-link" href="${BOOK_INSTALL_HREF}" target="_blank" rel="noopener">schedule installation</a> if you already have the hardware.</p>`}
     ${tabsHtml}
   </div>
 </section>
+${activeTab === 'parts' ? `<section class="shop-how-band"><div class="wrap wrap-narrow">
+  <h2>How a shop quote works</h2>
+  ${quoteHowItWorksHtml()}
+</div></section>` : ''}
 ${chipsHtml ? `<section class="shop-filter-band"><div class="wrap">${chipsHtml}</div></section>` : ''}
-${sectionsHtml || `<section class="band"><div class="wrap"><p class="muted">${activeTab === 'services' ? 'Services are being added -- check back shortly, or' : 'Products are being added -- check back shortly, or'} <a class="text-link" href="${BOOK_PUBLIC_HREF}" target="_blank" rel="noopener">book a consultation</a> in the meantime.</p></div></section>`}
+${sectionsHtml || `<section class="band"><div class="wrap"><p class="muted">${activeTab === 'services' ? 'Services are being added -- check back shortly, or' : 'Products are being added -- check back shortly, or'} <a class="text-link" href="${BOOK_INSTALL_HREF}" target="_blank" rel="noopener">schedule a visit</a> in the meantime.</p></div></section>`}
+${activeTab === 'parts' ? `<section class="shop-checkout-band" id="configure">
+  <div class="wrap wrap-narrow">
+    ${quoteFormHtml({ variant: 'system', nextHref: `${base}/shop/` })}
+  </div>
+</section>` : ''}
 </main>
 ${islandFooter({ current: 'shop' })}
 ${islandMobileBar()}
 <script src="/js/cart.js"></script>
+<script src="/js/quote-form.js"></script>
 <script src="/js/site.js?v=20260918mesh" defer></script>
-<script>
-(function () {
-  document.querySelectorAll('.shop-add-btn').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      window.UMRTCart.addToCart(btn.dataset.productId, 1);
-      var original = btn.textContent;
-      btn.textContent = 'Added \u2713';
-      setTimeout(function () { btn.textContent = original; }, 1200);
-    });
-  });
-})();
-</script>
 </body>
 </html>`;
 

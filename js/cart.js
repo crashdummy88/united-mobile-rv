@@ -1,11 +1,10 @@
 /**
  * UMRT Shop cart -- skeleton.
  *
- * Phase 1: there is no live checkout. This is a client-side "quote cart":
- * localStorage holds {product_id: quantity} so a customer can gather more
- * than one item, then submit ONE quote request for the whole cart from
- * /shop/cart (see functions/shop/cart.js), posted to /api/shop/quote.
- * Nothing here charges anything or reserves stock.
+ * Quote list (not a checkout). localStorage holds {product_id: quantity}
+ * so a customer can gather more than one item, then submit ONE quote
+ * request from /shop/cart to /api/shop/quote. Payment is a later Square
+ * invoice -- nothing here charges or reserves stock.
  */
 (function (window) {
   var STORAGE_KEY = 'umrt_cart_v1';
@@ -79,6 +78,7 @@
   window.UMRTCart = {
     readCart: readCart,
     addToCart: addToCart,
+    addToQuote: addToCart,
     setQuantity: setQuantity,
     removeFromCart: removeFromCart,
     clearCart: clearCart,

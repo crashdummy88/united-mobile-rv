@@ -22,6 +22,7 @@ import {
   MAIN_HOME_HREF,
   MAIN_HOME_LABEL,
 } from './mesh-chrome.js';
+import { googleLoginHref, SHOP_HOME_HREF } from './auth-return.js';
 
 export const BOOK_HOST = 'book.unitedmobilerv.com';
 export { SQUARE_BOOK_URL };
@@ -45,6 +46,9 @@ const SUITE_CSS = `
   .book-expect { display:grid; grid-template-columns:repeat(3,1fr); gap:28px; margin-top:28px; }
   @media (max-width:800px) { .book-expect { grid-template-columns:1fr; } }
   .book-expect .step-num { color:#C9972C; font-size:12px; letter-spacing:.18em; text-transform:uppercase; font-weight:600; display:block; margin-bottom:10px; }
+  .book-sso-bar { margin: 22px auto 0; max-width: 520px; text-align: left; padding: 14px 16px; border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; }
+  .google-signin-btn { display:inline-flex; align-items:center; gap:10px; background:#fff; color:#3c4043; border-radius:8px; padding:10px 16px; font-weight:600; text-decoration:none; }
+  .google-signin-btn:hover { color:#3c4043; background:#f8f9fa; }
 `;
 
 function suiteFooter({ bookHost }) {
@@ -75,7 +79,7 @@ function suiteFooter({ bookHost }) {
   </div>`;
 }
 
-function suiteMain({ bookHost }) {
+function suiteMain({ bookHost, nextHref }) {
   const rateSheet = bookHost
     ? ''
     : `<p class="mt-8 muted">Full rate sheet: <a href="/pricing/">Pricing</a>.</p>`;
@@ -94,6 +98,10 @@ function suiteMain({ bookHost }) {
       <a class="btn btn-ghost" href="${TEXT_NOW_HREF}">${TEXT_NOW_LABEL}</a>
     </div>
     <p class="muted" style="margin-top:20px">BOOK ONLINE leaves this site for Square (new tab). Or <a href="tel:${BOOK_PHONE_E164}">call ${BOOK_PHONE_DISPLAY}</a> — same number, technician directly.</p>
+    <div class="umrt-sso-bar book-sso-bar" id="umrt-sso-bar" data-next="${esc(nextHref)}" data-login="${esc(googleLoginHref(nextHref))}">
+      <p class="muted mb-0">Same Google sign-in as the shop and forum -- not a new book account.</p>
+    </div>
+    <p class="muted" style="margin-top:16px">Need hardware first? Configure the system and <a href="${SHOP_HOME_HREF}">request a quote on the shop</a>. Pay that quote on a Square invoice; then come back here to schedule the install.</p>
   </div>
 </section>
 <section class="band" style="padding-top:16px">
@@ -196,6 +204,7 @@ ${mainHtml}
   </div>
 </footer>
 ${islandMobileBar()}
+<script src="/js/quote-form.js"></script>
 <script src="/js/site.js?v=20260918mesh" defer></script>
 </body>
 </html>`;
@@ -213,7 +222,7 @@ export function renderBookSuite(request) {
     canonical,
     bookHost,
     robotsMeta: bookHost ? 'noindex, follow' : '',
-    mainHtml: suiteMain({ bookHost }),
+    mainHtml: suiteMain({ bookHost, nextHref: canonical }),
     extraFooter: `<div class="wrap footer-proof" aria-label="Real job photos">
     <div class="footer-brand-row">
       <img class="footer-logo" src="/assets/brand/umrt-logo.webp" width="40" height="40" alt="United Mobile RV">

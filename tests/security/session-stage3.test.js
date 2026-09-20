@@ -91,9 +91,9 @@ function makeForumDb({ users = [] } = {}) {
       return {
         bind(...a) { args = a; return this; },
         async first() {
-          if (/SELECT id, display_name, avatar_url FROM users WHERE central_user_id = \?/.test(sql)) {
+          if (/SELECT id, display_name, avatar_url(?:, email)? FROM users WHERE central_user_id = \?/.test(sql)) {
             const u = self._users.find((u) => u.central_user_id === args[0]);
-            return u ? { id: u.id, display_name: u.display_name, avatar_url: u.avatar_url } : undefined;
+            return u ? { id: u.id, display_name: u.display_name, avatar_url: u.avatar_url, email: u.email || null } : undefined;
           }
           throw new Error(`mock DB.first: unhandled query: ${sql}`);
         },
@@ -164,7 +164,7 @@ test('readSession: new central (Stage 3) cookie authenticates via PORTAL_DB.sess
   const cookieValue = cookie.split('umrt_session=')[1].split(';')[0];
 
   const session = await readSession(makeRequest(cookieValue), env);
-  assert.deepEqual(session, { uid: 'forum-user-2', name: 'Central User', avatar: 'a.png' });
+  assert.deepEqual(session, { uid: 'forum-user-2', name: 'Central User', avatar: 'a.png', email: null });
 });
 
 test('createCentralSessionCookie: NEVER sets Domain when served from a *.pages.dev host (security review finding, 2026-09-15)', async () => {

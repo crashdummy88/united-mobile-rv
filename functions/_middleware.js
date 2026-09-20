@@ -61,7 +61,10 @@ const SHOP_ALLOWED_EXACT = ['/', '/favicon.png', '/robots.txt', '/sitemap.xml'];
 // being caught by this same lockdown and silently bouncing back to /shop/,
 // which is a bug, not the "don't let people wander off" behavior this
 // gate exists for.
-const SHOP_ALLOWED_PREFIXES = ['/shop/', '/api/shop/', '/book-service/', '/api/book', '/css/', '/js/', '/assets/', '/fonts/'];
+// /api/auth /api/me /api/logout: same Google SSO as forum (umrt_session +
+// umrt_sso). Shop does not get a third auth stack -- these existing
+// routes must be reachable on the shop host or lockdown 301s them.
+const SHOP_ALLOWED_PREFIXES = ['/shop/', '/api/shop/', '/api/auth/', '/api/me', '/api/logout', '/book-service/', '/api/book', '/css/', '/js/', '/assets/', '/fonts/'];
 
 function isShopAllowed(path) {
   if (SHOP_ALLOWED_EXACT.includes(path)) return true;
@@ -82,6 +85,9 @@ const BOOK_ALLOWED_EXACT = ['/', '/favicon.png', '/robots.txt'];
 const BOOK_ALLOWED_PREFIXES = [
   '/book-service/thank-you/',
   '/api/book',
+  '/api/auth/',
+  '/api/me',
+  '/api/logout',
   '/css/',
   '/js/',
   '/assets/',

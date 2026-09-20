@@ -1,6 +1,7 @@
 import { getProviderConfig } from '../../../_lib/oauth.js';
 import { createCentralSessionCookie, randomId } from '../../../_lib/session.js';
 import { createSsoCookie } from '../../../_lib/sso.js';
+import { sanitizeAuthNext, readOauthNextCookie, clearOauthNextCookie, defaultAuthNext } from '../../../_lib/auth-return.js';
 
 async function upsertUser(db, provider, mapped) {
   const existing = await db
@@ -137,9 +138,11 @@ export async function onRequestGet(context) {
     const centralUserId = await upsertCentralUser(env.PORTAL_DB, env.DB, user.id, provider, mapped);
     const cookie = await createCentralSessionCookie(centralUserId, env, request);
 
-    const headers = new Headers({ Location: '/forum/' });
+    const next = sanitizeAuthNext(readOauthNextCookie(request), request) || defaultAuthNext(request);
+    const headers = new Headers({ Location: next });
     headers.append('Set-Cookie', cookie);
     headers.append('Set-Cookie', 'umrt_oauth_state=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0');
+    headers.append('Set-Cookie', clearOauthNextCookie());
 
     // Cross-subdomain SSO recognition cookie, additive -- only meaningful
     // for Google (the only provider forum supports; provider_id is Google's

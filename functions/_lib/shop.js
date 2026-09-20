@@ -11,18 +11,39 @@
 
 import { BOOK_PUBLIC_HREF } from './mesh-chrome.js';
 
+/**
+ * Artek (and Epoch sold through Artek) -- never invent or show a live
+ * price. Seed rows may still hold a historical cited number in D1; the
+ * storefront must treat those as TBD / request quote. No CSV, no guess.
+ */
+export function isArtekQuoteOnly(product) {
+  if (!product) return false;
+  const manufacturer = String(product.manufacturer || '').trim().toLowerCase();
+  const id = String(product.id || '').trim().toLowerCase();
+  const supplier = String(product.supplier_id || '').trim().toLowerCase();
+  if (manufacturer === 'artek') return true;
+  if (id.startsWith('artek-')) return true;
+  if (manufacturer === 'epoch' && (supplier === 'artek' || id.includes('epoch'))) return true;
+  return false;
+}
+
 export function hasPrice(product) {
-  return product && product.retail_price !== null && product.retail_price !== undefined;
+  if (!product || isArtekQuoteOnly(product)) return false;
+  return product.retail_price !== null && product.retail_price !== undefined;
 }
 
 export function formatPrice(product) {
-  return hasPrice(product) ? `$${Number(product.retail_price).toLocaleString()}` : 'Contact for pricing';
+  if (isArtekQuoteOnly(product)) return 'Price TBD -- request a quote';
+  return hasPrice(product) ? `$${Number(product.retail_price).toLocaleString()}` : 'Request quote';
 }
 
 export function priceNote(product) {
+  if (isArtekQuoteOnly(product)) {
+    return 'Artek pricing is confirmed by hand -- we do not publish or invent a number here. Request a quote and Matt checks current dealer cost and availability.';
+  }
   return hasPrice(product)
-    ? `Public reference price (${product.price_source || 'source on file'}) -- your actual quote may differ once availability and shipping are confirmed.`
-    : 'Custom/premium item -- contact us for current pricing before ordering.';
+    ? `Public reference price (${product.price_source || 'source on file'}) -- not a live checkout. Your Square invoice may differ once availability and shipping are confirmed.`
+    : 'Price confirmed as part of your quote -- request info and we will check current numbers.';
 }
 
 /**

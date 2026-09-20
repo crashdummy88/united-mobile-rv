@@ -1,11 +1,13 @@
 import { getProviderConfig } from '../../../_lib/oauth.js';
 import { randomId } from '../../../_lib/session.js';
+import { sanitizeAuthNext, oauthNextCookie } from '../../../_lib/auth-return.js';
 
 export async function onRequestGet(context) {
   const { params, request, env } = context;
   const provider = params.provider;
   const url = new URL(request.url);
   const redirectUri = `${url.origin}/api/auth/${provider}/callback`;
+  const next = sanitizeAuthNext(url.searchParams.get('next'), request);
 
   const cfg = getProviderConfig(provider, env, redirectUri);
   if (!cfg || !cfg.clientId) {
@@ -28,5 +30,6 @@ export async function onRequestGet(context) {
     'Set-Cookie',
     `umrt_oauth_state=${state}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=600`
   );
+  headers.append('Set-Cookie', oauthNextCookie(next));
   return new Response(null, { status: 302, headers });
 }

@@ -60,7 +60,7 @@ test('middleware: book host /wireless/ and /guide/ 301 to /', async () => {
 
 test('middleware: book host allows suite home, thank-you, assets, /api/book', async () => {
   const { next, calls } = makeNextCapture();
-  const allowed = ['/', '/favicon.png', '/robots.txt', '/book-service/thank-you/', '/api/book', '/css/site.css', '/js/site.js', '/assets/brand/umrt-logo.webp', '/fonts/inter-400.woff2'];
+  const allowed = ['/', '/favicon.png', '/robots.txt', '/book-service/thank-you/', '/api/book', '/api/me', '/api/logout', '/api/auth/google/login', '/css/site.css', '/js/site.js', '/assets/brand/umrt-logo.webp', '/fonts/inter-400.woff2'];
   for (const path of allowed) {
     const res = await middleware({
       request: makeRequest(`https://book.unitedmobilerv.com${path}`),
