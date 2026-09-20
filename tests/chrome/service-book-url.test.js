@@ -25,9 +25,10 @@ const GEN = {
   title: 'Generator Maintenance',
 };
 
-test('chrome Book lock stays Square homepage root (not appointments, not book.)', () => {
-  assert.equal(BOOK_PUBLIC_HREF, 'https://united-mobile-rv-llc.square.site/');
-  assert.equal(SQUARE_BOOK_URL, BOOK_PUBLIC_HREF);
+test('chrome Book lock is book. wrap; Square stays card deep-link fallback', () => {
+  assert.equal(BOOK_PUBLIC_HREF, 'https://book.unitedmobilerv.com/');
+  assert.equal(SQUARE_BOOK_URL, 'https://united-mobile-rv-llc.square.site/');
+  assert.notEqual(BOOK_PUBLIC_HREF, SQUARE_BOOK_URL);
   assert.equal(SQUARE_APPOINTMENTS_HREF, 'https://united-mobile-rv-llc.square.site/s/appointments');
   assert.notEqual(SQUARE_APPOINTMENTS_HREF, BOOK_PUBLIC_HREF);
 });
@@ -46,7 +47,8 @@ test('isSquareLandUrl accepts Square hosts and rejects off-ecosystem pastes', ()
 test('NULL book_url defaults to Square homepage with service + UTM intent', () => {
   const href = serviceBookHref(GEN);
   const u = new URL(href);
-  assert.equal(`${u.origin}/`, BOOK_PUBLIC_HREF);
+  assert.equal(`${u.origin}/`, SQUARE_BOOK_URL);
+  assert.notEqual(href, SQUARE_BOOK_URL);
   assert.notEqual(href, BOOK_PUBLIC_HREF);
   assert.equal(u.searchParams.get('service'), 'generator-maintenance');
   assert.equal(u.searchParams.get('service_name'), 'Generator Maintenance');
@@ -156,8 +158,8 @@ test('GET /shop/?tab=services renders Generator CTA with intent query, not bare 
     assert.doesNotMatch(href, /book\.unitedmobilerv\.com/);
     assert.notEqual(href, 'https://united-mobile-rv-llc.square.site/');
   }
-  // Header chrome Book stays on the Square homepage root (no query)
-  assert.match(html, /btn btn-ghost" href="https:\/\/united-mobile-rv-llc\.square\.site\/" target="_blank" rel="noopener">Book</);
+  // Header chrome Book stays on the book. wrap (no query)
+  assert.match(html, /btn btn-ghost" href="https:\/\/book\.unitedmobilerv\.com\/">Book</);
 });
 
 await run();

@@ -93,13 +93,14 @@ test('markup is a quiet Guide text link, not a button, and drops unknown slugs',
   assert.equal(relatedGuidesMarkup([{ href: 'https://evil.example/x', label: 'Nope' }]), '');
 });
 
-test('shared mesh chrome does not include Field guides; Book stays Square', () => {
-  assert.deepEqual(MESH_LINKS.map((l) => l.label), ['MAIN HUB', 'Shop', 'Book', 'Forum', 'Software', 'Docs']);
+test('shared mesh chrome does not include Field guides; Book is book. wrap', () => {
+  assert.deepEqual(MESH_LINKS.map((l) => l.label), ['Home', 'Shop', 'Book', 'Forum', 'Software', 'Docs']);
   assert.ok(MESH_LINKS.findIndex((l) => l.label === 'Shop') < MESH_LINKS.findIndex((l) => l.label === 'Book'));
   assert.equal(MESH_LINKS.find((l) => l.key === 'guides'), undefined);
   assert.ok(!MESH_LINKS.some((l) => /guide|portal|status/i.test(l.label) || /guide|portal|status/i.test(l.key)));
   const book = src('functions/_lib/mesh-chrome.js');
-  assert.match(book, /BOOK_PUBLIC_HREF = SQUARE_BOOK_URL/);
+  assert.match(book, /BOOK_PUBLIC_HREF = BOOK_HOST_HREF/);
+  assert.doesNotMatch(book, /BOOK_PUBLIC_HREF = SQUARE_BOOK_URL/);
   assert.doesNotMatch(book, /href="\/guide\//);
   assert.doesNotMatch(book, /GUIDES_HREF/);
   assert.doesNotMatch(book, /label: 'Guides'/);
@@ -107,7 +108,7 @@ test('shared mesh chrome does not include Field guides; Book stays Square', () =
   assert.doesNotMatch(book, /FIELD_GUIDES_HREF/);
 });
 
-test('product page has no related-guide chrome; Book stays Square', async () => {
+test('product page has no related-guide chrome; Book is book. wrap', async () => {
   const product = {
     id: 'victron-smartsolar-mppt',
     sku: null,
@@ -148,7 +149,7 @@ test('product page has no related-guide chrome; Book stays Square', async () => 
   assert.doesNotMatch(html, /Field guides/i);
   assert.doesNotMatch(html, /WP Field Guides/i);
   assert.doesNotMatch(html, /href="\/guide\//);
-  assert.match(html, /united-mobile-rv-llc\.square\.site\/" target="_blank" rel="noopener">Book</);
+  assert.match(html, /book\.unitedmobilerv\.com\/">Book</);
 });
 
 await run();

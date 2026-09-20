@@ -1,6 +1,6 @@
 /**
  * Canon convert pair on forum + shop + index header/mobile-bar.
- * Call tel: + gold Text Now sms: + Book → Square.
+ * Call tel: + gold Text Now sms: + Book → book.unitedmobilerv.com.
  * Run: node tests/chrome/convert-cta.test.js
  */
 import { readFileSync } from 'node:fs';
@@ -27,7 +27,7 @@ function assertConvertChrome(html, file) {
   assert.match(chrome, /sms:\+16166065277/, file);
   assert.match(chrome, /btn btn-gold[^>]*sms:\+16166065277|>Text Now</, file);
   assert.match(chrome, />Book</, file);
-  assert.match(chrome, /united-mobile-rv-llc\.square\.site/, file);
+  assert.match(chrome, /book\.unitedmobilerv\.com/, file);
   assert.doesNotMatch(chrome, /Prefer Text/, file);
   assert.doesNotMatch(chrome, /BOOK ONLINE/, file);
   assert.doesNotMatch(chrome, /Book Online/, file);
@@ -53,12 +53,12 @@ test('shop island chrome: Call / Text Now / Book', () => {
   assert.doesNotMatch(shop, /Prefer Text/);
 });
 
-test('site.js rewires in-page /book-service/ Book CTAs to Square (keeps labels)', () => {
+test('site.js rewires in-page /book-service/ Book CTAs to book. wrap (keeps labels)', () => {
   const js = src('js/site.js');
   assert.match(js, /umrtSquareBookHref/);
   assert.match(js, /umrtHrefIsSuiteBook/);
   assert.match(js, /data-book-service/);
-  assert.match(js, /united-mobile-rv-llc\.square\.site/);
+  assert.match(js, /book\.unitedmobilerv\.com/);
   assert.doesNotMatch(js, /addBubble\('bot'[\s\S]*href="\/book-service\/"/);
 });
 

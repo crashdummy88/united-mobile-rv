@@ -9,7 +9,7 @@
  * displayed or totaled.
  */
 
-import { BOOK_PUBLIC_HREF } from './mesh-chrome.js';
+import { BOOK_PUBLIC_HREF, SQUARE_BOOK_URL } from './mesh-chrome.js';
 
 export function hasPrice(product) {
   return product && product.retail_price !== null && product.retail_price !== undefined;
@@ -156,7 +156,8 @@ function appendServiceIntent(href, service) {
  *      carries which SKU was clicked. Default is the homepage (working
  *      "Request an appointment" form), not /s/appointments -- that path
  *      is HTTP 200 but the live widget errors as of 2026-09-17.
- * Header Book stays BOOK_PUBLIC_HREF with no query -- not this helper.
+ * Header / mesh Book stays BOOK_PUBLIC_HREF (book. wrap) with no query.
+ * square.site is the card deep-link fallback only.
  */
 export function serviceBookHref(service, env) {
   const explicit = service && service.book_url;
@@ -165,6 +166,6 @@ export function serviceBookHref(service, env) {
   const fromEnv = env && env.SQUARE_BOOKING_URL;
   const base = isSquareLandUrl(fromEnv)
     ? String(fromEnv).trim()
-    : BOOK_PUBLIC_HREF;
+    : SQUARE_BOOK_URL;
   return appendServiceIntent(base, service);
 }

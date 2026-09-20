@@ -1,6 +1,6 @@
 /**
- * Shop + forum + book mesh chrome: absolute ecosystem links, Book → Square.
- * Convert stack: Text Now sms: + tel: number + Square Book.
+ * Shop + forum + book mesh chrome: absolute ecosystem links, Book → book.
+ * Convert stack: Text Now sms: + tel: number + book. wrap Book.
  * Run: node tests/chrome/mesh-nav.test.js
  */
 import { readFileSync } from 'node:fs';
@@ -22,8 +22,9 @@ import {
 } from '../../functions/_lib/mesh-chrome.js';
 
 const NUMBERED_NAV = ['Shop', 'Book', 'Forum', 'Software', 'Docs'];
-const PRODUCT_NAV = ['MAIN HUB', ...NUMBERED_NAV];
-const FORBIDDEN = /Portal|Status|Field guides|WP Field Guides/;
+const PRODUCT_NAV = ['Home', ...NUMBERED_NAV];
+const FORBIDDEN = /Portal|Status|Field guides|WP Field Guides|MAIN HUB/;
+const BOOK_HOST = 'https://book.unitedmobilerv.com/';
 const SQUARE = 'https://united-mobile-rv-llc.square.site/';
 
 function productLabels(html) {
@@ -40,11 +41,12 @@ function src(rel) {
   return readFileSync(new URL('../../' + rel, import.meta.url), 'utf8');
 }
 
-test('public Book CTA is Square appointment intake, not book. or /book-service/', () => {
-  assert.equal(BOOK_PUBLIC_HREF, SQUARE);
+test('public Book CTA is book. wrap, not raw square.site hop', () => {
+  assert.equal(BOOK_PUBLIC_HREF, BOOK_HOST);
   assert.equal(SQUARE_BOOK_URL, SQUARE);
-  assert.match(BOOK_PUBLIC_HREF, /square\.site/);
-  assert.doesNotMatch(BOOK_PUBLIC_HREF, /book\.unitedmobilerv\.com/);
+  assert.notEqual(BOOK_PUBLIC_HREF, SQUARE_BOOK_URL);
+  assert.match(BOOK_PUBLIC_HREF, /book\.unitedmobilerv\.com/);
+  assert.doesNotMatch(BOOK_PUBLIC_HREF, /square\.site/);
   assert.doesNotMatch(BOOK_PUBLIC_HREF, /book-service/);
   assert.doesNotMatch(BOOK_PUBLIC_HREF, /\/go\/book/);
   assert.doesNotMatch(BOOK_PUBLIC_HREF, /pages\.dev/);
@@ -57,17 +59,18 @@ test('Text Now is sms:+16166065277; number is tel:+16166065277', () => {
   assert.equal(CALL_HREF, 'tel:+16166065277');
   assert.equal(CALL_LABEL, 'Call (616) 606-5277');
   assert.equal(MAIN_HOME_HREF, 'https://unitedmobilerv.com/');
-  assert.equal(MAIN_HOME_LABEL, 'MAIN HUB');
+  assert.equal(MAIN_HOME_LABEL, 'Home');
+  assert.notEqual(MAIN_HOME_LABEL, 'MAIN HUB');
 });
 
-test('MESH_LINKS is MAIN HUB + Shop · Book · Forum · Software · Docs (no Portal/Status/Guides)', () => {
+test('MESH_LINKS is Home + Shop · Book · Forum · Software · Docs (no Portal/Status/Guides)', () => {
   const labels = MESH_LINKS.map((l) => l.label);
   assert.deepEqual(labels, PRODUCT_NAV);
-  assert.deepEqual(labels.filter((l) => l !== 'MAIN HUB'), NUMBERED_NAV);
+  assert.deepEqual(labels.filter((l) => l !== 'Home'), NUMBERED_NAV);
   assert.ok(labels.indexOf('Shop') < labels.indexOf('Book'), 'Shop-first, not Book-first');
-  assert.equal(labels[0], 'MAIN HUB');
+  assert.equal(labels[0], 'Home');
   assert.equal(labels[1], 'Shop');
-  assert.equal(MESH_LINKS.find((l) => l.key === 'book').href, SQUARE);
+  assert.equal(MESH_LINKS.find((l) => l.key === 'book').href, BOOK_HOST);
   assert.equal(MESH_LINKS.find((l) => l.key === 'home').href, 'https://unitedmobilerv.com/');
   assert.ok(!MESH_LINKS.some((l) => /guide|portal|status/i.test(l.label) || /guide|portal|status/i.test(l.key)));
   const header = islandHeader({ current: 'shop' });
@@ -78,7 +81,7 @@ test('MESH_LINKS is MAIN HUB + Shop · Book · Forum · Software · Docs (no Por
   for (const html of [header, footer]) {
     assert.match(html, /https:\/\/unitedmobilerv\.com\//);
     assert.match(html, /https:\/\/shop\.unitedmobilerv\.com\//);
-    assert.match(html, /united-mobile-rv-llc\.square\.site/);
+    assert.match(html, /https:\/\/book\.unitedmobilerv\.com\//);
     assert.match(html, /https:\/\/forum\.unitedmobilerv\.com\//);
     assert.match(html, /https:\/\/software\.unitedmobilerv\.com\//);
     assert.match(html, /https:\/\/docs\.unitedmobilerv\.com\//);
@@ -87,9 +90,10 @@ test('MESH_LINKS is MAIN HUB + Shop · Book · Forum · Software · Docs (no Por
     assert.doesNotMatch(html, FORBIDDEN);
     assert.doesNotMatch(html, /unitedmobilerv\.com\/guide\//);
     assert.doesNotMatch(html, />Guides</);
+    assert.doesNotMatch(html, />MAIN HUB</);
   }
   for (const html of [header, footer, mobile]) {
-    assert.match(html, /united-mobile-rv-llc\.square\.site/);
+    assert.match(html, /book\.unitedmobilerv\.com/);
     assert.doesNotMatch(html, /Prefer Text/);
     assert.doesNotMatch(html, /href="\/book-service\//);
     assert.doesNotMatch(html, /pages\.dev/);
@@ -100,7 +104,7 @@ test('MESH_LINKS is MAIN HUB + Shop · Book · Forum · Software · Docs (no Por
   assert.match(header, /Call \(616\) 606-5277/);
   assert.match(header, /nav-text-now[^>]+sms:\+16166065277/);
   assert.match(header, />Text Now</);
-  assert.match(header, /btn btn-ghost[^>]+united-mobile-rv-llc\.square\.site/);
+  assert.match(header, /btn btn-ghost[^>]+book\.unitedmobilerv\.com/);
   assert.match(mobile, /Call \(616\) 606-5277/);
   assert.match(mobile, /tel:\+16166065277/);
   assert.match(mobile, /btn btn-gold[^>]+sms:\+16166065277/);
@@ -112,7 +116,7 @@ test('MESH_LINKS is MAIN HUB + Shop · Book · Forum · Software · Docs (no Por
   assert.doesNotMatch(mobile, /Prefer Text/);
 });
 
-test('shop + forum templates include mesh-chrome (or static mesh + Square)', () => {
+test('shop + forum templates include mesh-chrome (or static mesh + book. Book)', () => {
   const shopFiles = [
     'functions/shop/index.js',
     'functions/shop/p/[id].js',
@@ -144,8 +148,9 @@ test('shop + forum templates include mesh-chrome (or static mesh + Square)', () 
   assert.match(forum, /https:\/\/software\.unitedmobilerv\.com\//);
   assert.match(forum, /https:\/\/shop\.unitedmobilerv\.com\//);
   assert.match(forum, /https:\/\/docs\.unitedmobilerv\.com\//);
-  assert.match(forum, />MAIN HUB</);
-  assert.match(forum, /href="https:\/\/unitedmobilerv\.com\/"[^>]*>MAIN HUB</);
+  assert.match(forum, />Home</);
+  assert.match(forum, /href="https:\/\/unitedmobilerv\.com\/"[^>]*>Home</);
+  assert.doesNotMatch(forum, />MAIN HUB</);
   assert.doesNotMatch(forum, /status\.unitedmobilerv\.com/);
   assert.doesNotMatch(forum, /portal\.unitedmobilerv\.com/);
   assert.doesNotMatch(forum, FORBIDDEN);
@@ -153,7 +158,8 @@ test('shop + forum templates include mesh-chrome (or static mesh + Square)', () 
   assert.doesNotMatch(forum, /Field guides/i);
   assert.doesNotMatch(forum, />Guides</);
   assert.doesNotMatch(forum, /WP Field Guides/i);
-  assert.match(forum, /united-mobile-rv-llc\.square\.site/);
+  assert.match(forum, /book\.unitedmobilerv\.com/);
+  assert.doesNotMatch(forum, /united-mobile-rv-llc\.square\.site/);
   assert.match(forum, /sms:\+16166065277/);
   assert.match(forum, /tel:\+16166065277/);
   assert.match(forum, /Text Now/);
@@ -169,13 +175,14 @@ test('shop lockdown allowlist is unchanged (no /forum/ or /design/ added)', () =
   assert.match(mw, /const SHOP_ALLOWED_PREFIXES = \['\/shop\/', '\/api\/shop\/', '\/book-service\/', '\/api\/book', '\/css\/', '\/js\/', '\/assets\/', '\/fonts\/'\]/);
 });
 
-test('site.js stamps Call + gold Text Now + Square Book on every nav/mobile bar', () => {
+test('site.js stamps Call + gold Text Now + book. Book on every nav/mobile bar', () => {
   const js = src('js/site.js');
-  assert.match(js, /https:\/\/united-mobile-rv-llc\.square\.site\//);
+  assert.match(js, /https:\/\/book\.unitedmobilerv\.com\//);
   assert.match(js, /sms:\+16166065277/);
   assert.match(js, /tel:\+16166065277/);
   assert.match(js, /Call \(616\) 606-5277/);
-  assert.match(js, /MAIN HUB/);
+  assert.match(js, /MAIN_HOME_LABEL = 'Home'/);
+  assert.doesNotMatch(js, /MAIN_HOME_LABEL = 'MAIN HUB'/);
   assert.match(js, /https:\/\/unitedmobilerv\.com\//);
   assert.doesNotMatch(js, /\['Main', 'https:\/\/unitedmobilerv\.com\/'\]/);
   assert.match(js, /navCtaHtml/);
@@ -191,28 +198,29 @@ test('site.js stamps Call + gold Text Now + Square Book on every nav/mobile bar'
   assert.match(js, /\['Forum', 'https:\/\/forum\.unitedmobilerv\.com\/'\]/);
   assert.match(js, /\['Software', 'https:\/\/software\.unitedmobilerv\.com\/'\]/);
   assert.match(js, /\['Docs', 'https:\/\/docs\.unitedmobilerv\.com\/'\]/);
-  assert.doesNotMatch(js, /BOOK_PUBLIC = 'https:\/\/book\.unitedmobilerv\.com\//);
+  assert.match(js, /BOOK_PUBLIC = 'https:\/\/book\.unitedmobilerv\.com\//);
+  assert.doesNotMatch(js, /BOOK_PUBLIC = 'https:\/\/united-mobile-rv-llc\.square\.site\//);
   assert.doesNotMatch(js, /PREFER_TEXT_HREF = 'tel:/);
   assert.doesNotMatch(js, /pages\.dev/);
   assert.match(js, /umrtSquareBookHref/);
 });
 
-test('mothership home + platform-bar convert stack: Text Now sms + tel + Square', () => {
+test('mothership home + platform-bar convert stack: Text Now sms + tel + book.', () => {
   for (const file of ['index.html', 'design/platform-bar.html']) {
     const html = src(file);
     const bar = html.match(/umrt-platform-bar-inner">[\s\S]*?<\/div>/)[0];
     assert.deepEqual(productLabels(bar), PRODUCT_NAV, file);
-    assert.match(html, /united-mobile-rv-llc\.square\.site/, file);
+    assert.match(html, /book\.unitedmobilerv\.com/, file);
     assert.match(html, /sms:\+16166065277/, file);
     assert.match(html, /tel:\+16166065277/, file);
     assert.match(html, /Call \(616\) 606-5277/, file);
-    assert.match(html, />MAIN HUB</, file);
+    assert.match(html, />Home</, file);
+    assert.doesNotMatch(html, />MAIN HUB</, file);
     assert.doesNotMatch(html, /status\.unitedmobilerv\.com/, file);
     assert.doesNotMatch(html, /portal\.unitedmobilerv\.com/, file);
     assert.doesNotMatch(html, FORBIDDEN, file);
     assert.doesNotMatch(html, /Prefer Text/, file);
-    assert.doesNotMatch(html, /data-platform-link="book"[^>]*book\.unitedmobilerv\.com/, file);
-    assert.doesNotMatch(html, /class="btn btn-ghost"[^>]*book\.unitedmobilerv\.com/, file);
+    assert.match(html, /href="https:\/\/book\.unitedmobilerv\.com\/"[^>]*data-platform-link="book"/, file);
   }
 });
 

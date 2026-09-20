@@ -6,5 +6,5 @@
 import { renderBookSuite } from '../_lib/book-suite.js';
 
 export async function onRequestGet(context) {
-  return renderBookSuite(context.request);
+  return renderBookSuite(context.request, context.env);
 }
