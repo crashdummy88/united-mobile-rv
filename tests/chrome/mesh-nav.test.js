@@ -75,6 +75,9 @@ test('MESH_LINKS is Home + Shop · Book · Forum · Software · Docs (no Portal/
   const mobile = islandMobileBar();
   assert.doesNotMatch(header, /brand-text/);
   assert.doesNotMatch(header, />United Mobile/);
+  assert.match(header, /umrt-icon\.webp/);
+  assert.doesNotMatch(header, /umrt-logo\.webp/);
+  assert.match(header, /brand-mark/);
   assert.deepEqual(productLabels(header), PRODUCT_NAV);
   assert.deepEqual(productLabels(footer), PRODUCT_NAV);
   for (const html of [header, footer]) {
@@ -149,6 +152,8 @@ test('shop + forum templates include mesh-chrome (or static mesh + Square)', () 
   assert.match(forum, />Home</);
   assert.match(forum, /href="https:\/\/unitedmobilerv\.com\/"[^>]*>Home</);
   assert.doesNotMatch(forum, /brand-text/);
+  assert.match(forum.match(/<header[\s\S]*?<\/header>/)[0], /umrt-icon\.webp/);
+  assert.doesNotMatch(forum.match(/<header[\s\S]*?<\/header>/)[0], /umrt-logo\.webp/);
   assert.doesNotMatch(forum, />MAIN HUB</);
   assert.doesNotMatch(forum, /status\.unitedmobilerv\.com/);
   assert.doesNotMatch(forum, /portal\.unitedmobilerv\.com/);
@@ -200,6 +205,8 @@ test('shop/forum/book chrome has no sticky United Mobile RV brand-text', () => {
   assert.match(header, /brand-mark/);
   assert.doesNotMatch(header, /brand-text/);
   assert.doesNotMatch(header, /United Mobile/);
+  assert.match(header, /umrt-icon\.webp/);
+  assert.doesNotMatch(header, /umrt-logo\.webp/);
   const surfaces = [
     'forum/index.html',
     'forum/mod/index.html',
@@ -212,6 +219,15 @@ test('shop/forum/book chrome has no sticky United Mobile RV brand-text', () => {
     const html = src(file);
     assert.doesNotMatch(html, /class="brand-text"/, file);
     assert.doesNotMatch(html, /United Mobile <span>RV/, file);
+    const bar = html.includes('<header')
+      ? html.match(/<header[\s\S]*?<\/header>/)[0]
+      : islandHeader({ current: 'shop' });
+    assert.doesNotMatch(bar, /brand-text/, file);
+    assert.doesNotMatch(bar, />United Mobile/, file);
+    assert.doesNotMatch(bar, /alt="United Mobile RV"/, file);
+    assert.match(bar, /umrt-icon\.webp/, file);
+    assert.doesNotMatch(bar, /umrt-logo\.webp/, file);
+    assert.match(bar, /brand-mark/, file);
   }
   const css = src('css/site.css');
   assert.match(css, /body\.island-chrome \.site-header \.brand-text/);
@@ -219,6 +235,10 @@ test('shop/forum/book chrome has no sticky United Mobile RV brand-text', () => {
   const js = src('js/site.js');
   assert.match(js, /umrtStripIslandBrandText/);
   assert.match(js, /islandPath/);
+  assert.match(js, /umrt-icon\.webp/);
+  const mothership = src('index.html').match(/<header[\s\S]*?<\/header>/)[0];
+  assert.match(mothership, /brand-text/);
+  assert.match(mothership, /United Mobile/);
 });
 
 test('shop lockdown allowlist is unchanged (no /forum/ or /design/ added)', () => {

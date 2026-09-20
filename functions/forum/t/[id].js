@@ -215,7 +215,7 @@ ${islandFooter({ current: 'forum' })}
   <img id="lightbox-img" src="" alt="">
 </div>
 ${islandMobileBar()}
-<script src="/js/site.js?v=20260920home" defer></script>
+<script src="/js/site.js?v=20260920icon" defer></script>
 <script>
 (function () {
   var THREAD_ID = ${JSON.stringify(thread.id)};
