@@ -147,3 +147,14 @@ export {
   clarityHeadSnippet,
 } from './clarity.js';
 
+export {
+  landJsonLdSnippet,
+  landCrumbsNav,
+  injectLandJsonLd,
+  injectLandCrumbsNav,
+  injectLandSchema,
+  buildLandJsonLd,
+  buildLandCrumbs,
+  LAND_SITES,
+} from './jsonld.js';
+

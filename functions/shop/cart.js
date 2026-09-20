@@ -1,4 +1,4 @@
-import { islandHeader, islandFooter, islandMobileBar, shopCartNavItem, clarityHeadSnippet } from '../_lib/mesh-chrome.js';
+import { islandHeader, islandFooter, islandMobileBar, shopCartNavItem, clarityHeadSnippet, landJsonLdSnippet, landCrumbsNav } from '../_lib/mesh-chrome.js';
 
 /**
  * GET /shop/cart -- skeleton cart page.
@@ -22,13 +22,15 @@ export async function onRequestGet(context) {
 <link rel="canonical" href="${base}/shop/cart">
 <meta name="robots" content="noindex,follow">
 <link rel="icon" href="/favicon.png" type="image/png">
-<link rel="stylesheet" href="/css/site.css?v=20260920home">
+<link rel="stylesheet" href="/css/site.css?v=20260920crumbs">
 <link rel="stylesheet" href="/css/shop.css">
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 ${clarityHeadSnippet()}
+${landJsonLdSnippet(context.request, { pageName: 'Cart' })}
 </head>
 <body class="island-chrome">
 ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem(), extraAfterKey: 'shop' })}
+${landCrumbsNav(context.request, { pageName: 'Cart' })}
 <main id="main">
 <section class="page-hero">
   <div class="wrap wrap-narrow">
