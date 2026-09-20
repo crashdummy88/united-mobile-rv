@@ -22,6 +22,14 @@ import {
   MAIN_HOME_HREF,
   MAIN_HOME_LABEL,
 } from './mesh-chrome.js';
+import {
+  bookExpectSection,
+  bookHeroHtml,
+  bookRequestSection,
+  bookVisitSection,
+  bookWhoArrivesSection,
+  publishedRatesSection,
+} from './island-substance.js';
 
 export const BOOK_HOST = 'book.unitedmobilerv.com';
 export { SQUARE_BOOK_URL };
@@ -76,91 +84,13 @@ function suiteFooter({ bookHost }) {
 }
 
 function suiteMain({ bookHost }) {
-  const rateSheet = bookHost
-    ? ''
-    : `<p class="mt-8 muted">Full rate sheet: <a href="/pricing/">Pricing</a>.</p>`;
   return `<main id="main">
-<section class="page-hero">
-  <div class="wrap">
-    <span class="micro">Booking</span>
-    <h1>Book a mobile RV visit</h1>
-    <p class="lead">BOOK ONLINE opens Square in a new tab — that is the official booking intake. You leave this page to finish the request on Square. Text if you want the technician first. Every request is reviewed personally — trip fee and price confirmed before we roll.</p>
-  </div>
-</section>
-<section class="band" style="padding-top:48px;padding-bottom:32px">
-  <div class="wrap-narrow" style="text-align:center">
-    <div class="book-cta-row">
-      <a class="btn btn-gold" href="${esc(SQUARE_BOOK_URL)}" target="_blank" rel="noopener" style="font-size:1.05em;padding:0 40px;">BOOK ONLINE</a>
-      <a class="btn btn-ghost" href="${TEXT_NOW_HREF}">${TEXT_NOW_LABEL}</a>
-    </div>
-    <p class="muted" style="margin-top:20px">BOOK ONLINE leaves this site for Square (new tab). Or <a href="tel:${BOOK_PHONE_E164}">call ${BOOK_PHONE_DISPLAY}</a> — same number, technician directly.</p>
-  </div>
-</section>
-<section class="band" style="padding-top:16px">
-  <div class="wrap">
-    <span class="micro">What to expect</span>
-    <h2>Three steps. No surprise invoice.</h2>
-    <div class="book-expect">
-      <div>
-        <span class="step-num">01</span>
-        <h3>Book or text</h3>
-        <p>Use BOOK ONLINE to continue on Square (new tab), or Text Now. Tell us the issue, City/ZIP, and the rig.</p>
-      </div>
-      <div>
-        <span class="step-num">02</span>
-        <h3>We confirm scope</h3>
-        <p>Trip fee quoted upfront. Diagnostic-first — we do not guess a total before we see the system.</p>
-      </div>
-      <div>
-        <span class="step-num">03</span>
-        <h3>Price before work</h3>
-        <p>You authorize the fix after the diagnosis. Parts and materials billed separately.</p>
-      </div>
-    </div>
-  </div>
-</section>
-<section class="band band-light">
-  <div class="wrap">
-    <span class="micro">Published rates</span>
-    <h2>Pricing snapshot</h2>
-    <p>Same figures as the public rate sheet. Confirmed with you before we arrive.</p>
-    <div class="grid-3 mt-8">
-      <div class="price-card">
-        <span class="micro">Labor rate</span>
-        <div class="amount">$150</div>
-        <div class="unit">Per hour</div>
-        <p>1 hour minimum · billed in 30-minute increments after the first hour · parts and materials billed separately.</p>
-      </div>
-      <div class="price-card">
-        <span class="micro">Trip / service call</span>
-        <div class="amount">$75</div>
-        <div class="unit">Within 30 miles</div>
-        <p>Beyond 30 miles: $75 + $1.50/mi each way. Trip fee quoted upfront when you book or text.</p>
-      </div>
-      <div class="price-card">
-        <span class="micro">Diagnostic</span>
-        <div class="amount">$175</div>
-        <div class="unit">Applied if you proceed</div>
-        <p>Full system scan / DVOM / thermal imaging where applicable. Applied toward repair if you authorize the fix.</p>
-      </div>
-    </div>
-    <div class="grid-2 mt-8">
-      <div class="price-card">
-        <h3>Winterization</h3>
-        <div class="amount">$175</div>
-        <div class="unit">Fixed price</div>
-        <p>Labor included · materials extra. Separate line item — not by coach class.</p>
-      </div>
-      <div class="price-card">
-        <h3>Trip prep &amp; safety check</h3>
-        <div class="amount">$225</div>
-        <div class="unit">Fixed price</div>
-        <p>Labor included · materials extra. Brakes, lights, tires, hitch, LP check.</p>
-      </div>
-    </div>
-    ${rateSheet}
-  </div>
-</section>
+${bookHeroHtml()}
+${bookExpectSection()}
+${bookWhoArrivesSection()}
+${bookVisitSection()}
+${bookRequestSection()}
+${publishedRatesSection({ includeRateSheetLink: !bookHost })}
 </main>`;
 }
 
@@ -186,7 +116,7 @@ ${robots}<meta name="theme-color" content="#1A1A1A">
 </head>
 <body class="book-suite">
 <a class="skip-link" href="#main">Skip to content</a>
-${islandHeader()}
+${islandHeader({ current: 'book' })}
 ${mainHtml}
 <footer class="site-footer">
   ${suiteFooter({ bookHost })}
@@ -206,7 +136,7 @@ export function renderBookSuite(request) {
   const bookHost = isBookHost(url.hostname);
   const canonical = bookHost ? `${url.origin}/` : `${url.origin}/book-service/`;
   const title = 'Book a Mobile RV Repair Visit | United Mobile RV';
-  const description = 'Book mobile RV repair at your campsite, driveway, or storage yard. BOOK ONLINE on Square, or Text Now (616) 606-5277.';
+  const description = 'Request a mobile RV repair visit at your campsite, driveway, or storage yard. Every request is reviewed personally. Book on Square or text (616) 606-5277.';
   const html = pageShell({
     title,
     description,
@@ -243,7 +173,7 @@ export function renderBookThankYou(request) {
   <div class="wrap">
     <span class="micro">Book</span>
     <h1>Request received</h1>
-    <p class="lead">Thanks — we will follow up shortly. Need something sooner? Text Now ${BOOK_PHONE_DISPLAY}.</p>
+    <p class="lead">Thank you. We will follow up shortly. For something more urgent, text ${BOOK_PHONE_DISPLAY} — you reach the technician directly.</p>
   </div>
 </section>
 <section class="band"><div class="wrap"><div class="btn-row">

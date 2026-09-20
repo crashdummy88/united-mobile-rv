@@ -106,6 +106,12 @@ function umrtGetTurnstileToken(containerId) {
         continue;
       }
       var chromeLabel = umrtLinkLabel(chromeA);
+      if (/^(MAIN HUB|Main Hub|Main)$/i.test(chromeLabel)
+        || chromeA.getAttribute('data-platform-link') === 'hub') {
+        chromeA.setAttribute('href', 'https://unitedmobilerv.com/');
+        chromeA.textContent = 'Home';
+        continue;
+      }
       if (/^(Book|Book Now|Book a Service|BOOK ONLINE|Book Online|Book service)$/i.test(chromeLabel)) {
         chromeA.setAttribute('href', BOOK_PUBLIC);
         chromeA.setAttribute('target', '_blank');
@@ -170,10 +176,10 @@ function umrtGetTurnstileToken(containerId) {
     ba.setAttribute('rel', 'noopener');
   }
 
-  /* Shop/forum/book islands: Shop-first product nav — MAIN HUB + Shop · Book ·
+  /* Shop/forum/book islands: Shop-first product nav — Home + Shop · Book ·
      Forum · Software · Docs. Not Book-first. Strip retired destinations and guide-library labels. */
   var MAIN_HOME_HREF = 'https://unitedmobilerv.com/';
-  var MAIN_HOME_LABEL = 'MAIN HUB';
+  var MAIN_HOME_LABEL = 'Home';
   var islandHost = location.hostname === 'shop.unitedmobilerv.com'
     || location.hostname === 'forum.unitedmobilerv.com'
     || location.hostname === 'book.unitedmobilerv.com';
@@ -192,20 +198,24 @@ function umrtGetTurnstileToken(containerId) {
       leftover.forEach(function (li) { meshNav.removeChild(li); });
       var have = {};
       var extras = [];
+      var cartItems = [];
       leftover.forEach(function (li) {
         var a = li.querySelector('a');
         if (!a) { extras.push(li); return; }
         if (umrtIsForbiddenIslandNav(a)) return;
         var name = umrtLinkLabel(a);
-        if (/^Cart\b/i.test(name)) { extras.push(li); return; }
+        if (/^Cart\b/i.test(name)) { cartItems.push(li); return; }
         have[name.toLowerCase()] = li;
-        if (/^(main|home|main hub)$/i.test(name)) have['main hub'] = li;
+        if (/^(main|home|main hub)$/i.test(name)) {
+          have.home = li;
+          have['main hub'] = li;
+        }
       });
       meshItems.forEach(function (pair) {
         var name = pair[0];
         var href = pair[1];
         var found = have[name.toLowerCase()]
-          || (name === MAIN_HOME_LABEL ? (have['main hub'] || have.main || have.home) : null);
+          || (name === MAIN_HOME_LABEL ? (have.home || have['main hub'] || have.main) : null);
         var li;
         var link;
         if (found) {
@@ -226,8 +236,15 @@ function umrtGetTurnstileToken(containerId) {
           link.setAttribute('rel', 'noopener');
         }
         meshNav.appendChild(li);
+        if (name === 'Shop') {
+          cartItems.forEach(function (c) { meshNav.appendChild(c); });
+        }
       });
       extras.forEach(function (li) { meshNav.appendChild(li); });
+    }
+    var brandTexts = document.querySelectorAll('.site-header .brand-text');
+    for (var bt = 0; bt < brandTexts.length; bt++) {
+      brandTexts[bt].parentNode.removeChild(brandTexts[bt]);
     }
   }
 

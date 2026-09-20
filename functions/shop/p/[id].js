@@ -5,6 +5,7 @@
  */
 import { formatPrice, priceNote, displayName, CATEGORY_ICONS, stockStatusMeta } from '../../_lib/shop.js';
 import { islandHeader, islandFooter, islandMobileBar, shopCartNavItem } from '../../_lib/mesh-chrome.js';
+import { quoteFirstSection, shopQuoteNeedsSection } from '../../_lib/island-substance.js';
 
 function esc(s) {
   return String(s || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -65,7 +66,7 @@ export async function onRequestGet(context) {
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
-${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem() })}
+${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem(), extraAfterKey: 'shop' })}
 <main id="main">
 <section class="page-hero">
   <div class="wrap wrap-narrow">
@@ -94,14 +95,16 @@ ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem() })}
     <p>${esc(product.description || 'Technical details available on request.')}</p>
     ${product.compatibility ? `<h2>Compatibility</h2><p>${esc(product.compatibility)}</p>` : ''}
     ${componentsHtml}
-    ${product.installation_required ? '<p class="held-note">Professional installation strongly recommended for this item.</p>' : ''}
+    ${product.installation_required ? '<p class="held-note">Professional installation is strongly recommended for this item — undersized wire, a missed fuse, or a wrong charge profile will underperform at best and fail dangerously at worst.</p>' : ''}
   </div>
 </section>
+${quoteFirstSection({ variant: 'product' })}
+${shopQuoteNeedsSection()}
 <section class="shop-checkout-band" id="quote">
   <div class="wrap wrap-narrow">
     <div class="shop-checkout-panel">
     <h2>Request a quote</h2>
-    <p class="muted">This isn't a live checkout yet -- submit your info and our team follows up with real pricing, availability, and next steps. No charge happens here. Call or text (616) 606-5277 anytime.</p>
+    <p class="muted">This is a quote request, not a live checkout. Submit your details and we follow up with pricing, availability, and next steps. No payment is taken here. Call or text (616) 606-5277 anytime.</p>
     <form id="quote-form">
       <input type="hidden" id="qf-product-id" value="${esc(product.id)}">
       <label class="service-tier"><input type="radio" name="service_option" value="hardware_only" checked><span class="service-tier-text"><strong>Hardware only</strong><small>We ship it to you and you handle the install.</small></span></label>
@@ -116,8 +119,8 @@ ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem() })}
         <div class="qf-field"><label class="qf-label" for="qf-location">City / State</label><input class="forum-input" id="qf-location" placeholder="Missoula, MT" maxlength="160"></div>
       </div>
       <div class="qf-field"><label class="qf-label" for="qf-rig">RV year / make / model</label><input class="forum-input" id="qf-rig" placeholder="2021 Forest River Cherokee" maxlength="160"></div>
-      <div class="qf-field"><label class="qf-label" for="qf-notes">Anything else we should know?</label><textarea class="forum-input" id="qf-notes" rows="3" maxlength="1500"></textarea></div>
-      <div class="btn-row"><button type="submit" class="btn btn-gold" id="qf-submit">Request Quote</button></div>
+      <div class="qf-field"><label class="qf-label" for="qf-notes">Notes for the quote</label><textarea class="forum-input" id="qf-notes" rows="3" maxlength="1500"></textarea></div>
+      <div class="btn-row"><button type="submit" class="btn btn-gold" id="qf-submit">Request a quote</button></div>
       <p class="held-note" id="qf-status"></p>
       <div id="qf-turnstile"></div>
     </form>
@@ -159,7 +162,7 @@ ${islandMobileBar()}
   addBtn.addEventListener('click', function () {
     window.UMRTCart.addToCart(addBtn.dataset.productId, 1);
     var original = addBtn.textContent;
-    addBtn.textContent = 'Added to Cart \u2713';
+    addBtn.textContent = 'Added to cart';
     setTimeout(function () { addBtn.textContent = original; }, 1200);
   });
 
@@ -190,7 +193,7 @@ ${islandMobileBar()}
     });
     var data = await res.json().catch(function(){return {};});
     submitBtn.disabled = false;
-    if (!data.success) { status.textContent = data.message || 'Could not submit -- please text/call (616) 606-5277 instead.'; return; }
+    if (!data.success) { status.textContent = data.message || 'We could not submit the request. Please call or text (616) 606-5277.'; return; }
     status.textContent = data.message;
     form.reset();
   });

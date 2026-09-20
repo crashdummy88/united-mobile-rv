@@ -8,10 +8,11 @@
  * Do not add a guide-library item to MESH_LINKS. That library stays
  * on the WP apex, not in shop/forum/book product chrome.
  *
- * Matt LOCK 2026-09-18 product nav (shop / forum / book), Shop-first:
- *   MAIN HUB return → https://unitedmobilerv.com/
+ * Matt LOCK 2026-09-20 product nav (shop / forum / book), Shop-first:
+ *   Home return → https://unitedmobilerv.com/  (label Home, not MAIN HUB)
  *   1 Shop · 2 Book (Square) · 3 Forum · 4 Software · 5 Docs
  *   Not Book-first. Do not add portal, status, or guide-library items.
+ *   Island header is logo-only — no "United Mobile RV" corner title.
  *
  * Matt LOCK 2026-09-16 convert stack (header + mobile bar, every surface):
  *   Call (616) 606-5277 → tel:+16166065277 (older clients; number is the call control)
@@ -33,7 +34,7 @@ export const TEXT_NOW_COMPACT = 'Text Now';
 export const CALL_HREF = 'tel:+16166065277';
 export const CALL_LABEL = 'Call (616) 606-5277';
 export const MAIN_HOME_HREF = 'https://unitedmobilerv.com/';
-export const MAIN_HOME_LABEL = 'MAIN HUB';
+export const MAIN_HOME_LABEL = 'Home';
 
 export function convertNavCta() {
   return `<div class="nav-cta">
@@ -69,11 +70,13 @@ function meshAnchorOpen(item, current) {
   return `<a href="${item.href}"${currentAttr(item, current)}${extra}>`;
 }
 
-export function meshNavLis({ current, extraAfter = '' } = {}) {
-  const items = MESH_LINKS.map(
-    (item) => `<li>${meshAnchorOpen(item, current)}${item.label}</a></li>`
-  );
-  if (extraAfter) items.push(extraAfter);
+export function meshNavLis({ current, extraAfter = '', extraAfterKey = '' } = {}) {
+  const items = [];
+  for (const item of MESH_LINKS) {
+    items.push(`<li>${meshAnchorOpen(item, current)}${item.label}</a></li>`);
+    if (extraAfter && extraAfterKey === item.key) items.push(extraAfter);
+  }
+  if (extraAfter && !extraAfterKey) items.push(extraAfter);
   return items.join('\n      ');
 }
 
@@ -84,13 +87,13 @@ export function meshFooterAnchors({ current } = {}) {
   return `${mesh}\n      <a href="${TEXT_NOW_HREF}">${TEXT_NOW_COMPACT}</a>`;
 }
 
-export function islandHeader({ current, extraNavHtml = '' } = {}) {
+export function islandHeader({ current, extraNavHtml = '', extraAfterKey = '' } = {}) {
   return `<header class="site-header">
   <div class="wrap nav-bar">
-    <a class="brand" href="${MAIN_HOME_HREF}"><img class="brand-logo" src="/assets/brand/umrt-logo.webp" alt="United Mobile RV" width="40" height="40"><span class="brand-text">United Mobile <span>RV</span></span></a>
+    <a class="brand brand-mark" href="${MAIN_HOME_HREF}" aria-label="Home"><img class="brand-logo" src="/assets/brand/umrt-logo.webp" alt="" width="40" height="40"></a>
     <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">☰</button>
     <ul class="nav-links">
-      ${meshNavLis({ current, extraAfter: extraNavHtml })}
+      ${meshNavLis({ current, extraAfter: extraNavHtml, extraAfterKey })}
     </ul>
     ${convertNavCta()}
   </div>
