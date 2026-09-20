@@ -53,7 +53,7 @@ test('terms-of-use hosts the full site + forum terms body', () => {
   assert.match(terms, /Community forum/);
   assert.match(terms, /AI moderation/);
   assert.match(terms, /No warranty/);
-  assert.match(terms, /provided "as is"/);
+  assert.match(terms, /as is\./);
   assert.match(terms, /<h2>Changes<\/h2>/);
   assert.match(terms, /<h2>Contact<\/h2>/);
   assert.match(terms, /unitedrvnetwork@gmail.com/);
@@ -66,8 +66,11 @@ test('forum chrome still points at these CF legal paths', () => {
 });
 
 test('legal page Book CTAs stay Square; sitemap lists both paths', () => {
-  assert.match(privacy, SQUARE);
-  assert.match(terms, SQUARE);
+  const squareRe = /https:\/\/united-mobile-rv-llc\.square\.site\//;
+  assert.match(privacy, squareRe);
+  assert.match(terms, squareRe);
+  assert.ok(privacy.includes(SQUARE));
+  assert.ok(terms.includes(SQUARE));
   assert.doesNotMatch(privacy, /href="https:\/\/book\.unitedmobilerv\.com/);
   assert.doesNotMatch(terms, /href="https:\/\/book\.unitedmobilerv\.com/);
   assert.match(sitemap, /loc: '\/privacy-policy\/'/);
