@@ -399,9 +399,9 @@ test('every shop/forum/book chrome file says Home, never MAIN HUB / Main Hub, no
   }
   assert.equal(MAIN_HOME_LABEL, 'Home');
   assert.equal(MAIN_HOME_HREF, 'https://unitedmobilerv.com/');
-  assert.match(src('forum/index.html'), /site\.js\?v=20260920svc/);
-  assert.match(src('functions/shop/index.js'), /site\.js\?v=20260920svc/);
-  assert.match(src('functions/_lib/book-suite.js'), /site\.js\?v=20260920svc/);
+  assert.match(src('forum/index.html'), /site\.js\?v=20260920chatoff/);
+  assert.match(src('functions/shop/index.js'), /site\.js\?v=20260920chatoff/);
+  assert.match(src('functions/_lib/book-suite.js'), /site\.js\?v=20260920chatoff/);
 });
 
 test('shop Cart sits after Shop, after Services', () => {

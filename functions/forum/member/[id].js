@@ -90,7 +90,7 @@ ${landCrumbsNav(request, { pageName: user.display_name })}
 </main>
 ${islandFooter({ current: 'forum' })}
 ${islandMobileBar()}
-<script src="/js/site.js?v=20260920svc" defer></script>
+<script src="/js/site.js?v=20260920chatoff" defer></script>
 </body>
 </html>`;
 

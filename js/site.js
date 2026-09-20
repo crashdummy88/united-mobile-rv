@@ -384,7 +384,11 @@ function umrtGetTurnstileToken(containerId) {
   }
 })();
 
-/* UMRT AI Chat widget */
+/* UMRT AI Chat widget.
+ * Public FAB is gated by UMRT_CHAT_UI_ENABLED. Flip to true to remount
+ * the existing #umrt-chat-root / #chat-fab / #chat-panel implementation.
+ * APIs, CSS, and mountChatFab stay intact while this is false. */
+var UMRT_CHAT_UI_ENABLED = false;
 (function () {
   function mountChatFab() {
     if (document.getElementById('umrt-chat-root')) return;
@@ -541,6 +545,7 @@ function umrtGetTurnstileToken(containerId) {
       if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
     });
   }
+  if (!UMRT_CHAT_UI_ENABLED) return;
   if (typeof requestIdleCallback === 'function') {
     requestIdleCallback(mountChatFab, { timeout: 2000 });
   } else {
