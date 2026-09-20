@@ -205,7 +205,7 @@ ${sectionsHtml || shopEmptyHtml(activeTab)}
 ${islandFooter({ current: 'shop' })}
 ${islandMobileBar()}
 <script src="/js/cart.js"></script>
-<script src="/js/site.js?v=20260920icon" defer></script>
+<script src="/js/site.js?v=20260920booksq" defer></script>
 <script>
 (function () {
   document.querySelectorAll('.shop-add-btn').forEach(function (btn) {

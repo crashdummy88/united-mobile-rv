@@ -54,7 +54,10 @@ function umrtGetTurnstileToken(containerId) {
 }
 
 (function () {
-  /* Matt LOCK: every header + mobile bar is Call / Text Now / Book.
+  /* Matt HARD LOCK 2026-09-20: chrome Book = STRAIGHT to Square.
+     BOOK_PUBLIC / meshItems Book / nav-cta / mobile-bar / platform-bar
+     must be https://united-mobile-rv-llc.square.site/
+     NEVER https://book.unitedmobilerv.com/ in chrome.
      Do not rewrite a Call control onto sms: — older clients use tel:. */
   var BOOK_PUBLIC = 'https://united-mobile-rv-llc.square.site/';
   var TEXT_NOW_HREF = 'sms:+16166065277';
@@ -106,8 +109,17 @@ function umrtGetTurnstileToken(containerId) {
   function umrtIsHubLabel(label) {
     return umrtIsHubAlias(label) || /^home$/i.test(umrtNormalizeLabel(label));
   }
+  function umrtIsChromeBookLabel(label) {
+    return /^(Book|Book Now|Book a Service|BOOK ONLINE|Book Online|Book service)$/i.test(umrtNormalizeLabel(label));
+  }
+  function umrtStampChromeBook(a) {
+    a.setAttribute('href', BOOK_PUBLIC);
+    a.setAttribute('target', '_blank');
+    a.setAttribute('rel', 'noopener');
+    a.textContent = 'Book';
+  }
 
-  var chromeRoots = document.querySelectorAll('.nav-links, .site-footer, .umrt-platform-bar, .site-header');
+  var chromeRoots = document.querySelectorAll('.nav-links, .site-footer, .umrt-platform-bar, .site-header, .mobile-bar');
   for (var ci = 0; ci < chromeRoots.length; ci++) {
     var chromeLinks = chromeRoots[ci].querySelectorAll('a[href]');
     for (var cj = 0; cj < chromeLinks.length; cj++) {
@@ -123,11 +135,9 @@ function umrtGetTurnstileToken(containerId) {
         chromeA.textContent = 'Home';
         continue;
       }
-      if (/^(Book|Book Now|Book a Service|BOOK ONLINE|Book Online|Book service)$/i.test(chromeLabel)) {
-        chromeA.setAttribute('href', BOOK_PUBLIC);
-        chromeA.setAttribute('target', '_blank');
-        chromeA.setAttribute('rel', 'noopener');
-        chromeA.textContent = 'Book';
+      if (umrtIsChromeBookLabel(chromeLabel)
+        || chromeA.getAttribute('data-platform-link') === 'book') {
+        umrtStampChromeBook(chromeA);
         continue;
       }
       if (/^(Call(\s*\(616\)\s*606[-.\s]?5277)?|\(?616\)?\s*606[-.\s]?5277)$/i.test(chromeLabel)
@@ -276,6 +286,13 @@ function umrtGetTurnstileToken(containerId) {
       if (!umrtIsHubAlias(umrtLinkLabel(hubA)) && hubA.getAttribute('data-platform-link') !== 'hub') continue;
       hubA.setAttribute('href', MAIN_HOME_HREF);
       hubA.textContent = MAIN_HOME_LABEL;
+    }
+    var leftoverBook = document.querySelectorAll('.nav-links a[href], .site-footer a[href], .umrt-platform-bar a[href], .site-header a[href], .mobile-bar a[href]');
+    for (var bk = 0; bk < leftoverBook.length; bk++) {
+      var leftoverBookA = leftoverBook[bk];
+      if (!umrtIsChromeBookLabel(umrtLinkLabel(leftoverBookA))
+        && leftoverBookA.getAttribute('data-platform-link') !== 'book') continue;
+      umrtStampChromeBook(leftoverBookA);
     }
     var brandLinks = document.querySelectorAll('.site-header .brand');
     for (var bl = 0; bl < brandLinks.length; bl++) {

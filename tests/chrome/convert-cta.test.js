@@ -28,6 +28,15 @@ function assertConvertChrome(html, file) {
   assert.match(chrome, /btn btn-gold[^>]*sms:\+16166065277|>Text Now</, file);
   assert.match(chrome, />Book</, file);
   assert.match(chrome, /united-mobile-rv-llc\.square\.site/, file);
+  const bookHrefs = [...chrome.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/g)]
+    .filter((m) => /^Book$/i.test(m[2].replace(/<[^>]+>/g, '').trim()))
+    .map((m) => (m[1].match(/href="([^"]*)"/) || [])[1]);
+  assert.ok(bookHrefs.length > 0, `${file}: missing Book href`);
+  for (const href of bookHrefs) {
+    assert.equal(href, 'https://united-mobile-rv-llc.square.site/', `${file}: Book href must be Square`);
+    assert.doesNotMatch(href, /book\.unitedmobilerv\.com/, `${file}: Book href must not be book.*`);
+  }
+  assert.doesNotMatch(chrome, /href="https:\/\/book\.unitedmobilerv\.com/, file);
   assert.doesNotMatch(chrome, /Prefer Text/, file);
   assert.doesNotMatch(chrome, /BOOK ONLINE/, file);
   assert.doesNotMatch(chrome, /Book Online/, file);
