@@ -29,10 +29,10 @@ function renderImages(imageKeysJson) {
 
 function catLabel(cat) {
   const map = {
-    general: '💬 General', repair: '🔧 Repair & Diagnostics', power: '⚡ Off-Grid & Power',
-    connectivity: '📡 Connectivity', route: '🗺️ Route & Service Areas', blog: '📝 Vlog & Updates',
+    general: 'General', repair: 'Repair & Diagnostics', power: 'Off-Grid & Power',
+    connectivity: 'Connectivity', route: 'Route & Service Areas', blog: 'Updates',
   };
-  return map[cat] || ('💬 ' + cat);
+  return map[cat] || cat;
 }
 
 function notFoundPage(base) {

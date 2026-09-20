@@ -5,22 +5,32 @@
  * Phase 1: no live checkout -- every product routes to a quote request.
  */
 import { formatPrice, displayName, CATEGORY_ICONS, formatServicePrice, stockStatusMeta, serviceBookHref } from '../_lib/shop.js';
-import { islandHeader, islandFooter, islandMobileBar, shopCartNavItem, BOOK_PUBLIC_HREF } from '../_lib/mesh-chrome.js';
+import { islandHeader, islandFooter, islandMobileBar, shopCartNavItem } from '../_lib/mesh-chrome.js';
 import { relatedGuidesForService, relatedGuidesMarkup } from '../_lib/field-guides.js';
+import {
+  diagnosticProcessSection,
+  quoteFirstSection,
+  serviceLinesSection,
+  shopEmptyHtml,
+  shopPartsIntroHtml,
+  shopServicesIntroHtml,
+  techVoiceSection,
+  troubleshootingSection,
+} from '../_lib/island-substance.js';
 
 function esc(s) {
   return String(s || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
 const CATEGORY_LABELS = {
-  'rv-batteries': '🔋 RV Batteries',
-  'rv-solar': '☀️ RV Solar',
-  'rv-power-protection': '⚡ RV Electrical & Power Protection',
-  'rv-connectivity': '📡 RV Connectivity',
-  'rv-climate': '❄️ RV Climate & A/C',
-  'rv-refrigeration': '🧊 RV Refrigeration',
-  'rv-roof-ventilation': '🌬️ RV Roof & Ventilation',
-  'rv-precision-stack': '⚙️ Precision Stack',
+  'rv-batteries': 'RV batteries',
+  'rv-solar': 'RV solar',
+  'rv-power-protection': 'RV electrical and power protection',
+  'rv-connectivity': 'RV connectivity',
+  'rv-climate': 'RV climate and A/C',
+  'rv-refrigeration': 'RV refrigeration',
+  'rv-roof-ventilation': 'RV roof and ventilation',
+  'rv-precision-stack': 'Precision stack',
 };
 
 // Services tab -- added 2026-09-15. Site-owned content (db/migrations/
@@ -28,12 +38,12 @@ const CATEGORY_LABELS = {
 // Matt's own internal invoicing tool. See that migration's header for
 // the full reasoning.
 const SERVICE_CATEGORY_LABELS = {
-  diagnostics: '🔍 Diagnostics & Planning',
-  seasonal: '🗓️ Seasonal & Inspection',
-  'power-solar': '☀️ Power & Solar Installation',
-  'electrical-repair': '⚡ Electrical Repair',
-  'systems-repair': '🔧 Systems Repair',
-  connectivity: '📡 Connectivity',
+  diagnostics: 'Diagnostics and planning',
+  seasonal: 'Seasonal and inspection',
+  'power-solar': 'Power and solar installation',
+  'electrical-repair': 'Electrical repair',
+  'systems-repair': 'Systems repair',
+  connectivity: 'Connectivity',
 };
 
 function cardImageHtml(p) {
@@ -112,7 +122,7 @@ export async function onRequestGet(context) {
             ${p.manufacturer ? `<div class="shop-card-brand">${esc(p.manufacturer)}</div>` : ''}
             <div class="shop-card-title">${esc(displayName(p.manufacturer, p.title))}</div>
             <div class="shop-card-price">${formatPrice(p)}</div>
-            <div class="shop-card-meta">${p.product_type === 'kit' ? 'Complete kit' : 'Component'} &middot; price shown is a public reference price, not a live quote</div>
+            <div class="shop-card-meta">${p.product_type === 'kit' ? 'Complete kit' : 'Component'} · published reference price — request a quote for availability and payment</div>
             <span class="shop-stock-chip is-${stock.cls}">${esc(stock.label)}</span>
           </div>
         </a>
@@ -148,21 +158,29 @@ export async function onRequestGet(context) {
     </div></section>`;
   }).join('\n');
 
-  const servicesNoteHtml = `<section class="band"><div class="wrap wrap-narrow">
-    <p class="muted">Shop labor is billed at <strong>$150/hr</strong> after the initial diagnostic. A trip fee applies beyond 30 miles ($1.50/mi each way) -- confirmed with you before any work starts.</p>
+  const servicesNoteHtml = `<section class="band"><div class="wrap">
+    <p>Shop labor is billed at <strong>$150/hr</strong> after the initial diagnostic. Trip fee is $75 within 30 miles, then $1.50/mi each way — confirmed before we leave. Diagnostic $175 is applied toward the repair if you authorize the fix.</p>
   </div></section>`;
 
+  const partsContextHtml = `${quoteFirstSection({ variant: 'shop' })}
+${diagnosticProcessSection()}
+${serviceLinesSection()}`;
+
+  const servicesContextHtml = `${techVoiceSection()}
+${diagnosticProcessSection()}
+${troubleshootingSection()}`;
+
   const sectionsHtml = activeTab === 'services'
-    ? (services.length ? `${servicesNoteHtml}\n${servicesSectionsHtml}` : '')
-    : partsSectionsHtml;
+    ? (services.length ? `${servicesNoteHtml}\n${servicesSectionsHtml}\n${servicesContextHtml}` : '')
+    : (partsSectionsHtml ? `${partsSectionsHtml}\n${partsContextHtml}` : '');
 
   const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${activeTab === 'services' ? 'RV Repair & Install Services' : 'RV Systems Shop'} | United Mobile RV</title>
-<meta name="description" content="${activeTab === 'services' ? 'Diagnostics, installs, winterization, and repair -- real UMRT service rates, book straight from the list.' : "Curated RV power, solar, and climate systems -- tell us what your rig needs to do and we'll tell you what equipment actually works together."}">
+<title>${activeTab === 'services' ? 'RV Repair and Install Services' : 'RV Systems Shop'} | United Mobile RV</title>
+<meta name="description" content="${activeTab === 'services' ? 'Diagnostics, Victron installs, winterization, and repair at published rates. Diagnostic-first mobile service — book from the list.' : 'Specify RV power, solar, lithium, and climate systems that work together. Published reference prices. Request a quote — not a live checkout.'}">
 <link rel="canonical" href="${base}/shop/${activeTab === 'services' ? '?tab=services' : ''}">
 <!-- 2026-09-16: was noindex,follow -- the X-Robots-Tag header in
      functions/_middleware.js now sends index,follow for /shop/ (real
@@ -176,23 +194,16 @@ export async function onRequestGet(context) {
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
-${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem() })}
+${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem(), extraAfterKey: 'shop' })}
 <main id="main">
 <section class="page-hero">
   <div class="wrap">
-    <span class="eyebrow"><span class="dot"></span>RV Systems Shop</span>
-    ${activeTab === 'services' ? `
-    <h1>Real rates. Book straight from the list.</h1>
-    <p class="lead">Diagnostics, installs, winterization, and repair -- these are UMRT's actual current service rates, the same ones we invoice against. Pick one and book it; we'll confirm scope and schedule with you directly.</p>
-    <p class="muted" style="margin-top:14px">Shopping for hardware instead? <a class="text-link" href="/shop/">See Parts</a>.</p>` : `
-    <h1>Not a parts store. A systems integrator.</h1>
-    <p class="lead">Tell us what your RV is trying to do and we'll tell you what equipment actually works together -- then handle sourcing, configuration, and installation if you want it. Every listing here is a real, cited reference price -- not a guess, and not a live checkout yet. Submit a quote request and our team follows up directly.</p>
-    <p class="muted" style="margin-top:14px">Not sure what you need? <a class="text-link" href="${BOOK_PUBLIC_HREF}" target="_blank" rel="noopener">Tell us the problem</a> and skip guessing at part numbers -- we'll spec it for you.</p>`}
+    ${activeTab === 'services' ? shopServicesIntroHtml() : shopPartsIntroHtml()}
     ${tabsHtml}
   </div>
 </section>
 ${chipsHtml ? `<section class="shop-filter-band"><div class="wrap">${chipsHtml}</div></section>` : ''}
-${sectionsHtml || `<section class="band"><div class="wrap"><p class="muted">${activeTab === 'services' ? 'Services are being added -- check back shortly, or' : 'Products are being added -- check back shortly, or'} <a class="text-link" href="${BOOK_PUBLIC_HREF}" target="_blank" rel="noopener">book a consultation</a> in the meantime.</p></div></section>`}
+${sectionsHtml || shopEmptyHtml(activeTab)}
 </main>
 ${islandFooter({ current: 'shop' })}
 ${islandMobileBar()}
@@ -204,7 +215,7 @@ ${islandMobileBar()}
     btn.addEventListener('click', function () {
       window.UMRTCart.addToCart(btn.dataset.productId, 1);
       var original = btn.textContent;
-      btn.textContent = 'Added \u2713';
+      btn.textContent = 'Added';
       setTimeout(function () { btn.textContent = original; }, 1200);
     });
   });
