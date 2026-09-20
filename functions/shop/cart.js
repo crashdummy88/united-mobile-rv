@@ -23,11 +23,11 @@ export async function onRequestGet(context) {
 <link rel="canonical" href="${base}/shop/cart">
 <meta name="robots" content="noindex,follow">
 <link rel="icon" href="/favicon.png" type="image/png">
-<link rel="stylesheet" href="/css/site.css">
+<link rel="stylesheet" href="/css/site.css?v=20260920chrome">
 <link rel="stylesheet" href="/css/shop.css">
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
-<body>
+<body class="island-chrome">
 ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem(), extraAfterKey: 'shop' })}
 <main id="main">
 <section class="page-hero">
@@ -77,7 +77,7 @@ ${shopQuoteNeedsSection()}
 ${islandFooter({ current: 'shop' })}
 ${islandMobileBar()}
 <script src="/js/cart.js"></script>
-<script src="/js/site.js?v=20260918mesh" defer></script>
+<script src="/js/site.js?v=20260920chrome" defer></script>
 <script>
 (function () {
   var qfTurnstileWidgetId = null;

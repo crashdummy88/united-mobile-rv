@@ -183,6 +183,20 @@ function umrtGetTurnstileToken(containerId) {
   var islandHost = location.hostname === 'shop.unitedmobilerv.com'
     || location.hostname === 'forum.unitedmobilerv.com'
     || location.hostname === 'book.unitedmobilerv.com';
+  var islandPath = /^\/(shop|forum|book-service)(\/|$)/.test(location.pathname);
+  var islandSurface = islandHost || islandPath;
+  function umrtStripIslandBrandText() {
+    var brands = document.querySelectorAll('.site-header .brand');
+    for (var bi = 0; bi < brands.length; bi++) {
+      var brand = brands[bi];
+      var kids = Array.prototype.slice.call(brand.children);
+      for (var kj = 0; kj < kids.length; kj++) {
+        var kid = kids[kj];
+        if (kid.classList.contains('brand-logo') || kid.tagName === 'IMG') continue;
+        brand.removeChild(kid);
+      }
+    }
+  }
   var meshItems = [
     [MAIN_HOME_LABEL, MAIN_HOME_HREF],
     ['Shop', 'https://shop.unitedmobilerv.com/'],
@@ -242,11 +256,8 @@ function umrtGetTurnstileToken(containerId) {
       });
       extras.forEach(function (li) { meshNav.appendChild(li); });
     }
-    var brandTexts = document.querySelectorAll('.site-header .brand-text');
-    for (var bt = 0; bt < brandTexts.length; bt++) {
-      brandTexts[bt].parentNode.removeChild(brandTexts[bt]);
-    }
   }
+  if (islandSurface) umrtStripIslandBrandText();
 
   /* Text Now / TEXT NOW controls must open sms:, never tel:. Call stays tel:. */
   var textNowLinks = document.querySelectorAll('a[href], a.nav-text-now, a[data-platform-link="text"]');

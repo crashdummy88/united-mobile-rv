@@ -168,6 +168,32 @@ test('shop + forum templates include mesh-chrome (or static mesh + Square)', () 
   assert.doesNotMatch(forum, /href="https:\/\/united-mobile-rv\.pages\.dev/);
 });
 
+test('shop/forum/book chrome has no sticky United Mobile RV brand-text', () => {
+  const header = islandHeader({ current: 'forum' });
+  assert.match(header, /brand-mark/);
+  assert.doesNotMatch(header, /brand-text/);
+  assert.doesNotMatch(header, /United Mobile/);
+  const surfaces = [
+    'forum/index.html',
+    'forum/mod/index.html',
+    'forum/mod/status.html',
+    'book-service/index.html',
+    'book-service/thank-you/index.html',
+    'functions/_lib/mesh-chrome.js',
+  ];
+  for (const file of surfaces) {
+    const html = src(file);
+    assert.doesNotMatch(html, /class="brand-text"/, file);
+    assert.doesNotMatch(html, /United Mobile <span>RV/, file);
+  }
+  const css = src('css/site.css');
+  assert.match(css, /body\.island-chrome \.site-header \.brand-text/);
+  assert.match(css, /body\.book-suite \.site-header \.brand-text/);
+  const js = src('js/site.js');
+  assert.match(js, /umrtStripIslandBrandText/);
+  assert.match(js, /islandPath/);
+});
+
 test('shop lockdown allowlist is unchanged (no /forum/ or /design/ added)', () => {
   const mw = src('functions/_middleware.js');
   assert.match(mw, /const SHOP_ALLOWED_PREFIXES = \['\/shop\/', '\/api\/shop\/', '\/book-service\/', '\/api\/book', '\/css\/', '\/js\/', '\/assets\/', '\/fonts\/'\]/);
@@ -200,6 +226,7 @@ test('site.js stamps Call + gold Text Now + Square Book on every nav/mobile bar'
   assert.doesNotMatch(js, /PREFER_TEXT_HREF = 'tel:/);
   assert.doesNotMatch(js, /pages\.dev/);
   assert.match(js, /umrtSquareBookHref/);
+  assert.match(js, /umrtStripIslandBrandText/);
 });
 
 test('mothership home + platform-bar convert stack: Text Now sms + tel + Square', () => {

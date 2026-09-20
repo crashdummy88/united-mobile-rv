@@ -111,7 +111,7 @@ ${robots}<meta name="theme-color" content="#1A1A1A">
 <meta property="og:description" content="${esc(description)}">
 <meta property="og:type" content="website">
 <meta property="og:url" content="${esc(canonical)}">
-<link rel="stylesheet" href="/css/site.css?v=20260916viz">
+<link rel="stylesheet" href="/css/site.css?v=20260920chrome">
 <style>${SUITE_CSS}</style>
 </head>
 <body class="book-suite">
@@ -126,7 +126,7 @@ ${mainHtml}
   </div>
 </footer>
 ${islandMobileBar()}
-<script src="/js/site.js?v=20260918mesh" defer></script>
+<script src="/js/site.js?v=20260920chrome" defer></script>
 </body>
 </html>`;
 }
