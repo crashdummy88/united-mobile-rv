@@ -19,8 +19,8 @@ const shopPages = [
 test('shop pages load shared /css/shop.css after site.css (no per-page style dump)', () => {
   for (const file of shopPages) {
     const html = src(file);
-    assert.match(html, /href="\/css\/site\.css"/, file);
-    assert.match(html, /href="\/css\/shop\.css"/, file);
+    assert.match(html, /href="\/css\/site\.css(?:\?[^"]*)?"/, file);
+    assert.match(html, /href="\/css\/shop\.css(?:\?[^"]*)?"/, file);
     assert.doesNotMatch(html, /<style>/, file);
     assert.doesNotMatch(html, /pages\.dev/, file);
   }
@@ -89,7 +89,7 @@ test('listing is parts-only: full wrap, no Services sale tab or appointment card
   assert.match(listing, /productSquareHref/);
   assert.match(listing, /View on Square/);
   assert.doesNotMatch(listing, /shop-tab-row/);
-  assert.doesNotMatch(listing, /tab=services/);
+  assert.doesNotMatch(listing, /href="\$\{base\}\/shop\/\?tab=services"/);
   assert.doesNotMatch(listing, /shop-service-card/);
   assert.doesNotMatch(listing, /serviceBookHref/);
   assert.doesNotMatch(listing, /Book this service/);

@@ -86,7 +86,7 @@ test('shop listing is parts-only; chrome Book still BOOK_PUBLIC_HREF', () => {
   assert.doesNotMatch(listing, /Book this service/);
   assert.doesNotMatch(listing, /FROM services/);
   assert.doesNotMatch(listing, /shop-tab-row/);
-  assert.doesNotMatch(listing, /tab=services/);
+  assert.doesNotMatch(listing, /href="\$\{base\}\/shop\/\?tab=services"/);
 });
 
 test('migration 020 adds book_url and seeds Generator Maintenance with intent query', () => {

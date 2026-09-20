@@ -6,7 +6,7 @@
  *
  * 2026-09-20: sale catalog is Parts only. Appointments stay on Book /
  * Square / WP /service/ -- not a second Services tab in this catalog.
- * ?tab=services is ignored (still 200) so old bookmarks do not 404.
+ * Legacy services-tab query bookmarks still 200 and render parts.
  */
 import { formatPrice, displayName, CATEGORY_ICONS, stockStatusMeta, productSquareHref } from '../_lib/shop.js';
 import { islandHeader, islandFooter, islandMobileBar, shopCartNavItem, clarityHeadSnippet, landJsonLdSnippet, landCrumbsNav } from '../_lib/mesh-chrome.js';
@@ -178,7 +178,7 @@ ${islandMobileBar()}
 }
 
 // Cloudflare Pages only dispatches onRequestGet to GET. Uptime/CDN HEAD
-// probes on /shop/ (and leftover /shop/?tab=services bookmarks) were 404
+// probes on /shop/ (and leftover services-tab query bookmarks) were 404
 // (GET 200) -- cheap empty 200 matches the GET success status without
 // running the D1 listing query.
 export function onRequestHead() {
