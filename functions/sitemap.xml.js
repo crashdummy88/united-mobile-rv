@@ -19,6 +19,7 @@
  * the apex points here) without needing a code change per host.
  */
 import { STATIC_PAGES } from './_lib/static-pages.js';
+import { publicThreadSql } from './_lib/forum-growth.js';
 
 function xmlEscape(s) {
   return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -37,7 +38,7 @@ export async function onRequestGet(context) {
 
   if (env.DB) {
     try {
-      const row = await env.DB.prepare(`SELECT MAX(updated_at) AS t FROM threads WHERE hidden = 0`).first();
+      const row = await env.DB.prepare(`SELECT MAX(updated_at) AS t FROM threads t WHERE ${publicThreadSql('t')}`).first();
       if (row && row.t) indexLastmod = String(row.t).slice(0, 10);
     } catch {
       // fall back to today's date if D1 isn't reachable
@@ -45,7 +46,7 @@ export async function onRequestGet(context) {
 
     try {
       const { results } = await env.DB.prepare(
-        `SELECT id, updated_at, solved_at FROM threads WHERE hidden = 0 ORDER BY updated_at DESC LIMIT 1000`
+        `SELECT id, updated_at, solved_at FROM threads t WHERE ${publicThreadSql('t')} ORDER BY t.updated_at DESC LIMIT 1000`
       ).all();
       for (const t of results || []) {
         urls.push({

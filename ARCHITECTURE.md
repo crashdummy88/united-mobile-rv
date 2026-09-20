@@ -39,7 +39,7 @@ Full live property inventory (indexing status, sitemap coverage, cross-link heal
 
 Two **standalone Cloudflare Workers** exist outside the Pages projects (their own `wrangler.toml`, own deploy):
 - `workers/square-inventory-cron` — cron `0 */6 * * *`, POSTs to the mothership's `/api/admin/sync-square-inventory` with `X-Sync-Secret`.
-- `workers/content-bot` (`umrt-forum-content-bot`) — cron `0 15 * * 2,5` (Tue/Fri), generates one AI-labeled diagnostic-guide forum thread per run, own `AI`+`DB` bindings into the same `umrt_forum` D1 database.
+- `workers/content-bot` (`umrt-forum-content-bot`) — cron `0 15 * * 2,5` (Tue/Fri). **Pin first-reply only**: may post one AI-labeled reply on each `tech-*` UMRV Tech pin if that pin has no bot reply yet. Does **not** create threads. Seed generator is frozen (`functions/_lib/forum-growth.js` + migration 021). Same `AI`+`DB` bindings into `umrt_forum`.
 
 ## Mothership route inventory
 

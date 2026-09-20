@@ -1,8 +1,10 @@
 /**
- * AI-drafted first-pass technical reply, via the same free Cloudflare
- * Workers AI Llama binding used for moderation. Always truthfully
- * labeled as an automated draft from the "UMRT Team" bot account —
- * never impersonates Matt, never claims to be a licensed diagnosis.
+ * AI-drafted first-pass technical reply helper.
+ *
+ * Thread-create auto-replies are frozen. umrt-forum-content-bot posts the
+ * only remaining AI reply, and only as a first reply on tech-* pins.
+ * This helper stays for tests / a future explicit staff trigger — do not
+ * wire it back to POST /api/threads.
  */
 const DRAFT_PROMPT = `You are a helpful, technically knowledgeable assistant for a mobile RV and trailer repair company's public forum. A visitor just posted a question below.
 

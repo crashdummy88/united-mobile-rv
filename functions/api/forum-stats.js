@@ -2,6 +2,8 @@
  * GET /api/forum-stats — public, read-only. Real counts only, no fabricated
  * numbers: member count, thread count, reply count, and last-activity time.
  */
+import { publicThreadSql } from '../_lib/forum-growth.js';
+
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
     status,
@@ -20,10 +22,15 @@ export async function onRequestGet(context) {
   const members = await env.DB.prepare(
     `SELECT COUNT(*) AS n FROM users WHERE provider != 'system'`
   ).first();
-  const threads = await env.DB.prepare(`SELECT COUNT(*) AS n FROM threads WHERE hidden = 0`).first();
-  const posts = await env.DB.prepare(`SELECT COUNT(*) AS n FROM posts WHERE hidden = 0`).first();
+  const threads = await env.DB.prepare(
+    `SELECT COUNT(*) AS n FROM threads t WHERE ${publicThreadSql('t')}`
+  ).first();
+  const posts = await env.DB.prepare(
+    `SELECT COUNT(*) AS n FROM posts p JOIN threads t ON t.id = p.thread_id
+     WHERE p.hidden = 0 AND ${publicThreadSql('t')}`
+  ).first();
   const lastActivity = await env.DB.prepare(
-    `SELECT MAX(updated_at) AS t FROM threads WHERE hidden = 0`
+    `SELECT MAX(updated_at) AS t FROM threads t WHERE ${publicThreadSql('t')}`
   ).first();
 
   return json({

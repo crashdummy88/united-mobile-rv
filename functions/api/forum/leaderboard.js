@@ -5,6 +5,7 @@
  * bot account so it never crowds out real members.
  */
 import { json } from '../../_lib/authz.js';
+import { publicThreadSql } from '../../_lib/forum-growth.js';
 
 export async function onRequestGet(context) {
   const { env } = context;
@@ -16,10 +17,10 @@ export async function onRequestGet(context) {
   const { results } = await env.DB.prepare(
     `SELECT * FROM (
        SELECT u.id, u.display_name, u.avatar_url,
-         (SELECT COUNT(*) FROM threads t WHERE t.author_id = u.id AND t.hidden = 0 AND t.created_at >= datetime('now','-30 days')) AS thread_count,
-         (SELECT COUNT(*) FROM posts p WHERE p.author_id = u.id AND p.hidden = 0 AND p.created_at >= datetime('now','-30 days')) AS reply_count
+         (SELECT COUNT(*) FROM threads t WHERE t.author_id = u.id AND ${publicThreadSql('t')} AND t.created_at >= datetime('now','-30 days')) AS thread_count,
+         (SELECT COUNT(*) FROM posts p JOIN threads t ON t.id = p.thread_id WHERE p.author_id = u.id AND p.hidden = 0 AND ${publicThreadSql('t')} AND p.created_at >= datetime('now','-30 days')) AS reply_count
        FROM users u
-       WHERE u.banned = 0 AND u.id != 'bot-umrt-team'
+       WHERE u.banned = 0 AND u.provider != 'system'
      )
      WHERE (thread_count + reply_count) > 0
      ORDER BY (thread_count + reply_count) DESC

@@ -19,6 +19,8 @@
  * every other function in this repo.
  */
 
+import { publicThreadSql } from './forum-growth.js';
+
 function isTrafficConfigured(env) {
   return !!(env.CF_ANALYTICS_TOKEN && env.CF_ZONE_ID);
 }
@@ -90,7 +92,7 @@ export async function getEngagement(env) {
 
   if (env.DB) {
     const forum = await env.DB.prepare(
-      `SELECT COUNT(*) AS threads, SUM(pinned) AS pinned, MAX(updated_at) AS last_activity FROM threads WHERE hidden = 0`
+      `SELECT COUNT(*) AS threads, SUM(pinned) AS pinned, MAX(updated_at) AS last_activity FROM threads t WHERE ${publicThreadSql('t')}`
     ).first();
     const users = await env.DB.prepare(`SELECT COUNT(*) AS n FROM users`).first();
     const shop = await env.DB.prepare(

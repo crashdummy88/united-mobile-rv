@@ -5,6 +5,7 @@
  * Never trust ownership/mod status from the browser -- always re-check server-side.
  */
 import { requireSession, json } from '../../../../_lib/authz.js';
+import { isSeedOrPinSpamId } from '../../../../_lib/forum-growth.js';
 
 export async function onRequestPost(context) {
   const { env, request, params } = context;
@@ -12,6 +13,7 @@ export async function onRequestPost(context) {
 
   const session = await requireSession(request, env);
   if (!session) return json({ success: false, error: 'auth_required' }, 401);
+  if (isSeedOrPinSpamId(params.id)) return json({ success: false, error: 'not_found' }, 404);
 
   const thread = await env.DB.prepare('SELECT id, author_id FROM threads WHERE id = ? AND hidden = 0')
     .bind(params.id)

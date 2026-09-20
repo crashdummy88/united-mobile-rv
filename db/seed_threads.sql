@@ -1,3 +1,7 @@
+-- FROZEN — do not re-apply to live D1.
+-- These seed-* threads are soft-archived by db/migrations/021_archive_seeds_tech_pins.sql.
+-- Public listings also hide seed-* / pin-* ids in functions/_lib/forum-growth.js.
+
 INSERT INTO threads (id, title, body, category, author_id, pinned) VALUES
 ('seed-0001-repair', 'Battery not charging while driving — where to start?', 'Common one I get on service calls: house battery shows fine at the campsite, but doesn''t seem to charge while you''re driving. Before you assume a bad battery, check these in order:
 

@@ -1,3 +1,5 @@
+import { isPubliclyListedThread, isSeedOrPinSpamId } from '../../../../_lib/forum-growth.js';
+
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
     status,
@@ -8,6 +10,7 @@ function json(data, status = 200) {
 export async function onRequestGet(context) {
   const { env, params } = context;
   if (!env.DB) return json({ success: false, error: 'not_configured' }, 503);
+  if (isSeedOrPinSpamId(params.id)) return json({ success: false, error: 'not_found' }, 404);
 
   const thread = await env.DB.prepare(
     `SELECT t.id, t.title, t.body, t.category, t.created_at, t.pinned, t.image_keys,
@@ -17,7 +20,7 @@ export async function onRequestGet(context) {
      WHERE t.id = ? AND t.hidden = 0`
   ).bind(params.id).first();
 
-  if (!thread) return json({ success: false, error: 'not_found' }, 404);
+  if (!thread || !isPubliclyListedThread(thread)) return json({ success: false, error: 'not_found' }, 404);
 
   const { results: posts } = await env.DB.prepare(
     `SELECT p.id, p.body, p.created_at, p.image_keys,

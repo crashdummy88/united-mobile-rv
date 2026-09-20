@@ -2,8 +2,9 @@ name = "umrt-forum-content-bot"
 main = "index.js"
 compatibility_date = "2024-11-01"
 
-# Runs on a schedule and writes directly into the forum's D1 database and
-# Workers AI — same free bindings the Pages Functions app already uses.
+# Pin first-reply only (tech-* UMRV Tech pins). Does not create threads.
+# Runs on a schedule against the forum D1 + Workers AI — same bindings
+# the Pages Functions app already uses.
 [triggers]
 crons = ["0 15 * * 2,5"]  # Tue & Fri, 15:00 UTC (~10-11am ET depending on DST)
 

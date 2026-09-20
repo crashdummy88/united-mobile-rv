@@ -13,7 +13,10 @@
 -- functions/forum/t/[id].js renders thread.body through esc() + \n->br,
 -- so raw HTML/markdown would show as literal text, not a real link.
 --
--- NOT YET APPLIED. Apply with:
+-- FROZEN — these pin-* silo-bridge threads are seed spam on the public index.
+-- Archived by 021_archive_seeds_tech_pins.sql. Do not re-apply to live D1.
+--
+-- Originally: NOT YET APPLIED. Apply with:
 --   wrangler d1 execute umrt_forum --remote --file=./db/migrations/014_pinned_silo_bridge_threads.sql
 
 INSERT INTO threads (id, title, body, category, author_id, pinned) VALUES

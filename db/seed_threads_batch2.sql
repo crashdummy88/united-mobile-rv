@@ -1,3 +1,6 @@
+-- FROZEN — do not re-apply to live D1.
+-- These seed-* threads are soft-archived by db/migrations/021_archive_seeds_tech_pins.sql.
+
 INSERT INTO threads (id, title, body, category, author_id, pinned) VALUES
 ('seed-0007-repair', 'Slide-out stalls or reverses halfway out — where to look first', 'Comes up a lot, especially on older hydraulic and Schwintek-style electric slides. Before assuming a motor or ram is dead, check in this order:
 

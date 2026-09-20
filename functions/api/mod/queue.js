@@ -23,7 +23,12 @@ export async function onRequestGet(context) {
 
   const { results: threads } = await env.DB.prepare(
     `SELECT t.id, 'thread' AS kind, t.title AS preview, t.ai_reason, t.created_at, u.id AS author_id, u.display_name AS author
-     FROM threads t JOIN users u ON u.id = t.author_id WHERE t.hidden = 1 ORDER BY t.created_at DESC LIMIT 50`
+     FROM threads t JOIN users u ON u.id = t.author_id
+     WHERE t.hidden = 1
+       AND t.id NOT LIKE 'seed-%'
+       AND t.id NOT LIKE 'seed3-%'
+       AND t.id NOT LIKE 'pin-%'
+     ORDER BY t.created_at DESC LIMIT 50`
   ).all();
   const { results: posts } = await env.DB.prepare(
     `SELECT p.id, 'post' AS kind, p.body AS preview, p.ai_reason, p.created_at, p.thread_id, u.id AS author_id, u.display_name AS author

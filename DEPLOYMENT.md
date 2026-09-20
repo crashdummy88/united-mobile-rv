@@ -12,7 +12,7 @@ _Generated 2026-09-15 from a live, read-only audit. Covers the mothership repo's
 - **GitHub Actions** (`.github/workflows/`): `codeql.yml` (CodeQL scan on push/PR to `main` + weekly) is the only pre-merge automated check — **no test suite, no lint step, no deploy step in CI**. `commerce_catalog.yml` (daily cron, unrelated Python catalog sync, not part of the Pages app). `cross_repo_link_check.yml` (weekly, checks links across 9 sibling repos, skips live-URL checks because Cloudflare Bot Fight Mode blocks GitHub Actions runner IPs).
 - **Standalone Workers** (separate deploy, own `wrangler.toml` each, under `workers/`):
   - `square-inventory-cron` — cron `0 */6 * * *`. Requires `X-Sync-Secret` on its own trigger endpoint (fixed 2026-09-14; previously unauthenticated).
-  - `content-bot` (`umrt-forum-content-bot`) — cron `0 15 * * 2,5`. Manual trigger gated by `X-Content-Bot-Key`.
+  - `content-bot` (`umrt-forum-content-bot`) — cron `0 15 * * 2,5`. Pin first-reply only on `tech-*` threads. Manual trigger gated by `X-Content-Bot-Key`. Seed-thread generator is frozen; do not re-enable. D1 archive + Tech pins: `db/migrations/021_archive_seeds_tech_pins.sql` (Matt apply only — not auto-run).
 
 ## Portal (`umrt-portal`)
 

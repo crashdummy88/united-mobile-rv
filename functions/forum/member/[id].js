@@ -1,4 +1,5 @@
 import { islandHeader, islandFooter, islandMobileBar } from '../../_lib/mesh-chrome.js';
+import { publicThreadSql } from '../../_lib/forum-growth.js';
 
 /**
  * GET /forum/member/:id — real, server-rendered member profile.
@@ -40,11 +41,11 @@ export async function onRequestGet(context) {
     }
   }
 
-  const threadCount = await env.DB.prepare(`SELECT COUNT(*) AS n FROM threads WHERE author_id = ? AND hidden = 0`).bind(params.id).first();
-  const replyCount = await env.DB.prepare(`SELECT COUNT(*) AS n FROM posts WHERE author_id = ? AND hidden = 0`).bind(params.id).first();
-  const solvedCount = await env.DB.prepare(`SELECT COUNT(*) AS n FROM threads WHERE author_id = ? AND hidden = 0 AND solved_at IS NOT NULL`).bind(params.id).first();
+  const threadCount = await env.DB.prepare(`SELECT COUNT(*) AS n FROM threads t WHERE t.author_id = ? AND ${publicThreadSql('t')}`).bind(params.id).first();
+  const replyCount = await env.DB.prepare(`SELECT COUNT(*) AS n FROM posts p JOIN threads t ON t.id = p.thread_id WHERE p.author_id = ? AND p.hidden = 0 AND ${publicThreadSql('t')}`).bind(params.id).first();
+  const solvedCount = await env.DB.prepare(`SELECT COUNT(*) AS n FROM threads t WHERE t.author_id = ? AND ${publicThreadSql('t')} AND t.solved_at IS NOT NULL`).bind(params.id).first();
   const { results: recentThreads } = await env.DB.prepare(
-    `SELECT id, title, category, created_at, solved_at FROM threads WHERE author_id = ? AND hidden = 0 ORDER BY created_at DESC LIMIT 15`
+    `SELECT id, title, category, created_at, solved_at FROM threads t WHERE t.author_id = ? AND ${publicThreadSql('t')} ORDER BY t.created_at DESC LIMIT 15`
   ).bind(params.id).all();
 
   const threadsHtml = recentThreads.length

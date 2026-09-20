@@ -4,6 +4,7 @@
  * reputation, or follower counts; those need real infrastructure first.
  */
 import { json } from '../../../_lib/authz.js';
+import { publicThreadSql } from '../../../_lib/forum-growth.js';
 
 export async function onRequestGet(context) {
   const { env, params } = context;
@@ -15,18 +16,19 @@ export async function onRequestGet(context) {
   if (!user) return json({ success: false, error: 'not_found' }, 404);
 
   const threadCount = await env.DB.prepare(
-    `SELECT COUNT(*) AS n FROM threads WHERE author_id = ? AND hidden = 0`
+    `SELECT COUNT(*) AS n FROM threads t WHERE t.author_id = ? AND ${publicThreadSql('t')}`
   ).bind(params.id).first();
   const replyCount = await env.DB.prepare(
-    `SELECT COUNT(*) AS n FROM posts WHERE author_id = ? AND hidden = 0`
+    `SELECT COUNT(*) AS n FROM posts p JOIN threads t ON t.id = p.thread_id
+     WHERE p.author_id = ? AND p.hidden = 0 AND ${publicThreadSql('t')}`
   ).bind(params.id).first();
   const solvedCount = await env.DB.prepare(
-    `SELECT COUNT(*) AS n FROM threads WHERE author_id = ? AND hidden = 0 AND solved_at IS NOT NULL`
+    `SELECT COUNT(*) AS n FROM threads t WHERE t.author_id = ? AND ${publicThreadSql('t')} AND t.solved_at IS NOT NULL`
   ).bind(params.id).first();
 
   const { results: recentThreads } = await env.DB.prepare(
-    `SELECT id, title, category, created_at, updated_at, solved_at FROM threads
-     WHERE author_id = ? AND hidden = 0 ORDER BY created_at DESC LIMIT 10`
+    `SELECT id, title, category, created_at, updated_at, solved_at FROM threads t
+     WHERE t.author_id = ? AND ${publicThreadSql('t')} ORDER BY t.created_at DESC LIMIT 10`
   ).bind(params.id).all();
 
   return json({

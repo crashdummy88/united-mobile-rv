@@ -1,3 +1,5 @@
+import { publicThreadSql } from '../../_lib/forum-growth.js';
+
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
     status,
@@ -18,7 +20,7 @@ export async function onRequestGet(context) {
        (SELECT COUNT(*) FROM post_votes v JOIN posts p ON p.id = v.post_id WHERE p.thread_id = t.id) AS vote_count,
        (SELECT COUNT(*) FROM thread_views tv WHERE tv.thread_id = t.id AND tv.viewed_at >= datetime('now','-3 days')) AS recent_views
      FROM threads t
-     WHERE t.hidden = 0 AND t.updated_at >= datetime('now','-7 days')
+     WHERE ${publicThreadSql('t')} AND t.updated_at >= datetime('now','-7 days')
      ORDER BY (reply_count * 2 + COALESCE(vote_count, 0) + COALESCE(recent_views, 0)) DESC, t.updated_at DESC
      LIMIT ?`
   ).bind(limit).all();

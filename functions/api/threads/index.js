@@ -1,9 +1,9 @@
 import { readSession, randomId } from '../../_lib/session.js';
 import { moderateText } from '../../_lib/moderate.js';
-import { draftAiReply } from '../../_lib/ai-reply.js';
 import { notifyForumActivity } from '../../_lib/notify.js';
 import { verifyTurnstile } from '../../_lib/turnstile.js';
 import { autoTagCategory } from '../../_lib/bot-sweep.js';
+import { publicThreadSql } from '../../_lib/forum-growth.js';
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -24,7 +24,7 @@ export async function onRequestGet(context) {
       t.solved_at, t.locked, u.id AS author_id, u.display_name AS author, u.avatar_url AS author_avatar,
       (SELECT COUNT(*) FROM posts p WHERE p.thread_id = t.id AND p.hidden = 0) AS reply_count
      FROM threads t JOIN users u ON u.id = t.author_id
-     WHERE t.hidden = 0
+     WHERE ${publicThreadSql('t')}
      ORDER BY t.pinned DESC, t.updated_at DESC
      LIMIT ?`
   )
@@ -102,56 +102,9 @@ export async function onRequestPost(context) {
       .run();
   }
 
-  // Auto-welcome: if this is the author's first-ever (visible) thread, have the
-  // UMRT Team bot account drop a friendly first reply so new members don't post into silence.
+  // AI / welcome auto-replies are frozen. The content-bot may post ONE
+  // first reply on the five UMRV Tech pins only — never on member threads.
   if (!hidden) {
-    try {
-      const countRow = await env.DB.prepare(
-        `SELECT COUNT(*) AS n FROM threads WHERE author_id = ? AND hidden = 0`
-      ).bind(session.uid).first();
-      if (countRow && countRow.n === 1) {
-        const bot = await env.DB.prepare(`SELECT id FROM users WHERE id = 'bot-umrt-team'`).first();
-        if (bot) {
-          const firstName = (session.name || 'there').toString().split(' ')[0];
-          const catWelcome = {
-            general: "Glad to have you here — feel free to poke around the other categories too.",
-            repair: "Diagnostics and repair questions are exactly what this place is for — hope you get it sorted.",
-            power: "Off-grid and power setups come up a lot here — good place to compare notes.",
-            connectivity: "Connectivity questions are common here too — Starlink, boosters, all of it.",
-            route: "Good to have another voice on route and service-area talk.",
-          };
-          const line = catWelcome[category] || catWelcome.general;
-          const welcomeBody = `Welcome to the forum, ${firstName}! ${line} If you don't hear back right away, hang tight — someone from the team will chime in.`;
-          await env.DB.prepare(
-            `INSERT INTO posts (id, thread_id, author_id, body, hidden, ai_flagged, ai_reason) VALUES (?, ?, ?, ?, 0, 0, NULL)`
-          ).bind(randomId(), id, bot.id, welcomeBody).run();
-          await env.DB.prepare(`UPDATE threads SET updated_at = datetime('now') WHERE id = ?`).bind(id).run();
-        }
-      }
-    } catch (e) {
-      // Welcome bot is a nice-to-have — never let it break thread creation.
-    }
-
-    // AI first-pass technical draft: only for non-general technical categories,
-    // clearly labeled as an automated draft, never posing as Matt.
-    try {
-      if (category !== 'general') {
-        const draft = await draftAiReply(env.AI, title, text);
-        if (draft) {
-          const bot = await env.DB.prepare(`SELECT id FROM users WHERE id = 'bot-umrt-team'`).first();
-          if (bot) {
-            const draftBody = `🤖 Automated first-pass from the UMRT assistant (not a tech, not a full diagnosis):\n\n${draft}\n\nWant eyes and a meter on it? Text/call (616) 606-5277.`;
-            await env.DB.prepare(
-              `INSERT INTO posts (id, thread_id, author_id, body, hidden, ai_flagged, ai_reason) VALUES (?, ?, ?, ?, 0, 0, NULL)`
-            ).bind(randomId(), id, bot.id, draftBody).run();
-            await env.DB.prepare(`UPDATE threads SET updated_at = datetime('now') WHERE id = ?`).bind(id).run();
-          }
-        }
-      }
-    } catch (e) {
-      // AI draft reply is a nice-to-have — never let it break thread creation.
-    }
-
     // Email alert to Matt — fire and forget.
     context.waitUntil(notifyForumActivity(env, {
       subject: `New forum thread: ${title}`,
