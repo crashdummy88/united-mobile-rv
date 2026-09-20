@@ -93,6 +93,26 @@ test('middleware: book host X-Robots-Tag is noindex, follow', async () => {
   assert.equal(res.headers.get('X-Robots-Tag'), 'noindex, follow');
 });
 
+test('middleware: book host HTML never keeps a pages.dev canonical', async () => {
+  const next = async () => new Response(
+    `<!DOCTYPE html><html><head>
+<link rel="canonical" href="https://united-mobile-rv.pages.dev/book-service/">
+<meta property="og:url" content="https://united-mobile-rv.pages.dev/book-service/">
+</head><body><title>Book</title></body></html>`,
+    { status: 200, headers: { 'Content-Type': 'text/html' } }
+  );
+  const res = await middleware({
+    request: makeRequest('https://book.unitedmobilerv.com/'),
+    env,
+    next,
+  });
+  const html = await res.text();
+  assert.match(html, /<link rel="canonical" href="https:\/\/book\.unitedmobilerv\.com\/">/);
+  assert.match(html, /<meta property="og:url" content="https:\/\/book\.unitedmobilerv\.com\/">/);
+  assert.doesNotMatch(html, /united-mobile-rv\.pages\.dev/);
+  assert.equal(res.headers.get('X-Robots-Tag'), 'noindex, follow');
+});
+
 test('host home: book. / renders booking suite, not marketing homepage', async () => {
   const next = async () => {
     throw new Error('book host must not fall through to the static homepage');

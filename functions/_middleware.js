@@ -1,5 +1,11 @@
 import { resolveCentralIdentity } from './_lib/central-identity.js';
 import { injectClarityOnce } from './_lib/clarity.js';
+import {
+  isLandHost,
+  isHtmlContentType,
+  resolveLandCanonical,
+  rewriteHtmlCanonicals,
+} from './_lib/canonical.js';
 
 /**
  * Sets X-Robots-Tag exactly once per response, path-aware.
@@ -151,7 +157,7 @@ export async function onRequest(context) {
   headers.set('X-Robots-Tag', indexable ? 'index, follow' : 'noindex, follow');
 
   const contentType = headers.get('Content-Type') || '';
-  if (!contentType.includes('text/html')) {
+  if (!isHtmlContentType(contentType)) {
     return new Response(response.body, {
       status: response.status,
       statusText: response.statusText,
@@ -161,8 +167,15 @@ export async function onRequest(context) {
 
   // Site-wide Clarity: inject before </head> once. Island templates
   // already include the snippet; this covers static HTML that does not.
+  // On shop/forum/book, also rewrite canonical + og:url (host-aware):
+  // land-unique stays on this host; shared WP mirrors point at apex;
+  // never leave united-mobile-rv.pages.dev as the canonical.
   headers.delete('Content-Length');
-  const html = await response.text();
+  let html = await response.text();
+  if (isLandHost(requestUrl.hostname)) {
+    const canonical = resolveLandCanonical(requestUrl);
+    html = rewriteHtmlCanonicals(html, canonical);
+  }
   return new Response(injectClarityOnce(html), {
     status: response.status,
     statusText: response.statusText,
