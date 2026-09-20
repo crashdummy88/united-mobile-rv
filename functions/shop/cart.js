@@ -1,5 +1,4 @@
 import { islandHeader, islandFooter, islandMobileBar, shopCartNavItem } from '../_lib/mesh-chrome.js';
-import { quoteFirstSection, shopQuoteNeedsSection } from '../_lib/island-substance.js';
 
 /**
  * GET /shop/cart -- skeleton cart page.
@@ -33,7 +32,7 @@ ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem(), extraAfterKey
 <section class="page-hero">
   <div class="wrap wrap-narrow">
     <h1>Your cart</h1>
-    <p class="lead">Review the items you selected, then request a single quote. This is not a live checkout. We follow up with confirmed pricing, availability, and how to arrange payment.</p>
+    <p class="lead">This cart is a quote worksheet, not live checkout. Request one combined quote; we arrange payment after we confirm.</p>
   </div>
 </section>
 <section class="shop-cart-band">
@@ -45,13 +44,11 @@ ${islandHeader({ current: 'shop', extraNavHtml: shopCartNavItem(), extraAfterKey
     </div>
   </div>
 </section>
-${quoteFirstSection({ variant: 'cart' })}
-${shopQuoteNeedsSection()}
 <section class="shop-checkout-band" id="quote" hidden>
   <div class="wrap wrap-narrow" id="quote-wrap">
     <div class="shop-checkout-panel">
     <h2>Request a quote for this cart</h2>
-    <p class="muted">One combined quote covering every item above. Prefer to talk it through? Call or text (616) 606-5277.</p>
+    <p class="muted">One combined quote covering every line above. Prefer to talk it through? Call or text (616) 606-5277.</p>
     <form id="quote-form">
       <label class="service-tier"><input type="radio" name="service_option" value="hardware_only" checked><span class="service-tier-text"><strong>Hardware only</strong><small>Ships to you, you install.</small></span></label>
       <label class="service-tier"><input type="radio" name="service_option" value="hardware_plus_config"><span class="service-tier-text"><strong>Hardware + remote configuration</strong><small>We configure it with you remotely.</small></span></label>

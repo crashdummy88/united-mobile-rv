@@ -47,13 +47,11 @@ export function shopEmptyHtml(activeTab) {
   </div></section>`;
 }
 
-/** Quote worksheet — shop / cart / product only. */
+/** Quote-first model — shop listing and product pages. Cart stays a short worksheet. */
 export function quoteFirstSection({ variant = 'shop' } = {}) {
-  const lead = variant === 'cart'
-    ? 'This cart is a quote worksheet, not a live checkout. Nothing is charged here. Request one combined quote covering every line above. We follow up with confirmed pricing, availability, shipping or install options, and how to arrange payment.'
-    : variant === 'product'
-      ? 'Listed prices are published reference figures — cited, not invented, and not a live checkout. Submit the quote request with the service tier you want. We follow up with availability, a real number, and how to arrange payment. No automatic charge.'
-      : 'This is not a parts store checkout. Tell us what the rig needs to do. We specify equipment that works together, then source, configure, and install it if you want us to. Every listing is a published reference price. Request a quote and we follow up directly.';
+  const lead = variant === 'product'
+    ? 'Listed prices are published reference figures — cited, not invented, and not a live checkout. Submit the quote request with the service tier you want. We follow up with availability, a real number, and how to arrange payment. No automatic charge.'
+    : 'This is not a parts store checkout. Tell us what the rig needs to do. We specify equipment that works together, then source, configure, and install it if you want us to. Every listing is a published reference price. Request a quote and we follow up directly.';
   return `<section class="band">
   <div class="wrap">
     <span class="micro">Quote first</span>

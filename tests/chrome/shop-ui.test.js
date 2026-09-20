@@ -36,6 +36,25 @@ test('cart quote form stays on the dark theme (no band-gray light wash)', () => 
   assert.match(cart, /service-tier-text/);
 });
 
+test('cart is a short quote worksheet — no educational essay blocks', () => {
+  const cart = src('functions/shop/cart.js');
+  assert.doesNotMatch(cart, /island-substance\.js/);
+  assert.doesNotMatch(cart, /quoteFirstSection/);
+  assert.doesNotMatch(cart, /shopQuoteNeedsSection/);
+  assert.doesNotMatch(cart, /Quote first/);
+  assert.doesNotMatch(cart, /What we need/);
+  assert.doesNotMatch(cart, /Daily watt-hours/);
+  assert.doesNotMatch(cart, /Pedestal and shore/);
+  assert.doesNotMatch(cart, /Systems we specify/);
+  assert.match(cart, /quote worksheet, not live checkout/);
+  assert.match(cart, /we arrange payment after we confirm/);
+  const itemsIdx = cart.indexOf('id="cart-items"');
+  const formIdx = cart.indexOf('id="quote-form"');
+  assert.ok(itemsIdx > 0 && formIdx > itemsIdx, 'quote form must follow cart line items');
+  const between = cart.slice(itemsIdx, formIdx);
+  assert.doesNotMatch(between, /quoteFirstSection|shopQuoteNeedsSection|class="band"/);
+});
+
 test('listing uses full wrap + shop-service-card (not cramped wrap-narrow / .service-card clash)', () => {
   const listing = src('functions/shop/index.js');
   assert.match(listing, /shop-category-band"><div class="wrap">/);

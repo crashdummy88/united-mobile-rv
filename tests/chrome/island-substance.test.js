@@ -98,6 +98,7 @@ test('shop listing source imports shop sections only', () => {
   assert.doesNotMatch(shop, /forumHowToAskSection|forumEvidenceSection|forumRulesSection/);
   assert.doesNotMatch(shop, /techVoiceSection|diagnosticProcessSection|serviceLinesSection|troubleshootingSection/);
   assert.doesNotMatch(src('functions/shop/cart.js'), /diagnosticProcessSection|bookWhoArrivesSection|forumHowToAskSection/);
+  assert.doesNotMatch(src('functions/shop/cart.js'), /island-substance\.js|quoteFirstSection|shopQuoteNeedsSection/);
   assert.doesNotMatch(src('functions/shop/p/[id].js'), /diagnosticProcessSection|bookVisitSection|forumRulesSection/);
   assert.doesNotMatch(shop, /🔋/);
 });
