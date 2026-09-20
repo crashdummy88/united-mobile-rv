@@ -138,10 +138,7 @@ export function buildLandCrumbs(urlOrRequest, { pageName, html } = {}) {
 
   if (land.key === 'shop') {
     if (path === '/shop/') {
-      const name = url.searchParams.get('tab') === 'services'
-        ? (title || 'Services')
-        : (title || 'Systems Shop');
-      crumbs.push({ name, item: landCanonical(url) });
+      crumbs.push({ name: title || 'Systems Shop', item: landCanonical(url) });
       return crumbs;
     }
     if (path.startsWith('/shop/p/') || path.startsWith('/shop/cart')) {

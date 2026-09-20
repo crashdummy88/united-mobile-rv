@@ -1,6 +1,6 @@
 /**
- * Shop Services "Book this service" hrefs: Square-land only, optional
- * book_url, appointments default + intent query. HEAD /shop/?tab=services.
+ * Square-land allowlist + shop parts catalog: no Services sale tab,
+ * optional productSquareHref when a real Square item URL exists.
  * Run: node tests/chrome/service-book-url.test.js
  */
 import { readFileSync } from 'node:fs';
@@ -8,6 +8,7 @@ import { test, run, assert } from '../lib/tiny-test.js';
 import {
   serviceBookHref,
   isSquareLandUrl,
+  productSquareHref,
 } from '../../functions/_lib/shop.js';
 import {
   BOOK_PUBLIC_HREF,
@@ -15,6 +16,7 @@ import {
   SQUARE_APPOINTMENTS_HREF,
 } from '../../functions/_lib/mesh-chrome.js';
 import { onRequestGet, onRequestHead } from '../../functions/shop/index.js';
+import { onRequestGet as productPage } from '../../functions/shop/p/[id].js';
 
 function src(rel) {
   return readFileSync(new URL('../../' + rel, import.meta.url), 'utf8');
@@ -75,13 +77,16 @@ test('non-Square book_url is ignored; Pages env SQUARE_BOOKING_URL wins as base'
   assert.match(href, /service=generator-maintenance/);
 });
 
-test('shop listing uses serviceBookHref for cards; chrome Book still BOOK_PUBLIC_HREF', () => {
+test('shop listing is parts-only; chrome Book still BOOK_PUBLIC_HREF', () => {
   const listing = src('functions/shop/index.js');
-  assert.match(listing, /serviceBookHref\(s, env\)/);
-  assert.match(listing, /Book this service/);
-  assert.match(listing, /SELECT id, title, description, category, price, price_type, price_note, book_url/);
+  assert.match(listing, /productSquareHref/);
+  assert.match(listing, /View on Square/);
   assert.match(listing, /export function onRequestHead/);
-  assert.doesNotMatch(listing, /href="\$\{BOOK_PUBLIC_HREF\}"[^>]*>Book this service/);
+  assert.doesNotMatch(listing, /serviceBookHref/);
+  assert.doesNotMatch(listing, /Book this service/);
+  assert.doesNotMatch(listing, /FROM services/);
+  assert.doesNotMatch(listing, /shop-tab-row/);
+  assert.doesNotMatch(listing, /tab=services/);
 });
 
 test('migration 020 adds book_url and seeds Generator Maintenance with intent query', () => {
@@ -100,27 +105,39 @@ test('HEAD /shop/?tab=services returns 200 with empty body', async () => {
   assert.match(res.headers.get('Content-Type'), /text\/html/);
 });
 
-test('GET /shop/?tab=services renders Generator CTA with intent query, not bare homepage', async () => {
+test('productSquareHref uses a real Square item URL and rejects off-ecosystem pastes', () => {
+  const pasted = 'https://united-mobile-rv-llc.square.site/product/victron-gx-touch-50/123';
+  assert.equal(productSquareHref({ square_item_url: pasted }), pasted);
+  assert.equal(productSquareHref({ square_item_url: 'https://square.link/u/STB7z2B6' }), 'https://square.link/u/STB7z2B6');
+  assert.equal(productSquareHref({ square_item_url: 'https://evil.example/phish' }), '');
+  assert.equal(productSquareHref({ square_item_url: null }), '');
+  assert.equal(productSquareHref({ square_catalog_object_id: 'CATALOG_ONLY' }), '');
+  assert.equal(productSquareHref({}), '');
+});
+
+test('GET /shop/ and leftover ?tab=services render parts catalog, not service cards', async () => {
   const rows = [
     {
-      id: 'generator-maintenance',
-      title: 'Generator Maintenance',
-      description: 'On-site oil change',
-      category: 'power-solar',
-      price: 150,
-      price_type: 'starting_at',
-      price_note: null,
-      book_url: 'https://united-mobile-rv-llc.square.site/?service=generator-maintenance&utm_source=umrt_shop&utm_medium=service_card&utm_campaign=book_this_service&utm_content=generator-maintenance',
+      id: 'victron-gxtouch50',
+      manufacturer: 'Victron Energy',
+      title: 'Victron GX Touch 50 System Monitor',
+      category: 'rv-power-protection',
+      retail_price: 220.15,
+      product_type: 'individual',
+      stock_status: 'unverified',
+      image_url: null,
+      square_item_url: 'https://united-mobile-rv-llc.square.site/product/victron-gx-touch-50/abc',
     },
     {
-      id: 'diagnostic-fee',
-      title: 'Diagnostic Visit',
-      description: 'Initial on-site diagnostic',
-      category: 'diagnostics',
-      price: 175,
-      price_type: 'flat',
-      price_note: 'per visit',
-      book_url: null,
+      id: 'artek-epoch-eco-12v',
+      manufacturer: 'Epoch',
+      title: 'Epoch 12V Eco Series LiFePO4 Battery',
+      category: 'rv-batteries',
+      retail_price: 325,
+      product_type: 'individual',
+      stock_status: 'unverified',
+      image_url: null,
+      square_item_url: null,
     },
   ];
   const env = {
@@ -132,32 +149,90 @@ test('GET /shop/?tab=services renders Generator CTA with intent query, not bare 
       },
     },
   };
-  const res = await onRequestGet({
-    env,
-    request: new Request('https://shop.unitedmobilerv.com/shop/?tab=services'),
-  });
-  assert.equal(res.status, 200);
-  const html = await res.text();
-  assert.match(html, /Generator Maintenance/);
-  assert.match(html, /Starting at \$150/);
-  assert.match(html, /href="https:\/\/united-mobile-rv-llc\.square\.site\/\?service=generator-maintenance/);
-  assert.match(html, /href="https:\/\/united-mobile-rv-llc\.square\.site\/\?service=diagnostic-fee/);
-  assert.match(html, /Book this service/);
-  assert.match(html, /href="https:\/\/unitedmobilerv\.com\/guide\/generator-troubleshooting\/"/);
-  assert.match(html, />Guide</);
-  assert.doesNotMatch(html, /Related guides/i);
-  assert.doesNotMatch(html, /Field guides/i);
-  assert.doesNotMatch(html, /WP Field Guides/i);
-  assert.doesNotMatch(html, /href="\/guide\//);
-  const cardHrefs = [...html.matchAll(/shop-service-card[\s\S]*?href="([^"]+)"[^>]*>Book this service/g)].map((m) => m[1]);
-  assert.equal(cardHrefs.length, 2);
-  for (const href of cardHrefs) {
-    assert.match(href, /united-mobile-rv-llc\.square\.site\/\?service=/);
-    assert.doesNotMatch(href, /book\.unitedmobilerv\.com/);
-    assert.notEqual(href, 'https://united-mobile-rv-llc.square.site/');
+
+  for (const href of [
+    'https://shop.unitedmobilerv.com/shop/',
+    'https://shop.unitedmobilerv.com/shop/?tab=services',
+    'https://shop.unitedmobilerv.com/',
+  ]) {
+    const res = await onRequestGet({
+      env,
+      request: new Request(href),
+    });
+    assert.equal(res.status, 200, href);
+    const html = await res.text();
+    assert.match(html, /Specify the system/);
+    assert.match(html, /Victron GX Touch 50/);
+    assert.match(html, /Epoch 12V Eco Series/);
+    assert.match(html, /shop-add-btn/);
+    assert.match(html, /href="https:\/\/united-mobile-rv-llc\.square\.site\/product\/victron-gx-touch-50\/abc"[^>]*>View on Square</);
+    assert.equal((html.match(/View on Square/g) || []).length, 1, href);
+    assert.doesNotMatch(html, /shop-tab-row/);
+    assert.doesNotMatch(html, /shop-tab/);
+    assert.doesNotMatch(html, /shop-service-card/);
+    assert.doesNotMatch(html, /Book this service/);
+    assert.doesNotMatch(html, /Generator Maintenance/);
+    assert.doesNotMatch(html, /square\.site\/\?service=/);
+    assert.doesNotMatch(html, /System work rates/);
+    assert.match(html, /<link rel="canonical" href="https:\/\/shop\.unitedmobilerv\.com\/shop\/">/);
+    assert.match(html, /btn btn-ghost" href="https:\/\/united-mobile-rv-llc\.square\.site\/" target="_blank" rel="noopener">Book</);
+    assert.match(html, /href="https:\/\/unitedmobilerv\.com\/service\/"/);
   }
-  // Header chrome Book stays on the Square homepage root (no query)
-  assert.match(html, /btn btn-ghost" href="https:\/\/united-mobile-rv-llc\.square\.site\/" target="_blank" rel="noopener">Book</);
+});
+
+test('product page exposes View on Square only when a real Square item URL exists', async () => {
+  const withUrl = {
+    id: 'victron-gxtouch50',
+    sku: 'VICTRON-GXTOUCH50',
+    manufacturer: 'Victron Energy',
+    model: 'GX Touch 50',
+    title: 'Victron GX Touch 50 System Monitor',
+    description: 'Touchscreen system monitor.',
+    category: 'rv-power-protection',
+    product_type: 'individual',
+    retail_price: 220.15,
+    price_source: 'artek.energy',
+    stock_status: 'unverified',
+    installation_required: 0,
+    compatibility: null,
+    image_url: null,
+    square_item_url: 'https://united-mobile-rv-llc.square.site/product/victron-gx-touch-50/abc',
+  };
+  const envFor = (product) => ({
+    DB: {
+      prepare() {
+        return {
+          bind() { return this; },
+          async first() { return product; },
+          async all() { return { results: [] }; },
+        };
+      },
+    },
+  });
+
+  const withLink = await productPage({
+    env: envFor(withUrl),
+    params: { id: withUrl.id },
+    request: new Request('https://shop.unitedmobilerv.com/shop/p/victron-gxtouch50'),
+  });
+  const withHtml = await withLink.text();
+  assert.equal(withLink.status, 200);
+  assert.match(withHtml, /Add to Cart/);
+  assert.match(withHtml, /Request a quote/);
+  assert.match(withHtml, /Payment is arranged through Square after we confirm/);
+  assert.match(withHtml, /href="https:\/\/united-mobile-rv-llc\.square\.site\/product\/victron-gx-touch-50\/abc"[^>]*>View on Square</);
+  assert.match(withHtml, /btn btn-ghost" href="https:\/\/united-mobile-rv-llc\.square\.site\/" target="_blank" rel="noopener">Book</);
+
+  const noLink = await productPage({
+    env: envFor({ ...withUrl, square_item_url: null }),
+    params: { id: withUrl.id },
+    request: new Request('https://shop.unitedmobilerv.com/shop/p/victron-gxtouch50'),
+  });
+  const noHtml = await noLink.text();
+  assert.equal(noLink.status, 200);
+  assert.match(noHtml, /Add to Cart/);
+  assert.doesNotMatch(noHtml, /View on Square/);
+  assert.doesNotMatch(noHtml, /square\.site\/product\//);
 });
 
 await run();

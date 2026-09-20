@@ -124,7 +124,7 @@ test('resolveLandCanonical: land-unique stays on the request host', () => {
   );
   assert.equal(
     resolveLandCanonical('https://shop.unitedmobilerv.com/shop/?tab=services&utm=x'),
-    'https://shop.unitedmobilerv.com/shop/?tab=services'
+    'https://shop.unitedmobilerv.com/shop/'
   );
   assert.equal(
     resolveLandCanonical('https://shop.unitedmobilerv.com/shop/p/kit-1'),
@@ -219,7 +219,7 @@ test('middleware: forum land home stays self-canonical', async () => {
   assert.doesNotMatch(html, /<link rel="canonical" href="https:\/\/unitedmobilerv\.com\/">/);
 });
 
-test('middleware: shop catalog self-canonical; X-Robots still index,follow', async () => {
+test('middleware: shop catalog self-canonical; leftover services tab drops to /shop/', async () => {
   const res = await middleware({
     request: makeRequest('https://shop.unitedmobilerv.com/shop/?tab=services'),
     env,
@@ -228,8 +228,9 @@ test('middleware: shop catalog self-canonical; X-Robots still index,follow', asy
 </head><body></body></html>`),
   });
   const html = await res.text();
-  assert.match(html, /<link rel="canonical" href="https:\/\/shop\.unitedmobilerv\.com\/shop\/\?tab=services">/);
+  assert.match(html, /<link rel="canonical" href="https:\/\/shop\.unitedmobilerv\.com\/shop\/">/);
   assert.doesNotMatch(html, /pages\.dev/);
+  assert.doesNotMatch(html, /tab=services/);
   assert.equal(res.headers.get('X-Robots-Tag'), 'index, follow');
 });
 

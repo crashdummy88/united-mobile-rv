@@ -1,0 +1,34 @@
+-- UMRT Shop -- optional customer-facing Square Online item URL, 2026-09-20.
+-- Additive only. Apply with:
+--   wrangler d1 execute umrt_forum --remote --file=./db/migrations/022_products_square_item_url.sql
+-- Staging first (same D1 bind as other shop migrations).
+--
+-- Why this column exists:
+--   Shop part cards stay quote/cart first -- this is not a live Square
+--   checkout. When Matt already has a real Square Online item page (or
+--   Payment Link) for a part, paste that URL here so the card can offer
+--   "View on Square" next to Add to Cart. NULL means quote/cart only.
+--
+-- What this is NOT:
+--   - Not square_catalog_object_id (migration 015). That ID is the
+--     inventory-sync match key. It is not a storefront URL and must not
+--     be turned into one by inventing /product/ slugs.
+--   - Not a catalog pull. Do not invent SKUs or Square item IDs here.
+--
+-- How Matt adds a per-item Square link:
+--   1. Square Dashboard → Square Online → the item (or a Payment Link).
+--   2. Copy the customer-facing https URL. Acceptable hosts:
+--        - united-mobile-rv-llc.square.site/product/...
+--        - square.link/u/...
+--        - app.squareup.com / squareup.com item or payment links
+--      Do NOT paste WordPress, portal, or book.unitedmobilerv.com URLs
+--      -- productSquareHref() will reject them and keep quote/cart only.
+--   3. Paste into this table, e.g.
+--        UPDATE products
+--        SET square_item_url = 'https://united-mobile-rv-llc.square.site/product/...',
+--            updated_at = datetime('now')
+--        WHERE id = 'victron-gxtouch50';
+--   4. Redeploy is not required for the D1 write; the next /shop/ render
+--      (5 min cache) picks it up.
+
+ALTER TABLE products ADD COLUMN square_item_url TEXT;

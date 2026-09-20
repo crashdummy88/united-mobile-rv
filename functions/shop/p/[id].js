@@ -3,7 +3,7 @@
  * Phase 1: reference pricing + a quote-request form (four service tiers per
  * the "Product + Service" model) instead of a live checkout charge.
  */
-import { formatPrice, priceNote, displayName, CATEGORY_ICONS, stockStatusMeta } from '../../_lib/shop.js';
+import { formatPrice, priceNote, displayName, CATEGORY_ICONS, stockStatusMeta, productSquareHref } from '../../_lib/shop.js';
 import { islandHeader, islandFooter, islandMobileBar, shopCartNavItem, clarityHeadSnippet, landJsonLdSnippet, landCrumbsNav } from '../../_lib/mesh-chrome.js';
 import { quoteFirstSection, shopQuoteNeedsSection } from '../../_lib/island-substance.js';
 
@@ -23,11 +23,22 @@ export async function onRequestGet(context) {
   const base = new URL(request.url).origin;
   if (!env.DB) return notFoundPage();
 
-  const product = await env.DB.prepare(
-    `SELECT id, sku, manufacturer, model, title, description, category, product_type,
-       retail_price, price_source, stock_status, installation_required, compatibility, image_url
-     FROM products WHERE id = ? AND active = 1`
-  ).bind(params.id).first();
+  let product;
+  try {
+    product = await env.DB.prepare(
+      `SELECT id, sku, manufacturer, model, title, description, category, product_type,
+         retail_price, price_source, stock_status, installation_required, compatibility, image_url, square_item_url
+       FROM products WHERE id = ? AND active = 1`
+    ).bind(params.id).first();
+  } catch (err) {
+    const msg = String((err && err.message) || err);
+    if (!/no such column:\s*square_item_url/i.test(msg)) throw err;
+    product = await env.DB.prepare(
+      `SELECT id, sku, manufacturer, model, title, description, category, product_type,
+         retail_price, price_source, stock_status, installation_required, compatibility, image_url
+       FROM products WHERE id = ? AND active = 1`
+    ).bind(params.id).first();
+  }
   if (!product) return notFoundPage();
 
   let componentsHtml = '';
@@ -48,6 +59,7 @@ export async function onRequestGet(context) {
   // (2026-09-16) so a product's availability label/copy matches wherever
   // it's shown instead of two hand-maintained copies drifting apart.
   const stock = stockStatusMeta(product);
+  const squareHref = productSquareHref(product);
 
   const pageName = displayName(product.manufacturer, product.title);
   const html = `<!DOCTYPE html>
@@ -63,7 +75,7 @@ export async function onRequestGet(context) {
 <meta name="robots" content="index,follow">
 <link rel="icon" href="/favicon.png" type="image/png">
 <link rel="stylesheet" href="/css/site.css?v=20260920crumbs">
-<link rel="stylesheet" href="/css/shop.css">
+<link rel="stylesheet" href="/css/shop.css?v=20260920parts">
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 ${clarityHeadSnippet()}
 ${landJsonLdSnippet(request, { pageName })}
@@ -89,6 +101,7 @@ ${landCrumbsNav(request, { pageName })}
         <span class="shop-stock-chip is-${stock.cls}">${esc(stock.label)}</span>
         <p class="muted" style="margin-top:8px">${esc(stock.note)}</p>
         <button type="button" class="btn btn-gold add-cart-btn" id="add-cart-btn" data-product-id="${esc(product.id)}">Add to Cart</button>
+        ${squareHref ? `<p class="muted" style="margin-top:10px"><a class="btn btn-ghost shop-square-link" href="${esc(squareHref)}" target="_blank" rel="noopener">View on Square</a></p>` : ''}
       </div>
     </div>
   </div>
@@ -108,7 +121,7 @@ ${shopQuoteNeedsSection()}
   <div class="wrap wrap-narrow">
     <div class="shop-checkout-panel">
     <h2>Request a quote</h2>
-    <p class="muted">This is a quote request, not a live checkout. Submit your details and we follow up with pricing, availability, and next steps. No payment is taken here. Call or text (616) 606-5277 anytime.</p>
+    <p class="muted">This is a quote request, not a live checkout. Submit your details and we follow up with pricing, availability, and next steps. Payment is arranged through Square after we confirm — nothing is charged here. Call or text (616) 606-5277 anytime.</p>
     <form id="quote-form">
       <input type="hidden" id="qf-product-id" value="${esc(product.id)}">
       <label class="service-tier"><input type="radio" name="service_option" value="hardware_only" checked><span class="service-tier-text"><strong>Hardware only</strong><small>We ship it to you and you handle the install.</small></span></label>

@@ -93,11 +93,9 @@ export function wpPathFor(pathname) {
 
 function selfHref(hostname, url) {
   const path = url.pathname === '/' ? '/' : url.pathname.replace(/\/index\.html$/i, '/') || '/';
-  let query = '';
-  if (normalizeWpPath(url.pathname).startsWith('/shop/') && url.searchParams.get('tab') === 'services') {
-    query = '?tab=services';
-  }
-  return `https://${hostname}${path}${query}`;
+  // Shop sale catalog is parts-only. Leftover ?tab=services bookmarks
+  // self-canonical to the parts listing, not a second services catalog.
+  return `https://${hostname}${path}`;
 }
 
 /**
