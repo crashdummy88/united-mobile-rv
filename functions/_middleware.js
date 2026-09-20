@@ -18,6 +18,7 @@ import { injectClarityOnce } from './_lib/clarity.js';
 // was still noindex,follow like the cart/checkout utility paths around it, but
 // it's genuine public commercial content -- same category as /forum/ and
 // /guide/ above, not a utility page. Confirmed with Matt before flipping it.
+// This allowlist is now only for pages.dev / preview / unknown hosts.
 const INDEXABLE_PREFIXES = ['/forum/', '/forum-live/', '/guide/', '/shop/'];
 
 // Apex cutover prep, 2026-09-15: this project's own robots.txt has said
@@ -26,19 +27,51 @@ const INDEXABLE_PREFIXES = ['/forum/', '/forum-live/', '/guide/', '/shop/'];
 // real domain points here was already decided, just never implemented as
 // actual host-aware logic until now. Once unitedmobilerv.com/www resolve
 // here, INDEXABLE_PREFIXES above (a narrow allowlist, correct for the raw
-// pages.dev/shop./forum. hosts) no longer applies -- on the apex hosts we
-// index everything BY DEFAULT and explicitly carve out the few paths that
+// pages.dev host) no longer applies -- on the apex hosts we index
+// everything BY DEFAULT and explicitly carve out the few paths that
 // aren't real content, the reverse of the allowlist model.
 const APEX_HOSTS = ['unitedmobilerv.com', 'www.unitedmobilerv.com'];
-const APEX_NOINDEX_PREFIXES = ['/api/', '/shop/cart', '/forum/mod/'];
 
-// Carve-out for the non-apex (shop./forum./staging.) INDEXABLE_PREFIXES
-// branch below, same idea as APEX_NOINDEX_PREFIXES above but scoped to
-// that branch: adding the whole '/shop/' prefix to INDEXABLE_PREFIXES on
-// 2026-09-16 (to index the real catalog) briefly made /shop/cart index,follow
-// too -- caught live via curl right after deploy. Cart is a utility page,
-// never real content, same as it's excluded on the apex hosts above.
-const NON_APEX_NOINDEX_PREFIXES = ['/shop/cart'];
+// Matt SEO lock 2026-09-20: shop./forum./book. are the live customer
+// lands. Their homepages (`/`) rewrite to /shop/, /forum/, /book-service/
+// (functions/index.js) but the request path stays `/`, so the old
+// INDEXABLE_PREFIXES allowlist never matched and sent noindex on the
+// lands themselves. These three hosts now index-by-default like apex.
+// pages.dev stays on the allowlist (soft-launch / non-canonical).
+const CUSTOM_LAND_HOSTS = [
+  'shop.unitedmobilerv.com',
+  'forum.unitedmobilerv.com',
+  'book.unitedmobilerv.com',
+];
+
+// Shared utility carve-outs for index-by-default hosts (apex + customer
+// lands) and as a safety net on the pages.dev allowlist branch. Cart is
+// a utility page, never real content -- adding '/shop/' to INDEXABLE
+// on 2026-09-16 briefly made /shop/cart index,follow too.
+const UTILITY_NOINDEX_PREFIXES = ['/api/', '/shop/cart', '/forum/mod/'];
+
+function isStagingHost(hostname) {
+  return hostname === 'staging.unitedmobilerv.com' || hostname.startsWith('staging.');
+}
+
+function pathHasPrefix(path, prefix) {
+  if (prefix.endsWith('/')) {
+    return path === prefix.slice(0, -1) || path.startsWith(prefix);
+  }
+  return path === prefix || path.startsWith(`${prefix}/`);
+}
+
+function isUtilityNoindex(path) {
+  return UTILITY_NOINDEX_PREFIXES.some((p) => pathHasPrefix(path, p));
+}
+
+function isIndexable(hostname, path) {
+  if (isStagingHost(hostname)) return false;
+  if (APEX_HOSTS.includes(hostname) || CUSTOM_LAND_HOSTS.includes(hostname)) {
+    return !isUtilityNoindex(path);
+  }
+  return INDEXABLE_PREFIXES.some((p) => pathHasPrefix(path, p)) && !isUtilityNoindex(path);
+}
 
 // Files Google fetches as *resources*, not pages -- a noindex X-Robots-Tag
 // on these makes Google Search Console refuse to process them at all
@@ -141,10 +174,7 @@ export async function onRequest(context) {
     return response;
   }
 
-  const indexable = APEX_HOSTS.includes(requestUrl.hostname)
-    ? !APEX_NOINDEX_PREFIXES.some((p) => path === p || path.startsWith(p))
-    : INDEXABLE_PREFIXES.some((p) => path === p.slice(0, -1) || path.startsWith(p))
-      && !NON_APEX_NOINDEX_PREFIXES.some((p) => path === p || path.startsWith(p));
+  const indexable = isIndexable(requestUrl.hostname, path);
 
   const headers = new Headers(response.headers);
   headers.delete('X-Robots-Tag');

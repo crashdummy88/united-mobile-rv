@@ -5,7 +5,7 @@
  *      homepage title "Mobile RV Repair at Your Location"
  *   2) mothership paths 301 to '/' (suite root)
  *   3) canonical/og:url use the request host, not pages.dev
- *   4) X-Robots-Tag stays noindex,follow
+ *   4) X-Robots-Tag is index,follow on the book land (Matt SEO lock 2026-09-20)
  *
  * Run: node tests/security/book-host.test.js
  */
@@ -83,14 +83,14 @@ test('middleware: shop lockdown still 301s /pricing/ to /shop/ (unaffected)', as
   assert.equal(res.headers.get('Location'), 'https://shop.unitedmobilerv.com/shop/');
 });
 
-test('middleware: book host X-Robots-Tag is noindex, follow', async () => {
+test('middleware: book host X-Robots-Tag is index, follow', async () => {
   const { next } = makeNextCapture();
   const res = await middleware({
     request: makeRequest('https://book.unitedmobilerv.com/'),
     env,
     next,
   });
-  assert.equal(res.headers.get('X-Robots-Tag'), 'noindex, follow');
+  assert.equal(res.headers.get('X-Robots-Tag'), 'index, follow');
 });
 
 test('host home: book. / renders booking suite, not marketing homepage', async () => {
