@@ -22,7 +22,7 @@ import {
 } from '../../functions/_lib/mesh-chrome.js';
 
 const NUMBERED_NAV = ['Shop', 'Book', 'Forum', 'Software', 'Docs'];
-const PRODUCT_NAV = ['MAIN HUB', ...NUMBERED_NAV];
+const PRODUCT_NAV = ['Home', ...NUMBERED_NAV];
 const FORBIDDEN = /Portal|Status|Field guides|WP Field Guides/;
 const SQUARE = 'https://united-mobile-rv-llc.square.site/';
 
@@ -57,15 +57,15 @@ test('Text Now is sms:+16166065277; number is tel:+16166065277', () => {
   assert.equal(CALL_HREF, 'tel:+16166065277');
   assert.equal(CALL_LABEL, 'Call (616) 606-5277');
   assert.equal(MAIN_HOME_HREF, 'https://unitedmobilerv.com/');
-  assert.equal(MAIN_HOME_LABEL, 'MAIN HUB');
+  assert.equal(MAIN_HOME_LABEL, 'Home');
 });
 
-test('MESH_LINKS is MAIN HUB + Shop · Book · Forum · Software · Docs (no Portal/Status/Guides)', () => {
+test('MESH_LINKS is Home + Shop · Book · Forum · Software · Docs (no Portal/Status/Guides)', () => {
   const labels = MESH_LINKS.map((l) => l.label);
   assert.deepEqual(labels, PRODUCT_NAV);
-  assert.deepEqual(labels.filter((l) => l !== 'MAIN HUB'), NUMBERED_NAV);
+  assert.deepEqual(labels.filter((l) => l !== 'Home'), NUMBERED_NAV);
   assert.ok(labels.indexOf('Shop') < labels.indexOf('Book'), 'Shop-first, not Book-first');
-  assert.equal(labels[0], 'MAIN HUB');
+  assert.equal(labels[0], 'Home');
   assert.equal(labels[1], 'Shop');
   assert.equal(MESH_LINKS.find((l) => l.key === 'book').href, SQUARE);
   assert.equal(MESH_LINKS.find((l) => l.key === 'home').href, 'https://unitedmobilerv.com/');
@@ -77,6 +77,8 @@ test('MESH_LINKS is MAIN HUB + Shop · Book · Forum · Software · Docs (no Por
   assert.deepEqual(productLabels(footer), PRODUCT_NAV);
   for (const html of [header, footer]) {
     assert.match(html, /https:\/\/unitedmobilerv\.com\//);
+    assert.match(html, /href="https:\/\/unitedmobilerv\.com\/"[^>]*>Home</);
+    assert.doesNotMatch(html, />MAIN HUB</);
     assert.match(html, /https:\/\/shop\.unitedmobilerv\.com\//);
     assert.match(html, /united-mobile-rv-llc\.square\.site/);
     assert.match(html, /https:\/\/forum\.unitedmobilerv\.com\//);
@@ -144,8 +146,10 @@ test('shop + forum templates include mesh-chrome (or static mesh + Square)', () 
   assert.match(forum, /https:\/\/software\.unitedmobilerv\.com\//);
   assert.match(forum, /https:\/\/shop\.unitedmobilerv\.com\//);
   assert.match(forum, /https:\/\/docs\.unitedmobilerv\.com\//);
-  assert.match(forum, />MAIN HUB</);
-  assert.match(forum, /href="https:\/\/unitedmobilerv\.com\/"[^>]*>MAIN HUB</);
+  assert.match(forum, />Home</);
+  assert.match(forum, /href="https:\/\/unitedmobilerv\.com\/"[^>]*>Home</);
+  assert.doesNotMatch(forum, />MAIN HUB</);
+  assert.doesNotMatch(forum, />Main Hub</);
   assert.doesNotMatch(forum, /status\.unitedmobilerv\.com/);
   assert.doesNotMatch(forum, /portal\.unitedmobilerv\.com/);
   assert.doesNotMatch(forum, FORBIDDEN);
@@ -175,8 +179,9 @@ test('site.js stamps Call + gold Text Now + Square Book on every nav/mobile bar'
   assert.match(js, /sms:\+16166065277/);
   assert.match(js, /tel:\+16166065277/);
   assert.match(js, /Call \(616\) 606-5277/);
-  assert.match(js, /MAIN HUB/);
+  assert.match(js, /MAIN_HOME_LABEL = 'Home'/);
   assert.match(js, /https:\/\/unitedmobilerv\.com\//);
+  assert.doesNotMatch(js, /MAIN_HOME_LABEL = 'MAIN HUB'/);
   assert.doesNotMatch(js, /\['Main', 'https:\/\/unitedmobilerv\.com\/'\]/);
   assert.match(js, /navCtaHtml/);
   assert.match(js, /mobileBarHtml/);
@@ -206,7 +211,9 @@ test('mothership home + platform-bar convert stack: Text Now sms + tel + Square'
     assert.match(html, /sms:\+16166065277/, file);
     assert.match(html, /tel:\+16166065277/, file);
     assert.match(html, /Call \(616\) 606-5277/, file);
-    assert.match(html, />MAIN HUB</, file);
+    assert.match(html, />Home</, file);
+    assert.doesNotMatch(html, />MAIN HUB</, file);
+    assert.doesNotMatch(html, />Main Hub</, file);
     assert.doesNotMatch(html, /status\.unitedmobilerv\.com/, file);
     assert.doesNotMatch(html, /portal\.unitedmobilerv\.com/, file);
     assert.doesNotMatch(html, FORBIDDEN, file);

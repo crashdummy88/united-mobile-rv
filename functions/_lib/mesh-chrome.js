@@ -8,8 +8,8 @@
  * Do not add a guide-library item to MESH_LINKS. That library stays
  * on the WP apex, not in shop/forum/book product chrome.
  *
- * Matt LOCK 2026-09-18 product nav (shop / forum / book), Shop-first:
- *   MAIN HUB return → https://unitedmobilerv.com/
+ * Matt LOCK 2026-09-20 product nav (shop / forum / book), Shop-first:
+ *   Home return → https://unitedmobilerv.com/ (WordPress apex; not "MAIN HUB")
  *   1 Shop · 2 Book (Square) · 3 Forum · 4 Software · 5 Docs
  *   Not Book-first. Do not add portal, status, or guide-library items.
  *
@@ -33,7 +33,7 @@ export const TEXT_NOW_COMPACT = 'Text Now';
 export const CALL_HREF = 'tel:+16166065277';
 export const CALL_LABEL = 'Call (616) 606-5277';
 export const MAIN_HOME_HREF = 'https://unitedmobilerv.com/';
-export const MAIN_HOME_LABEL = 'MAIN HUB';
+export const MAIN_HOME_LABEL = 'Home';
 
 export function convertNavCta() {
   return `<div class="nav-cta">

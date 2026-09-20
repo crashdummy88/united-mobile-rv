@@ -61,6 +61,8 @@ function umrtGetTurnstileToken(containerId) {
   var TEXT_NOW_COMPACT = 'Text Now';
   var CALL_HREF = 'tel:+16166065277';
   var CALL_LABEL = 'Call (616) 606-5277';
+  var MAIN_HOME_HREF = 'https://unitedmobilerv.com/';
+  var MAIN_HOME_LABEL = 'Home';
   var navCtaHtml = '<a class="nav-phone" href="' + CALL_HREF + '">' + CALL_LABEL + '</a>'
     + '<a class="btn btn-gold nav-text-now" href="' + TEXT_NOW_HREF + '">' + TEXT_NOW_COMPACT + '</a>'
     + '<a class="btn btn-ghost" href="' + BOOK_PUBLIC + '" target="_blank" rel="noopener">Book</a>';
@@ -106,6 +108,12 @@ function umrtGetTurnstileToken(containerId) {
         continue;
       }
       var chromeLabel = umrtLinkLabel(chromeA);
+      if (/^(MAIN[\s-]*HUB|Main Hub)$/i.test(chromeLabel)
+        || chromeA.getAttribute('data-platform-link') === 'hub') {
+        chromeA.setAttribute('href', MAIN_HOME_HREF);
+        chromeA.textContent = MAIN_HOME_LABEL;
+        continue;
+      }
       if (/^(Book|Book Now|Book a Service|BOOK ONLINE|Book Online|Book service)$/i.test(chromeLabel)) {
         chromeA.setAttribute('href', BOOK_PUBLIC);
         chromeA.setAttribute('target', '_blank');
@@ -170,10 +178,9 @@ function umrtGetTurnstileToken(containerId) {
     ba.setAttribute('rel', 'noopener');
   }
 
-  /* Shop/forum/book islands: Shop-first product nav — MAIN HUB + Shop · Book ·
-     Forum · Software · Docs. Not Book-first. Strip retired destinations and guide-library labels. */
-  var MAIN_HOME_HREF = 'https://unitedmobilerv.com/';
-  var MAIN_HOME_LABEL = 'MAIN HUB';
+  /* Shop/forum/book islands: Shop-first product nav — Home + Shop · Book ·
+     Forum · Software · Docs. Not Book-first. Strip retired destinations and guide-library labels.
+     Legacy MAIN HUB / Main Hub / MAIN-HUB labels rewrite to Home → WP apex. */
   var islandHost = location.hostname === 'shop.unitedmobilerv.com'
     || location.hostname === 'forum.unitedmobilerv.com'
     || location.hostname === 'book.unitedmobilerv.com';
@@ -199,13 +206,13 @@ function umrtGetTurnstileToken(containerId) {
         var name = umrtLinkLabel(a);
         if (/^Cart\b/i.test(name)) { extras.push(li); return; }
         have[name.toLowerCase()] = li;
-        if (/^(main|home|main hub)$/i.test(name)) have['main hub'] = li;
+        if (/^(main|home|main[\s-]*hub)$/i.test(name)) have.home = li;
       });
       meshItems.forEach(function (pair) {
         var name = pair[0];
         var href = pair[1];
         var found = have[name.toLowerCase()]
-          || (name === MAIN_HOME_LABEL ? (have['main hub'] || have.main || have.home) : null);
+          || (name === MAIN_HOME_LABEL ? (have.home || have['main hub'] || have.main) : null);
         var li;
         var link;
         if (found) {
