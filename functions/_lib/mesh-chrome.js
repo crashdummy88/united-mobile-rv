@@ -23,7 +23,7 @@
  *   Book                → book.unitedmobilerv.com (ghost/secondary; label exact Book)
  */
 
-export const SQUARE_BOOK_URL = 'https://united-mobile-rv-llc.square.site/';
+export const SQUARE_BOOK_URL = 'https://united-mobile-rv-llc.square.site/'; // Matt published booking engine (iframe on book.*)
 export const BOOK_HOST_HREF = 'https://book.unitedmobilerv.com/';
 export const BOOK_PUBLIC_HREF = BOOK_HOST_HREF;
 // Square Online also exposes /s/appointments (GET 200) but the live

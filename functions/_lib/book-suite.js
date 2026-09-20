@@ -9,8 +9,18 @@
  * Canonical/og:url use the request host. book. stays noindex until Matt
  * says otherwise. Text Now is sms:+16166065277; number is tel:.
  * Square still processes the booking; this page wraps it so customers
- * stay on book.unitedmobilerv.com. Embed src comes from Pages env
- * SQUARE_APPOINTMENTS_EMBED_SRC (Matt paste). No invented Square IDs.
+ * stay on book.unitedmobilerv.com.
+ *
+ * Live square.site check (2026-09-20):
+ *   - Homepage https://united-mobile-rv-llc.square.site/ is the working
+ *     appointments engine (appointment-request form). No official
+ *     Square Appointments embed snippet / buyer-widget script is published.
+ *   - Homepage response has no X-Frame-Options and no CSP frame-ancestors.
+ *   - /s/appointments exists but is not the default engine (homepage form
+ *     is what Matt published as the booking URL).
+ *   - Do not invent widget, location, or appointment-unit IDs. Optional
+ *     Pages env SQUARE_APPOINTMENTS_EMBED_SRC is accepted only when it
+ *     is Square-land https (Matt paste of a real embed later).
  */
 
 import {
@@ -47,9 +57,9 @@ function esc(s) {
 /**
  * Square embed src. Preference:
  *   1. Pages env SQUARE_APPOINTMENTS_EMBED_SRC when it is Square-land https
- *   2. Matt's live Square Online homepage (SQUARE_BOOK_URL)
+ *   2. Matt's published Square Online URL (SQUARE_BOOK_URL)
  * Never invents widget, location, or appointment-unit IDs. A non-Square
- * env paste is ignored and the known square.site URL is used instead.
+ * env paste is ignored and the known square.site homepage is used instead.
  */
 export function squareAppointmentsEmbedSrc(env) {
   const raw = env && env[SQUARE_EMBED_ENV];

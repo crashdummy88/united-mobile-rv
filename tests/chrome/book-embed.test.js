@@ -24,6 +24,11 @@ test('mesh Book href is book. wrap; square.site is not chrome Book', () => {
   assert.notEqual(BOOK_PUBLIC_HREF, SQUARE_BOOK_URL);
 });
 
+test('Square engine is Matt published square.site homepage (no invented IDs)', () => {
+  assert.equal(SQUARE_BOOK_URL, 'https://united-mobile-rv-llc.square.site/');
+  assert.equal(squareAppointmentsEmbedSrc(), 'https://united-mobile-rv-llc.square.site/');
+});
+
 test('default embed src is Matt square.site URL; env override must be Square-land', () => {
   assert.equal(SQUARE_EMBED_ENV, 'SQUARE_APPOINTMENTS_EMBED_SRC');
   assert.equal(squareAppointmentsEmbedSrc(), SQUARE_BOOK_URL);
