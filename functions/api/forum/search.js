@@ -4,6 +4,7 @@
  * Parameterized, bounded, paginated. Never returns hidden content.
  */
 import { json } from '../../_lib/authz.js';
+import { publicThreadSql } from '../../_lib/forum-growth.js';
 
 export async function onRequestGet(context) {
   const { env, request } = context;
@@ -24,7 +25,7 @@ export async function onRequestGet(context) {
        (SELECT COUNT(*) FROM posts p WHERE p.thread_id = t.id AND p.hidden = 0) AS reply_count,
        substr(t.body, 1, 220) AS snippet
      FROM threads t JOIN users u ON u.id = t.author_id
-     WHERE t.hidden = 0
+     WHERE ${publicThreadSql('t')}
        AND (t.title LIKE ? ESCAPE '\\' OR t.body LIKE ? ESCAPE '\\' OR t.category LIKE ? ESCAPE '\\')
      ORDER BY t.updated_at DESC
      LIMIT ? OFFSET ?`

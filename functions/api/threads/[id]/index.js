@@ -2,6 +2,7 @@ import { readSession, randomId } from '../../../_lib/session.js';
 import { moderateText } from '../../../_lib/moderate.js';
 import { notifyForumActivity } from '../../../_lib/notify.js';
 import { verifyTurnstile } from '../../../_lib/turnstile.js';
+import { isPubliclyListedThread, isSeedOrPinSpamId } from '../../../_lib/forum-growth.js';
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -13,6 +14,7 @@ function json(data, status = 200) {
 export async function onRequestGet(context) {
   const { env, params } = context;
   if (!env.DB) return json({ success: false, error: 'not_configured' }, 503);
+  if (isSeedOrPinSpamId(params.id)) return json({ success: false, error: 'not_found' }, 404);
 
   const thread = await env.DB.prepare(
     `SELECT t.id, t.title, t.body, t.category, t.created_at, t.pinned, t.image_keys,
@@ -23,7 +25,7 @@ export async function onRequestGet(context) {
     .bind(params.id)
     .first();
 
-  if (!thread) return json({ success: false, error: 'not_found' }, 404);
+  if (!thread || !isPubliclyListedThread(thread)) return json({ success: false, error: 'not_found' }, 404);
 
   const { results: posts } = await env.DB.prepare(
     `SELECT p.id, p.body, p.created_at, p.image_keys, u.display_name AS author, u.avatar_url AS author_avatar
@@ -49,10 +51,11 @@ export async function onRequestPost(context) {
   const banCheck = await env.DB.prepare('SELECT banned FROM users WHERE id = ?').bind(session.uid).first();
   if (!banCheck || banCheck.banned) return json({ success: false, error: 'banned' }, 403);
 
-  const thread = await env.DB.prepare('SELECT id, locked FROM threads WHERE id = ? AND hidden = 0')
+  if (isSeedOrPinSpamId(params.id)) return json({ success: false, error: 'not_found' }, 404);
+  const thread = await env.DB.prepare('SELECT id, locked, author_id, hidden FROM threads WHERE id = ? AND hidden = 0')
     .bind(params.id)
     .first();
-  if (!thread) return json({ success: false, error: 'not_found' }, 404);
+  if (!thread || !isPubliclyListedThread(thread)) return json({ success: false, error: 'not_found' }, 404);
 
   if (thread.locked) {
     const modRow = await env.DB.prepare('SELECT is_mod FROM users WHERE id = ?').bind(session.uid).first();

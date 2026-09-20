@@ -1,3 +1,5 @@
+import { publicThreadSql } from './_lib/forum-growth.js';
+
 function esc(s) {
   return String(s || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
@@ -9,7 +11,7 @@ export async function onRequestGet(context) {
   const { results } = await env.DB.prepare(
     `SELECT t.id, t.title, t.body, t.category, t.created_at, u.display_name AS author
      FROM threads t JOIN users u ON u.id = t.author_id
-     WHERE t.hidden = 0 ORDER BY t.created_at DESC LIMIT 20`
+     WHERE ${publicThreadSql('t')} ORDER BY t.created_at DESC LIMIT 20`
   ).all();
 
   const items = (results || []).map((t) => {

@@ -4,12 +4,14 @@
  * Authenticated members only. Duplicate saves are a no-op (PRIMARY KEY dedupes).
  */
 import { requireSession, json } from '../../../../_lib/authz.js';
+import { isSeedOrPinSpamId } from '../../../../_lib/forum-growth.js';
 
 export async function onRequestPost(context) {
   const { env, request, params } = context;
   if (!env.DB) return json({ success: false, error: 'not_configured' }, 503);
   const session = await requireSession(request, env);
   if (!session) return json({ success: false, error: 'auth_required' }, 401);
+  if (isSeedOrPinSpamId(params.id)) return json({ success: false, error: 'not_found' }, 404);
 
   const thread = await env.DB.prepare('SELECT id FROM threads WHERE id = ? AND hidden = 0').bind(params.id).first();
   if (!thread) return json({ success: false, error: 'not_found' }, 404);

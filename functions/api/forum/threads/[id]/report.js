@@ -5,6 +5,7 @@
  */
 import { requireSession, json } from '../../../../_lib/authz.js';
 import { checkRateLimit } from '../../../../_lib/rate-limit.js';
+import { isSeedOrPinSpamId } from '../../../../_lib/forum-growth.js';
 
 const REASONS = new Set(['spam', 'abuse', 'misinformation', 'inappropriate', 'dangerous_advice', 'other']);
 
@@ -22,6 +23,7 @@ export async function onRequestPost(context) {
     return json({ success: false, error: 'rate_limited', message: 'Too many reports -- please slow down.', retry_after: rl.retryAfter }, 429);
   }
 
+  if (isSeedOrPinSpamId(params.id)) return json({ success: false, error: 'not_found' }, 404);
   const thread = await env.DB.prepare('SELECT id FROM threads WHERE id = ?').bind(params.id).first();
   if (!thread) return json({ success: false, error: 'not_found' }, 404);
 

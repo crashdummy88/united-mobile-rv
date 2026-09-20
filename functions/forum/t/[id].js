@@ -1,4 +1,5 @@
 import { islandHeader, islandFooter, islandMobileBar } from '../../_lib/mesh-chrome.js';
+import { isPubliclyListedThread, isSeedOrPinSpamId } from '../../_lib/forum-growth.js';
 
 /**
  * GET /forum/t/:id — real, server-rendered, permanently linkable thread page.
@@ -53,6 +54,7 @@ export async function onRequestGet(context) {
   const base = url.origin;
 
   if (!env.DB) return notFoundPage(base);
+  if (isSeedOrPinSpamId(params.id)) return notFoundPage(base);
 
   const thread = await env.DB.prepare(
     `SELECT t.id, t.title, t.body, t.category, t.created_at, t.updated_at, t.pinned, t.image_keys,
@@ -62,7 +64,7 @@ export async function onRequestGet(context) {
      WHERE t.id = ? AND t.hidden = 0`
   ).bind(params.id).first();
 
-  if (!thread) return notFoundPage(base);
+  if (!thread || !isPubliclyListedThread(thread)) return notFoundPage(base);
 
   const { results: posts } = await env.DB.prepare(
     `SELECT p.id, p.body, p.created_at, p.image_keys,

@@ -1,35 +1,26 @@
 /**
  * UMRT Forum Content Bot — scheduled Worker (Cron Trigger).
- * Generates one deep-dive diagnostic guide thread per run, posted honestly
- * under the existing "UMRT Team" bot account and clearly labeled as
- * AI-assisted so nothing is ever presented as a real customer post or as
- * Matt's own words. Runs against the same D1 database as the forum site.
+ *
+ * Scope (forum growth 021): ONE AI-labeled first reply on the five UMRV
+ * Tech pins only. Does not create threads. Does not impersonate owners.
+ * Does not reply anywhere else (no seed/pin spam, no drive-by auto-replies).
+ *
+ * Pins are created by db/migrations/021_archive_seeds_tech_pins.sql and
+ * authored as UMRV Tech. This Worker may add a single helpful first reply
+ * under the existing "UMRT Team" bot account, clearly labeled AI-assisted.
  */
 
-const TOPICS = [
-  'Isolating a high-resistance ground loop in a 24V multi-inverter setup',
-  'Dometic RV AC throwing an E1/E2 fault code — how to narrow it down',
-  'Diagnosing a slow-draining house battery bank with no obvious parasitic load',
-  'Troubleshooting a Truma or Suburban water heater that won’t ignite',
-  'Freightliner/Sprinter chassis warning lights after aftermarket electrical work',
-  'Solar charge controller showing bulk/absorption but batteries never reach 100%',
-  'RV roof seal failure signs before they become a leak',
-  'Diagnosing intermittent 12V circuit dropouts (loose ground vs. corroded connector)',
-  'Peplink/cellular booster showing signal but no data throughput',
-  'Winterizing a water system so the low-point drains actually work',
-  'Axle bearing noise vs. brake noise — how to tell them apart before towing',
-  'Propane appliance won’t stay lit — thermocouple vs. regulator vs. air in the line',
-];
+import {
+  BOT_UMRT_TEAM_ID,
+  TECH_PIN_IDS,
+  isTechPinId,
+} from '../../functions/_lib/forum-growth.js';
 
-const GUIDE_PROMPT = `You are a senior RV/trailer diagnostic technician writing an educational forum post for a mobile RV repair company's public community forum.
+const PIN_REPLY_PROMPT = `You are a senior RV/trailer diagnostic technician posting ONE first reply on a staff-authored Tech pin in a public community forum.
 
-Write a genuinely useful diagnostic guide (350-500 words) on the topic given. Structure it with:
-- A one-sentence summary of the symptom/problem
-- The likely causes, most common first
-- A step-by-step check-in-this-order troubleshooting approach a rig owner could actually follow
-- One clear line on when to stop DIY and call a certified mobile tech
+Write 4-7 sentences of general, well-known RV guidance that helps real owners answer the pin with useful details (what to measure, what to mention, what not to force). Be specific where you can but do not invent this particular rig's history, part numbers you are not sure of, or a personal "I did this on my coach" story.
 
-Be specific and technically accurate. Do not invent brand-specific part numbers you're not sure of. Do not claim personal experience or say "I" did a repair — write it as general technical guidance. Do not sign the post.`;
+Do not pretend to be a second owner. Do not sign the post. Do not use a greeting like "Hi". If the pin is not a technical RV question, respond with exactly: SKIP`;
 
 async function randomId() {
   const bytes = crypto.getRandomValues(new Uint8Array(16));
@@ -43,58 +34,89 @@ export default {
       const result = await runOnce(env);
       return new Response(JSON.stringify(result), { headers: { 'Content-Type': 'application/json' } });
     }
-    return new Response('UMRT Forum Content Bot — scheduled Worker, not a public endpoint.', { status: 200 });
+    return new Response(
+      'UMRT Forum Content Bot — pin first-reply only (tech-* pins). Not a public endpoint.',
+      { status: 200 }
+    );
   },
   async scheduled(event, env, ctx) {
     ctx.waitUntil(runOnce(env));
   },
 };
 
-async function runOnce(env) {
+export async function runOnce(env) {
   if (!env.DB || !env.AI) return { ok: false, error: 'missing_bindings' };
+  // Hard freeze: the old seed-thread generator cannot be re-enabled by env.
+  if (env.CONTENT_BOT_CREATE_THREADS === '1') {
+    return { ok: false, error: 'seed_generator_frozen' };
+  }
 
-  const bot = await env.DB.prepare(`SELECT id FROM users WHERE id = 'bot-umrt-team'`).first();
+  const bot = await env.DB.prepare(`SELECT id FROM users WHERE id = ?`).bind(BOT_UMRT_TEAM_ID).first();
   if (!bot) return { ok: false, error: 'bot_user_missing' };
 
-  const topic = TOPICS[Math.floor(Math.random() * TOPICS.length)];
+  const placeholders = TECH_PIN_IDS.map(() => '?').join(', ');
+  const { results: pins } = await env.DB.prepare(
+    `SELECT t.id, t.title, t.body FROM threads t
+     WHERE t.id IN (${placeholders})
+       AND t.hidden = 0
+       AND NOT EXISTS (
+         SELECT 1 FROM posts p
+         WHERE p.thread_id = t.id
+           AND p.author_id = ?
+           AND p.hidden = 0
+       )
+     ORDER BY t.id ASC`
+  )
+    .bind(...TECH_PIN_IDS, BOT_UMRT_TEAM_ID)
+    .all();
 
-  let guide;
-  try {
-    const result = await env.AI.run('@cf/meta/llama-3.1-8b-instruct-fast', {
-      messages: [
-        { role: 'system', content: GUIDE_PROMPT },
-        { role: 'user', content: `Topic: ${topic}` },
-      ],
-      max_tokens: 700,
-      temperature: 0.5,
-    });
-    guide = (result?.response || '').trim();
-  } catch (e) {
-    // Log full detail server-side only; never return stack/error internals
-    // to the caller (this endpoint is key-gated, but still no reason to leak).
-    console.error('content-bot AI failure:', e);
-    return { ok: false, error: 'ai_failed' };
+  const needed = (pins || []).filter((t) => isTechPinId(t.id));
+  if (!needed.length) {
+    return { ok: true, skipped: 'all_pins_have_first_reply_or_missing', replied: [] };
   }
-  if (!guide) return { ok: false, error: 'empty_guide' };
 
-  const category = /power|solar|battery|inverter|ground/i.test(topic)
-    ? 'power'
-    : /connectiv|peplink|cellular|signal/i.test(topic)
-    ? 'connectivity'
-    : /route|corridor/i.test(topic)
-    ? 'route'
-    : 'repair';
+  const replied = [];
+  const errors = [];
 
-  const title = topic.length > 120 ? topic.slice(0, 117) + '...' : topic;
-  const body =
-    `🤖 This is an AI-assisted diagnostic guide from the UMRT Team bot — general technical education, not a substitute for hands-on diagnosis of your specific rig.\n\n` +
-    guide +
-    `\n\nQuestions about your specific setup? Text/call (616) 606-5277 or start a thread below.`;
+  for (const pin of needed) {
+    if (!isTechPinId(pin.id)) continue;
 
-  const id = await randomId();
-  await env.DB.prepare(
-    `INSERT INTO threads (id, title, body, category, author_id, hidden, ai_flagged, ai_reason) VALUES (?, ?, ?, ?, ?, 0, 0, NULL)`
-  ).bind(id, title, body, category, bot.id).run();
+    let draft;
+    try {
+      const result = await env.AI.run('@cf/meta/llama-3.1-8b-instruct-fast', {
+        messages: [
+          { role: 'system', content: PIN_REPLY_PROMPT },
+          { role: 'user', content: `${pin.title}\n\n${pin.body}`.slice(0, 4000) },
+        ],
+        max_tokens: 350,
+        temperature: 0.4,
+      });
+      draft = (result?.response || '').trim();
+    } catch (e) {
+      console.error('content-bot AI failure:', e);
+      errors.push({ id: pin.id, error: 'ai_failed' });
+      continue;
+    }
+    if (!draft || draft.toUpperCase().startsWith('SKIP')) {
+      errors.push({ id: pin.id, error: 'empty_or_skip' });
+      continue;
+    }
 
-  return { ok: true, id, title, category };
+    const body =
+      `🤖 Automated first-pass from the UMRT assistant (not a tech, not a full diagnosis):\n\n` +
+      draft.slice(0, 2000) +
+      `\n\nWant eyes and a meter on it? Text/call (616) 606-5277.`;
+
+    const id = await randomId();
+    await env.DB.prepare(
+      `INSERT INTO posts (id, thread_id, author_id, body, hidden, ai_flagged, ai_reason) VALUES (?, ?, ?, ?, 0, 0, NULL)`
+    ).bind(id, pin.id, bot.id, body).run();
+    await env.DB.prepare(
+      `UPDATE threads SET updated_at = datetime('now') WHERE id = ?`
+    ).bind(pin.id).run();
+
+    replied.push({ id: pin.id, post_id: id });
+  }
+
+  return { ok: true, replied, errors };
 }
