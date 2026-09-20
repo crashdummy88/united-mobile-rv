@@ -117,3 +117,5 @@ test('middleware injects Clarity into HTML that lacks it, skips non-HTML and dup
   assert.doesNotMatch(plainBody, /clarity/);
   assert.equal(plain.headers.get('X-Robots-Tag'), null);
 });
+
+await run();
