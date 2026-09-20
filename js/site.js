@@ -64,6 +64,8 @@ function umrtGetTurnstileToken(containerId) {
   var TEXT_NOW_COMPACT = 'Text Now';
   var CALL_HREF = 'tel:+16166065277';
   var CALL_LABEL = 'Call (616) 606-5277';
+  var MAIN_SERVICES_HREF = 'https://unitedmobilerv.com/service/';
+  var MAIN_SERVICES_LABEL = 'Services';
   var navCtaHtml = '<a class="nav-phone" href="' + CALL_HREF + '">' + CALL_LABEL + '</a>'
     + '<a class="btn btn-gold nav-text-now" href="' + TEXT_NOW_HREF + '">' + TEXT_NOW_COMPACT + '</a>'
     + '<a class="btn btn-ghost" href="' + BOOK_PUBLIC + '" target="_blank" rel="noopener">Book</a>';
@@ -135,6 +137,11 @@ function umrtGetTurnstileToken(containerId) {
         chromeA.textContent = 'Home';
         continue;
       }
+      if (chromeA.getAttribute('data-platform-link') === 'service') {
+        chromeA.setAttribute('href', MAIN_SERVICES_HREF);
+        chromeA.textContent = MAIN_SERVICES_LABEL;
+        continue;
+      }
       if (umrtIsChromeBookLabel(chromeLabel)
         || chromeA.getAttribute('data-platform-link') === 'book') {
         umrtStampChromeBook(chromeA);
@@ -197,8 +204,9 @@ function umrtGetTurnstileToken(containerId) {
     ba.setAttribute('rel', 'noopener');
   }
 
-  /* Shop/forum/book islands: Shop-first product nav — Home + Shop · Book ·
-     Forum · Software · Docs. Not Book-first. Strip retired destinations and guide-library labels. */
+  /* Shop/forum/book islands: Home · Services · Shop · Book · Forum ·
+     Software · Docs. Cart after Shop on shop only. Not Book-first.
+     Strip retired destinations and guide-library labels. */
   var MAIN_HOME_HREF = 'https://unitedmobilerv.com/';
   var MAIN_HOME_LABEL = 'Home';
   var islandHost = location.hostname === 'shop.unitedmobilerv.com'
@@ -220,6 +228,7 @@ function umrtGetTurnstileToken(containerId) {
   }
   var meshItems = [
     [MAIN_HOME_LABEL, MAIN_HOME_HREF],
+    [MAIN_SERVICES_LABEL, MAIN_SERVICES_HREF],
     ['Shop', 'https://shop.unitedmobilerv.com/'],
     ['Book', BOOK_PUBLIC],
     ['Forum', 'https://forum.unitedmobilerv.com/'],
@@ -258,6 +267,7 @@ function umrtGetTurnstileToken(containerId) {
           link = li.querySelector('a');
           link.setAttribute('href', href);
           if (name === MAIN_HOME_LABEL) link.textContent = MAIN_HOME_LABEL;
+          else if (name === MAIN_SERVICES_LABEL) link.textContent = MAIN_SERVICES_LABEL;
           else if (name === 'Book') link.textContent = 'Book';
         } else {
           li = document.createElement('li');
@@ -293,6 +303,14 @@ function umrtGetTurnstileToken(containerId) {
       if (!umrtIsChromeBookLabel(umrtLinkLabel(leftoverBookA))
         && leftoverBookA.getAttribute('data-platform-link') !== 'book') continue;
       umrtStampChromeBook(leftoverBookA);
+    }
+    var leftoverServices = document.querySelectorAll('.nav-links a[href], .site-footer a[href], .umrt-platform-bar a[href], .site-header a[href]');
+    for (var sv = 0; sv < leftoverServices.length; sv++) {
+      var leftoverServicesA = leftoverServices[sv];
+      if (!/^Services$/i.test(umrtLinkLabel(leftoverServicesA))
+        && leftoverServicesA.getAttribute('data-platform-link') !== 'service') continue;
+      leftoverServicesA.setAttribute('href', MAIN_SERVICES_HREF);
+      leftoverServicesA.textContent = MAIN_SERVICES_LABEL;
     }
     var brandLinks = document.querySelectorAll('.site-header .brand');
     for (var bl = 0; bl < brandLinks.length; bl++) {

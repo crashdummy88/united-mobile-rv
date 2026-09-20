@@ -16,12 +16,15 @@ import {
   CALL_LABEL,
   MAIN_HOME_HREF,
   MAIN_HOME_LABEL,
+  MAIN_SERVICES_HREF,
+  MAIN_SERVICES_LABEL,
   islandHeader,
   islandFooter,
   islandMobileBar,
+  shopCartNavItem,
 } from '../../functions/_lib/mesh-chrome.js';
 
-const NUMBERED_NAV = ['Shop', 'Book', 'Forum', 'Software', 'Docs'];
+const NUMBERED_NAV = ['Services', 'Shop', 'Book', 'Forum', 'Software', 'Docs'];
 const PRODUCT_NAV = ['Home', ...NUMBERED_NAV];
 const FORBIDDEN = /Portal|Status|Field guides|WP Field Guides/;
 const SQUARE = 'https://united-mobile-rv-llc.square.site/';
@@ -60,15 +63,19 @@ test('Text Now is sms:+16166065277; number is tel:+16166065277', () => {
   assert.equal(MAIN_HOME_LABEL, 'Home');
 });
 
-test('MESH_LINKS is Home + Shop · Book · Forum · Software · Docs (no Portal/Status/Guides)', () => {
+test('MESH_LINKS is Home · Services · Shop · Book · Forum · Software · Docs (no Portal/Status/Guides)', () => {
   const labels = MESH_LINKS.map((l) => l.label);
   assert.deepEqual(labels, PRODUCT_NAV);
   assert.deepEqual(labels.filter((l) => l !== 'Home'), NUMBERED_NAV);
   assert.ok(labels.indexOf('Shop') < labels.indexOf('Book'), 'Shop-first, not Book-first');
   assert.equal(labels[0], 'Home');
-  assert.equal(labels[1], 'Shop');
+  assert.equal(labels[1], 'Services');
+  assert.equal(labels[2], 'Shop');
   assert.equal(MESH_LINKS.find((l) => l.key === 'book').href, SQUARE);
   assert.equal(MESH_LINKS.find((l) => l.key === 'home').href, 'https://unitedmobilerv.com/');
+  assert.equal(MESH_LINKS.find((l) => l.key === 'services').href, 'https://unitedmobilerv.com/service/');
+  assert.equal(MAIN_SERVICES_HREF, 'https://unitedmobilerv.com/service/');
+  assert.equal(MAIN_SERVICES_LABEL, 'Services');
   assert.ok(!MESH_LINKS.some((l) => /guide|portal|status/i.test(l.label) || /guide|portal|status/i.test(l.key)));
   const header = islandHeader({ current: 'shop' });
   const footer = islandFooter({ current: 'shop' });
@@ -82,6 +89,7 @@ test('MESH_LINKS is Home + Shop · Book · Forum · Software · Docs (no Portal/
   assert.deepEqual(productLabels(footer), PRODUCT_NAV);
   for (const html of [header, footer]) {
     assert.match(html, /https:\/\/unitedmobilerv\.com\//);
+    assert.match(html, /https:\/\/unitedmobilerv\.com\/service\//);
     assert.match(html, /https:\/\/shop\.unitedmobilerv\.com\//);
     assert.match(html, /united-mobile-rv-llc\.square\.site/);
     assert.match(html, /https:\/\/forum\.unitedmobilerv\.com\//);
@@ -165,6 +173,7 @@ test('shop + forum templates include mesh-chrome (or static mesh + Square)', () 
   assert.match(forum, /https:\/\/docs\.unitedmobilerv\.com\//);
   assert.match(forum, />Home</);
   assert.match(forum, /href="https:\/\/unitedmobilerv\.com\/"[^>]*>Home</);
+  assert.match(forum, /href="https:\/\/unitedmobilerv\.com\/service\/"[^>]*>Services</);
   assert.doesNotMatch(forum, /brand-text/);
   assert.match(forum.match(/<header[\s\S]*?<\/header>/)[0], /umrt-icon\.webp/);
   assert.doesNotMatch(forum.match(/<header[\s\S]*?<\/header>/)[0], /umrt-logo\.webp/);
@@ -257,6 +266,7 @@ test('shop/forum/book chrome has no sticky United Mobile RV brand-text', () => {
   const mothership = src('index.html').match(/<header[\s\S]*?<\/header>/)[0];
   assert.match(mothership, /brand-text/);
   assert.match(mothership, /United Mobile/);
+  assert.match(mothership, /href="\/service\/">Services</);
 });
 
 test('shop lockdown allowlist is unchanged (no /forum/ or /design/ added)', () => {
@@ -285,11 +295,16 @@ test('site.js stamps Call + gold Text Now + Square Book on every nav/mobile bar'
   assert.doesNotMatch(js, /https:\/\/unitedmobilerv\.com\/guide\//);
   assert.doesNotMatch(js, /\['Status', 'https:\/\/status\.unitedmobilerv\.com\/'\]/);
   assert.doesNotMatch(js, /\['Portal', 'https:\/\/portal\.unitedmobilerv\.com\/'\]/);
+  assert.match(js, /MAIN_SERVICES_HREF = 'https:\/\/unitedmobilerv\.com\/service\/'/);
+  assert.match(js, /MAIN_SERVICES_LABEL = 'Services'/);
   assert.match(js, /\['Shop', 'https:\/\/shop\.unitedmobilerv\.com\/'\]/);
   assert.match(js, /\['Book', BOOK_PUBLIC\]/);
+  assert.match(js, /MAIN_SERVICES_LABEL, MAIN_SERVICES_HREF/);
   assert.match(js, /function umrtIsChromeBookLabel/);
   assert.match(js, /function umrtStampChromeBook/);
   assert.match(js, /umrtStampChromeBook\(leftoverBookA\)/);
+  assert.match(js, /leftoverServices/);
+  assert.match(js, /data-platform-link'\) === 'service'/);
   assert.match(js, /\['Forum', 'https:\/\/forum\.unitedmobilerv\.com\/'\]/);
   assert.match(js, /\['Software', 'https:\/\/software\.unitedmobilerv\.com\/'\]/);
   assert.match(js, /\['Docs', 'https:\/\/docs\.unitedmobilerv\.com\/'\]/);
@@ -384,9 +399,24 @@ test('every shop/forum/book chrome file says Home, never MAIN HUB / Main Hub, no
   }
   assert.equal(MAIN_HOME_LABEL, 'Home');
   assert.equal(MAIN_HOME_HREF, 'https://unitedmobilerv.com/');
-  assert.match(src('forum/index.html'), /site\.js\?v=20260920booksq/);
-  assert.match(src('functions/shop/index.js'), /site\.js\?v=20260920booksq/);
-  assert.match(src('functions/_lib/book-suite.js'), /site\.js\?v=20260920booksq/);
+  assert.match(src('forum/index.html'), /site\.js\?v=20260920svc/);
+  assert.match(src('functions/shop/index.js'), /site\.js\?v=20260920svc/);
+  assert.match(src('functions/_lib/book-suite.js'), /site\.js\?v=20260920svc/);
+});
+
+test('shop Cart sits after Shop, after Services', () => {
+  const header = islandHeader({
+    current: 'shop',
+    extraNavHtml: shopCartNavItem(),
+    extraAfterKey: 'shop',
+  });
+  const labels = [...header.matchAll(/<a\b[^>]*>([\s\S]*?)<\/a>/g)]
+    .map((m) => m[1].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim())
+    .filter((label) => ['Home', 'Services', 'Shop', 'Cart', 'Book'].includes(label.split(' ')[0]));
+  assert.ok(labels.indexOf('Services') < labels.indexOf('Shop'));
+  assert.ok(labels.indexOf('Shop') < labels.findIndex((l) => /^Cart/.test(l)));
+  assert.ok(labels.findIndex((l) => /^Cart/.test(l)) < labels.indexOf('Book'));
+  assert.match(header, /href="https:\/\/unitedmobilerv\.com\/service\/"[^>]*>Services</);
 });
 
 await run();

@@ -131,7 +131,7 @@ ${shopQuoteNeedsSection()}
 ${islandFooter({ current: 'shop' })}
 ${islandMobileBar()}
 <script src="/js/cart.js"></script>
-<script src="/js/site.js?v=20260920booksq" defer></script>
+<script src="/js/site.js?v=20260920svc" defer></script>
 <script>
 (function () {
   var qfTurnstileWidgetId = null;
