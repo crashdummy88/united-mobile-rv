@@ -136,6 +136,11 @@ export async function onRequestPost(context) {
     // quote request to succeed.
   }
 
+  // Email path (do not retarget): same Web3Forms access key as /api/book
+  // and /api/chat-lead (PUBLIC_WEB3FORMS_KEY / WEB3FORMS_ACCESS_KEY).
+  // Destination is the inbox registered on that key — Matt's UMRV
+  // business address unitedrvnetwork@gmail.com. Customer `email` below
+  // is reply-to only; it is not the recipient.
   const key = (env.PUBLIC_WEB3FORMS_KEY || env.WEB3FORMS_ACCESS_KEY || '').trim();
   if (key && !key.includes('REPLACE')) {
     try {

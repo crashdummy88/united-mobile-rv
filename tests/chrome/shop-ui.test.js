@@ -36,6 +36,51 @@ test('cart quote form stays on the dark theme (no band-gray light wash)', () => 
   assert.match(cart, /service-tier-text/);
 });
 
+test('cart is a short quote worksheet — no educational essay blocks', () => {
+  const cart = src('functions/shop/cart.js');
+  assert.doesNotMatch(cart, /island-substance\.js/);
+  assert.doesNotMatch(cart, /quoteFirstSection/);
+  assert.doesNotMatch(cart, /shopQuoteNeedsSection/);
+  assert.doesNotMatch(cart, /Quote first/);
+  assert.doesNotMatch(cart, /What we need/);
+  assert.doesNotMatch(cart, /Daily watt-hours/);
+  assert.doesNotMatch(cart, /Pedestal and shore/);
+  assert.doesNotMatch(cart, /Systems we specify/);
+  assert.match(cart, /quote worksheet, not live checkout/);
+  assert.match(cart, /we arrange payment after we confirm/);
+  const itemsIdx = cart.indexOf('id="cart-items"');
+  const formIdx = cart.indexOf('id="quote-form"');
+  assert.ok(itemsIdx > 0 && formIdx > itemsIdx, 'quote form must follow cart line items');
+  const between = cart.slice(itemsIdx, formIdx);
+  assert.doesNotMatch(between, /quoteFirstSection|shopQuoteNeedsSection|class="band"/);
+});
+
+test('cart quote form itself stays complete (do not gut the form)', () => {
+  const cart = src('functions/shop/cart.js');
+  assert.match(cart, /<h2>Request a quote for this cart<\/h2>/);
+  assert.match(cart, /One combined quote covering every item above\. Prefer to talk it through\? Call or text \(616\) 606-5277\./);
+  assert.match(cart, /<strong>Hardware only<\/strong>/);
+  assert.match(cart, /<strong>Hardware \+ remote configuration<\/strong>/);
+  assert.match(cart, /<strong>Hardware \+ UMRT installation<\/strong>/);
+  assert.match(cart, /<strong>Full system design \+ installation<\/strong>/);
+  assert.match(cart, /Your name/);
+  assert.match(cart, /for="qf-phone">Phone/);
+  assert.match(cart, /for="qf-email">Email/);
+  assert.match(cart, /City \/ State/);
+  assert.match(cart, /RV year \/ make \/ model/);
+  assert.match(cart, /Notes for the quote/);
+  assert.match(cart, />Request a quote</);
+  assert.match(cart, /fetch\('\/api\/shop\/quote'/);
+});
+
+test('shop quote handler emails Matt via existing Web3Forms inbox', () => {
+  const quote = src('functions/api/shop/quote.js');
+  assert.match(quote, /PUBLIC_WEB3FORMS_KEY/);
+  assert.match(quote, /api\.web3forms\.com\/submit/);
+  assert.match(quote, /unitedrvnetwork@gmail\.com/);
+  assert.doesNotMatch(quote, /noreply@|demo@|example\.com/);
+});
+
 test('listing uses full wrap + shop-service-card (not cramped wrap-narrow / .service-card clash)', () => {
   const listing = src('functions/shop/index.js');
   assert.match(listing, /shop-category-band"><div class="wrap">/);
