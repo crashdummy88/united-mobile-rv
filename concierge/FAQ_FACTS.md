@@ -36,12 +36,13 @@ Structured facts for the widget. Prefer these over improvisation. Owner: Field K
 ## Corridor
 | Tier | States |
 |------|--------|
-| Active | MT, WY, ID, WA |
+| Active | WA only |
+| Inactive for booking | MT, WY, ID |
 | Case-by-case | MI, WI, SD (cycled this pass), MN, ND, OR |
 
 **Hubs (14):** Royal Oak MI · St. Ignace MI · Ironwood MI · Superior WI · Rapid City SD · Custer SD · Billings MT · Bozeman MT · Missoula MT · Jackson Hole WY · Alpine WY · Coeur d’Alene ID · Spokane WA · Seattle WA
 
-**Script:** “We’re active on the MT / WY / ID / WA corridor. Midwest and a few adjacent states are case-by-case when the route fits — tell us your city and ZIP.”
+**Script:** “Active booking zone is Washington only. Montana, Wyoming, and Idaho are inactive for booking right now. Anywhere else is case-by-case — tell us your city and ZIP.”
 
 ## Services (yes)
 - Electrical & diagnostics (12V / 120V)
@@ -95,7 +96,7 @@ A: Until we diagnose on site we quote structure, not a guess total: trip + labor
 A: Winterize is $175. Trip prep is $225. Those are flat separate line items — not TT vs fifth-wheel vs motorhome pricing. Trip fee and any extra labor still apply as quoted. Text Now (616) 606-5277.
 
 **Q: Do you cover [city]?**  
-A: Check active corridor vs case-by-case. Ask for city/ZIP. Always offer Book/text either way.
+A: Active booking zone is Washington only. Montana, Wyoming, and Idaho are inactive for booking right now. Anywhere else is case-by-case. Ask for city/ZIP. Always offer Book/text either way.
 
 **Q: Are you a shop?**  
 A: Owner-operated mobile service. We meet you at campsites, driveways, and storage lots.

@@ -165,7 +165,7 @@ export function bookWhoArrivesSection() {
     <div class="grid-2">
       ${card('One person on the ticket', 'The name on the Square request is the person who texts the window and who knocks. You are not handed to a second crew.')}
       ${card('Credentials on the visit', 'Victron Professional Certified Installer. Dometic Professional Certified. Peplink Certified Associate. weBoost Authorized Installer. NPS Generator Certified Technician.')}
-      ${card('Where we roll', 'Active MT · WY · ID · WA corridor. Case-by-case beyond. Trip is quoted from your city or ZIP before we leave — not after we arrive.')}
+      ${card('Where we roll', 'Active booking zone: WA only. MT · WY · ID inactive for booking right now. Trip is quoted from your city or ZIP before we leave — not after we arrive.')}
       ${card('Access we need', 'A working path to the bay, roof, or appliance, and a place to park the service vehicle. Note dogs, locked storage, and park gate codes on the request.')}
     </div>
   </div>

@@ -106,7 +106,7 @@ CREATE INDEX IF NOT EXISTS idx_threads_solved ON threads(solved_at);
 
 CREATE TABLE IF NOT EXISTS site_status (
   id INTEGER PRIMARY KEY CHECK (id = 1),
-  active_corridor TEXT NOT NULL DEFAULT 'Montana · Wyoming · Idaho · Washington',
+  active_corridor TEXT NOT NULL DEFAULT 'WA only',
   case_by_case TEXT NOT NULL DEFAULT 'MI / WI / SD · MN / ND / OR',
   current_location TEXT NOT NULL DEFAULT 'Alpine WY',
   status_note TEXT NOT NULL DEFAULT 'Now Cycling',
