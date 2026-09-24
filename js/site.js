@@ -64,14 +64,20 @@ function umrtGetTurnstileToken(containerId) {
   var TEXT_NOW_COMPACT = 'Text Now';
   var CALL_HREF = 'tel:+16166065277';
   var CALL_LABEL = 'Call (616) 606-5277';
+  var MOBILE_CALL_LABEL = 'Call';
+  var FORUM_JOIN_HREF = 'https://forum.unitedmobilerv.com/';
+  var FORUM_JOIN_LABEL = 'Join the Free Forum';
   var MAIN_SERVICES_HREF = 'https://unitedmobilerv.com/service/';
   var MAIN_SERVICES_LABEL = 'Services';
   var navCtaHtml = '<a class="nav-phone" href="' + CALL_HREF + '">' + CALL_LABEL + '</a>'
     + '<a class="btn btn-gold nav-text-now" href="' + TEXT_NOW_HREF + '">' + TEXT_NOW_COMPACT + '</a>'
     + '<a class="btn btn-ghost" href="' + BOOK_PUBLIC + '" target="_blank" rel="noopener">Book</a>';
-  var mobileBarHtml = '<a class="btn btn-ghost" href="' + CALL_HREF + '">' + CALL_LABEL + '</a>'
-    + '<a class="btn btn-gold" href="' + TEXT_NOW_HREF + '">' + TEXT_NOW_COMPACT + '</a>'
-    + '<a class="btn btn-ghost" href="' + BOOK_PUBLIC + '" target="_blank" rel="noopener">Book</a>';
+  /* Mobile bar only: quiet text row Call · Text Now · Book · Join the Free Forum.
+     Header nav-cta stays button pills. Gold on the bar is Text Now text, not a fill. */
+  var mobileBarHtml = '<a href="' + CALL_HREF + '" aria-label="' + CALL_LABEL + '">' + MOBILE_CALL_LABEL + '</a>'
+    + '<a class="mobile-text-now" href="' + TEXT_NOW_HREF + '">' + TEXT_NOW_COMPACT + '</a>'
+    + '<a href="' + BOOK_PUBLIC + '" target="_blank" rel="noopener">Book</a>'
+    + '<a href="' + FORUM_JOIN_HREF + '">' + FORUM_JOIN_LABEL + '</a>';
   var navCtas = document.querySelectorAll('.nav-cta');
   for (var ni = 0; ni < navCtas.length; ni++) navCtas[ni].innerHTML = navCtaHtml;
   var mobileBars = document.querySelectorAll('.mobile-bar');
@@ -119,6 +125,9 @@ function umrtGetTurnstileToken(containerId) {
     a.setAttribute('target', '_blank');
     a.setAttribute('rel', 'noopener');
     a.textContent = 'Book';
+    if (a.closest && a.closest('.mobile-bar')) {
+      a.classList.remove('btn', 'btn-gold', 'btn-ghost', 'btn-dark');
+    }
   }
 
   var chromeRoots = document.querySelectorAll('.nav-links, .site-footer, .umrt-platform-bar, .site-header, .mobile-bar');
@@ -131,6 +140,8 @@ function umrtGetTurnstileToken(containerId) {
         continue;
       }
       var chromeLabel = umrtLinkLabel(chromeA);
+      var inMobileBar = !!(chromeA.closest && chromeA.closest('.mobile-bar'));
+      if (inMobileBar) chromeA.classList.remove('btn', 'btn-gold', 'btn-ghost', 'btn-dark');
       if (umrtIsHubAlias(chromeLabel)
         || chromeA.getAttribute('data-platform-link') === 'hub') {
         chromeA.setAttribute('href', 'https://unitedmobilerv.com/');
@@ -150,13 +161,23 @@ function umrtGetTurnstileToken(containerId) {
       if (/^(Call(\s*\(616\)\s*606[-.\s]?5277)?|\(?616\)?\s*606[-.\s]?5277)$/i.test(chromeLabel)
         || chromeA.getAttribute('data-platform-link') === 'call') {
         chromeA.setAttribute('href', CALL_HREF);
-        chromeA.textContent = CALL_LABEL;
+        if (inMobileBar) {
+          chromeA.textContent = 'Call';
+          chromeA.setAttribute('aria-label', CALL_LABEL);
+        } else {
+          chromeA.textContent = CALL_LABEL;
+        }
         continue;
       }
       if (/^(Text\s*\/\s*Call|Call\s*\/\s*Text|Text Us|Text|Prefer Text.*|Text Now.*)$/i.test(chromeLabel)) {
         chromeA.setAttribute('href', TEXT_NOW_HREF);
-        chromeA.textContent = chromeA.closest('.umrt-platform-bar') ? TEXT_NOW_COMPACT
-          : (/Text Now \(616\)/i.test(chromeLabel) ? chromeLabel.replace(/^Prefer Text/i, 'Text Now') : TEXT_NOW_COMPACT);
+        if (inMobileBar) {
+          chromeA.textContent = TEXT_NOW_COMPACT;
+          chromeA.classList.add('mobile-text-now');
+        } else {
+          chromeA.textContent = chromeA.closest('.umrt-platform-bar') ? TEXT_NOW_COMPACT
+            : (/Text Now \(616\)/i.test(chromeLabel) ? chromeLabel.replace(/^Prefer Text/i, 'Text Now') : TEXT_NOW_COMPACT);
+        }
       }
     }
   }

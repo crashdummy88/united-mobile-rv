@@ -29,9 +29,13 @@
  *   not a chrome Book destination. Geo landing CTAs are out of scope.
  *
  * Matt LOCK 2026-09-16 convert stack (header + mobile bar, every surface):
- *   Call (616) 606-5277 → tel:+16166065277 (older clients; number is the call control)
- *   Text Now            → sms:+16166065277 (gold primary; compact label exact)
- *   Book                → Square appointment intake (ghost/secondary; label exact Book)
+ *   Call (616) 606-5277 → tel:+16166065277 (header label; number is the call control)
+ *   Text Now            → sms:+16166065277 (header: gold button; compact label exact)
+ *   Book                → Square appointment intake (header: ghost button; label exact Book)
+ *   Mobile bar is a quiet text row, not pills (even spacing, padding tap targets):
+ *     Call · Text Now · Book · Join the Free Forum
+ *     Call is the short word; tel: stays +16166065277. Text Now is gold text only.
+ *     Join the Free Forum → https://forum.unitedmobilerv.com/ after Book.
  */
 
 export const SQUARE_BOOK_URL = 'https://united-mobile-rv-llc.square.site/';
@@ -47,6 +51,9 @@ export const TEXT_NOW_LABEL = 'Text Now (616) 606-5277';
 export const TEXT_NOW_COMPACT = 'Text Now';
 export const CALL_HREF = 'tel:+16166065277';
 export const CALL_LABEL = 'Call (616) 606-5277';
+export const MOBILE_CALL_LABEL = 'Call';
+export const FORUM_JOIN_HREF = 'https://forum.unitedmobilerv.com/';
+export const FORUM_JOIN_LABEL = 'Join the Free Forum';
 export const MAIN_HOME_HREF = 'https://unitedmobilerv.com/';
 export const MAIN_HOME_LABEL = 'Home';
 export const MAIN_SERVICES_HREF = 'https://unitedmobilerv.com/service/';
@@ -62,9 +69,10 @@ export function convertNavCta() {
 
 export function convertMobileBar() {
   return `<div class="mobile-bar" aria-label="Quick actions">
-  <a class="btn btn-ghost" href="${CALL_HREF}">${CALL_LABEL}</a>
-  <a class="btn btn-gold" href="${TEXT_NOW_HREF}">${TEXT_NOW_COMPACT}</a>
-  <a class="btn btn-ghost" href="${BOOK_PUBLIC_HREF}" target="_blank" rel="noopener">Book</a>
+  <a href="${CALL_HREF}" aria-label="${CALL_LABEL}">${MOBILE_CALL_LABEL}</a>
+  <a class="mobile-text-now" href="${TEXT_NOW_HREF}">${TEXT_NOW_COMPACT}</a>
+  <a href="${BOOK_PUBLIC_HREF}" target="_blank" rel="noopener">Book</a>
+  <a href="${FORUM_JOIN_HREF}">${FORUM_JOIN_LABEL}</a>
 </div>`;
 }
 
@@ -73,7 +81,7 @@ export const MESH_LINKS = [
   { key: 'services', href: MAIN_SERVICES_HREF, label: MAIN_SERVICES_LABEL },
   { key: 'shop', href: 'https://shop.unitedmobilerv.com/', label: 'Shop' },
   { key: 'book', href: BOOK_PUBLIC_HREF, label: 'Book', external: true },
-  { key: 'forum', href: 'https://forum.unitedmobilerv.com/', label: 'Forum' },
+  { key: 'forum', href: FORUM_JOIN_HREF, label: 'Forum' },
   { key: 'software', href: 'https://software.unitedmobilerv.com/', label: 'Software' },
   { key: 'docs', href: 'https://docs.unitedmobilerv.com/', label: 'Docs' },
 ];
