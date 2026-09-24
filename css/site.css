@@ -94,9 +94,9 @@ p { margin: 0 0 calc(var(--space) * 2); color: rgba(255,255,255,0.78); max-width
 }
 @media (max-width: 900px) {
   .nav-links, .nav-cta .nav-phone { display: none; }
-  /* The sticky mobile action bar (.mobile-bar) already surfaces
-     Call + gold Text Now + Book on small screens -- hiding the
-     header's duplicate buttons here avoids stacked convert CTAs. */
+  /* The sticky mobile text row (.mobile-bar) already surfaces
+     Call · Text Now · Book · Join the Free Forum on small screens.
+     Header button pills stay hidden here so the two CTAs do not stack. */
   .nav-cta .btn { display: none; }
   .nav-toggle { display: inline-flex; align-items: center; justify-content: center; }
   .site-header.is-open .nav-links {
@@ -247,20 +247,65 @@ textarea { min-height: 120px; resize: vertical; }
 .form-status.ok { color: var(--gold); }
 .form-status.err { color: #ff6b6b; }
 
-/* Sticky mobile bar */
+/* Sticky mobile bar — quiet text row: Call · Text Now · Book · Join the Free Forum.
+   Tap height is padding-block 14px + line-height 16px = 44px. No button pills. */
 .mobile-bar {
   display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
-  background: rgba(17,17,17,0.98);
-  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
-  border-top: 1px solid var(--rule);
-  padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
-  gap: 10px;
-  box-shadow: 0 -8px 24px rgba(0,0,0,0.35);
+  align-items: stretch;
+  justify-content: space-evenly;
+  gap: 0;
+  background: rgba(17,17,17,0.55);
+  -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding: 0 4px env(safe-area-inset-bottom);
+  box-shadow: none;
 }
-.mobile-bar .btn { flex: 1; min-height: 44px; padding: 0 8px; letter-spacing: 0.08em; font-size: 11px; }
+.mobile-bar a,
+.mobile-bar .btn,
+.mobile-bar .btn-gold,
+.mobile-bar .btn-ghost {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin: 0;
+  padding-block: 14px;
+  padding-inline: 6px;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  color: rgba(255,255,255,0.9);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 16px;
+  text-transform: none;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.mobile-bar a:hover,
+.mobile-bar .btn:hover,
+.mobile-bar .btn-ghost:hover {
+  background: transparent;
+  border-color: transparent;
+  color: var(--white);
+  transform: none;
+}
+.mobile-bar a.mobile-text-now,
+.mobile-bar .btn-gold,
+.mobile-bar .btn-gold:hover {
+  background: transparent;
+  color: var(--gold);
+  font-weight: 600;
+  box-shadow: none;
+  transform: none;
+}
+.mobile-bar a.mobile-text-now:hover { color: var(--gold-hover, #e0b04a); }
 @media (max-width: 900px) {
   .mobile-bar { display: flex; }
-  body { padding-bottom: 72px; }
+  body { padding-bottom: calc(48px + env(safe-area-inset-bottom)); }
 }
 
 /* Footer */
@@ -652,8 +697,8 @@ h1, h2 { font-weight: 400; letter-spacing: -0.03em; }
   opacity: 0.55;
   font-size: 12px;
 }
-/* Tap targets */
-.btn, .mobile-bar a {
+/* Tap targets. The mobile text row reaches 44px from its own padding. */
+.btn {
   min-height: 44px;
 }
 @media (min-width: 1100px) {
