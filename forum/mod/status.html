@@ -49,7 +49,7 @@ async function load() {
   }
   var s = data.status;
   var html = '<h2>Corridor status</h2>' +
-    field('active_corridor', 'Active corridor', s.active_corridor) +
+    field('active_corridor', 'Active booking zone', s.active_corridor) +
     field('case_by_case', 'Case-by-case states', s.case_by_case) +
     field('current_location', 'Current location', s.current_location) +
     field('status_note', 'Status note (e.g. "Now Cycling")', s.status_note) +
