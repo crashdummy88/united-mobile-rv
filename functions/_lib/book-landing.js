@@ -36,9 +36,11 @@ export const BOOK_LANDING_NAV = [
   { key: 'docs', href: 'https://docs.unitedmobilerv.com/', label: 'Docs' },
 ];
 
-/* Tall on purpose: the Square site is a full page inside the frame.
-   Outer page scrolls; the height is there so booking is not stuck in a
-   short nested scrollbar. 390px layouts stack longer than desktop. */
+/* The frame opens on the appointment-request block (#HjeiGL). Square
+   keeps a 72px site header pinned above that anchor at both 1280 and
+   390. Shift the frame up by 76px and clip it so the visible area is
+   the form, not that header or the homepage hero. Heights match the
+   form block: about 636px on desktop, about 708px at 390. */
 export const BOOK_LANDING_CSS = `
   .book-landing { background: #0C0C0C; }
   .book-landing h1 { color: #fff; }
@@ -53,6 +55,7 @@ export const BOOK_LANDING_CSS = `
   .book-landing .book-fallback:hover { background: #E0B04A; color: #1A1A1A; }
   .book-frame-wrap {
     width: min(100% - 32px, 1200px);
+    height: 640px;
     margin: 12px auto 56px;
     background: #1A1A1A;
     border: 1px solid rgba(224, 176, 74, 0.28);
@@ -62,7 +65,8 @@ export const BOOK_LANDING_CSS = `
   .book-frame {
     display: block;
     width: 100%;
-    height: 2000px;
+    height: calc(640px + 76px);
+    margin-top: -76px;
     border: 0;
     background: #0C0C0C;
   }
@@ -70,8 +74,12 @@ export const BOOK_LANDING_CSS = `
     .book-landing .nav-links { gap: 16px; }
   }
   @media (max-width: 480px) {
-    .book-frame-wrap { width: calc(100% - 16px); border-radius: 10px; }
-    .book-frame { height: 2000px; }
+    .book-frame-wrap {
+      width: calc(100% - 16px);
+      height: 720px;
+      border-radius: 10px;
+    }
+    .book-frame { height: calc(720px + 76px); }
   }
 `;
 

@@ -16,6 +16,7 @@ import { onRequestGet as hostHome } from '../../functions/index.js';
 import { onRequestGet as bookService } from '../../functions/book-service/index.js';
 import { onRequestGet as bookThankYou } from '../../functions/book-service/thank-you.js';
 import { SQUARE_BOOK_URL, BOOK_PHONE_DISPLAY } from '../../functions/_lib/book-suite.js';
+import { SQUARE_BOOKING_PAGE_URL } from '../../functions/_lib/square-booking-embed.js';
 
 function makeRequest(url, extraHeaders) {
   return new Request(url, { headers: extraHeaders || {} });
@@ -131,6 +132,9 @@ test('host home: book. / renders booking suite, not marketing homepage', async (
   assert.match(html, /allow="payment"/);
   assert.match(html, /title="United Mobile RV booking"/);
   assert.match(html, new RegExp(SQUARE_BOOK_URL.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.equal(SQUARE_BOOKING_PAGE_URL, 'https://united-mobile-rv-llc.square.site/#HjeiGL');
+  assert.match(html, /src="https:\/\/united-mobile-rv-llc\.square\.site\/#HjeiGL"/);
+  assert.match(html, /class="btn btn-gold book-fallback" href="https:\/\/united-mobile-rv-llc\.square\.site\/#HjeiGL"/);
   assert.match(html, /Open booking in a new tab/);
   assert.match(html, /On-site booking is Washington only/);
   assert.match(html, /https:\/\/unitedmobilerv\.com\/remote\//);
