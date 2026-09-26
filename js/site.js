@@ -67,7 +67,7 @@ function umrtGetTurnstileToken(containerId) {
   var MOBILE_CALL_LABEL = 'Call';
   var FORUM_JOIN_HREF = 'https://forum.unitedmobilerv.com/';
   var FORUM_JOIN_LABEL = 'Join the Free Forum';
-  var MAIN_SERVICES_HREF = 'https://unitedmobilerv.com/service/';
+  var MAIN_SERVICES_HREF = 'https://unitedmobilerv.com/services/';
   var MAIN_SERVICES_LABEL = 'Services';
   var navCtaHtml = '<a class="nav-phone" href="' + CALL_HREF + '">' + CALL_LABEL + '</a>'
     + '<a class="btn btn-gold nav-text-now" href="' + TEXT_NOW_HREF + '">' + TEXT_NOW_COMPACT + '</a>'

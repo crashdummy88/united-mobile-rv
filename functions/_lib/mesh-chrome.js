@@ -10,7 +10,7 @@
  *
  * Matt LOCK 2026-09-20 product nav (shop / forum / book):
  *   Home return → https://unitedmobilerv.com/  (label Home, never MAIN HUB / Main Hub)
- *   Services → https://unitedmobilerv.com/service/  (after Home, before Shop)
+ *   Services → https://unitedmobilerv.com/services/  (after Home, before Shop)
  *   Every CF island (shop. / forum. / book.) stamps that same Home + Services door.
  *   Home · Services · Shop · Book (Square) · Forum · Software · Docs
  *   Cart after Shop on shop only. Not Book-first.
@@ -56,7 +56,7 @@ export const FORUM_JOIN_HREF = 'https://forum.unitedmobilerv.com/';
 export const FORUM_JOIN_LABEL = 'Join the Free Forum';
 export const MAIN_HOME_HREF = 'https://unitedmobilerv.com/';
 export const MAIN_HOME_LABEL = 'Home';
-export const MAIN_SERVICES_HREF = 'https://unitedmobilerv.com/service/';
+export const MAIN_SERVICES_HREF = 'https://unitedmobilerv.com/services/';
 export const MAIN_SERVICES_LABEL = 'Services';
 
 export function convertNavCta() {

@@ -88,7 +88,7 @@ test('BOOK_PUBLIC_HREF / SQUARE_BOOK_URL / MESH_LINKS.book are Square, not book.
   assert.doesNotMatch(book.href, BOOK_HOST_RE);
   assert.deepEqual(MESH_LINKS.map((l) => l.label), ['Home', 'Services', 'Shop', 'Book', 'Forum', 'Software', 'Docs']);
   assert.equal(MESH_LINKS.find((l) => l.key === 'home').href, 'https://unitedmobilerv.com/');
-  assert.equal(MESH_LINKS.find((l) => l.key === 'services').href, 'https://unitedmobilerv.com/service/');
+  assert.equal(MESH_LINKS.find((l) => l.key === 'services').href, 'https://unitedmobilerv.com/services/');
 });
 
 test('islandHeader / footer / mobile-bar Book href is Square, never book.*', () => {

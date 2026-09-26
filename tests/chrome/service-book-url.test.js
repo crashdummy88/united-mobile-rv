@@ -176,7 +176,7 @@ test('GET /shop/ and leftover ?tab=services render parts catalog, not service ca
     assert.doesNotMatch(html, /System work rates/);
     assert.match(html, /<link rel="canonical" href="https:\/\/shop\.unitedmobilerv\.com\/shop\/">/);
     assert.match(html, /btn btn-ghost" href="https:\/\/united-mobile-rv-llc\.square\.site\/" target="_blank" rel="noopener">Book</);
-    assert.match(html, /href="https:\/\/unitedmobilerv\.com\/service\/"/);
+    assert.match(html, /href="https:\/\/unitedmobilerv\.com\/services\/"/);
   }
 });
 
