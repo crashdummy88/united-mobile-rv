@@ -1,3 +1,4 @@
+import { SQUARE_BOOK_URL } from './_lib/mesh-chrome.js';
 import { resolveCentralIdentity } from './_lib/central-identity.js';
 import { injectClarityOnce } from './_lib/clarity.js';
 import {
@@ -39,16 +40,16 @@ const INDEXABLE_PREFIXES = ['/forum/', '/forum-live/', '/guide/', '/shop/'];
 // aren't real content, the reverse of the allowlist model.
 const APEX_HOSTS = ['unitedmobilerv.com', 'www.unitedmobilerv.com'];
 
-// Matt SEO lock 2026-09-20: shop./forum./book. are the live customer
-// lands. Their homepages (`/`) rewrite to /shop/, /forum/, /book-service/
-// (functions/index.js) but the request path stays `/`, so the old
-// INDEXABLE_PREFIXES allowlist never matched and sent noindex on the
-// lands themselves. These three hosts now index-by-default like apex.
-// pages.dev stays on the allowlist (soft-launch / non-canonical).
+// Matt SEO lock 2026-09-20: shop./forum. are the live customer lands.
+// Their homepages (`/`) rewrite to /shop/ and /forum/ (functions/index.js)
+// but the request path stays `/`, so the old INDEXABLE_PREFIXES allowlist
+// never matched and sent noindex on the lands themselves. These hosts
+// now index-by-default like apex. pages.dev stays on the allowlist
+// (soft-launch / non-canonical). book.unitedmobilerv.com is not a land:
+// every path 301s to Square before a page is served.
 const CUSTOM_LAND_HOSTS = [
   'shop.unitedmobilerv.com',
   'forum.unitedmobilerv.com',
-  'book.unitedmobilerv.com',
 ];
 
 // Shared utility carve-outs for index-by-default hosts (apex + customer
@@ -109,30 +110,11 @@ function isShopAllowed(path) {
   return SHOP_ALLOWED_PREFIXES.some((p) => path === p.slice(0, -1) || path.startsWith(p));
 }
 
-// book.unitedmobilerv.com is the booking-suite product, not a second copy
-// of the mothership. Same Pages-project problem as shop (2026-09-13):
-// without this gate every marketing URL was reachable here, and '/' was
-// serving the full homepage because HOST_HOME_REWRITES had no book entry.
-// Suite URL is '/' -- /book-service/ 301s here so the address bar does not
-// become book.unitedmobilerv.com/book-service/. /sitemap.xml is NOT
-// allowed (that is the full mothership sitemap). /book-service/thank-you/
-// stays -- it is a booking page, not a marketing page.
+// book.unitedmobilerv.com does not serve a page. Booking is Square.
+// Pages Functions ignore _redirects, and this middleware runs on every
+// request, so the 301 has to live here. Every path, including /, assets,
+// /api/book, and /book-service/thank-you/, goes to the Square site root.
 const BOOK_HOST = 'book.unitedmobilerv.com';
-const BOOK_SUITE_HOME = '/';
-const BOOK_ALLOWED_EXACT = ['/', '/favicon.png', '/robots.txt'];
-const BOOK_ALLOWED_PREFIXES = [
-  '/book-service/thank-you/',
-  '/api/book',
-  '/css/',
-  '/js/',
-  '/assets/',
-  '/fonts/',
-];
-
-function isBookAllowed(path) {
-  if (BOOK_ALLOWED_EXACT.includes(path)) return true;
-  return BOOK_ALLOWED_PREFIXES.some((p) => path === p.slice(0, -1) || path.startsWith(p));
-}
 
 // Auth-unification stage 2 (2026-09-15) -- see functions/_lib/central-identity.js
 // for the full explanation. LOG-ONLY this stage: resolves a central identity
@@ -156,8 +138,8 @@ export async function onRequest(context) {
     return Response.redirect(new URL('/shop/', requestUrl), 301);
   }
 
-  if (requestUrl.hostname === BOOK_HOST && !isBookAllowed(requestUrl.pathname)) {
-    return Response.redirect(new URL(BOOK_SUITE_HOME, requestUrl), 301);
+  if (requestUrl.hostname === BOOK_HOST) {
+    return Response.redirect(SQUARE_BOOK_URL, 301);
   }
 
   // Skip identity resolution (2 D1 reads) for static assets -- this

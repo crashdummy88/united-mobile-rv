@@ -141,24 +141,17 @@ test('static shop/forum/book island HTML chrome Book href is Square', () => {
   }
 });
 
-test('book host landing nav Book is the current page; CTA and mobile Book stay Square', async () => {
+test('rendered book-suite chrome Book href is Square even on book.* host', async () => {
   const res = renderBookSuite(new Request('https://book.unitedmobilerv.com/'));
   const html = await res.text();
+  assertChromeBookIsSquare(html, 'renderBookSuite(book.unitedmobilerv.com)');
   const header = html.match(/<header[\s\S]*?<\/header>/)[0];
-  const nav = header.match(/<ul class="nav-links">[\s\S]*?<\/ul>/)[0];
-  const cta = header.match(/<div class="nav-cta">[\s\S]*?<\/div>/)[0];
   const footer = html.match(/<footer[\s\S]*?<\/footer>/)[0];
   const mobile = html.match(/<div class="mobile-bar"[^>]*>[\s\S]*?<\/div>/)[0];
-  assert.match(nav, /href="https:\/\/book\.unitedmobilerv\.com\/" aria-current="page">Book</);
-  assert.match(footer, /href="https:\/\/book\.unitedmobilerv\.com\/" aria-current="page">Book</);
-  assertChromeBookIsSquare(cta, 'book landing CTA');
-  assertChromeBookIsSquare(mobile, 'book landing mobile bar');
-});
-
-test('mothership book suite chrome Book href stays Square', async () => {
-  const res = renderBookSuite(new Request('https://unitedmobilerv.com/book-service/'));
-  const html = await res.text();
-  assertChromeBookIsSquare(html, 'renderBookSuite(mothership /book-service/)');
+  for (const slice of [header, footer, mobile]) {
+    assert.doesNotMatch(slice, /href="https:\/\/book\.unitedmobilerv\.com/, 'suite chrome href');
+    assert.match(slice, /href="https:\/\/united-mobile-rv-llc\.square\.site\/"[^>]*>Book</);
+  }
 });
 
 test('chrome source files never emit book.* as a Book href', () => {

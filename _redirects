@@ -3,9 +3,10 @@
 # Keep: book / software / text (+ Text Now bounce at /go/text/)
 
 # Live Book + Text Now
-# Book→book.unitedmobilerv.com suite; Square stays BOOK ONLINE button inside suite
-/go/book       https://book.unitedmobilerv.com/  302
-/go/book/      https://book.unitedmobilerv.com/  302
+# Book goes straight to Square. book.unitedmobilerv.com itself 301s in
+# functions/_middleware.js — Pages Functions ignore _redirects.
+/go/book       https://united-mobile-rv-llc.square.site/  302
+/go/book/      https://united-mobile-rv-llc.square.site/  302
 /go/sms        /go/text/  302
 /go/sms/       /go/text/  302
 /go/phone      /go/text/  302

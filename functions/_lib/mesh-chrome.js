@@ -25,8 +25,8 @@
  *     = https://united-mobile-rv-llc.square.site/
  *   NEVER https://book.unitedmobilerv.com/ in MESH_LINKS, islandHeader,
  *   islandFooter, islandMobileBar, platform-bar, or static HTML nav/footer.
- *   book.unitedmobilerv.com stays a host for the booking-suite product,
- *   not a chrome Book destination. Geo landing CTAs are out of scope.
+ *   book.unitedmobilerv.com is not a page: middleware 301s every path
+ *   there to this same Square URL. Geo landing CTAs are out of scope.
  *
  * Matt LOCK 2026-09-16 convert stack (header + mobile bar, every surface):
  *   Call (616) 606-5277 → tel:+16166065277 (header label; number is the call control)
@@ -95,9 +95,9 @@ function meshAnchorOpen(item, current) {
   return `<a href="${item.href}"${currentAttr(item, current)}${extra}>`;
 }
 
-export function meshNavLis({ current, extraAfter = '', extraAfterKey = '', links = MESH_LINKS } = {}) {
+export function meshNavLis({ current, extraAfter = '', extraAfterKey = '' } = {}) {
   const items = [];
-  for (const item of links) {
+  for (const item of MESH_LINKS) {
     items.push(`<li>${meshAnchorOpen(item, current)}${item.label}</a></li>`);
     if (extraAfter && extraAfterKey === item.key) items.push(extraAfter);
   }
@@ -105,20 +105,20 @@ export function meshNavLis({ current, extraAfter = '', extraAfterKey = '', links
   return items.join('\n      ');
 }
 
-export function meshFooterAnchors({ current, links = MESH_LINKS } = {}) {
-  const mesh = links.map(
+export function meshFooterAnchors({ current } = {}) {
+  const mesh = MESH_LINKS.map(
     (item) => `${meshAnchorOpen(item, current)}${item.label}</a>`
   ).join('\n      ');
   return `${mesh}\n      <a href="${TEXT_NOW_HREF}">${TEXT_NOW_COMPACT}</a>`;
 }
 
-export function islandHeader({ current, extraNavHtml = '', extraAfterKey = '', links = MESH_LINKS } = {}) {
+export function islandHeader({ current, extraNavHtml = '', extraAfterKey = '' } = {}) {
   return `<header class="site-header">
   <div class="wrap nav-bar">
     <a class="brand brand-mark" href="${MAIN_HOME_HREF}" aria-label="Home"><img class="brand-logo" src="/assets/brand/umrt-icon.webp" alt="" width="40" height="40"></a>
     <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">☰</button>
     <ul class="nav-links">
-      ${meshNavLis({ current, extraAfter: extraNavHtml, extraAfterKey, links })}
+      ${meshNavLis({ current, extraAfter: extraNavHtml, extraAfterKey })}
     </ul>
     ${convertNavCta()}
   </div>

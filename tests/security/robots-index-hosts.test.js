@@ -1,7 +1,7 @@
 /**
- * Matt SEO lock 2026-09-20: shop./forum./book. customer lands index
+ * Matt SEO lock 2026-09-20: shop./forum. customer lands index
  * by default (including `/`). Utility paths stay noindex. pages.dev
- * stays on the allowlist (homepage noindex).
+ * stays on the allowlist (homepage noindex). book. 301s to Square.
  *
  * Run: node tests/security/robots-index-hosts.test.js
  */
@@ -37,8 +37,14 @@ test('forum host / is index, follow', async () => {
   assert.equal(await robotsTag('forum.unitedmobilerv.com', '/'), 'index, follow');
 });
 
-test('book host / is index, follow', async () => {
-  assert.equal(await robotsTag('book.unitedmobilerv.com', '/'), 'index, follow');
+test('book host / 301s to Square and does not serve a page', async () => {
+  const res = await middleware({
+    request: new Request('https://book.unitedmobilerv.com/'),
+    env,
+    next: nextOk(),
+  });
+  assert.equal(res.status, 301);
+  assert.equal(res.headers.get('Location'), 'https://united-mobile-rv-llc.square.site/');
 });
 
 test('pages.dev / stays noindex, follow', async () => {
@@ -72,14 +78,14 @@ test('shop lockdown path gates are unchanged', async () => {
   assert.equal(res.headers.get('Location'), 'https://shop.unitedmobilerv.com/shop/');
 });
 
-test('book lockdown path gates are unchanged', async () => {
+test('book host deep path 301s to Square', async () => {
   const res = await middleware({
     request: new Request('https://book.unitedmobilerv.com/pricing/'),
     env,
     next: nextOk(),
   });
   assert.equal(res.status, 301);
-  assert.equal(res.headers.get('Location'), 'https://book.unitedmobilerv.com/');
+  assert.equal(res.headers.get('Location'), 'https://united-mobile-rv-llc.square.site/');
 });
 
 await run();
