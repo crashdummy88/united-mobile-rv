@@ -5,16 +5,18 @@
  * (SHOP_ALLOWED_PREFIXES in _middleware.js) 301s any relative
  * /forum/, /guide/, etc. back to /shop/. Do not add those paths
  * to the shop allowlist -- link off-host instead.
- * Do not add a guide-library item to MESH_LINKS. That library stays
- * on the WP apex, not in shop/forum/book product chrome.
+ * Guides is the apex hub https://unitedmobilerv.com/guide/, not a
+ * relative /guide/ path (shop lockdown would 301 that back to /shop/).
+ * Do not add the retired Field guides / WP Field Guides library labels.
  *
  * Matt LOCK 2026-09-20 product nav (shop / forum / book):
  *   Home return → https://unitedmobilerv.com/  (label Home, never MAIN HUB / Main Hub)
- *   Services → https://unitedmobilerv.com/services/  (after Home, before Shop)
- *   Every CF island (shop. / forum. / book.) stamps that same Home + Services door.
- *   Home · Services · Shop · Book (Square) · Forum · Software · Docs
+ *   Services → https://unitedmobilerv.com/services/  (after Home, before Guides)
+ *   Guides → https://unitedmobilerv.com/guide/  (after Services, before Shop)
+ *   Every CF island (shop. / forum. / book.) stamps that same header.
+ *   Home · Services · Guides · Shop · Book (Square) · Forum · Software · Docs
  *   Cart after Shop on shop only. Not Book-first.
- *   Do not add portal, status, or guide-library items.
+ *   Do not add portal, status, or Field guides items.
  *   Island header is logo-only — no "United Mobile RV" corner title.
  *   Use umrt-icon.webp (car + gear, no lettering). umrt-logo.webp still
  *   has UNITED MOBILE RV in the artwork and must not sit in this bar.
@@ -58,6 +60,8 @@ export const MAIN_HOME_HREF = 'https://unitedmobilerv.com/';
 export const MAIN_HOME_LABEL = 'Home';
 export const MAIN_SERVICES_HREF = 'https://unitedmobilerv.com/services/';
 export const MAIN_SERVICES_LABEL = 'Services';
+export const MAIN_GUIDES_HREF = 'https://unitedmobilerv.com/guide/';
+export const MAIN_GUIDES_LABEL = 'Guides';
 
 export function convertNavCta() {
   return `<div class="nav-cta">
@@ -79,6 +83,7 @@ export function convertMobileBar() {
 export const MESH_LINKS = [
   { key: 'home', href: MAIN_HOME_HREF, label: MAIN_HOME_LABEL },
   { key: 'services', href: MAIN_SERVICES_HREF, label: MAIN_SERVICES_LABEL },
+  { key: 'guides', href: MAIN_GUIDES_HREF, label: MAIN_GUIDES_LABEL },
   { key: 'shop', href: 'https://shop.unitedmobilerv.com/', label: 'Shop' },
   { key: 'book', href: BOOK_PUBLIC_HREF, label: 'Book', external: true },
   { key: 'forum', href: FORUM_JOIN_HREF, label: 'Forum' },

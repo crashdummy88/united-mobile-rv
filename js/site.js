@@ -69,6 +69,8 @@ function umrtGetTurnstileToken(containerId) {
   var FORUM_JOIN_LABEL = 'Join the Free Forum';
   var MAIN_SERVICES_HREF = 'https://unitedmobilerv.com/services/';
   var MAIN_SERVICES_LABEL = 'Services';
+  var MAIN_GUIDES_HREF = 'https://unitedmobilerv.com/guide/';
+  var MAIN_GUIDES_LABEL = 'Guides';
   var navCtaHtml = '<a class="nav-phone" href="' + CALL_HREF + '">' + CALL_LABEL + '</a>'
     + '<a class="btn btn-gold nav-text-now" href="' + TEXT_NOW_HREF + '">' + TEXT_NOW_COMPACT + '</a>'
     + '<a class="btn btn-ghost" href="' + BOOK_PUBLIC + '" target="_blank" rel="noopener">Book</a>';
@@ -100,7 +102,7 @@ function umrtGetTurnstileToken(containerId) {
   }
   function umrtIsForbiddenIslandNav(a) {
     if (umrtIsRetiredChromeLink(a)) return true;
-    return /^(Field guides|Guides|WP Field Guides)$/i.test(umrtLinkLabel(a)); // retired guide-library labels only
+    return /^(Field guides|WP Field Guides)$/i.test(umrtLinkLabel(a)); // retired guide-library labels only
   }
   function umrtRemoveChromeLink(a) {
     var li = a.parentNode && a.parentNode.tagName === 'LI' ? a.parentNode : a;
@@ -225,9 +227,10 @@ function umrtGetTurnstileToken(containerId) {
     ba.setAttribute('rel', 'noopener');
   }
 
-  /* Shop/forum/book islands: Home · Services · Shop · Book · Forum ·
-     Software · Docs. Cart after Shop on shop only. Not Book-first.
-     Strip retired destinations and guide-library labels. */
+  /* Shop/forum/book islands: Home · Services · Guides · Shop · Book ·
+     Forum · Software · Docs. Guides is the apex /guide/ hub. Cart after
+     Shop on shop only. Not Book-first. Strip retired destinations and
+     Field guides labels. */
   var MAIN_HOME_HREF = 'https://unitedmobilerv.com/';
   var MAIN_HOME_LABEL = 'Home';
   var islandHost = location.hostname === 'shop.unitedmobilerv.com'
@@ -250,6 +253,7 @@ function umrtGetTurnstileToken(containerId) {
   var meshItems = [
     [MAIN_HOME_LABEL, MAIN_HOME_HREF],
     [MAIN_SERVICES_LABEL, MAIN_SERVICES_HREF],
+    [MAIN_GUIDES_LABEL, MAIN_GUIDES_HREF],
     ['Shop', 'https://shop.unitedmobilerv.com/'],
     ['Book', BOOK_PUBLIC],
     ['Forum', 'https://forum.unitedmobilerv.com/'],
@@ -289,6 +293,7 @@ function umrtGetTurnstileToken(containerId) {
           link.setAttribute('href', href);
           if (name === MAIN_HOME_LABEL) link.textContent = MAIN_HOME_LABEL;
           else if (name === MAIN_SERVICES_LABEL) link.textContent = MAIN_SERVICES_LABEL;
+          else if (name === MAIN_GUIDES_LABEL) link.textContent = MAIN_GUIDES_LABEL;
           else if (name === 'Book') link.textContent = 'Book';
         } else {
           li = document.createElement('li');
