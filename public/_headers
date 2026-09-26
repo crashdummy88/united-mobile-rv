@@ -1,16 +1,15 @@
 # These rules apply to static assets only. Pages Functions (shop catalog,
 # cart, book suite, forum threads) do not receive this file. Matching
 # HSTS, framing, nosniff, and Referrer-Policy headers are set in
-# functions/_middleware.js. That middleware does not copy the CSP below:
-# script-src here omits https://www.clarity.ms, which the cart and the
-# shop/book shells load.
+# functions/_middleware.js. Function HTML gets frame-ancestors only, so
+# it does not inherit this CSP.
 /*
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: interest-cohort=()
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.web3forms.com https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; frame-ancestors 'none'; base-uri 'self'; object-src 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://www.clarity.ms https://scripts.clarity.ms; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: https://*.clarity.ms https://c.bing.com; connect-src 'self' https://api.web3forms.com https://challenges.cloudflare.com https://*.clarity.ms https://c.bing.com; frame-src https://challenges.cloudflare.com; frame-ancestors 'none'; base-uri 'self'; object-src 'none'
 
 # X-Robots-Tag is now set by functions/_middleware.js instead of here —
 # Cloudflare Pages merges/duplicates X-Robots-Tag across matching _headers
