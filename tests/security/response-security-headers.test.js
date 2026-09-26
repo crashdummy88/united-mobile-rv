@@ -87,6 +87,9 @@ test('existing static CSP from _headers is left unchanged', async () => {
 
 test('static _headers CSP allows Clarity and keeps the other sources', () => {
   const headers = readSrc('_headers', import.meta.url);
+  const cspLines = headers.match(/Content-Security-Policy:/g) || [];
+  assert.equal(cspLines.length, 1);
+  assert.doesNotMatch(headers, /\/forum\/\*/);
   const csp = headers.match(/Content-Security-Policy:\s*(.+)/)[1];
   const directive = (name) => {
     const match = csp.match(new RegExp(`${name} ([^;]+)`));
@@ -106,11 +109,7 @@ test('static _headers CSP allows Clarity and keeps the other sources', () => {
   assert.match(connect, /https:\/\/\*\.clarity\.ms/);
   assert.match(connect, /https:\/\/c\.bing\.com/);
   const img = directive('img-src');
-  assert.match(img, /'self'/);
-  assert.match(img, /data:/);
-  assert.match(img, /https:/);
-  assert.match(img, /https:\/\/\*\.clarity\.ms/);
-  assert.match(img, /https:\/\/c\.bing\.com/);
+  assert.equal(img, "'self' data: https:");
   assert.match(csp, /frame-src https:\/\/challenges\.cloudflare\.com/);
   assert.match(csp, /frame-ancestors 'none'/);
   assert.match(csp, /object-src 'none'/);
