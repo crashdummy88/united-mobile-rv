@@ -62,10 +62,8 @@ const SCRIPTED_ANSWERS = [
   },
   {
     test: /\bwinteriz|trip prep\b/i,
-    reply: (p) =>
-      p
-        ? `Winterize is ${p.winterize}. Trip prep is ${p.trip_prep}. Both are flat, separate line items — not priced by coach class (travel trailer vs. fifth-wheel vs. motorhome). Trip fee and any extra labor still apply as quoted. Want me to get you scheduled?`
-        : "Winterize is $175. Trip prep is $225. Both are flat, separate line items — not priced by coach class (travel trailer vs. fifth-wheel vs. motorhome). Trip fee and any extra labor still apply as quoted. Want me to get you scheduled?",
+    reply:
+      "Winterize and trip-prep are flat $175 for a travel trailer and $225 for a 5th wheel or motorhome. Trip fee and any extra labor still apply as quoted.",
   },
   {
     test: /\b(do you (cover|service|come to|travel to)|coverage area|service area|what (states|areas) do you (cover|service))\b/i,

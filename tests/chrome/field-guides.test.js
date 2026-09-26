@@ -2,7 +2,7 @@
  * Shop → WP Field Guide wiring: only published unitedmobilerv.com/guide/
  * URLs, Book → Square unchanged. Run: node tests/chrome/field-guides.test.js
  */
-import { readFileSync } from 'node:fs';
+import { readSrc } from '../lib/read-src.js';
 import { test, run, assert } from '../lib/tiny-test.js';
 import {
   FIELD_GUIDES_HREF,
@@ -17,7 +17,7 @@ import { MESH_LINKS } from '../../functions/_lib/mesh-chrome.js';
 import { onRequestGet } from '../../functions/shop/p/[id].js';
 
 function src(rel) {
-  return readFileSync(new URL('../../' + rel, import.meta.url), 'utf8');
+  return readSrc(rel, import.meta.url);
 }
 
 test('hub + every mapped slug is a published WP /guide/ URL', () => {

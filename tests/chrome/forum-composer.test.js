@@ -4,7 +4,7 @@
  * electrical field guide (BUG-F2); Book stays Square.
  * Run: node tests/chrome/forum-composer.test.js
  */
-import { readFileSync } from 'node:fs';
+import { readSrc } from '../lib/read-src.js';
 import { test, run, assert } from '../lib/tiny-test.js';
 import { TROUBLESHOOTING_INDEX_HREF, TECH_PIN_IDS } from '../../functions/_lib/forum-growth.js';
 import { renderForumBodyHtml } from '../../functions/_lib/forum-body.js';
@@ -13,7 +13,7 @@ const SQUARE = 'https://united-mobile-rv-llc.square.site/';
 const GUIDE = 'https://unitedmobilerv.com/guide/electrical-troubleshooting/';
 
 function src(rel) {
-  return readFileSync(new URL('../../' + rel, import.meta.url), 'utf8');
+  return readSrc(rel, import.meta.url);
 }
 
 test('BUG-F1: #new-thread-form wrapper is not display:none; composer/gate toggle with is-open', () => {

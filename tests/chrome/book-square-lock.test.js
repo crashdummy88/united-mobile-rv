@@ -6,7 +6,7 @@
  *
  * Run: node tests/chrome/book-square-lock.test.js
  */
-import { readFileSync } from 'node:fs';
+import { readSrc } from '../lib/read-src.js';
 import { test, run, assert } from '../lib/tiny-test.js';
 import {
   BOOK_PUBLIC_HREF,
@@ -33,7 +33,7 @@ const CHROME_FILES = [
 ];
 
 function src(rel) {
-  return readFileSync(new URL('../../' + rel, import.meta.url), 'utf8');
+  return readSrc(rel, import.meta.url);
 }
 
 function labeledAnchors(html) {

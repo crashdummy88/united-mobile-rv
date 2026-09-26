@@ -134,6 +134,41 @@ function isBookAllowed(path) {
   return BOOK_ALLOWED_PREFIXES.some((p) => path === p.slice(0, -1) || path.startsWith(p));
 }
 
+// Same values forum's static _headers already sends. _headers is not
+// applied to Pages Functions, so shop (/shop/, cart) and book (suite at
+// /) were leaving without them. Set only when the response does not
+// already have the header, so static assets keep the _headers value.
+const SECURITY_HEADERS = {
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
+  'X-Content-Type-Options': 'nosniff',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'X-Frame-Options': 'DENY',
+};
+
+function applySecurityHeaders(headers) {
+  for (const [name, value] of Object.entries(SECURITY_HEADERS)) {
+    if (!headers.has(name)) headers.set(name, value);
+  }
+  // frame-ancestors only. Static pages get the fuller policy in
+  // public/_headers (including Clarity). Function HTML (shop, cart, book,
+  // threads) is not covered by that file. frame-ancestors does not
+  // restrict scripts, connections, images, or embeds, so Clarity still
+  // loads on those pages.
+  if (!headers.has('Content-Security-Policy')) {
+    headers.set('Content-Security-Policy', "frame-ancestors 'none'");
+  }
+}
+
+function withSecurityHeaders(response) {
+  const headers = new Headers(response.headers);
+  applySecurityHeaders(headers);
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 // Auth-unification stage 2 (2026-09-15) -- see functions/_lib/central-identity.js
 // for the full explanation. LOG-ONLY this stage: resolves a central identity
 // (when one exists) and attaches it as X-User-Id/X-User-Role on the request
@@ -153,11 +188,11 @@ export async function onRequest(context) {
   let request = new Request(context.request, { headers: strippedHeaders });
 
   if (requestUrl.hostname === SHOP_HOST && !isShopAllowed(requestUrl.pathname)) {
-    return Response.redirect(new URL('/shop/', requestUrl), 301);
+    return withSecurityHeaders(Response.redirect(new URL('/shop/', requestUrl), 301));
   }
 
   if (requestUrl.hostname === BOOK_HOST && !isBookAllowed(requestUrl.pathname)) {
-    return Response.redirect(new URL(BOOK_SUITE_HOME, requestUrl), 301);
+    return withSecurityHeaders(Response.redirect(new URL(BOOK_SUITE_HOME, requestUrl), 301));
   }
 
   // Skip identity resolution (2 D1 reads) for static assets -- this
@@ -178,7 +213,7 @@ export async function onRequest(context) {
   const path = new URL(context.request.url).pathname;
 
   if (ROBOTS_HEADER_EXEMPT.includes(path)) {
-    return response;
+    return withSecurityHeaders(response);
   }
 
   const indexable = isIndexable(requestUrl.hostname, path);
@@ -186,6 +221,7 @@ export async function onRequest(context) {
   const headers = new Headers(response.headers);
   headers.delete('X-Robots-Tag');
   headers.set('X-Robots-Tag', indexable ? 'index, follow' : 'noindex, follow');
+  applySecurityHeaders(headers);
 
   const contentType = headers.get('Content-Type') || '';
   if (!isHtmlContentType(contentType)) {

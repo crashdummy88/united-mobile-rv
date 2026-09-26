@@ -3,7 +3,7 @@
  * once-only inject for any other HTML Pages serve.
  * Run: node tests/chrome/clarity.test.js
  */
-import { readFileSync } from 'node:fs';
+import { readSrc } from '../lib/read-src.js';
 import { test, run, assert } from '../lib/tiny-test.js';
 import {
   CLARITY_PROJECT_ID,
@@ -17,7 +17,7 @@ import { renderBookSuite, renderBookThankYou } from '../../functions/_lib/book-s
 import { onRequest as middleware } from '../../functions/_middleware.js';
 
 function src(rel) {
-  return readFileSync(new URL('../../' + rel, import.meta.url), 'utf8');
+  return readSrc(rel, import.meta.url);
 }
 
 const ISLAND_SSR = [

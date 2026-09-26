@@ -3,7 +3,7 @@
  * site-wide. Sitemap lines are live custom hosts, never pages.dev.
  * Run: node tests/security/robots-allow.test.js
  */
-import { readFileSync } from 'node:fs';
+import { readSrc } from '../lib/read-src.js';
 import { test, run, assert } from '../lib/tiny-test.js';
 import { onRequest as middleware } from '../../functions/_middleware.js';
 import { onRequestGet as robotsFn } from '../../functions/robots.txt.js';
@@ -15,7 +15,7 @@ import {
   sitemapsForHost,
 } from '../../functions/_lib/robots-txt.js';
 
-const staticRobots = readFileSync(new URL('../../robots.txt', import.meta.url), 'utf8');
+const staticRobots = readSrc('robots.txt', import.meta.url);
 
 const REQUIRED_BOTS = [
   'GPTBot',
@@ -177,7 +177,7 @@ test('middleware still exempts /robots.txt from X-Robots-Tag', async () => {
 });
 
 test('sitemap-network mothership entries are live custom hosts, not pages.dev', () => {
-  const src = readFileSync(new URL('../../functions/sitemap-network.xml.js', import.meta.url), 'utf8');
+  const src = readSrc('functions/sitemap-network.xml.js', import.meta.url);
   assert.match(src, /https:\/\/shop\.unitedmobilerv\.com\/sitemap\.xml/);
   assert.match(src, /https:\/\/forum\.unitedmobilerv\.com\/sitemap\.xml/);
   assert.doesNotMatch(src, /united-mobile-rv\.pages\.dev\/sitemap\.xml/);

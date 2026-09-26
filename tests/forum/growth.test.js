@@ -2,7 +2,7 @@
  * Forum growth: archive seed/pin spam, freeze the generator, Tech pins,
  * content-bot first-reply-only. Run: node tests/forum/growth.test.js
  */
-import { readFileSync } from 'node:fs';
+import { readSrc } from '../lib/read-src.js';
 import { test, run, assert } from '../lib/tiny-test.js';
 import {
   BOT_UMRT_TEAM_ID,
@@ -20,7 +20,7 @@ import { maybeRunNudgeSweep } from '../../functions/_lib/bot-sweep.js';
 import { runOnce } from '../../workers/content-bot/index.js';
 
 function src(rel) {
-  return readFileSync(new URL('../../' + rel, import.meta.url), 'utf8');
+  return readSrc(rel, import.meta.url);
 }
 
 test('isSeedOrPinSpamId matches seed-, seed3-, and pin- only', () => {

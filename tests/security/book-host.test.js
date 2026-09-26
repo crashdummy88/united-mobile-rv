@@ -111,7 +111,8 @@ test('middleware: book host HTML never keeps a pages.dev canonical', async () =>
   assert.match(html, /<link rel="canonical" href="https:\/\/book\.unitedmobilerv\.com\/">/);
   assert.match(html, /<meta property="og:url" content="https:\/\/book\.unitedmobilerv\.com\/">/);
   assert.doesNotMatch(html, /united-mobile-rv\.pages\.dev/);
-  assert.equal(res.headers.get('X-Robots-Tag'), 'noindex, follow');
+  // book. is a customer land: index by default (same as the test above).
+  assert.equal(res.headers.get('X-Robots-Tag'), 'index, follow');
 });
 
 test('host home: book. / renders booking suite, not marketing homepage', async () => {

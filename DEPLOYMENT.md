@@ -4,7 +4,7 @@ _Generated 2026-09-15 from a live, read-only audit. Covers the mothership repo's
 
 ## Mothership (`united-mobile-rv`)
 
-- **Cloudflare Pages project**: `united-mobile-rv`, `pages_build_output_dir = "."`, `compatibility_date = "2024-11-01"`. No build step, no framework, zero npm dependencies (no `package.json` anywhere in the repo).
+- **Cloudflare Pages project**: `united-mobile-rv`, `pages_build_output_dir = "public"`, `compatibility_date = "2024-11-01"`. No build step, no framework, zero npm dependencies (no `package.json` anywhere in the repo). Static site files live in `public/`. `functions/` stays at the repo root. The dashboard Build output directory must be `public` or blank; `/` or `.` publishes the repo root again.
 - **Bindings** (root `wrangler.toml`): `AI` (Workers AI), `DB` → `umrt_forum`, `PORTAL_DB` → `umrt-portal-db`, `UNIFIED_DB` → `umrt-unified-db` (unused), `MEDIA` (R2 bucket `umrt-forum-media`).
 - **Custom domains attached**: `shop.unitedmobilerv.com`, `forum.unitedmobilerv.com` (confirmed live via Cloudflare API this session). `unitedmobilerv.com` apex is intentionally NOT attached — WordPress.com serves the apex permanently, per business decision 2026-09-15.
 - **Deploy process, as actually used this session**: `wrangler pages deploy` from a **clean git clone** (not the local working directory, which carries an untracked ~1GB `ai-env/` Python venv that exceeds Pages' 25MB single-file limit). Cloudflare Pages also has native git-integration auto-build on push to `main` — both paths were observed live this session (a git-push-triggered build and a manual `wrangler pages deploy` both produced separate successful deployments within seconds of each other).

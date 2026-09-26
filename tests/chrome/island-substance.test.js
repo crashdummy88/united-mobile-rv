@@ -2,7 +2,7 @@
  * Each island has unique body copy. Shared chrome only.
  * Run: node tests/chrome/island-substance.test.js
  */
-import { readFileSync } from 'node:fs';
+import { readSrc } from '../lib/read-src.js';
 import { test, run, assert } from '../lib/tiny-test.js';
 import {
   quoteFirstSection,
@@ -22,7 +22,7 @@ import { renderBookSuite } from '../../functions/_lib/book-suite.js';
 import { islandHeader } from '../../functions/_lib/mesh-chrome.js';
 
 function src(rel) {
-  return readFileSync(new URL('../../' + rel, import.meta.url), 'utf8');
+  return readSrc(rel, import.meta.url);
 }
 
 const SHOP_MARKERS = [

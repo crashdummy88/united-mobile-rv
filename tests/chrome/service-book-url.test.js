@@ -3,7 +3,7 @@
  * optional productSquareHref when a real Square item URL exists.
  * Run: node tests/chrome/service-book-url.test.js
  */
-import { readFileSync } from 'node:fs';
+import { readSrc } from '../lib/read-src.js';
 import { test, run, assert } from '../lib/tiny-test.js';
 import {
   serviceBookHref,
@@ -19,7 +19,7 @@ import { onRequestGet, onRequestHead } from '../../functions/shop/index.js';
 import { onRequestGet as productPage } from '../../functions/shop/p/[id].js';
 
 function src(rel) {
-  return readFileSync(new URL('../../' + rel, import.meta.url), 'utf8');
+  return readSrc(rel, import.meta.url);
 }
 
 const GEN = {

@@ -1,6 +1,11 @@
 name = "united-mobile-rv"
 compatibility_date = "2024-11-01"
-pages_build_output_dir = "."
+# Publish only public/. "." shipped the repo root, so wrangler.toml, SQL,
+# and docs were downloadable. functions/ stays at the repo root; Pages
+# reads it from the project root, not from this directory.
+# Dashboard: Build output directory must be public, or blank so this
+# value wins. "/" or "." will keep publishing the wrong folder.
+pages_build_output_dir = "public"
 
 # Workers AI — free open models (Llama). Bind as `AI` in CF Pages → Settings → Functions → Bindings.
 [ai]
