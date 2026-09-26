@@ -517,3 +517,74 @@ textarea.forum-input:focus {
 }
 
 .held-note { color: var(--gold); font-size: 0.85em; }
+
+/* Brand cards, buttons, and contrast. Header nav stays on site.css
+   (Home · Services · Shop · Cart · Book · Forum · Software · Docs). */
+main .shop-card,
+main .cart-line,
+main .shop-checkout-panel,
+main .service-tier,
+main .service-card {
+  background: #0C0C0C;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  color: #D6D6D6;
+}
+main .shop-card-imgwrap,
+main .product-hero-img,
+main .cart-line-thumb {
+  background: #1A1A1A;
+  border-radius: 10px;
+}
+main .shop-card-title,
+main .shop-category-band h2,
+main .shop-checkout-panel h2,
+main h1,
+main h2,
+main h3,
+main .service-card h3,
+main .service-tier strong {
+  color: #FFFFFF;
+}
+main p,
+main .lead,
+main .muted,
+main .shop-card-meta,
+main .shop-card-desc,
+main .price-note,
+main .shop-checkout-panel p,
+main .shop-checkout-panel .muted,
+main .service-tier,
+main .service-tier small,
+main .shop-related-guides {
+  color: #D6D6D6;
+}
+main .shop-card-price,
+main .price-tag,
+main .cart-line-price,
+main .shop-card-brand,
+main .micro,
+main .eyebrow {
+  color: #C9972C;
+}
+main .shop-stock-chip.is-muted { color: #D6D6D6; }
+main .btn {
+  border-radius: 10px;
+}
+main .btn-gold,
+main .shop-add-btn,
+main .shop-square-link,
+main .add-cart-btn {
+  background: #C9972C;
+  color: #1A1A1A;
+  border-color: #C9972C;
+  border-radius: 10px;
+}
+main .btn-gold:hover,
+main .shop-add-btn:hover,
+main .shop-square-link:hover,
+main .add-cart-btn:hover {
+  background: #E0B04A;
+  color: #1A1A1A;
+  border-color: #E0B04A;
+}

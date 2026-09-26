@@ -146,6 +146,7 @@ export async function onRequestGet(context) {
 <meta name="theme-color" content="#1A1A1A">
 <link rel="icon" href="/favicon.png" type="image/png">
 <link rel="stylesheet" href="/css/site.css?v=20260920crumbs">
+<link rel="stylesheet" href="/forum/features.css?v=20260926brand">
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <script type="application/ld+json">${JSON.stringify(jsonLd).replace(/</g, '\\u003c')}</script>
 ${landJsonLdSnippet(request, { pageName: thread.title })}

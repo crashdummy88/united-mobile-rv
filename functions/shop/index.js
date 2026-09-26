@@ -137,7 +137,7 @@ ${shopQuoteNeedsSection()}`;
 <meta name="robots" content="index,follow">
 <link rel="icon" href="/favicon.png" type="image/png">
 <link rel="stylesheet" href="/css/site.css?v=20260920crumbs">
-<link rel="stylesheet" href="/css/shop.css?v=20260920parts">
+<link rel="stylesheet" href="/css/shop.css?v=20260926brand">
 ${clarityHeadSnippet()}
 ${landJsonLdSnippet(request, { pageName: 'Systems Shop' })}
 </head>
