@@ -9,9 +9,11 @@
  * Canonical/og:url use the request host. Matt SEO lock 2026-09-20:
  * book. is INDEX (HTML meta robots + X-Robots-Tag). Text Now is
  * sms:+16166065277; number is tel:.
- * Matt HARD LOCK 2026-09-20: chrome Book is STRAIGHT to Square
- * (BOOK_PUBLIC_HREF). NEVER book.unitedmobilerv.com in islandHeader /
- * footer / mobile-bar. book. is the suite host, not the Book href.
+ * Matt HARD LOCK 2026-09-20: shared chrome Book is STRAIGHT to Square
+ * (BOOK_PUBLIC_HREF). Shop, forum, mothership /book-service/, the header
+ * Book button, and the mobile bar do not point at book.unitedmobilerv.com.
+ * The book. host landing is the exception: that page is the booking page,
+ * so its 8-item nav marks Book as the current page. See book-landing.js.
  */
 
 import {
@@ -37,6 +39,13 @@ import {
   bookWhoArrivesSection,
   publishedRatesSection,
 } from './island-substance.js';
+import {
+  BOOK_LANDING_NAV,
+  BOOK_LANDING_CSS,
+  BOOK_LANDING_NAV_JS,
+  BOOK_LANDING_ORIGIN,
+  bookLandingMainHtml,
+} from './book-landing.js';
 
 export const BOOK_HOST = 'book.unitedmobilerv.com';
 export { SQUARE_BOOK_URL };
@@ -62,10 +71,13 @@ const SUITE_CSS = `
   .book-expect .step-num { color:#C9972C; font-size:12px; letter-spacing:.18em; text-transform:uppercase; font-weight:600; display:block; margin-bottom:10px; }
 `;
 
-function suiteFooter({ bookHost }) {
+function suiteFooter({ bookHost, links = null }) {
   const apexNote = bookHost
     ? `<p class="mt-6 mb-0 muted">Return to <a href="${MAIN_HOME_HREF}">${MAIN_HOME_LABEL}</a></p>`
     : '';
+  const network = links
+    ? meshFooterAnchors({ current: 'book', links })
+    : meshFooterAnchors();
   return `<div class="wrap footer-grid">
     <div>
       <div class="footer-brand">United Mobile RV LLC</div>
@@ -76,7 +88,7 @@ function suiteFooter({ bookHost }) {
     </div>
     <div>
       <div class="micro">Network</div>
-      ${meshFooterAnchors()}
+      ${network}
     </div>
     <div>
       <div class="micro">Credentials</div>
@@ -101,10 +113,31 @@ ${publishedRatesSection({ includeRateSheetLink: !bookHost })}
 </main>`;
 }
 
-function pageShell({ title, description, canonical, bookHost, robotsMeta, mainHtml, extraFooter = '', request, pageName }) {
+function pageShell({
+  title,
+  description,
+  canonical,
+  bookHost,
+  robotsMeta,
+  mainHtml,
+  extraFooter = '',
+  request,
+  pageName,
+  navLinks = null,
+  loadSiteJs = true,
+  bodyClass = 'book-suite',
+  extraStyle = '',
+}) {
   const robots = robotsMeta ? `<meta name="robots" content="${esc(robotsMeta)}">\n` : '';
+  const landingAttr = bodyClass.includes('book-landing') ? ' data-book-landing="1"' : '';
+  const header = navLinks
+    ? islandHeader({ current: 'book', links: navLinks })
+    : islandHeader({ current: 'book' });
+  const script = loadSiteJs
+    ? '<script src="/js/site.js?v=20260920chatoff" defer></script>'
+    : `<script>${BOOK_LANDING_NAV_JS}</script>`;
   return `<!DOCTYPE html>
-<html lang="en" data-book-suite="${bookHost ? 'book-host' : 'mothership'}">
+<html lang="en" data-book-suite="${bookHost ? 'book-host' : 'mothership'}"${landingAttr}>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -119,32 +152,52 @@ ${robots}<meta name="theme-color" content="#1A1A1A">
 <meta property="og:type" content="website">
 <meta property="og:url" content="${esc(canonical)}">
 <link rel="stylesheet" href="/css/site.css?v=20260920crumbs">
-<style>${SUITE_CSS}</style>
+<style>${SUITE_CSS}${extraStyle}</style>
 ${clarityHeadSnippet()}
 ${request ? landJsonLdSnippet(request, { pageName }) : ''}
 </head>
-<body class="book-suite">
+<body class="${bodyClass}">
 <a class="skip-link" href="#main">Skip to content</a>
-${islandHeader({ current: 'book' })}
+${header}
 ${request ? landCrumbsNav(request, { pageName }) : ''}
 ${mainHtml}
 <footer class="site-footer">
-  ${suiteFooter({ bookHost })}
+  ${suiteFooter({ bookHost, links: navLinks })}
   ${extraFooter}
   <div class="wrap">
     <p class="footer-note"><span class="footer-quiet">United Mobile RV LLC — diagnostic-first mobile RV repair.</span> Official UMRT and Victron Professional Certified Installer marks shown where authorized.</p>
   </div>
 </footer>
 ${islandMobileBar()}
-<script src="/js/site.js?v=20260920chatoff" defer></script>
+${script}
 </body>
 </html>`;
+}
+
+function renderBookLanding(request) {
+  const title = 'Book Mobile RV Repair in Washington | United Mobile RV';
+  const description = 'Book on-site mobile RV repair in Washington. Outside Washington, remote help is available. Call or text (616) 606-5277.';
+  const html = pageShell({
+    title,
+    description,
+    canonical: BOOK_LANDING_ORIGIN,
+    bookHost: true,
+    robotsMeta: 'index, follow',
+    request,
+    navLinks: BOOK_LANDING_NAV,
+    loadSiteJs: false,
+    bodyClass: 'book-suite book-landing',
+    extraStyle: BOOK_LANDING_CSS,
+    mainHtml: bookLandingMainHtml(),
+  });
+  return htmlResponse(html);
 }
 
 export function renderBookSuite(request) {
   const url = new URL(request.url);
   const bookHost = isBookHost(url.hostname);
-  const canonical = bookHost ? `${url.origin}/` : `${url.origin}/book-service/`;
+  if (bookHost) return renderBookLanding(request);
+  const canonical = `${url.origin}/book-service/`;
   const title = 'Book a Mobile RV Repair Visit | United Mobile RV';
   const description = 'Request a mobile RV repair visit at your campsite, driveway, or storage yard. Every request is reviewed personally. Book on Square or text (616) 606-5277.';
   const html = pageShell({

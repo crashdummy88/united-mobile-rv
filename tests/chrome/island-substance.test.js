@@ -107,7 +107,7 @@ test('shop listing source imports shop sections only', () => {
 });
 
 test('book suite HTML is booking-only depth in Pages chrome', async () => {
-  const html = renderBookSuite(new Request('https://book.unitedmobilerv.com/'));
+  const html = renderBookSuite(new Request('https://unitedmobilerv.com/book-service/'));
   const text = await html.text();
   assert.match(text, /Request a service call/);
   assert.match(text, /Liebherr Aerospace/);

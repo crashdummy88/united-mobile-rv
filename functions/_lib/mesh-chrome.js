@@ -95,9 +95,9 @@ function meshAnchorOpen(item, current) {
   return `<a href="${item.href}"${currentAttr(item, current)}${extra}>`;
 }
 
-export function meshNavLis({ current, extraAfter = '', extraAfterKey = '' } = {}) {
+export function meshNavLis({ current, extraAfter = '', extraAfterKey = '', links = MESH_LINKS } = {}) {
   const items = [];
-  for (const item of MESH_LINKS) {
+  for (const item of links) {
     items.push(`<li>${meshAnchorOpen(item, current)}${item.label}</a></li>`);
     if (extraAfter && extraAfterKey === item.key) items.push(extraAfter);
   }
@@ -105,20 +105,20 @@ export function meshNavLis({ current, extraAfter = '', extraAfterKey = '' } = {}
   return items.join('\n      ');
 }
 
-export function meshFooterAnchors({ current } = {}) {
-  const mesh = MESH_LINKS.map(
+export function meshFooterAnchors({ current, links = MESH_LINKS } = {}) {
+  const mesh = links.map(
     (item) => `${meshAnchorOpen(item, current)}${item.label}</a>`
   ).join('\n      ');
   return `${mesh}\n      <a href="${TEXT_NOW_HREF}">${TEXT_NOW_COMPACT}</a>`;
 }
 
-export function islandHeader({ current, extraNavHtml = '', extraAfterKey = '' } = {}) {
+export function islandHeader({ current, extraNavHtml = '', extraAfterKey = '', links = MESH_LINKS } = {}) {
   return `<header class="site-header">
   <div class="wrap nav-bar">
     <a class="brand brand-mark" href="${MAIN_HOME_HREF}" aria-label="Home"><img class="brand-logo" src="/assets/brand/umrt-icon.webp" alt="" width="40" height="40"></a>
     <button class="nav-toggle" type="button" aria-label="Menu" aria-expanded="false">☰</button>
     <ul class="nav-links">
-      ${meshNavLis({ current, extraAfter: extraNavHtml, extraAfterKey })}
+      ${meshNavLis({ current, extraAfter: extraNavHtml, extraAfterKey, links })}
     </ul>
     ${convertNavCta()}
   </div>

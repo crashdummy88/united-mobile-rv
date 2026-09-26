@@ -52,8 +52,8 @@ export async function onRequestGet(context) {
   if (host === 'book.unitedmobilerv.com') {
     // Same reason as shop: /book-service/ is a Pages Function
     // (functions/book-service/index.js). Call it directly so book. '/'
-    // renders the suite at the URL the visitor typed -- no visible hop
-    // to book.unitedmobilerv.com/book-service/.
+    // renders the customer booking page at the URL the visitor typed
+    // -- no visible hop to book.unitedmobilerv.com/book-service/.
     return bookSuite(context);
   }
 

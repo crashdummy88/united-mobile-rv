@@ -151,7 +151,7 @@ test('shop land home + /shop/ render BreadcrumbList', async () => {
   }
 });
 
-test('book land home renders Home → Book + WebSite; chrome Book stays Square', async () => {
+test('book land home renders Home → Book + WebSite; nav Book is this page', async () => {
   const res = renderBookSuite(new Request('https://book.unitedmobilerv.com/'));
   const html = await res.text();
   assert.deepEqual(crumbPairs(html), [
@@ -165,12 +165,12 @@ test('book land home renders Home → Book + WebSite; chrome Book stays Square',
   const nav = html.match(/<ul class="nav-links">[\s\S]*?<\/ul>/)[0];
   const crumbs = html.match(/data-land-crumbs[\s\S]*?<\/nav>/)[0];
   assert.match(header, /united-mobile-rv-llc\.square\.site/);
-  assert.match(nav, /href="https:\/\/united-mobile-rv-llc\.square\.site\/"[^>]*>Book</);
-  assert.doesNotMatch(header, /href="https:\/\/book\.unitedmobilerv\.com/);
+  assert.match(nav, /href="https:\/\/book\.unitedmobilerv\.com\/" aria-current="page">Book</);
   assert.match(crumbs, /aria-current="page">Book</);
   assert.doesNotMatch(crumbs, /href="https:\/\/book\.unitedmobilerv\.com/);
   assert.equal(BOOK_PUBLIC_HREF, 'https://united-mobile-rv-llc.square.site/');
   assert.match(islandHeader({ current: 'book' }), /united-mobile-rv-llc\.square\.site/);
+  assert.doesNotMatch(islandHeader({ current: 'book' }), /href="https:\/\/book\.unitedmobilerv\.com/);
 });
 
 test('book thank-you adds a page crumb; mothership suite has no land schema', async () => {
