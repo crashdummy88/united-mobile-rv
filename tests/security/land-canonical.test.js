@@ -236,7 +236,7 @@ test('middleware: shop catalog self-canonical; leftover services tab drops to /s
   assert.equal(res.headers.get('X-Robots-Tag'), 'index, follow');
 });
 
-test('middleware: book suite self-canonical; X-Robots is index,follow', async () => {
+test('middleware: book host / 301s to Square instead of serving HTML', async () => {
   const res = await middleware({
     request: makeRequest('https://book.unitedmobilerv.com/'),
     env,
@@ -245,11 +245,8 @@ test('middleware: book suite self-canonical; X-Robots is index,follow', async ()
 <meta property="og:url" content="https://united-mobile-rv.pages.dev/book-service/">
 </head><body></body></html>`),
   });
-  const html = await res.text();
-  assert.match(html, /<link rel="canonical" href="https:\/\/book\.unitedmobilerv\.com\/">/);
-  assert.match(html, /<meta property="og:url" content="https:\/\/book\.unitedmobilerv\.com\/">/);
-  assert.doesNotMatch(html, /pages\.dev/);
-  assert.equal(res.headers.get('X-Robots-Tag'), 'index, follow');
+  assert.equal(res.status, 301);
+  assert.equal(res.headers.get('Location'), 'https://united-mobile-rv-llc.square.site/');
 });
 
 test('middleware: pages.dev host is not rewritten', async () => {
@@ -278,7 +275,7 @@ test('middleware: shop/book lockdowns unchanged', async () => {
     next: htmlNext(PAGES_DEV_HTML),
   });
   assert.equal(book.status, 301);
-  assert.equal(book.headers.get('Location'), 'https://book.unitedmobilerv.com/');
+  assert.equal(book.headers.get('Location'), 'https://united-mobile-rv-llc.square.site/');
 });
 
 test('middleware: non-HTML is not rewritten', async () => {

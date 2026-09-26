@@ -1,9 +1,9 @@
 /**
  * Booking suite HTML -- Square + Text Now shell, no replacement form.
  *
- * Served at:
- *   - book.unitedmobilerv.com/          (HOST_HOME_REWRITES in functions/index.js)
- *   - /book-service/ on every other host (functions/book-service/index.js)
+ * Served at /book-service/ on mothership, shop, and pages.dev
+ * (functions/book-service/index.js). book.unitedmobilerv.com does not
+ * render this page; middleware 301s that host to Square.
  *
  * Shared ecosystem chrome (mesh-chrome) so book. matches forum/shop.
  * Canonical/og:url use the request host. Matt SEO lock 2026-09-20:

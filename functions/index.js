@@ -9,8 +9,7 @@
  *
  * Internal rewrite, NOT a redirect (changed 2026-09-14): a subdomain
  * literally named "shop" bouncing to shop.unitedmobilerv.com/shop/ (or
- * forum -> forum.unitedmobilerv.com/forum/, or book ->
- * book.unitedmobilerv.com/book-service/) is a confusing, redundant URL
+ * forum -> forum.unitedmobilerv.com/forum/) is a confusing, redundant URL
  * -- the visitor's address bar shouldn't grow a second copy of the
  * subdomain name. These hostnames now render their target content
  * directly at '/' with no visible redirect. SEO-wise this is a non-issue:
@@ -18,26 +17,27 @@
  * consolidate away from -- it's the same one URL either way, just
  * without a hop.
  */
+import { SQUARE_BOOK_URL } from './_lib/mesh-chrome.js';
 import { onRequestGet as shopIndex, onRequestHead as shopHead } from './shop/index.js';
-import { onRequestGet as bookSuite } from './book-service/index.js';
 
 const HOST_HOME_REWRITES = {
   'shop.unitedmobilerv.com': '/shop/',
   'forum.unitedmobilerv.com': '/forum/',
-  // book. follows the shop pattern (dedicated function), not forum's
-  // ASSETS.fetch of a static file -- the suite chrome/canonicals are
-  // host-aware and would be wrong if we just served book-service/index.html.
-  'book.unitedmobilerv.com': '/book-service/',
 };
 
 export async function onRequestHead(context) {
   const host = new URL(context.request.url).hostname;
+  if (host === 'book.unitedmobilerv.com') return Response.redirect(SQUARE_BOOK_URL, 301);
   if (host === 'shop.unitedmobilerv.com') return shopHead(context);
   return context.next();
 }
 
 export async function onRequestGet(context) {
   const host = new URL(context.request.url).hostname;
+  if (host === 'book.unitedmobilerv.com') {
+    return Response.redirect(SQUARE_BOOK_URL, 301);
+  }
+
   const target = HOST_HOME_REWRITES[host];
   if (!target) return context.next();
 
@@ -47,14 +47,6 @@ export async function onRequestGet(context) {
     // than trying to re-route, so it renders identically to visiting
     // /shop/ (same DB query, same category filter handling).
     return shopIndex(context);
-  }
-
-  if (host === 'book.unitedmobilerv.com') {
-    // Same reason as shop: /book-service/ is a Pages Function
-    // (functions/book-service/index.js). Call it directly so book. '/'
-    // renders the suite at the URL the visitor typed -- no visible hop
-    // to book.unitedmobilerv.com/book-service/.
-    return bookSuite(context);
   }
 
   // /forum/ is a static asset directory (forum/index.html) -- fetch it

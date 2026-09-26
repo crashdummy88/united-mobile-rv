@@ -1,21 +1,16 @@
 /**
- * book.unitedmobilerv.com is a booking-suite host, not a second
- * mothership. Guards:
- *   1) '/' renders the suite (Square + Text Now), never the marketing
- *      homepage title "Mobile RV Repair at Your Location"
- *   2) mothership paths 301 to '/' (suite root)
- *   3) canonical/og:url use the request host, not pages.dev
- *   4) X-Robots-Tag + HTML meta robots are index,follow on the book land
- *      (Matt SEO lock 2026-09-20 — no noindex meta for Google to union)
+ * book.unitedmobilerv.com does not serve a page. Every path 301s to
+ * Square. Shop lockdown and mothership /book-service/ stay as they were.
  *
  * Run: node tests/security/book-host.test.js
  */
 import { test, run, assert } from '../lib/tiny-test.js';
 import { onRequest as middleware } from '../../functions/_middleware.js';
-import { onRequestGet as hostHome } from '../../functions/index.js';
+import { onRequestGet as hostHome, onRequestHead as hostHead } from '../../functions/index.js';
 import { onRequestGet as bookService } from '../../functions/book-service/index.js';
-import { onRequestGet as bookThankYou } from '../../functions/book-service/thank-you.js';
-import { SQUARE_BOOK_URL, BOOK_PHONE_DISPLAY } from '../../functions/_lib/book-suite.js';
+import { SQUARE_BOOK_URL } from '../../functions/_lib/book-suite.js';
+
+const SQUARE = 'https://united-mobile-rv-llc.square.site/';
 
 function makeRequest(url, extraHeaders) {
   return new Request(url, { headers: extraHeaders || {} });
@@ -27,7 +22,6 @@ function makeNextCapture() {
     calls.push(req);
     return new Response('<html><title>Mobile RV Repair at Your Location | United Mobile RV</title></html>', {
       status: 200,
-      headers: { 'Content-Type': 'text/html' },
     });
   };
   return { next, calls };
@@ -35,42 +29,20 @@ function makeNextCapture() {
 
 const env = { SESSION_SECRET: 'test-session-secret', DB: {}, PORTAL_DB: {} };
 
-test('middleware: book host /pricing/ 301s to suite root /', async () => {
-  const { next } = makeNextCapture();
-  const res = await middleware({
-    request: makeRequest('https://book.unitedmobilerv.com/pricing/'),
-    env,
-    next,
-  });
-  assert.equal(res.status, 301);
-  assert.equal(res.headers.get('Location'), 'https://book.unitedmobilerv.com/');
-});
-
-test('middleware: book host /wireless/ and /guide/ 301 to /', async () => {
-  const { next } = makeNextCapture();
-  for (const path of ['/wireless/', '/guide/', '/services/', '/sitemap.xml', '/book-service/', '/book-service']) {
+test('middleware: book host / and deep paths 301 to Square', async () => {
+  const { next, calls } = makeNextCapture();
+  const paths = ['/', '/pricing/', '/wireless/', '/guide/', '/services/', '/sitemap.xml', '/book-service/', '/book-service', '/book-service/thank-you/', '/api/book', '/robots.txt', '/css/site.css'];
+  for (const path of paths) {
     const res = await middleware({
       request: makeRequest(`https://book.unitedmobilerv.com${path}`),
       env,
       next,
     });
     assert.equal(res.status, 301, `${path} should 301`);
-    assert.equal(res.headers.get('Location'), 'https://book.unitedmobilerv.com/', `${path} should land on /`);
+    assert.equal(res.headers.get('Location'), SQUARE, `${path} should land on Square`);
   }
-});
-
-test('middleware: book host allows suite home, thank-you, assets, /api/book', async () => {
-  const { next, calls } = makeNextCapture();
-  const allowed = ['/', '/favicon.png', '/robots.txt', '/book-service/thank-you/', '/api/book', '/css/site.css', '/js/site.js', '/assets/brand/umrt-logo.webp', '/assets/brand/umrt-icon.webp', '/fonts/inter-400.woff2'];
-  for (const path of allowed) {
-    const res = await middleware({
-      request: makeRequest(`https://book.unitedmobilerv.com${path}`),
-      env,
-      next,
-    });
-    assert.equal(res.status, 200, `${path} should pass through, got ${res.status}`);
-  }
-  assert.equal(calls.length, allowed.length);
+  assert.equal(calls.length, 0);
+  assert.equal(SQUARE_BOOK_URL, SQUARE);
 });
 
 test('middleware: shop lockdown still 301s /pricing/ to /shop/ (unaffected)', async () => {
@@ -84,88 +56,24 @@ test('middleware: shop lockdown still 301s /pricing/ to /shop/ (unaffected)', as
   assert.equal(res.headers.get('Location'), 'https://shop.unitedmobilerv.com/shop/');
 });
 
-test('middleware: book host X-Robots-Tag is index, follow', async () => {
-  const { next } = makeNextCapture();
-  const res = await middleware({
-    request: makeRequest('https://book.unitedmobilerv.com/'),
-    env,
-    next,
-  });
-  assert.equal(res.headers.get('X-Robots-Tag'), 'index, follow');
-});
-
-test('middleware: book host HTML never keeps a pages.dev canonical', async () => {
-  const next = async () => new Response(
-    `<!DOCTYPE html><html><head>
-<link rel="canonical" href="https://united-mobile-rv.pages.dev/book-service/">
-<meta property="og:url" content="https://united-mobile-rv.pages.dev/book-service/">
-</head><body><title>Book</title></body></html>`,
-    { status: 200, headers: { 'Content-Type': 'text/html' } }
-  );
-  const res = await middleware({
-    request: makeRequest('https://book.unitedmobilerv.com/'),
-    env,
-    next,
-  });
-  const html = await res.text();
-  assert.match(html, /<link rel="canonical" href="https:\/\/book\.unitedmobilerv\.com\/">/);
-  assert.match(html, /<meta property="og:url" content="https:\/\/book\.unitedmobilerv\.com\/">/);
-  assert.doesNotMatch(html, /united-mobile-rv\.pages\.dev/);
-  assert.equal(res.headers.get('X-Robots-Tag'), 'noindex, follow');
-});
-
-test('host home: book. / renders booking suite, not marketing homepage', async () => {
+test('host home: book. / GET and HEAD 301 to Square, not the homepage', async () => {
   const next = async () => {
     throw new Error('book host must not fall through to the static homepage');
   };
-  const res = await hostHome({
+  const getRes = await hostHome({
     request: makeRequest('https://book.unitedmobilerv.com/'),
     env,
     next,
   });
-  assert.equal(res.status, 200);
-  const html = await res.text();
-  assert.match(html, /<title>Book a Mobile RV Repair Visit \| United Mobile RV<\/title>/);
-  assert.doesNotMatch(html, /Mobile RV Repair at Your Location/);
-  assert.match(html, /Book on Square/);
-  assert.match(html, new RegExp(SQUARE_BOOK_URL.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
-  assert.match(html, new RegExp(`Text Now ${BOOK_PHONE_DISPLAY.replace(/[()]/g, '\\$&')}`));
-  assert.match(html, /data-book-suite="book-host"/);
-  assert.match(html, /<link rel="canonical" href="https:\/\/book\.unitedmobilerv\.com\/">/);
-  assert.match(html, /<meta property="og:url" content="https:\/\/book\.unitedmobilerv\.com\/">/);
-  assert.match(html, /<meta name="robots" content="index, follow">/);
-  assert.doesNotMatch(html, /<meta name="robots"[^>]*noindex/i);
-  assert.doesNotMatch(html, /href="\/pricing\/"/);
-  assert.doesNotMatch(html, /href="\/guide\/"/);
-  assert.doesNotMatch(html, /unitedmobilerv\.com\/guide\//);
-  assert.doesNotMatch(html, /Field guides/i);
-  assert.doesNotMatch(html, />Guides</);
-  assert.doesNotMatch(html, /href="\/wireless\/"/);
-  assert.match(html, /Victron Professional Certified Installer/);
-  assert.match(html, /weBoost Authorized Installer/);
-  assert.match(html, /Peplink Certified Associate/);
-  assert.match(html, /Starlink installs \(not a Starlink-certified installer\)/);
-  assert.doesNotMatch(html, /Starlink Certified/);
-  assert.match(html, /https:\/\/forum\.unitedmobilerv\.com\//);
-  assert.match(html, /https:\/\/shop\.unitedmobilerv\.com\//);
-  assert.match(html, /https:\/\/software\.unitedmobilerv\.com\//);
-  const chromeBooks = [...html.match(/<header[\s\S]*?<\/header>/)[0].matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/g)]
-    .filter((m) => /^Book$/i.test(m[2].replace(/<[^>]+>/g, '').trim()));
-  assert.ok(chromeBooks.length >= 2);
-  for (const m of chromeBooks) {
-    assert.match(m[1], /href="https:\/\/united-mobile-rv-llc\.square\.site\/"/);
-    assert.doesNotMatch(m[1], /href="https:\/\/book\.unitedmobilerv\.com/);
-  }
-  assert.match(html, /sms:\+16166065277/);
-  assert.match(html, /tel:\+16166065277/);
-  assert.match(html, /nav-phone[^>]+tel:\+16166065277/);
-  assert.match(html, />Home</);
-  assert.match(html, /href="https:\/\/unitedmobilerv\.com\/"/);
-  assert.doesNotMatch(html, /http:\/\/unitedmobilerv\.com/);
-  assert.match(html, /Booking continues on Square/);
-  assert.match(html, /official intake/);
-  assert.doesNotMatch(html, /Prefer Text/);
-  assert.doesNotMatch(html, /Text \/ Call/);
+  assert.equal(getRes.status, 301);
+  assert.equal(getRes.headers.get('Location'), SQUARE);
+  const headRes = await hostHead({
+    request: makeRequest('https://book.unitedmobilerv.com/'),
+    env,
+    next,
+  });
+  assert.equal(headRes.status, 301);
+  assert.equal(headRes.headers.get('Location'), SQUARE);
 });
 
 test('host home: pages.dev / still falls through (no book rewrite)', async () => {
@@ -193,7 +101,8 @@ test('/book-service/ on mothership keeps reasonable nav + request-host canonical
   assert.match(html, /<link rel="canonical" href="https:\/\/united-mobile-rv\.pages\.dev\/book-service\/">/);
   assert.match(html, /href="\/pricing\/"/);
   assert.match(html, /Book on Square/);
-  assert.match(html, new RegExp(SQUARE_BOOK_URL.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.match(html, new RegExp(SQUARE.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.doesNotMatch(html, /<iframe/i);
   assert.doesNotMatch(html, /Mobile RV Repair at Your Location/);
   assert.match(html, /https:\/\/forum\.unitedmobilerv\.com\//);
   assert.match(html, /Text Now \(616\) 606-5277/);
@@ -203,32 +112,6 @@ test('/book-service/ on mothership keeps reasonable nav + request-host canonical
   assert.doesNotMatch(html, /unitedmobilerv\.com\/guide\//);
   assert.doesNotMatch(html, /Field guides/i);
   assert.doesNotMatch(html, />Guides</);
-  assert.doesNotMatch(html, /Prefer Text/);
-});
-
-test('thank-you on book host uses book. canonical and mesh nav (no mothership mega-nav)', async () => {
-  const res = await bookThankYou({
-    request: makeRequest('https://book.unitedmobilerv.com/book-service/thank-you/'),
-    env,
-  });
-  const html = await res.text();
-  assert.match(html, /<link rel="canonical" href="https:\/\/book\.unitedmobilerv\.com\/book-service\/thank-you\/">/);
-  assert.match(html, /<meta property="og:url" content="https:\/\/book\.unitedmobilerv\.com\/book-service\/thank-you\/">/);
-  assert.match(html, /<meta name="robots" content="index, follow">/);
-  assert.doesNotMatch(html, /<meta name="robots"[^>]*noindex/i);
-  assert.doesNotMatch(html, /united-mobile-rv\.pages\.dev/);
-  assert.doesNotMatch(html, /href="\/pricing\/"/);
-  assert.match(html, /href="\/"/);
-  assert.match(html, /href="https:\/\/unitedmobilerv\.com\/"/);
-  assert.match(html, />Home</);
-  assert.doesNotMatch(html, /http:\/\/unitedmobilerv\.com/);
-  assert.doesNotMatch(html, /unitedmobilerv\.com\/guide\//);
-  assert.doesNotMatch(html, /Field guides/i);
-  assert.doesNotMatch(html, />Guides</);
-  assert.match(html, /https:\/\/forum\.unitedmobilerv\.com\//);
-  assert.match(html, /united-mobile-rv-llc\.square\.site/);
-  assert.match(html, /Text Now \(616\) 606-5277/);
-  assert.match(html, /sms:\+16166065277/);
   assert.doesNotMatch(html, /Prefer Text/);
 });
 

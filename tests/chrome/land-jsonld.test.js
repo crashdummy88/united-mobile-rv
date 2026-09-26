@@ -200,10 +200,15 @@ test('middleware injects BreadcrumbList on bare land HTML and does not duplicate
   const bare = '<!DOCTYPE html><html><head><title>Community Forum | United Mobile RV</title></head><body><header></header><main></main></body></html>';
   const shop = await landHtml('https://shop.unitedmobilerv.com/', bare.replace('Community Forum', 'RV Systems Shop'));
   const forum = await landHtml('https://forum.unitedmobilerv.com/', bare);
-  const book = await landHtml('https://book.unitedmobilerv.com/', bare.replace('Community Forum', 'Book a visit'));
   assert.deepEqual(crumbPairs(shop).map((p) => p[0]), ['Home', 'Shop']);
   assert.deepEqual(crumbPairs(forum).map((p) => p[0]), ['Home', 'Forum']);
-  assert.deepEqual(crumbPairs(book).map((p) => p[0]), ['Home', 'Book']);
+  const book = await middleware({
+    request: new Request('https://book.unitedmobilerv.com/'),
+    env,
+    next: htmlNext(bare.replace('Community Forum', 'Book a visit')),
+  });
+  assert.equal(book.status, 301);
+  assert.equal(book.headers.get('Location'), 'https://united-mobile-rv-llc.square.site/');
   assert.match(shop, /yl6ovtkj2p/);
   assert.equal((shop.match(/application\/ld\+json/g) || []).length, 1);
 

@@ -25,8 +25,8 @@
  *     = https://united-mobile-rv-llc.square.site/
  *   NEVER https://book.unitedmobilerv.com/ in MESH_LINKS, islandHeader,
  *   islandFooter, islandMobileBar, platform-bar, or static HTML nav/footer.
- *   book.unitedmobilerv.com stays a host for the booking-suite product,
- *   not a chrome Book destination. Geo landing CTAs are out of scope.
+ *   book.unitedmobilerv.com is not a page: middleware 301s every path
+ *   there to this same Square URL. Geo landing CTAs are out of scope.
  *
  * Matt LOCK 2026-09-16 convert stack (header + mobile bar, every surface):
  *   Call (616) 606-5277 → tel:+16166065277 (header label; number is the call control)
