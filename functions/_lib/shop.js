@@ -20,9 +20,13 @@ export function formatPrice(product) {
 }
 
 export function priceNote(product) {
-  return hasPrice(product)
-    ? `Published reference price (${product.price_source || 'source on file'}). Your quote may differ once availability and shipping are confirmed.`
-    : 'Priced on request. Contact us for current pricing before you order.';
+  if (!hasPrice(product)) return 'Priced on request. Contact us for current pricing before you order.';
+  // The Square sync stores "Square catalog sync, <ISO timestamp>" in
+  // price_source as an internal audit note. Keep it off the page.
+  if (/^Square catalog sync\b/i.test(product.price_source || '')) {
+    return 'Published reference price. Your quote may differ once availability and shipping are confirmed.';
+  }
+  return `Published reference price (${product.price_source || 'source on file'}). Your quote may differ once availability and shipping are confirmed.`;
 }
 
 /**
