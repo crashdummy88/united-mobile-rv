@@ -16,7 +16,6 @@ import { onRequestGet as hostHome } from '../../functions/index.js';
 import { onRequestGet as bookService } from '../../functions/book-service/index.js';
 import { onRequestGet as bookThankYou } from '../../functions/book-service/thank-you.js';
 import { SQUARE_BOOK_URL, BOOK_PHONE_DISPLAY } from '../../functions/_lib/book-suite.js';
-import { SQUARE_BOOKING_PAGE_URL } from '../../functions/_lib/square-booking-embed.js';
 
 function makeRequest(url, extraHeaders) {
   return new Request(url, { headers: extraHeaders || {} });
@@ -128,14 +127,22 @@ test('host home: book. / renders booking suite, not marketing homepage', async (
   const html = await res.text();
   assert.match(html, /<title>Book Mobile RV Repair in Washington \| United Mobile RV<\/title>/);
   assert.doesNotMatch(html, /Mobile RV Repair at Your Location/);
-  assert.match(html, /class="book-frame"/);
-  assert.match(html, /allow="payment"/);
-  assert.match(html, /title="United Mobile RV booking"/);
+  assert.doesNotMatch(html, /<iframe/i);
+  assert.doesNotMatch(html, /class="book-frame"/);
+  assert.doesNotMatch(html, /Open booking in a new tab/);
+  assert.match(html, /class="btn btn-gold book-square" href="https:\/\/united-mobile-rv-llc\.square\.site\/" target="_blank" rel="noopener">Book on Square</);
+  assert.match(html, /id="book-form"/);
+  assert.match(html, /name="name"/);
+  assert.match(html, /name="phone"/);
+  assert.match(html, /name="email"/);
+  assert.match(html, /name="location"/);
+  assert.match(html, /name="rig"/);
+  assert.match(html, /RV \/ issue/);
+  assert.match(html, /name="issue"/);
+  assert.match(html, /for="issue">Message/);
+  assert.match(html, /fetch\('\/api\/book'/);
+  assert.match(html, /\/book-service\/thank-you\//);
   assert.match(html, new RegExp(SQUARE_BOOK_URL.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
-  assert.equal(SQUARE_BOOKING_PAGE_URL, 'https://united-mobile-rv-llc.square.site/#HjeiGL');
-  assert.match(html, /src="https:\/\/united-mobile-rv-llc\.square\.site\/#HjeiGL"/);
-  assert.match(html, /class="btn btn-gold book-fallback" href="https:\/\/united-mobile-rv-llc\.square\.site\/#HjeiGL"/);
-  assert.match(html, /Open booking in a new tab/);
   assert.match(html, /On-site booking is Washington only/);
   assert.match(html, /https:\/\/unitedmobilerv\.com\/remote\//);
   assert.match(html, new RegExp(BOOK_PHONE_DISPLAY.replace(/[()]/g, '\\$&')));

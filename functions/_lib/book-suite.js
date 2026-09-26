@@ -1,5 +1,7 @@
 /**
- * Booking suite HTML -- Square + Text Now shell, no replacement form.
+ * Booking suite HTML.
+ * book.unitedmobilerv.com/ is a branded page (Book on Square, then the
+ * existing contact form). Mothership /book-service/ stays the suite shell.
  *
  * Served at:
  *   - book.unitedmobilerv.com/          (HOST_HOME_REWRITES in functions/index.js)
