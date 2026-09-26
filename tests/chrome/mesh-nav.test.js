@@ -3,7 +3,7 @@
  * Convert stack: Text Now sms: + tel: number + Square Book.
  * Run: node tests/chrome/mesh-nav.test.js
  */
-import { readFileSync } from 'node:fs';
+import { readSrc } from '../lib/read-src.js';
 import { test, run, assert } from '../lib/tiny-test.js';
 import {
   BOOK_PUBLIC_HREF,
@@ -40,7 +40,7 @@ function productLabels(html) {
 }
 
 function src(rel) {
-  return readFileSync(new URL('../../' + rel, import.meta.url), 'utf8');
+  return readSrc(rel, import.meta.url);
 }
 
 test('public Book CTA is Square appointment intake, not book. or /book-service/', () => {

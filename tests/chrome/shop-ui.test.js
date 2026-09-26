@@ -3,11 +3,11 @@
  * checkout, no radio overflow, no pages.dev customer URLs.
  * Run: node tests/chrome/shop-ui.test.js
  */
-import { readFileSync } from 'node:fs';
+import { readSrc } from '../lib/read-src.js';
 import { test, run, assert } from '../lib/tiny-test.js';
 
 function src(rel) {
-  return readFileSync(new URL('../../' + rel, import.meta.url), 'utf8');
+  return readSrc(rel, import.meta.url);
 }
 
 const shopPages = [

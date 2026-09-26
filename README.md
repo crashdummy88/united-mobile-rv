@@ -5,7 +5,9 @@ Private staging site. Separate from unitedmobilerv.com WordPress.
 ## Cloudflare Pages
 - Framework preset: None
 - Build command: (empty)
-- Output directory: /
+- Output directory: public
+
+`wrangler.toml` sets `pages_build_output_dir = "public"`. Before a production merge, confirm the dashboard Build output directory shows `public`, or is blank so that file wins. If it is still `/` or `.`, the deploy publishes the repo root.
 
 ## Book form + secrets (Pages)
 

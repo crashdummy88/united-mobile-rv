@@ -3,7 +3,7 @@
  * Product pie: Home (unitedmobilerv.com) → Land → optional section → page.
  * Run: node tests/chrome/land-jsonld.test.js
  */
-import { readFileSync } from 'node:fs';
+import { readSrc } from '../lib/read-src.js';
 import { test, run, assert } from '../lib/tiny-test.js';
 import { onRequest as middleware } from '../../functions/_middleware.js';
 import { onRequestGet as shopIndex } from '../../functions/shop/index.js';
@@ -22,7 +22,7 @@ import { islandHeader, BOOK_PUBLIC_HREF } from '../../functions/_lib/mesh-chrome
 const env = { SESSION_SECRET: 'test-session-secret', DB: {}, PORTAL_DB: {} };
 
 function src(rel) {
-  return readFileSync(new URL('../../' + rel, import.meta.url), 'utf8');
+  return readSrc(rel, import.meta.url);
 }
 
 function ldBlocks(html) {

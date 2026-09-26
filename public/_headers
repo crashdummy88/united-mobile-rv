@@ -1,3 +1,9 @@
+# These rules apply to static assets only. Pages Functions (shop catalog,
+# cart, book suite, forum threads) do not receive this file. Matching
+# HSTS, framing, nosniff, and Referrer-Policy headers are set in
+# functions/_middleware.js. That middleware does not copy the CSP below:
+# script-src here omits https://www.clarity.ms, which the cart and the
+# shop/book shells load.
 /*
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff

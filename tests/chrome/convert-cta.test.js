@@ -5,13 +5,14 @@
  * Run: node tests/chrome/convert-cta.test.js
  */
 import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { readSrc } from '../lib/read-src.js';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { test, run, assert } from '../lib/tiny-test.js';
 import { islandHeader, islandMobileBar } from '../../functions/_lib/mesh-chrome.js';
 
 function src(rel) {
-  return readFileSync(new URL('../../' + rel, import.meta.url), 'utf8');
+  return readSrc(rel, import.meta.url);
 }
 
 function chromeSlices(html) {

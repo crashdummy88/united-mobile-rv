@@ -3,11 +3,11 @@
  * Staging/prototype disclaimers must stay gone; legal body must stay full.
  * Run: node tests/chrome/legal-pages.test.js
  */
-import { readFileSync } from 'node:fs';
+import { readSrc } from '../lib/read-src.js';
 import { test, run, assert } from '../lib/tiny-test.js';
 
 function src(rel) {
-  return readFileSync(new URL('../../' + rel, import.meta.url), 'utf8');
+  return readSrc(rel, import.meta.url);
 }
 
 const STAGING_BLURB = /staging page|sales prototype|live legal copy if wording ever diverges|paraphrases the live site policy/i;
