@@ -149,11 +149,11 @@ function applySecurityHeaders(headers) {
   for (const [name, value] of Object.entries(SECURITY_HEADERS)) {
     if (!headers.has(name)) headers.set(name, value);
   }
-  // frame-ancestors only. The full CSP in public/_headers allows scripts
-  // from 'self', inline, and challenges.cloudflare.com. Shop, book, and
-  // the cart also load https://www.clarity.ms/tag/ (and Clarity's collect
-  // hosts). Copying that CSP would block Clarity. A frame-ancestors
-  // directive does not restrict scripts, connections, images, or embeds.
+  // frame-ancestors only. Static pages get the fuller policy in
+  // public/_headers (including Clarity). Function HTML (shop, cart, book,
+  // threads) is not covered by that file. frame-ancestors does not
+  // restrict scripts, connections, images, or embeds, so Clarity still
+  // loads on those pages.
   if (!headers.has('Content-Security-Policy')) {
     headers.set('Content-Security-Policy', "frame-ancestors 'none'");
   }
