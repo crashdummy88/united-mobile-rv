@@ -72,8 +72,22 @@ function isUtilityNoindex(path) {
   return UTILITY_NOINDEX_PREFIXES.some((p) => pathHasPrefix(path, p));
 }
 
+// Shop and forum still serve /book-service/thank-you/ (shop allowlist;
+// forum has no path gate). That confirmation page is not a landing page.
+// book. is left index,follow — its booking pages are a separate change.
+// Apex stays index,follow too; this is not a mothership robots change.
+const THANK_YOU_NOINDEX_HOSTS = new Set([
+  'shop.unitedmobilerv.com',
+  'forum.unitedmobilerv.com',
+]);
+
+function isThankYouPath(path) {
+  return pathHasPrefix(path, '/book-service/thank-you/');
+}
+
 function isIndexable(hostname, path) {
   if (isStagingHost(hostname)) return false;
+  if (THANK_YOU_NOINDEX_HOSTS.has(hostname) && isThankYouPath(path)) return false;
   if (APEX_HOSTS.includes(hostname) || CUSTOM_LAND_HOSTS.includes(hostname)) {
     return !isUtilityNoindex(path);
   }

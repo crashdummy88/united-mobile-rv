@@ -77,6 +77,102 @@
   margin-bottom: 8px;
 }
 .tech-pin-index { margin-top: 14px; }
+
+/* Brand cards, buttons, and contrast on the forum only.
+   Header nav stays the site.css reference. Book pages do not load this sheet. */
+body.island-chrome .band-gray {
+  background: #0C0C0C;
+  color: #D6D6D6;
+}
+body.island-chrome .band-gray p,
+body.island-chrome .band-gray .form-note {
+  color: #D6D6D6;
+}
+body.island-chrome main .service-card,
+body.island-chrome main .faq-item,
+body.island-chrome main .tech-pin-card,
+body.island-chrome main .trending-item,
+body.island-chrome main #new-thread-gate,
+body.island-chrome main .diag-prompt,
+body.island-chrome main .cat-nav-wrap {
+  background: #0C0C0C;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  color: #D6D6D6;
+}
+body.island-chrome main .faq-item {
+  margin: 0 0 12px;
+  padding: 16px 18px;
+}
+body.island-chrome main .service-card {
+  padding: 16px 18px;
+}
+body.island-chrome main h1,
+body.island-chrome main h2,
+body.island-chrome main h3,
+body.island-chrome main .service-card h3,
+body.island-chrome main .faq-item h3,
+body.island-chrome main .tech-pin-card h3,
+body.island-chrome main .tech-pin-card h3 a,
+body.island-chrome main .trending-title {
+  color: #FFFFFF;
+}
+body.island-chrome main p,
+body.island-chrome main .lead,
+body.island-chrome main .muted,
+body.island-chrome main .service-card p,
+body.island-chrome main .faq-item p,
+body.island-chrome main .tech-pin-card p,
+body.island-chrome main .trending-meta,
+body.island-chrome main .stat-label,
+body.island-chrome main .upload-label,
+body.island-chrome main .tou-consent-note,
+body.island-chrome main .tou-consent-note a,
+body.island-chrome main .share-label,
+body.island-chrome main .helpful-btn,
+body.island-chrome main .share-btn {
+  color: #D6D6D6;
+}
+body.island-chrome main .tech-pin-kicker,
+body.island-chrome main .cat-nav-label,
+body.island-chrome main .micro,
+body.island-chrome main .eyebrow,
+body.island-chrome main .stat-num,
+body.island-chrome main .badge-cat {
+  color: #C9972C;
+}
+body.island-chrome main .btn {
+  border-radius: 10px;
+}
+body.island-chrome main .btn-gold,
+body.island-chrome main .btn-ghost {
+  background: #C9972C;
+  color: #1A1A1A;
+  border-color: #C9972C;
+  border-radius: 10px;
+}
+body.island-chrome main .btn-gold:hover,
+body.island-chrome main .btn-ghost:hover {
+  background: #E0B04A;
+  color: #1A1A1A;
+  border-color: #E0B04A;
+}
+body.island-chrome .ask-tech-cta {
+  border-radius: 10px;
+}
+body.island-chrome .ask-tech-cta h3,
+body.island-chrome .ask-tech-cta p {
+  color: #1A1A1A;
+}
+body.island-chrome .ask-tech-cta .btn {
+  background: #1A1A1A;
+  color: #C9972C;
+  border-radius: 10px;
+}
+body.island-chrome .ask-tech-cta .btn:hover {
+  background: #0C0C0C;
+  color: #E0B04A;
+}
 .tech-pin-index .tech-pin-card { border-color: rgba(201,151,44,0.45); }
 .thread-pin-badge {
   display: inline-block;

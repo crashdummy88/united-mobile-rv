@@ -23,7 +23,7 @@ export async function onRequestGet(context) {
 <meta name="robots" content="noindex,follow">
 <link rel="icon" href="/favicon.png" type="image/png">
 <link rel="stylesheet" href="/css/site.css?v=20260920crumbs">
-<link rel="stylesheet" href="/css/shop.css?v=20260920parts">
+<link rel="stylesheet" href="/css/shop.css?v=20260926brand">
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 ${clarityHeadSnippet()}
 ${landJsonLdSnippet(context.request, { pageName: 'Cart' })}

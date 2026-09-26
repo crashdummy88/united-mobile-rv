@@ -51,6 +51,19 @@ test('pages.dev catalog paths stay on the allowlist', async () => {
   assert.equal(await robotsTag('united-mobile-rv.pages.dev', '/shop/cart'), 'noindex, follow');
 });
 
+test('shop and forum thank-you is noindex; book and apex stay index', async () => {
+  assert.equal(await robotsTag('shop.unitedmobilerv.com', '/book-service/thank-you/'), 'noindex, follow');
+  assert.equal(await robotsTag('shop.unitedmobilerv.com', '/book-service/thank-you'), 'noindex, follow');
+  assert.equal(await robotsTag('forum.unitedmobilerv.com', '/book-service/thank-you/'), 'noindex, follow');
+  assert.equal(await robotsTag('book.unitedmobilerv.com', '/book-service/thank-you/'), 'index, follow');
+  assert.equal(await robotsTag('unitedmobilerv.com', '/book-service/thank-you/'), 'index, follow');
+});
+
+test('shop and forum homes stay index (hub rewrite is unchanged)', async () => {
+  assert.equal(await robotsTag('shop.unitedmobilerv.com', '/shop/'), 'index, follow');
+  assert.equal(await robotsTag('forum.unitedmobilerv.com', '/forum/'), 'index, follow');
+});
+
 test('custom lands still noindex utility prefixes', async () => {
   assert.equal(await robotsTag('shop.unitedmobilerv.com', '/api/shop/'), 'noindex, follow');
   assert.equal(await robotsTag('forum.unitedmobilerv.com', '/forum/mod/'), 'noindex, follow');

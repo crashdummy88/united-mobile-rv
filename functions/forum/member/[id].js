@@ -63,6 +63,7 @@ export async function onRequestGet(context) {
 <meta name="robots" content="index,follow">
 <link rel="icon" href="/favicon.png" type="image/png">
 <link rel="stylesheet" href="/css/site.css?v=20260920crumbs">
+<link rel="stylesheet" href="/forum/features.css?v=20260926brand">
 ${clarityHeadSnippet()}
 ${landJsonLdSnippet(request, { pageName: user.display_name })}
 </head>
@@ -75,9 +76,9 @@ ${landCrumbsNav(request, { pageName: user.display_name })}
     <h1>${esc(user.display_name)}${isVerifiedCustomer ? ' <span title="Booked a real job through United Mobile RV" style="display:inline-block;vertical-align:middle;font-size:0.45em;font-weight:700;color:#1A1A1A;background:#C9972C;padding:3px 10px;border-radius:999px;margin-left:8px">Verified Customer</span>' : ''}</h1>
     <p class="lead">Member since ${esc(String(user.created_at).slice(0, 10))}</p>
     <div class="stats-bar" style="display:flex;gap:28px;margin-top:18px">
-      <div><span style="font-size:1.6em;font-weight:800;color:#E8B84B">${threadCount.n || 0}</span><br><span class="muted" style="font-size:0.8em;text-transform:uppercase">Threads</span></div>
-      <div><span style="font-size:1.6em;font-weight:800;color:#E8B84B">${replyCount.n || 0}</span><br><span class="muted" style="font-size:0.8em;text-transform:uppercase">Replies</span></div>
-      <div><span style="font-size:1.6em;font-weight:800;color:#E8B84B">${solvedCount.n || 0}</span><br><span class="muted" style="font-size:0.8em;text-transform:uppercase">Solved</span></div>
+      <div><span style="font-size:1.6em;font-weight:800;color:#C9972C">${threadCount.n || 0}</span><br><span class="muted" style="font-size:0.8em;text-transform:uppercase">Threads</span></div>
+      <div><span style="font-size:1.6em;font-weight:800;color:#C9972C">${replyCount.n || 0}</span><br><span class="muted" style="font-size:0.8em;text-transform:uppercase">Replies</span></div>
+      <div><span style="font-size:1.6em;font-weight:800;color:#C9972C">${solvedCount.n || 0}</span><br><span class="muted" style="font-size:0.8em;text-transform:uppercase">Solved</span></div>
     </div>
   </div>
 </section>

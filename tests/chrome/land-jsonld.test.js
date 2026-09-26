@@ -193,7 +193,7 @@ test('static forum homepage already has Home → Forum JSON-LD + Clarity', () =>
   assert.match(html, /data-land-crumbs/);
   const header = html.match(/<header[\s\S]*?<\/header>/)[0];
   assert.match(header, /href="https:\/\/united-mobile-rv-llc\.square\.site\/"[^>]*>Book</);
-  assert.match(header, /href="https:\/\/unitedmobilerv\.com\/service\/"/);
+  assert.match(header, /href="https:\/\/unitedmobilerv\.com\/services\/"/);
 });
 
 test('middleware injects BreadcrumbList on bare land HTML and does not duplicate', async () => {

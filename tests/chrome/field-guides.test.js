@@ -93,20 +93,22 @@ test('markup is a quiet Guide text link, not a button, and drops unknown slugs',
   assert.equal(relatedGuidesMarkup([{ href: 'https://evil.example/x', label: 'Nope' }]), '');
 });
 
-test('shared mesh chrome does not include Field guides; Book stays Square', () => {
-  assert.deepEqual(MESH_LINKS.map((l) => l.label), ['Home', 'Services', 'Shop', 'Book', 'Forum', 'Software', 'Docs']);
-  assert.ok(MESH_LINKS.findIndex((l) => l.label === 'Services') < MESH_LINKS.findIndex((l) => l.label === 'Shop'));
+test('shared mesh chrome links Guides to the apex hub; Book stays Square', () => {
+  assert.deepEqual(MESH_LINKS.map((l) => l.label), ['Home', 'Services', 'Guides', 'Shop', 'Book', 'Forum', 'Software', 'Docs']);
+  assert.ok(MESH_LINKS.findIndex((l) => l.label === 'Services') < MESH_LINKS.findIndex((l) => l.label === 'Guides'));
+  assert.ok(MESH_LINKS.findIndex((l) => l.label === 'Guides') < MESH_LINKS.findIndex((l) => l.label === 'Shop'));
   assert.ok(MESH_LINKS.findIndex((l) => l.label === 'Shop') < MESH_LINKS.findIndex((l) => l.label === 'Book'));
-  assert.equal(MESH_LINKS.find((l) => l.key === 'guides'), undefined);
-  assert.equal(MESH_LINKS.find((l) => l.key === 'services').href, 'https://unitedmobilerv.com/service/');
-  assert.ok(!MESH_LINKS.some((l) => /guide|portal|status/i.test(l.label) || /guide|portal|status/i.test(l.key)));
+  assert.equal(MESH_LINKS.find((l) => l.key === 'guides').href, 'https://unitedmobilerv.com/guide/');
+  assert.equal(MESH_LINKS.find((l) => l.key === 'services').href, 'https://unitedmobilerv.com/services/');
+  assert.ok(!MESH_LINKS.some((l) => /portal|status/i.test(l.label) || /portal|status/i.test(l.key)));
+  assert.ok(!MESH_LINKS.some((l) => /field guides/i.test(l.label)));
   const book = src('functions/_lib/mesh-chrome.js');
   assert.match(book, /BOOK_PUBLIC_HREF = SQUARE_BOOK_URL/);
   assert.equal(MESH_LINKS.find((l) => l.key === 'book').href, 'https://united-mobile-rv-llc.square.site/');
   assert.doesNotMatch(MESH_LINKS.find((l) => l.key === 'book').href, /book\.unitedmobilerv\.com/);
   assert.doesNotMatch(book, /href="\/guide\//);
-  assert.doesNotMatch(book, /GUIDES_HREF/);
-  assert.doesNotMatch(book, /label: 'Guides'/);
+  assert.match(book, /MAIN_GUIDES_HREF = 'https:\/\/unitedmobilerv\.com\/guide\/'/);
+  assert.match(book, /label: MAIN_GUIDES_LABEL/);
   assert.doesNotMatch(book, /label: 'Field guides'/);
   assert.doesNotMatch(book, /FIELD_GUIDES_HREF/);
 });
@@ -146,9 +148,12 @@ test('product page has no related-guide chrome; Book stays Square', async () => 
   });
   assert.equal(res.status, 200);
   const html = await res.text();
-  assert.doesNotMatch(html, /Related guides/i);
+  const main = html.match(/<main[\s\S]*<\/main>/)[0];
+  const header = html.match(/<header[\s\S]*?<\/header>/)[0];
+  assert.doesNotMatch(main, /Related guides/i);
   assert.doesNotMatch(html, /shop-related-guides/);
-  assert.doesNotMatch(html, /unitedmobilerv\.com\/guide\//);
+  assert.doesNotMatch(main, /unitedmobilerv\.com\/guide\//);
+  assert.match(header, /href="https:\/\/unitedmobilerv\.com\/guide\/"[^>]*>Guides</);
   assert.doesNotMatch(html, /Field guides/i);
   assert.doesNotMatch(html, /WP Field Guides/i);
   assert.doesNotMatch(html, /href="\/guide\//);
