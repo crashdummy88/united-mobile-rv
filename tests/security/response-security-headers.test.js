@@ -3,11 +3,12 @@
  * to Function responses, so those hosts were missing the headers forum's
  * static files already send. Middleware fills that gap.
  *
- * The CSP added here is frame-ancestors only. Forum's full CSP does not
- * allow https://www.clarity.ms, which shop, book, and the cart load.
+ * The CSP added here is frame-ancestors only. Static pages use the
+ * policy in public/_headers, which allows Microsoft Clarity.
  *
  * Run: node tests/security/response-security-headers.test.js
  */
+import { readSrc } from '../lib/read-src.js';
 import { test, run, assert } from '../lib/tiny-test.js';
 import { onRequest as middleware } from '../../functions/_middleware.js';
 import { clarityHeadSnippet } from '../../functions/_lib/clarity.js';
@@ -82,6 +83,47 @@ test('existing static CSP from _headers is left unchanged', async () => {
   });
   assert.equal(res.headers.get('Content-Security-Policy'), forumCsp);
   assert.equal(res.headers.get('X-Frame-Options'), 'DENY');
+});
+
+test('static _headers CSP allows Clarity and keeps the other sources', () => {
+  const headers = readSrc('_headers', import.meta.url);
+  const csp = headers.match(/Content-Security-Policy:\s*(.+)/)[1];
+  const directive = (name) => {
+    const match = csp.match(new RegExp(`${name} ([^;]+)`));
+    assert.ok(match, name);
+    return match[1];
+  };
+  const script = directive('script-src');
+  assert.match(script, /'self'/);
+  assert.match(script, /'unsafe-inline'/);
+  assert.match(script, /https:\/\/challenges\.cloudflare\.com/);
+  assert.match(script, /https:\/\/www\.clarity\.ms/);
+  assert.match(script, /https:\/\/scripts\.clarity\.ms/);
+  const connect = directive('connect-src');
+  assert.match(connect, /'self'/);
+  assert.match(connect, /https:\/\/api\.web3forms\.com/);
+  assert.match(connect, /https:\/\/challenges\.cloudflare\.com/);
+  assert.match(connect, /https:\/\/\*\.clarity\.ms/);
+  assert.match(connect, /https:\/\/c\.bing\.com/);
+  const img = directive('img-src');
+  assert.match(img, /'self'/);
+  assert.match(img, /data:/);
+  assert.match(img, /https:/);
+  assert.match(img, /https:\/\/\*\.clarity\.ms/);
+  assert.match(img, /https:\/\/c\.bing\.com/);
+  assert.match(csp, /frame-src https:\/\/challenges\.cloudflare\.com/);
+  assert.match(csp, /frame-ancestors 'none'/);
+  assert.match(csp, /object-src 'none'/);
+  assert.doesNotMatch(script, /\*/);
+});
+
+test('home FAQ books on Square', () => {
+  const html = readSrc('index.html', import.meta.url);
+  const faq = html.match(/How do I book\?<\/h3><p>([\s\S]*?)<\/p>/)[1];
+  assert.match(faq, /href="https:\/\/united-mobile-rv-llc\.square\.site\/"/);
+  assert.match(faq, />book on Square</);
+  assert.doesNotMatch(faq, /book-service/);
+  assert.doesNotMatch(faq, /the form/);
 });
 
 test('shop lockdown redirect also sends the headers', async () => {
