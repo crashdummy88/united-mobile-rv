@@ -26,12 +26,12 @@ Structured facts for the widget. Prefer these over improvisation. Owner: Field K
 | Trip fee | $75 | Within 30 miles |
 | Mileage | $1.50/mi each way | Beyond 30 miles |
 | Labor | ~$150/hr | 1 hr minimum; 30-min increments after |
-| Diagnostic | $150 | Credited toward repair if customer proceeds |
+| Diagnostic | $175 | Credited toward repair if customer proceeds |
 | Winterize | $175 | Separate line item — not TT vs 5th/MH |
 | Trip prep | $225 | Separate line item — not coach-class framing |
 | Parts | Quoted before install | No surprise installs |
 
-**Script:** “Trip fee is $75 within 30 miles, then $1.50 a mile each way. Labor is about $150 an hour with a 1-hour minimum and 30-minute increments after that. Diagnostic is $150 and applies toward the repair if we move forward. Winterize is $175 and trip prep is $225 — separate line items, not by coach class.”
+**Script:** “Trip fee is $75 within 30 miles, then $1.50 a mile each way. Labor is about $150 an hour with a 1-hour minimum and 30-minute increments after that. Diagnostic is $175 and applies toward the repair if we move forward. Winterize is $175 and trip prep is $225 — separate line items, not by coach class.”
 
 ## Corridor
 | Tier | States |
@@ -90,7 +90,7 @@ Starlink: install capability only (mount, cable routing, power integration, aim/
 A: Name, phone, email, city/ZIP (location), what’s going on (issue), and rig info. **Text Now** is the default follow-up — text (616) 606-5277 first; Book is secondary.
 
 **Q: How much will my repair cost?**  
-A: Until we diagnose on site we quote structure, not a guess total: trip + labor (~$150/hr, 1 hr min, 30-min increments), diagnostic $150 toward repair if you proceed, parts quoted before install. Seasonal: winterize $175, trip prep $225 (separate line items — not by coach class). Book or text so we can look at your location and symptoms.
+A: Until we diagnose on site we quote structure, not a guess total: trip + labor (~$150/hr, 1 hr min, 30-min increments), diagnostic $175 toward repair if you proceed, parts quoted before install. Seasonal: winterize $175, trip prep $225 (separate line items — not by coach class). Book or text so we can look at your location and symptoms.
 
 **Q: Winterize / trip prep?**  
 A: Winterize is $175. Trip prep is $225. Those are flat separate line items — not TT vs fifth-wheel vs motorhome pricing. Trip fee and any extra labor still apply as quoted. Text Now (616) 606-5277.

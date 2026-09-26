@@ -19,7 +19,7 @@ Private staging site. Separate from unitedmobilerv.com WordPress.
 - Phone: (616) 606-5277
 - Trip: $75 / 30mi then $1.50/mi each way
 - Labor: ~$150/hr
-- Diagnostic: $150 applied if proceed
+- Diagnostic: $175 applied if proceed
 - CTAs: Book Now / Book a Service
 - Creds: Victron Professional Certified Installer; weBoost Authorized Installer; Peplink Certified Associate; Dometic Professional Certified
 
