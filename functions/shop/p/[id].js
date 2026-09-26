@@ -4,6 +4,7 @@
  * the "Product + Service" model) instead of a live checkout charge.
  */
 import { formatPrice, priceNote, displayName, CATEGORY_ICONS, stockStatusMeta, productSquareHref } from '../../_lib/shop.js';
+import { productImageSrc } from '../../_lib/product-image.js';
 import { islandHeader, islandFooter, islandMobileBar, shopCartNavItem, clarityHeadSnippet, landJsonLdSnippet, landCrumbsNav } from '../../_lib/mesh-chrome.js';
 import { quoteFirstSection, shopQuoteNeedsSection } from '../../_lib/island-substance.js';
 
@@ -60,6 +61,7 @@ export async function onRequestGet(context) {
   // it's shown instead of two hand-maintained copies drifting apart.
   const stock = stockStatusMeta(product);
   const squareHref = productSquareHref(product);
+  const imageSrc = productImageSrc(product.image_url);
 
   const pageName = displayName(product.manufacturer, product.title);
   const html = `<!DOCTYPE html>
@@ -88,9 +90,9 @@ ${landCrumbsNav(request, { pageName })}
   <div class="wrap wrap-narrow">
     <p class="muted mb-0"><a class="text-link" href="/shop/">&larr; Back to shop</a></p>
     <div class="product-hero-grid">
-      <div class="product-hero-img${product.image_url ? '' : ' is-fallback'}">${
-        product.image_url
-          ? `<img src="${esc(product.image_url)}" alt="" loading="eager" onerror="this.closest('.product-hero-img').classList.add('is-fallback');this.remove()">`
+      <div class="product-hero-img${imageSrc ? '' : ' is-fallback'}">${
+        imageSrc
+          ? `<img src="${esc(imageSrc)}" alt="" loading="eager" onerror="this.closest('.product-hero-img').classList.add('is-fallback');this.remove()">`
           : `<span aria-hidden="true">${CATEGORY_ICONS[product.category] || '🔧'}</span>`
       }</div>
       <div>

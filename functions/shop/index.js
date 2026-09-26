@@ -9,6 +9,7 @@
  * Legacy services-tab query bookmarks still 200 and render parts.
  */
 import { formatPrice, displayName, CATEGORY_ICONS, stockStatusMeta, productSquareHref } from '../_lib/shop.js';
+import { productImageSrc } from '../_lib/product-image.js';
 import { islandHeader, islandFooter, islandMobileBar, shopCartNavItem, clarityHeadSnippet, landJsonLdSnippet, landCrumbsNav } from '../_lib/mesh-chrome.js';
 import {
   quoteFirstSection,
@@ -34,8 +35,9 @@ const CATEGORY_LABELS = {
 };
 
 function cardImageHtml(p) {
-  if (p.image_url) {
-    return `<img class="shop-card-img" src="${esc(p.image_url)}" alt="" loading="lazy" width="220" height="220"
+  const src = productImageSrc(p.image_url);
+  if (src) {
+    return `<img class="shop-card-img" src="${esc(src)}" alt="" loading="lazy" width="220" height="220"
       onerror="this.closest('.shop-card-imgwrap').classList.add('is-fallback');this.remove()">`;
   }
   return `<span class="shop-card-img-fallback" aria-hidden="true">${CATEGORY_ICONS[p.category] || '🔧'}</span>`;
@@ -94,7 +96,7 @@ export async function onRequestGet(context) {
       return `
       <div class="shop-card">
         <a class="shop-card-link" href="${base}/shop/p/${esc(p.id)}">
-          <div class="shop-card-imgwrap${p.image_url ? '' : ' is-fallback'}">${cardImageHtml(p)}</div>
+          <div class="shop-card-imgwrap${productImageSrc(p.image_url) ? '' : ' is-fallback'}">${cardImageHtml(p)}</div>
           <div class="shop-card-body">
             ${p.manufacturer ? `<div class="shop-card-brand">${esc(p.manufacturer)}</div>` : ''}
             <div class="shop-card-title">${esc(displayName(p.manufacturer, p.title))}</div>

@@ -3,6 +3,7 @@
  * Single published product, plus any real components if it's a kit.
  */
 import { json } from '../../../../_lib/authz.js';
+import { productImageSrc } from '../../../../_lib/product-image.js';
 
 export async function onRequestGet(context) {
   const { env, params } = context;
@@ -14,6 +15,7 @@ export async function onRequestGet(context) {
      FROM products WHERE id = ? AND active = 1`
   ).bind(params.id).first();
   if (!product) return json({ success: false, error: 'not_found' }, 404);
+  if (product.image_url) product.image_url = productImageSrc(product.image_url);
 
   let components = [];
   if (product.product_type === 'kit') {
