@@ -15,18 +15,20 @@
  * origins there too. The iframe class "book-frame" is sized in
  * functions/_lib/book-landing.js (BOOK_LANDING_CSS).
  *
- * URL (checked 2026-09-26): there is no published Appointments calendar.
- * book.squareup.com/appointments/ for the site's squareAppointment id
- * (11ee0a41ff32bdd39387ac1f6bbbd01e) and the store location
- * (LN918X13KYRXS) both render "Page not found". /s/appointments is a
- * theme placeholder ("Something went wrong") and shows a demo San
- * Francisco address, so it is not the booking form. The sitemap's real
- * pages are /, /remote, and /repair-agreement. The booking request is
- * the "Request an appointment" contact form on the homepage. #HjeiGL is
- * that block (short id for c2ee3d80-b196-11f1-994c-e58736b6895a), so the
- * frame opens on the form. The page sends no X-Frame-Options or
- * frame-ancestors. The landing CSS crops the Square header that stays
- * pinned above this anchor.
+ * URL (checked 2026-09-26): the contact form, not the Appointments
+ * calendar. Square has no page that is only a contact form. Published
+ * pages are /, /remote, and /repair-agreement. /contact and the
+ * book.squareup.com appointment URLs are not a form (/contact is 404;
+ * the calendar URLs render "Page not found"). /s/appointments is a
+ * broken theme placeholder with a demo street address.
+ *
+ * The contact form is the homepage block named "Appointment request"
+ * (type contact-form): Full Name, Email, Phone Number, Service Location,
+ * What Services Do You Need?, Trailer/RV Year,Make,Model. #HjeiGL is
+ * that block (short id for c2ee3d80-b196-11f1-994c-e58736b6895a).
+ * /remote is a different form (VictronConnect / PowerWatch), not this
+ * one. The page sends no X-Frame-Options or frame-ancestors. The
+ * landing CSS crops the Square header pinned above this anchor.
  */
 
 export const SQUARE_BOOKING_PAGE_URL = 'https://united-mobile-rv-llc.square.site/#HjeiGL';

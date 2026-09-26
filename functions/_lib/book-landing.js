@@ -36,11 +36,11 @@ export const BOOK_LANDING_NAV = [
   { key: 'docs', href: 'https://docs.unitedmobilerv.com/', label: 'Docs' },
 ];
 
-/* The frame opens on the appointment-request block (#HjeiGL). Square
-   keeps a 72px site header pinned above that anchor at both 1280 and
-   390. Shift the frame up by 76px and clip it so the visible area is
-   the form, not that header or the homepage hero. Heights match the
-   form block: about 636px on desktop, about 708px at 390. */
+/* The frame opens on the contact form (#HjeiGL). Square keeps a 72px
+   site header pinned above that anchor at both 1280 and 390. Shift the
+   frame up by 76px and clip it so the visible area is the form. Heights
+   cover the fields and the Submit button: the form ends near 664px on
+   desktop and near 752px at 390, measured from the top of the iframe. */
 export const BOOK_LANDING_CSS = `
   .book-landing { background: #0C0C0C; }
   .book-landing h1 { color: #fff; }
